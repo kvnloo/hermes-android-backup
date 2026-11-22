@@ -15,3 +15,4 @@ jobs:
         with: {repository: kvnloo/home, token: '${{ secrets.MIRROR_TOKEN }}', path: .home, sparse-checkout: tools/fork-standard, persist-credentials: false}
       - run: .home/tools/fork-standard/scripts/run-mirror.sh
         env: {UPSTREAM: 'rusty4444/ares', FORK: 'kvnloo/hermes-android', BRANCH: 'main', MIRROR_TOKEN: '${{ secrets.MIRROR_TOKEN }}'}
+# registered: 2026-11-22T14:32Z (an edit to this file makes GitHub register the workflow)
