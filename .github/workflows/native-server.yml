@@ -62,7 +62,7 @@ jobs:
         run: gradle :app:testDebugUnitTest :flutter_tts:testDebugUnitTest --no-daemon --stacktrace
       - name: Preserve native test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: native-test-reports
           path: |
