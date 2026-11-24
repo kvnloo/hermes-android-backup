@@ -3582,6 +3582,48 @@ class DashboardClient {
     },
   );
 
+  /// [setAuxiliaryModel] for the Models page. [confirmExpensive] is only for
+  /// a choice the user has just agreed to against the gateway's own warning.
+  /// The thinking level is left alone unless [setReasoningEffort] is true; a
+  /// null level then clears it.
+  Future<Map<String, dynamic>> assignAuxiliaryModel({
+    required String task,
+    required String provider,
+    required String model,
+    bool confirmExpensive = false,
+    bool setReasoningEffort = false,
+    String? reasoningEffort,
+  }) => apiPost(
+    'model/set',
+    body: {
+      'scope': 'auxiliary',
+      'task': task,
+      'provider': provider,
+      'model': model,
+      'confirm_expensive_model': confirmExpensive,
+      if (setReasoningEffort) 'reasoning_effort': reasoningEffort,
+      'profile': ?_gatewayProfile,
+    },
+  );
+
+  /// [setModel] for the profile's default model, from the Models page.
+  /// [confirmExpensive] is only for a choice the user has just agreed to
+  /// against the gateway's own warning.
+  Future<Map<String, dynamic>> assignMainModel(
+    String provider,
+    String model, {
+    bool confirmExpensive = false,
+  }) => apiPost(
+    'model/set',
+    body: {
+      'scope': 'main',
+      'provider': provider,
+      'model': model,
+      if (confirmExpensive) 'confirm_expensive_model': true,
+      'profile': ?_gatewayProfile,
+    },
+  );
+
   /// Custom endpoint status for the main assignment, without retaining URLs or
   /// credential previews. Canonical standard URLs are not endpoint overrides.
   /// model/info omits base_url; config flattens model. The custom-endpoints route

@@ -5616,6 +5616,168 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ng_notify_master_off => '通知已關閉';
+
+  @override
+  String get ng_models_default => '默认模型';
+
+  @override
+  String get ng_models_change => '更改';
+
+  @override
+  String get ng_models_custom_endpoint => '使用自定义端点。请在网关上更改。';
+
+  @override
+  String get ng_models_context_window => '上下文窗口';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count Token';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return '已在网关上设置。自动检测：$count Token。';
+  }
+
+  @override
+  String get ng_models_max_output => '最大输出';
+
+  @override
+  String get ng_models_input_price => '输入价格';
+
+  @override
+  String get ng_models_output_price => '输出价格';
+
+  @override
+  String get ng_models_cache_price => '缓存输入价格';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '每百万 Token $price';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return '每百万 Token：输入 $input · 输出 $output';
+  }
+
+  @override
+  String get ng_models_free => '免费';
+
+  @override
+  String get ng_models_vision => '视觉';
+
+  @override
+  String get ng_models_reasoning => '推理';
+
+  @override
+  String get ng_models_fast => '快速模式';
+
+  @override
+  String get ng_models_in_use => '使用中';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个模型',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => '已限流';
+
+  @override
+  String get ng_models_plan_locked => '当前套餐不可用';
+
+  @override
+  String get ng_models_unsaved => '未保存的更改';
+
+  @override
+  String get ng_models_discard => '放弃';
+
+  @override
+  String get ng_models_aux_hint => '辅助任务使用默认模型，除非你为其单独指定。';
+
+  @override
+  String get ng_models_uses_default => '使用默认模型';
+
+  @override
+  String get ng_models_thinking_level => '思考级别';
+
+  @override
+  String get ng_models_providers => '提供方';
+
+  @override
+  String get ng_models_saved => '已保存';
+
+  @override
+  String get ng_aux_vision => '视觉';
+
+  @override
+  String get ng_aux_vision_hint => '读取图片和截图';
+
+  @override
+  String get ng_aux_compression => '压缩';
+
+  @override
+  String get ng_aux_compression_hint => '压缩较长的聊天，使其适应上下文窗口';
+
+  @override
+  String get ng_aux_approval => '审批';
+
+  @override
+  String get ng_aux_approval_hint => '判断命令是否可以不经询问安全执行';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => '选择要使用的 MCP 工具';
+
+  @override
+  String get ng_aux_title_generation => '聊天标题';
+
+  @override
+  String get ng_aux_title_generation_hint => '为新聊天命名';
+
+  @override
+  String get ng_aux_review => '评审';
+
+  @override
+  String get ng_aux_review_hint => '运行 /review 时检查工作成果';
+
+  @override
+  String get ng_aux_voice_chat => '语音聊天';
+
+  @override
+  String get ng_aux_voice_chat_hint => '在语音模式下回复';
+
+  @override
+  String get ng_aux_triage_specifier => '任务分类';
+
+  @override
+  String get ng_aux_triage_specifier_hint => '将一行的看板卡片扩展为规格说明';
+
+  @override
+  String get ng_aux_kanban_decomposer => '看板拆解';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint => '将看板卡片拆分为更小的任务';
+
+  @override
+  String get ng_aux_profile_describer => '配置档案描述';
+
+  @override
+  String get ng_aux_profile_describer_hint => '为每个配置档案撰写简短描述';
+
+  @override
+  String get ng_aux_curator => '维护器';
+
+  @override
+  String get ng_aux_curator_hint => '审查技能的使用情况';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -11038,4 +11200,166 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get ng_notify_master_off => '通知已关闭';
+
+  @override
+  String get ng_models_default => '默认模型';
+
+  @override
+  String get ng_models_change => '更改';
+
+  @override
+  String get ng_models_custom_endpoint => '使用自定义端点。请在网关上更改。';
+
+  @override
+  String get ng_models_context_window => '上下文窗口';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count Token';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return '已在网关上设置。自动检测：$count Token。';
+  }
+
+  @override
+  String get ng_models_max_output => '最大输出';
+
+  @override
+  String get ng_models_input_price => '输入价格';
+
+  @override
+  String get ng_models_output_price => '输出价格';
+
+  @override
+  String get ng_models_cache_price => '缓存输入价格';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '每百万 Token $price';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return '每百万 Token：输入 $input · 输出 $output';
+  }
+
+  @override
+  String get ng_models_free => '免费';
+
+  @override
+  String get ng_models_vision => '视觉';
+
+  @override
+  String get ng_models_reasoning => '推理';
+
+  @override
+  String get ng_models_fast => '快速模式';
+
+  @override
+  String get ng_models_in_use => '使用中';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个模型',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => '已限流';
+
+  @override
+  String get ng_models_plan_locked => '当前套餐不可用';
+
+  @override
+  String get ng_models_unsaved => '未保存的更改';
+
+  @override
+  String get ng_models_discard => '放弃';
+
+  @override
+  String get ng_models_aux_hint => '辅助任务使用默认模型，除非你为其单独指定。';
+
+  @override
+  String get ng_models_uses_default => '使用默认模型';
+
+  @override
+  String get ng_models_thinking_level => '思考级别';
+
+  @override
+  String get ng_models_providers => '提供方';
+
+  @override
+  String get ng_models_saved => '已保存';
+
+  @override
+  String get ng_aux_vision => '视觉';
+
+  @override
+  String get ng_aux_vision_hint => '读取图片和截图';
+
+  @override
+  String get ng_aux_compression => '压缩';
+
+  @override
+  String get ng_aux_compression_hint => '压缩较长的聊天，使其适应上下文窗口';
+
+  @override
+  String get ng_aux_approval => '审批';
+
+  @override
+  String get ng_aux_approval_hint => '判断命令是否可以不经询问安全执行';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => '选择要使用的 MCP 工具';
+
+  @override
+  String get ng_aux_title_generation => '聊天标题';
+
+  @override
+  String get ng_aux_title_generation_hint => '为新聊天命名';
+
+  @override
+  String get ng_aux_review => '评审';
+
+  @override
+  String get ng_aux_review_hint => '运行 /review 时检查工作成果';
+
+  @override
+  String get ng_aux_voice_chat => '语音聊天';
+
+  @override
+  String get ng_aux_voice_chat_hint => '在语音模式下回复';
+
+  @override
+  String get ng_aux_triage_specifier => '任务分类';
+
+  @override
+  String get ng_aux_triage_specifier_hint => '将一行的看板卡片扩展为规格说明';
+
+  @override
+  String get ng_aux_kanban_decomposer => '看板拆解';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint => '将看板卡片拆分为更小的任务';
+
+  @override
+  String get ng_aux_profile_describer => '配置档案描述';
+
+  @override
+  String get ng_aux_profile_describer_hint => '为每个配置档案撰写简短描述';
+
+  @override
+  String get ng_aux_curator => '维护器';
+
+  @override
+  String get ng_aux_curator_hint => '审查技能的使用情况';
 }

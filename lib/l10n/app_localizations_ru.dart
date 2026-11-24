@@ -5860,4 +5860,177 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ng_notify_master_off => 'Уведомления выключены';
+
+  @override
+  String get ng_models_default => 'Модель по умолчанию';
+
+  @override
+  String get ng_models_change => 'Изменить';
+
+  @override
+  String get ng_models_custom_endpoint =>
+      'Работает через пользовательский адрес. Измените его на шлюзе.';
+
+  @override
+  String get ng_models_context_window => 'Контекстное окно';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count токенов';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return 'Задано на шлюзе. Определено автоматически: $count токенов.';
+  }
+
+  @override
+  String get ng_models_max_output => 'Макс. вывод';
+
+  @override
+  String get ng_models_input_price => 'Цена ввода';
+
+  @override
+  String get ng_models_output_price => 'Цена вывода';
+
+  @override
+  String get ng_models_cache_price => 'Цена кэшированного ввода';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '$price за 1 млн токенов';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return 'Ввод $input · вывод $output за 1 млн токенов';
+  }
+
+  @override
+  String get ng_models_free => 'Бесплатно';
+
+  @override
+  String get ng_models_vision => 'Зрение';
+
+  @override
+  String get ng_models_reasoning => 'Рассуждение';
+
+  @override
+  String get ng_models_fast => 'Быстрый режим';
+
+  @override
+  String get ng_models_in_use => 'Используется';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count модели',
+      many: '$count моделей',
+      few: '$count модели',
+      one: '$count модель',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => 'Лимит исчерпан';
+
+  @override
+  String get ng_models_plan_locked => 'Недоступно в вашем тарифе';
+
+  @override
+  String get ng_models_unsaved => 'Несохранённые изменения';
+
+  @override
+  String get ng_models_discard => 'Сбросить';
+
+  @override
+  String get ng_models_aux_hint =>
+      'Вспомогательные задачи используют модель по умолчанию, пока вы не назначите им свою.';
+
+  @override
+  String get ng_models_uses_default => 'Использует модель по умолчанию';
+
+  @override
+  String get ng_models_thinking_level => 'Уровень размышления';
+
+  @override
+  String get ng_models_providers => 'Провайдеры';
+
+  @override
+  String get ng_models_saved => 'Сохранено';
+
+  @override
+  String get ng_aux_vision => 'Зрение';
+
+  @override
+  String get ng_aux_vision_hint => 'Читает изображения и снимки экрана';
+
+  @override
+  String get ng_aux_compression => 'Сжатие';
+
+  @override
+  String get ng_aux_compression_hint =>
+      'Сокращает длинный чат, чтобы он помещался в контекстное окно';
+
+  @override
+  String get ng_aux_approval => 'Одобрение';
+
+  @override
+  String get ng_aux_approval_hint =>
+      'Решает, можно ли безопасно выполнить команду без запроса';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => 'Выбирает, какие инструменты MCP использовать';
+
+  @override
+  String get ng_aux_title_generation => 'Названия чатов';
+
+  @override
+  String get ng_aux_title_generation_hint => 'Даёт названия новым чатам';
+
+  @override
+  String get ng_aux_review => 'Ревью';
+
+  @override
+  String get ng_aux_review_hint =>
+      'Проверяет работу, когда вы запускаете /review';
+
+  @override
+  String get ng_aux_voice_chat => 'Голосовой чат';
+
+  @override
+  String get ng_aux_voice_chat_hint => 'Отвечает в голосовом режиме';
+
+  @override
+  String get ng_aux_triage_specifier => 'Триаж';
+
+  @override
+  String get ng_aux_triage_specifier_hint =>
+      'Разворачивает однострочную карточку Kanban в спецификацию';
+
+  @override
+  String get ng_aux_kanban_decomposer => 'Разбиение Kanban';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint =>
+      'Делит карточку Kanban на более мелкие задачи';
+
+  @override
+  String get ng_aux_profile_describer => 'Описания профилей';
+
+  @override
+  String get ng_aux_profile_describer_hint =>
+      'Пишет краткое описание каждого профиля';
+
+  @override
+  String get ng_aux_curator => 'Куратор';
+
+  @override
+  String get ng_aux_curator_hint => 'Проверяет, как используются навыки';
 }

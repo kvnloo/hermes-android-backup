@@ -1,5 +1,5 @@
-// "More": archived chats, the raw config editor and every classic Hermes
-// Android feature Kyllene doesn't have (memory, projects, model management,
+// "More": archived chats, the raw config editor, the Models page and every
+// classic Hermes Android feature Kyllene doesn't have (memory, projects,
 // provider sign-in, Nous Portal, the full cron editor...), opened in place.
 import 'dart:convert';
 
@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import '../../core/models/session.dart';
 import '../../core/screens/cron_screen.dart';
 import '../../core/screens/memory_screen.dart';
-import '../../core/screens/model_management_screen.dart';
 import '../../core/screens/nous_portal_screen.dart';
 import '../../core/screens/projects_root_screen.dart';
 import '../../core/screens/provider_oauth_screen.dart';
@@ -16,6 +15,7 @@ import '../../core/screens/skills_screen.dart';
 import '../../core/services/dashboard_api_client.dart';
 import '../nextgen_preferences.dart';
 import '../theme/nextgen_theme.dart';
+import 'models_page.dart';
 import 'nextgen_scope.dart';
 import 'scheduled_page.dart';
 import 'sessions_sidebar.dart';
@@ -100,9 +100,9 @@ class NgMorePage extends StatelessWidget {
                   title: ngL.ng_model_management,
                   subtitle: ngL.ng_default_fallback_and_auxiliary_models,
                   onTap: () => push(
-                    ModelManagementScreen(
+                    NgModelsPage(
                       connection: conn,
-                      dashboardClient: scope.gateway.dashboard,
+                      client: scope.gateway.dashboard,
                     ),
                   ),
                 ),

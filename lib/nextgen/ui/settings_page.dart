@@ -5,7 +5,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../core/models/connection.dart';
-import '../../core/screens/model_management_screen.dart';
 import '../../core/screens/settings_screen.dart';
 import '../../core/services/app_licenses.dart';
 import '../../core/services/background_work_prefs.dart';
@@ -16,6 +15,7 @@ import '../../core/services/legal_links.dart';
 import '../data/connection_check.dart';
 import '../nextgen_preferences.dart';
 import '../theme/nextgen_theme.dart';
+import 'models_page.dart';
 import 'nextgen_scope.dart';
 import 'widgets.dart';
 import '../nextgen_l10n.dart';
@@ -210,9 +210,9 @@ class _NgSettingsPageState extends State<NgSettingsPage> {
                 subtitle: ngL.ng_default_fallback_and_auxiliary_models,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder: (_) => ModelManagementScreen(
+                    builder: (_) => NgModelsPage(
                       connection: conn,
-                      dashboardClient: scope.gateway.dashboard,
+                      client: scope.gateway.dashboard,
                     ),
                   ),
                 ),

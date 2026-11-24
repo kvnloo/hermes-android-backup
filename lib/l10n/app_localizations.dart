@@ -9797,6 +9797,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications off'**
   String get ng_notify_master_off;
+
+  /// No description provided for @ng_models_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Default model'**
+  String get ng_models_default;
+
+  /// No description provided for @ng_models_change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get ng_models_change;
+
+  /// No description provided for @ng_models_custom_endpoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs on a custom endpoint. Change it on the gateway.'**
+  String get ng_models_custom_endpoint;
+
+  /// No description provided for @ng_models_context_window.
+  ///
+  /// In en, this message translates to:
+  /// **'Context window'**
+  String get ng_models_context_window;
+
+  /// No description provided for @ng_models_token_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tokens'**
+  String ng_models_token_count(String count);
+
+  /// No description provided for @ng_models_context_override.
+  ///
+  /// In en, this message translates to:
+  /// **'Set on the gateway. Auto-detected: {count} tokens.'**
+  String ng_models_context_override(String count);
+
+  /// No description provided for @ng_models_max_output.
+  ///
+  /// In en, this message translates to:
+  /// **'Max output'**
+  String get ng_models_max_output;
+
+  /// No description provided for @ng_models_input_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Input price'**
+  String get ng_models_input_price;
+
+  /// No description provided for @ng_models_output_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Output price'**
+  String get ng_models_output_price;
+
+  /// No description provided for @ng_models_cache_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Cached input price'**
+  String get ng_models_cache_price;
+
+  /// No description provided for @ng_models_per_million.
+  ///
+  /// In en, this message translates to:
+  /// **'{price} per 1M tokens'**
+  String ng_models_per_million(String price);
+
+  /// No description provided for @ng_models_price_pair.
+  ///
+  /// In en, this message translates to:
+  /// **'{input} in · {output} out per 1M tokens'**
+  String ng_models_price_pair(String input, String output);
+
+  /// No description provided for @ng_models_free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get ng_models_free;
+
+  /// No description provided for @ng_models_vision.
+  ///
+  /// In en, this message translates to:
+  /// **'Vision'**
+  String get ng_models_vision;
+
+  /// No description provided for @ng_models_reasoning.
+  ///
+  /// In en, this message translates to:
+  /// **'Reasoning'**
+  String get ng_models_reasoning;
+
+  /// No description provided for @ng_models_fast.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast mode'**
+  String get ng_models_fast;
+
+  /// No description provided for @ng_models_in_use.
+  ///
+  /// In en, this message translates to:
+  /// **'In use'**
+  String get ng_models_in_use;
+
+  /// No description provided for @ng_models_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{{count} model} other{{count} models}}'**
+  String ng_models_count(int count);
+
+  /// No description provided for @ng_models_rate_limited.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate-limited'**
+  String get ng_models_rate_limited;
+
+  /// No description provided for @ng_models_plan_locked.
+  ///
+  /// In en, this message translates to:
+  /// **'Not on your plan'**
+  String get ng_models_plan_locked;
+
+  /// No description provided for @ng_models_unsaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved changes'**
+  String get ng_models_unsaved;
+
+  /// No description provided for @ng_models_discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get ng_models_discard;
+
+  /// No description provided for @ng_models_aux_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Helper tasks use the default model unless you give them their own.'**
+  String get ng_models_aux_hint;
+
+  /// No description provided for @ng_models_uses_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses the default model'**
+  String get ng_models_uses_default;
+
+  /// No description provided for @ng_models_thinking_level.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking level'**
+  String get ng_models_thinking_level;
+
+  /// No description provided for @ng_models_providers.
+  ///
+  /// In en, this message translates to:
+  /// **'Providers'**
+  String get ng_models_providers;
+
+  /// No description provided for @ng_models_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get ng_models_saved;
+
+  /// No description provided for @ng_aux_vision.
+  ///
+  /// In en, this message translates to:
+  /// **'Vision'**
+  String get ng_aux_vision;
+
+  /// No description provided for @ng_aux_vision_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reads images and screenshots'**
+  String get ng_aux_vision_hint;
+
+  /// No description provided for @ng_aux_compression.
+  ///
+  /// In en, this message translates to:
+  /// **'Compression'**
+  String get ng_aux_compression;
+
+  /// No description provided for @ng_aux_compression_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortens a long chat so it fits the context window'**
+  String get ng_aux_compression_hint;
+
+  /// No description provided for @ng_aux_approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval'**
+  String get ng_aux_approval;
+
+  /// No description provided for @ng_aux_approval_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Decides whether a command is safe to run without asking'**
+  String get ng_aux_approval_hint;
+
+  /// No description provided for @ng_aux_mcp.
+  ///
+  /// In en, this message translates to:
+  /// **'MCP'**
+  String get ng_aux_mcp;
+
+  /// No description provided for @ng_aux_mcp_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Chooses which MCP tools to use'**
+  String get ng_aux_mcp_hint;
+
+  /// No description provided for @ng_aux_title_generation.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat titles'**
+  String get ng_aux_title_generation;
+
+  /// No description provided for @ng_aux_title_generation_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Names new chats'**
+  String get ng_aux_title_generation_hint;
+
+  /// No description provided for @ng_aux_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get ng_aux_review;
+
+  /// No description provided for @ng_aux_review_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews work when you run /review'**
+  String get ng_aux_review_hint;
+
+  /// No description provided for @ng_aux_voice_chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice chat'**
+  String get ng_aux_voice_chat;
+
+  /// No description provided for @ng_aux_voice_chat_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Replies in voice mode'**
+  String get ng_aux_voice_chat_hint;
+
+  /// No description provided for @ng_aux_triage_specifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Triage'**
+  String get ng_aux_triage_specifier;
+
+  /// No description provided for @ng_aux_triage_specifier_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Expands a one-line Kanban card into a spec'**
+  String get ng_aux_triage_specifier_hint;
+
+  /// No description provided for @ng_aux_kanban_decomposer.
+  ///
+  /// In en, this message translates to:
+  /// **'Kanban breakdown'**
+  String get ng_aux_kanban_decomposer;
+
+  /// No description provided for @ng_aux_kanban_decomposer_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Splits a Kanban card into smaller tasks'**
+  String get ng_aux_kanban_decomposer_hint;
+
+  /// No description provided for @ng_aux_profile_describer.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile descriptions'**
+  String get ng_aux_profile_describer;
+
+  /// No description provided for @ng_aux_profile_describer_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Writes each profile\'s short description'**
+  String get ng_aux_profile_describer_hint;
+
+  /// No description provided for @ng_aux_curator.
+  ///
+  /// In en, this message translates to:
+  /// **'Curator'**
+  String get ng_aux_curator;
+
+  /// No description provided for @ng_aux_curator_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews how skills are used'**
+  String get ng_aux_curator_hint;
 }
 
 class _AppLocalizationsDelegate

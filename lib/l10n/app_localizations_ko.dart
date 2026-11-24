@@ -5704,4 +5704,166 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ng_notify_master_off => '알림 꺼짐';
+
+  @override
+  String get ng_models_default => '기본 모델';
+
+  @override
+  String get ng_models_change => '변경';
+
+  @override
+  String get ng_models_custom_endpoint => '사용자 지정 엔드포인트를 사용합니다. 게이트웨이에서 변경하세요.';
+
+  @override
+  String get ng_models_context_window => '컨텍스트 창';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count 토큰';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return '게이트웨이에서 설정되었습니다. 자동 감지: $count 토큰.';
+  }
+
+  @override
+  String get ng_models_max_output => '최대 출력';
+
+  @override
+  String get ng_models_input_price => '입력 요금';
+
+  @override
+  String get ng_models_output_price => '출력 요금';
+
+  @override
+  String get ng_models_cache_price => '캐시된 입력 요금';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '100만 토큰당 $price';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return '100만 토큰당 입력 $input · 출력 $output';
+  }
+
+  @override
+  String get ng_models_free => '무료';
+
+  @override
+  String get ng_models_vision => '이미지 인식';
+
+  @override
+  String get ng_models_reasoning => '추론';
+
+  @override
+  String get ng_models_fast => '빠른 모드';
+
+  @override
+  String get ng_models_in_use => '사용 중';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '모델 $count개',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => '사용량 제한됨';
+
+  @override
+  String get ng_models_plan_locked => '현재 요금제에서 사용 불가';
+
+  @override
+  String get ng_models_unsaved => '저장되지 않은 변경 사항';
+
+  @override
+  String get ng_models_discard => '되돌리기';
+
+  @override
+  String get ng_models_aux_hint => '보조 작업은 별도로 모델을 지정하지 않으면 기본 모델을 사용합니다.';
+
+  @override
+  String get ng_models_uses_default => '기본 모델 사용';
+
+  @override
+  String get ng_models_thinking_level => '사고 수준';
+
+  @override
+  String get ng_models_providers => '제공자';
+
+  @override
+  String get ng_models_saved => '저장했어요';
+
+  @override
+  String get ng_aux_vision => '비전';
+
+  @override
+  String get ng_aux_vision_hint => '이미지와 스크린샷을 읽습니다';
+
+  @override
+  String get ng_aux_compression => '압축';
+
+  @override
+  String get ng_aux_compression_hint => '긴 채팅을 컨텍스트 창에 맞게 줄입니다';
+
+  @override
+  String get ng_aux_approval => '승인';
+
+  @override
+  String get ng_aux_approval_hint => '명령을 묻지 않고 실행해도 안전한지 판단합니다';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => '사용할 MCP 도구를 선택합니다';
+
+  @override
+  String get ng_aux_title_generation => '채팅 제목';
+
+  @override
+  String get ng_aux_title_generation_hint => '새 채팅의 이름을 정합니다';
+
+  @override
+  String get ng_aux_review => '검토';
+
+  @override
+  String get ng_aux_review_hint => '/review 실행 시 작업을 검토합니다';
+
+  @override
+  String get ng_aux_voice_chat => '음성 채팅';
+
+  @override
+  String get ng_aux_voice_chat_hint => '음성 모드에서 응답합니다';
+
+  @override
+  String get ng_aux_triage_specifier => '분류';
+
+  @override
+  String get ng_aux_triage_specifier_hint => '한 줄짜리 칸반 카드를 명세로 확장합니다';
+
+  @override
+  String get ng_aux_kanban_decomposer => '칸반 분해';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint => '칸반 카드를 더 작은 작업으로 나눕니다';
+
+  @override
+  String get ng_aux_profile_describer => '프로필 설명';
+
+  @override
+  String get ng_aux_profile_describer_hint => '각 프로필의 짧은 설명을 작성합니다';
+
+  @override
+  String get ng_aux_curator => '큐레이터';
+
+  @override
+  String get ng_aux_curator_hint => '스킬 사용 현황을 검토합니다';
 }

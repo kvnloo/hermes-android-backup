@@ -5700,4 +5700,167 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get ng_notify_master_off => '通知オフ';
+
+  @override
+  String get ng_models_default => 'デフォルトモデル';
+
+  @override
+  String get ng_models_change => '変更';
+
+  @override
+  String get ng_models_custom_endpoint =>
+      'カスタムエンドポイントを使用しています。ゲートウェイ側で変更してください。';
+
+  @override
+  String get ng_models_context_window => 'コンテキストウィンドウ';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count トークン';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return 'ゲートウェイで設定されています。自動検出: $count トークン。';
+  }
+
+  @override
+  String get ng_models_max_output => '最大出力';
+
+  @override
+  String get ng_models_input_price => '入力料金';
+
+  @override
+  String get ng_models_output_price => '出力料金';
+
+  @override
+  String get ng_models_cache_price => 'キャッシュ済み入力の料金';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '100万トークンあたり $price';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return '100万トークンあたり 入力 $input · 出力 $output';
+  }
+
+  @override
+  String get ng_models_free => '無料';
+
+  @override
+  String get ng_models_vision => '画像認識';
+
+  @override
+  String get ng_models_reasoning => '推論';
+
+  @override
+  String get ng_models_fast => '高速モード';
+
+  @override
+  String get ng_models_in_use => '使用中';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個のモデル',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => 'レート制限中';
+
+  @override
+  String get ng_models_plan_locked => '現在のプランでは利用不可';
+
+  @override
+  String get ng_models_unsaved => '未保存の変更';
+
+  @override
+  String get ng_models_discard => '破棄';
+
+  @override
+  String get ng_models_aux_hint => '補助タスクは、個別にモデルを指定しない限りデフォルトモデルを使用します。';
+
+  @override
+  String get ng_models_uses_default => 'デフォルトモデルを使用';
+
+  @override
+  String get ng_models_thinking_level => '思考レベル';
+
+  @override
+  String get ng_models_providers => 'プロバイダー';
+
+  @override
+  String get ng_models_saved => '保存しました';
+
+  @override
+  String get ng_aux_vision => 'ビジョン';
+
+  @override
+  String get ng_aux_vision_hint => '画像やスクリーンショットを読み取ります';
+
+  @override
+  String get ng_aux_compression => '圧縮';
+
+  @override
+  String get ng_aux_compression_hint => '長いチャットをコンテキストウィンドウに収まるよう要約します';
+
+  @override
+  String get ng_aux_approval => '承認';
+
+  @override
+  String get ng_aux_approval_hint => 'コマンドを確認なしで安全に実行できるか判断します';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => '使用する MCP ツールを選びます';
+
+  @override
+  String get ng_aux_title_generation => 'チャットタイトル';
+
+  @override
+  String get ng_aux_title_generation_hint => '新しいチャットに名前を付けます';
+
+  @override
+  String get ng_aux_review => 'レビュー';
+
+  @override
+  String get ng_aux_review_hint => '/review の実行時に作業内容を確認します';
+
+  @override
+  String get ng_aux_voice_chat => '音声チャット';
+
+  @override
+  String get ng_aux_voice_chat_hint => '音声モードで応答します';
+
+  @override
+  String get ng_aux_triage_specifier => 'トリアージ';
+
+  @override
+  String get ng_aux_triage_specifier_hint => '1行のカンバンカードを仕様に展開します';
+
+  @override
+  String get ng_aux_kanban_decomposer => 'カンバン分解';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint => 'カンバンカードを小さなタスクに分割します';
+
+  @override
+  String get ng_aux_profile_describer => 'プロファイルの説明';
+
+  @override
+  String get ng_aux_profile_describer_hint => '各プロファイルの短い説明を作成します';
+
+  @override
+  String get ng_aux_curator => 'キュレーター';
+
+  @override
+  String get ng_aux_curator_hint => 'スキルの使われ方を確認します';
 }

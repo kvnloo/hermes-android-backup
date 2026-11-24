@@ -5865,4 +5865,175 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ng_notify_master_off => 'Benachrichtigungen deaktiviert';
+
+  @override
+  String get ng_models_default => 'Standardmodell';
+
+  @override
+  String get ng_models_change => 'Ändern';
+
+  @override
+  String get ng_models_custom_endpoint =>
+      'Läuft über einen benutzerdefinierten Endpunkt. Ändere ihn auf dem Gateway.';
+
+  @override
+  String get ng_models_context_window => 'Kontextfenster';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count Token';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return 'Auf dem Gateway festgelegt. Automatisch erkannt: $count Token.';
+  }
+
+  @override
+  String get ng_models_max_output => 'Max. Ausgabe';
+
+  @override
+  String get ng_models_input_price => 'Eingabepreis';
+
+  @override
+  String get ng_models_output_price => 'Ausgabepreis';
+
+  @override
+  String get ng_models_cache_price => 'Preis für zwischengespeicherte Eingabe';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '$price pro 1 Mio. Token';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return '$input Eingabe · $output Ausgabe pro 1 Mio. Token';
+  }
+
+  @override
+  String get ng_models_free => 'Kostenlos';
+
+  @override
+  String get ng_models_vision => 'Bildanalyse';
+
+  @override
+  String get ng_models_reasoning => 'Denken';
+
+  @override
+  String get ng_models_fast => 'Schnellmodus';
+
+  @override
+  String get ng_models_in_use => 'In Verwendung';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Modelle',
+      one: '$count Modell',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => 'Limit erreicht';
+
+  @override
+  String get ng_models_plan_locked => 'Nicht in deinem Tarif';
+
+  @override
+  String get ng_models_unsaved => 'Nicht gespeicherte Änderungen';
+
+  @override
+  String get ng_models_discard => 'Verwerfen';
+
+  @override
+  String get ng_models_aux_hint =>
+      'Hilfsaufgaben nutzen das Standardmodell, solange du ihnen kein eigenes zuweist.';
+
+  @override
+  String get ng_models_uses_default => 'Nutzt das Standardmodell';
+
+  @override
+  String get ng_models_thinking_level => 'Denkstufe';
+
+  @override
+  String get ng_models_providers => 'Anbieter';
+
+  @override
+  String get ng_models_saved => 'Gespeichert';
+
+  @override
+  String get ng_aux_vision => 'Bildanalyse';
+
+  @override
+  String get ng_aux_vision_hint => 'Liest Bilder und Screenshots';
+
+  @override
+  String get ng_aux_compression => 'Komprimierung';
+
+  @override
+  String get ng_aux_compression_hint =>
+      'Kürzt lange Chats, damit sie ins Kontextfenster passen';
+
+  @override
+  String get ng_aux_approval => 'Freigabe';
+
+  @override
+  String get ng_aux_approval_hint =>
+      'Entscheidet, ob ein Befehl ohne Nachfrage sicher ausgeführt werden kann';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => 'Wählt aus, welche MCP-Tools verwendet werden';
+
+  @override
+  String get ng_aux_title_generation => 'Chat-Titel';
+
+  @override
+  String get ng_aux_title_generation_hint => 'Benennt neue Chats';
+
+  @override
+  String get ng_aux_review => 'Überprüfung';
+
+  @override
+  String get ng_aux_review_hint =>
+      'Prüft die Arbeit, wenn du /review ausführst';
+
+  @override
+  String get ng_aux_voice_chat => 'Sprachchat';
+
+  @override
+  String get ng_aux_voice_chat_hint => 'Antwortet im Sprachmodus';
+
+  @override
+  String get ng_aux_triage_specifier => 'Triage';
+
+  @override
+  String get ng_aux_triage_specifier_hint =>
+      'Macht aus einer einzeiligen Kanban-Karte eine Spezifikation';
+
+  @override
+  String get ng_aux_kanban_decomposer => 'Kanban-Zerlegung';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint =>
+      'Teilt eine Kanban-Karte in kleinere Aufgaben auf';
+
+  @override
+  String get ng_aux_profile_describer => 'Profilbeschreibungen';
+
+  @override
+  String get ng_aux_profile_describer_hint =>
+      'Schreibt die Kurzbeschreibung jedes Profils';
+
+  @override
+  String get ng_aux_curator => 'Kurator';
+
+  @override
+  String get ng_aux_curator_hint => 'Prüft, wie Skills genutzt werden';
 }

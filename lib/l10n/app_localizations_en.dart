@@ -5819,4 +5819,174 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ng_notify_master_off => 'Notifications off';
+
+  @override
+  String get ng_models_default => 'Default model';
+
+  @override
+  String get ng_models_change => 'Change';
+
+  @override
+  String get ng_models_custom_endpoint =>
+      'Runs on a custom endpoint. Change it on the gateway.';
+
+  @override
+  String get ng_models_context_window => 'Context window';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count tokens';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return 'Set on the gateway. Auto-detected: $count tokens.';
+  }
+
+  @override
+  String get ng_models_max_output => 'Max output';
+
+  @override
+  String get ng_models_input_price => 'Input price';
+
+  @override
+  String get ng_models_output_price => 'Output price';
+
+  @override
+  String get ng_models_cache_price => 'Cached input price';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '$price per 1M tokens';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return '$input in · $output out per 1M tokens';
+  }
+
+  @override
+  String get ng_models_free => 'Free';
+
+  @override
+  String get ng_models_vision => 'Vision';
+
+  @override
+  String get ng_models_reasoning => 'Reasoning';
+
+  @override
+  String get ng_models_fast => 'Fast mode';
+
+  @override
+  String get ng_models_in_use => 'In use';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count models',
+      one: '$count model',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => 'Rate-limited';
+
+  @override
+  String get ng_models_plan_locked => 'Not on your plan';
+
+  @override
+  String get ng_models_unsaved => 'Unsaved changes';
+
+  @override
+  String get ng_models_discard => 'Discard';
+
+  @override
+  String get ng_models_aux_hint =>
+      'Helper tasks use the default model unless you give them their own.';
+
+  @override
+  String get ng_models_uses_default => 'Uses the default model';
+
+  @override
+  String get ng_models_thinking_level => 'Thinking level';
+
+  @override
+  String get ng_models_providers => 'Providers';
+
+  @override
+  String get ng_models_saved => 'Saved';
+
+  @override
+  String get ng_aux_vision => 'Vision';
+
+  @override
+  String get ng_aux_vision_hint => 'Reads images and screenshots';
+
+  @override
+  String get ng_aux_compression => 'Compression';
+
+  @override
+  String get ng_aux_compression_hint =>
+      'Shortens a long chat so it fits the context window';
+
+  @override
+  String get ng_aux_approval => 'Approval';
+
+  @override
+  String get ng_aux_approval_hint =>
+      'Decides whether a command is safe to run without asking';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => 'Chooses which MCP tools to use';
+
+  @override
+  String get ng_aux_title_generation => 'Chat titles';
+
+  @override
+  String get ng_aux_title_generation_hint => 'Names new chats';
+
+  @override
+  String get ng_aux_review => 'Review';
+
+  @override
+  String get ng_aux_review_hint => 'Reviews work when you run /review';
+
+  @override
+  String get ng_aux_voice_chat => 'Voice chat';
+
+  @override
+  String get ng_aux_voice_chat_hint => 'Replies in voice mode';
+
+  @override
+  String get ng_aux_triage_specifier => 'Triage';
+
+  @override
+  String get ng_aux_triage_specifier_hint =>
+      'Expands a one-line Kanban card into a spec';
+
+  @override
+  String get ng_aux_kanban_decomposer => 'Kanban breakdown';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint =>
+      'Splits a Kanban card into smaller tasks';
+
+  @override
+  String get ng_aux_profile_describer => 'Profile descriptions';
+
+  @override
+  String get ng_aux_profile_describer_hint =>
+      'Writes each profile\'s short description';
+
+  @override
+  String get ng_aux_curator => 'Curator';
+
+  @override
+  String get ng_aux_curator_hint => 'Reviews how skills are used';
 }

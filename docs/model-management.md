@@ -4,6 +4,59 @@ Open **More → Agent → Model** to manage the connected Hermes profile's main
 model, ordered fallback chain and auxiliary task assignments. These controls have moved out of Settings;
 Settings retains appearance, notifications, voice, connection and device options.
 
+## NextGen Models page
+
+In the NextGen interface the same settings open as **Models**, from
+**Settings → Model management**, **More → Model management** and the top of a
+chat's model picker. The page is shared Dart, so it is the same on Android, iOS,
+macOS and Windows. The classic screen described in the rest of this document is
+unchanged.
+
+The page has four sections:
+
+- **Default model.** The model and provider, then whatever the gateway reports
+  about it: context window (and the auto-detected size when the gateway
+  overrides it), maximum output, input, output and cached-input prices, and
+  whether it supports tools, vision, reasoning and fast mode. Anything the
+  gateway does not report is left out rather than guessed. **Change** opens a
+  searchable list of every model that can be assigned, with its price.
+- **Fallback models.** The ordered list with each entry's provider and price.
+  Entries are added from the same list, moved and removed; nothing is sent until
+  **Save fallback list**, and **Discard** returns to the saved list. Unsaved
+  edits survive a refresh.
+- **Auxiliary models.** Each helper task by name with a line on what it does,
+  and the model it uses. Tapping a task chooses a model, returns it to the
+  default model, or sets its thinking level. The thinking level is only offered
+  when the gateway reports one for the task.
+- **Providers.** Every provider the gateway lists, how many models it has,
+  which one is in use, subscription allowance per window (per account where a
+  provider has several) and any rate limit with its reset time. Tapping a
+  provider lists its models. Provider sign-in and Nous Portal are linked below.
+
+The rules in the sections below apply to this page as they do to the classic
+screen: selected-profile requests only, read-back before a save is reported,
+one change at a time, endpoint-bearing routes shown but never reassigned, the
+raw-config capability check before every fallback read or write, and no
+endpoint address, credential or key name on screen. Two things differ:
+
+- When the gateway answers a default or auxiliary assignment with
+  `confirm_required`, the page shows the gateway's own warning and sends the
+  assignment again with `confirm_expensive_model: true` only if the user
+  agrees. The classic screen reports that answer as a failed save.
+- An auxiliary thinking level is sent as `reasoning_effort` with the task's
+  current provider and model. It is omitted from every other assignment, so
+  choosing a model never changes the level; an explicit `null` clears it.
+
+Not on this page: Mixture-of-Agents presets, custom endpoints, the context
+window override and the default thinking level. Those are still edited on the
+gateway or in **More → Config file**.
+
+`test/nextgen_model_catalog_test.dart`, `test/nextgen_models_controller_test.dart`,
+`test/nextgen_models_page_test.dart` and `test/nextgen_models_l10n_test.dart`
+cover the parsing, every save path with refusal, ignored-write and confirmation
+cases, serialised changes, late answers after disposal, the page at 320px with
+2× text in four languages, and every new string in every shipped locale.
+
 ## Main model
 
 The profile default card shows the current provider/model and context length.

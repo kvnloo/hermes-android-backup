@@ -2,11 +2,10 @@
 // search, starred and recent models, then every configured provider.
 import 'package:flutter/material.dart';
 
-import '../../core/screens/model_management_screen.dart';
-
 import '../data/chat_controller.dart';
 import '../nextgen_preferences.dart';
 import '../theme/nextgen_theme.dart';
+import 'models_page.dart';
 import 'nextgen_scope.dart';
 import 'widgets.dart';
 import '../nextgen_l10n.dart';
@@ -271,9 +270,9 @@ class _ModelSheetState extends State<_ModelSheet> {
                 navigator.pop();
                 navigator.push(
                   MaterialPageRoute<void>(
-                    builder: (_) => ModelManagementScreen(
+                    builder: (_) => NgModelsPage(
                       connection: scope.connection,
-                      dashboardClient: scope.gateway.dashboard,
+                      client: scope.gateway.dashboard,
                     ),
                   ),
                 );
