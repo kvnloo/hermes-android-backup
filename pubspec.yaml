@@ -21,7 +21,7 @@ dependencies:
 
   # Offline, bounded Office document previews (also used transitively by image).
   archive: 4.0.9
-  xml: 6.6.1
+  xml: 7.1.0
 
   # State management
   flutter_riverpod: ^2.6.1
