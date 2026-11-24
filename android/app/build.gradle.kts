@@ -175,16 +175,16 @@ dependencies {
        val replacement = file(replacementEmbeddedPushAar)
        require(replacement.isFile && replacement.extension == "aar") { "embeddedPushAar must name an existing .aar" }
        implementation(files(replacement))
-       implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
+       implementation("org.jetbrains.kotlin:kotlin-stdlib:2.4.21")
        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
    }
-   implementation("org.unifiedpush.android:connector:3.3.5") {
+   implementation("org.unifiedpush.android:connector:3.3.6") {
        // flutter_secure_storage already uses tink-android. The JVM artifact
        // contains the same classes and cannot coexist in an APK.
        exclude(group = "com.google.crypto.tink", module = "tink")
    }
-   implementation("com.google.crypto.tink:tink-android:1.23.0")
+   implementation("com.google.crypto.tink:tink-android:1.24.0")
    testImplementation("junit:junit:4.13.2")
-   testImplementation("org.robolectric:robolectric:4.16")
-   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+   testImplementation("org.robolectric:robolectric:4.18.1")
+   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }
