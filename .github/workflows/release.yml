@@ -26,7 +26,7 @@ jobs:
       PUB_CACHE: ${{ github.workspace }}/.pub-cache
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Verify release scripts and README release window
         run: |
@@ -165,7 +165,7 @@ jobs:
 
       - name: Upload Play app bundle
         if: env.HAS_RELEASE_KEYSTORE == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ares-play-app-bundle
           path: build/app/outputs/bundle/release/app-release.aab
@@ -286,7 +286,7 @@ jobs:
 
       - name: Upload signed release APKs
         if: env.HAS_RELEASE_KEYSTORE == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: signed-release-apks
           path: build/app/outputs/flutter-apk/app-*-release.apk
@@ -294,7 +294,7 @@ jobs:
 
       - name: Upload debug validation APKs
         if: env.HAS_RELEASE_KEYSTORE != 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: debug-validation-apks
           path: build/app/outputs/flutter-apk/app-*-debug.apk
