@@ -178,7 +178,7 @@ dependencies {
        implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
    }
-   implementation("org.unifiedpush.android:connector:3.3.5") {
+   implementation("org.unifiedpush.android:connector:3.3.6") {
        // flutter_secure_storage already uses tink-android. The JVM artifact
        // contains the same classes and cannot coexist in an APK.
        exclude(group = "com.google.crypto.tink", module = "tink")
