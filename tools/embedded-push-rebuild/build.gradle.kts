@@ -44,7 +44,7 @@ kotlin {
 }
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.3.20")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0")
     compileOnly("androidx.annotation:annotation-jvm:1.10.0")
 }
 
