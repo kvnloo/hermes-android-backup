@@ -1684,5 +1684,9 @@
   "ng_aux_profile_describer": "Описания профилей",
   "ng_aux_profile_describer_hint": "Пишет краткое описание каждого профиля",
   "ng_aux_curator": "Куратор",
-  "ng_aux_curator_hint": "Проверяет, как используются навыки"
+  "ng_aux_curator_hint": "Проверяет, как используются навыки",
+  "ng_slash_suggestions_label": "Предлагаемые команды",
+  "ng_slash_suggestions_empty": "Нет подходящих команд",
+  "ng_slash_suggestions_loading": "Загрузка команд…",
+  "ng_slash_suggestions_skill": "Навык"
 }

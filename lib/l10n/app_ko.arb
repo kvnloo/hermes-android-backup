@@ -1684,5 +1684,9 @@
   "ng_aux_profile_describer": "프로필 설명",
   "ng_aux_profile_describer_hint": "각 프로필의 짧은 설명을 작성합니다",
   "ng_aux_curator": "큐레이터",
-  "ng_aux_curator_hint": "스킬 사용 현황을 검토합니다"
+  "ng_aux_curator_hint": "스킬 사용 현황을 검토합니다",
+  "ng_slash_suggestions_label": "명령 제안",
+  "ng_slash_suggestions_empty": "일치하는 명령이 없습니다",
+  "ng_slash_suggestions_loading": "명령을 불러오는 중…",
+  "ng_slash_suggestions_skill": "스킬"
 }

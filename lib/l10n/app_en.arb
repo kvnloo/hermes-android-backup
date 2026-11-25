@@ -2603,5 +2603,9 @@
   "ng_aux_profile_describer": "Profile descriptions",
   "ng_aux_profile_describer_hint": "Writes each profile's short description",
   "ng_aux_curator": "Curator",
-  "ng_aux_curator_hint": "Reviews how skills are used"
+  "ng_aux_curator_hint": "Reviews how skills are used",
+  "ng_slash_suggestions_label": "Command suggestions",
+  "ng_slash_suggestions_empty": "No matching commands",
+  "ng_slash_suggestions_loading": "Loading commands…",
+  "ng_slash_suggestions_skill": "Skill"
 }

@@ -1684,5 +1684,9 @@
   "ng_aux_profile_describer": "配置档案描述",
   "ng_aux_profile_describer_hint": "为每个配置档案撰写简短描述",
   "ng_aux_curator": "维护器",
-  "ng_aux_curator_hint": "审查技能的使用情况"
+  "ng_aux_curator_hint": "审查技能的使用情况",
+  "ng_slash_suggestions_label": "命令建议",
+  "ng_slash_suggestions_empty": "没有匹配的命令",
+  "ng_slash_suggestions_loading": "正在加载命令…",
+  "ng_slash_suggestions_skill": "技能"
 }

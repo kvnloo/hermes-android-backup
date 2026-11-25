@@ -1837,5 +1837,9 @@
   "ng_aux_profile_describer": "Описи профілів",
   "ng_aux_profile_describer_hint": "Пише короткий опис кожного профілю",
   "ng_aux_curator": "Куратор",
-  "ng_aux_curator_hint": "Перевіряє, як використовуються навички"
+  "ng_aux_curator_hint": "Перевіряє, як використовуються навички",
+  "ng_slash_suggestions_label": "Запропоновані команди",
+  "ng_slash_suggestions_empty": "Немає відповідних команд",
+  "ng_slash_suggestions_loading": "Завантаження команд…",
+  "ng_slash_suggestions_skill": "Навичка"
 }

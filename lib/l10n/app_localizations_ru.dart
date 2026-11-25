@@ -6140,4 +6140,16 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ng_aux_curator_hint => 'Проверяет, как используются навыки';
+
+  @override
+  String get ng_slash_suggestions_label => 'Предлагаемые команды';
+
+  @override
+  String get ng_slash_suggestions_empty => 'Нет подходящих команд';
+
+  @override
+  String get ng_slash_suggestions_loading => 'Загрузка команд…';
+
+  @override
+  String get ng_slash_suggestions_skill => 'Навык';
 }

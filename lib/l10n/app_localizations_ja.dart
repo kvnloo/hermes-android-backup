@@ -5959,4 +5959,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get ng_aux_curator_hint => 'スキルの使われ方を確認します';
+
+  @override
+  String get ng_slash_suggestions_label => 'コマンドの候補';
+
+  @override
+  String get ng_slash_suggestions_empty => '一致するコマンドはありません';
+
+  @override
+  String get ng_slash_suggestions_loading => 'コマンドを読み込み中…';
+
+  @override
+  String get ng_slash_suggestions_skill => 'スキル';
 }

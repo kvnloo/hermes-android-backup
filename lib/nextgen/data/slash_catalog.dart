@@ -59,6 +59,16 @@ class NgSlashCatalog extends ChangeNotifier {
   /// The loaded lookup for the current scope, or null.
   SlashCommandLookup? get lookup => _entry?.lookup;
 
+  /// The loaded commands for the current scope, in the gateway's order, or
+  /// null before the catalogue loads. Skills carry the `Skills` category.
+  List<SlashCommand>? get commands => _entry?.catalog?.commands;
+
+  /// The loaded alias map (bare lower-case alias → canonical name).
+  Map<String, String> get aliases => _entry?.aliases ?? const {};
+
+  /// Whether a catalogue read for the current scope is in flight.
+  bool get isLoading => _entry?.flight != null;
+
   _NgCatalogEntry? get _entry {
     final gateway = _gateway;
     return gateway == null ? null : _cache[gateway]?[_key];
@@ -160,6 +170,8 @@ class NgSlashCatalog extends ChangeNotifier {
       });
       entry
         ..lookup = SlashCommandLookup.fromCatalogResult(result)
+        ..catalog = SlashCommandCatalog.fromResult(result)
+        ..aliases = _aliasesOf(result)
         ..stale = false
         ..failedAt = null;
     } catch (_) {
@@ -169,6 +181,23 @@ class NgSlashCatalog extends ChangeNotifier {
       done.complete();
       _notify();
     }
+  }
+
+  /// `canon` without its identity rows: `{bg: background}`.
+  static Map<String, String> _aliasesOf(Object? result) {
+    final canon = result is Map ? result['canon'] : null;
+    if (canon is! Map) return const {};
+    String bare(Object? v) => v is String
+        ? v.trim().replaceFirst(RegExp(r'^/+'), '').toLowerCase()
+        : '';
+    return {
+      for (final entry in canon.entries)
+        if (bare(entry.key).isNotEmpty &&
+            bare(entry.value).isNotEmpty &&
+            bare(entry.key) != bare(entry.value) &&
+            !bare(entry.key).contains(RegExp(r'[\s/]')))
+          bare(entry.key): bare(entry.value),
+    };
   }
 
   void _notify() {
@@ -184,6 +213,8 @@ class NgSlashCatalog extends ChangeNotifier {
 
 class _NgCatalogEntry {
   SlashCommandLookup? lookup;
+  SlashCommandCatalog? catalog;
+  Map<String, String> aliases = const {};
 
   /// Loaded before the latest reconnect: still shown, refetched on demand.
   bool stale = false;

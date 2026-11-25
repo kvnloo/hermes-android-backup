@@ -37,6 +37,7 @@ import 'project_greeting.dart';
 import 'session_dock.dart';
 import 'sessions_sidebar.dart';
 import 'slash_command_info.dart';
+import 'slash_suggestions.dart';
 import 'widgets.dart';
 import '../nextgen_l10n.dart';
 
@@ -83,6 +84,10 @@ class _NgChatViewState extends State<NgChatView> {
   /// The composer's command catalogue: it decides both the highlight and
   /// whether a sent `/command` runs on the gateway.
   final _slashCatalog = NgSlashCatalog();
+
+  /// Whether the `/` suggestions box is showing (it keeps the command info
+  /// card away).
+  bool _suggestionsOpen = false;
   final _focus = FocusNode();
   final _scroll = ScrollController();
   Timer? _ticker;
@@ -623,7 +628,17 @@ class _NgChatViewState extends State<NgChatView> {
                   // Commands run here now, so the card no longer says they
                   // are sent as a message.
                   showsSentAsMessageNote: false,
-                  child: _composer(c, state),
+                  suppressed: _suggestionsOpen,
+                  child: NgSlashSuggestions(
+                    chat: chat,
+                    controller: _input,
+                    focusNode: _focus,
+                    catalog: _slashCatalog,
+                    onOpenChanged: (open) {
+                      if (mounted) setState(() => _suggestionsOpen = open);
+                    },
+                    child: _composer(c, state),
+                  ),
                 ),
             ],
           ),

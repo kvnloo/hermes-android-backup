@@ -1684,5 +1684,9 @@
   "ng_aux_profile_describer": "プロファイルの説明",
   "ng_aux_profile_describer_hint": "各プロファイルの短い説明を作成します",
   "ng_aux_curator": "キュレーター",
-  "ng_aux_curator_hint": "スキルの使われ方を確認します"
+  "ng_aux_curator_hint": "スキルの使われ方を確認します",
+  "ng_slash_suggestions_label": "コマンドの候補",
+  "ng_slash_suggestions_empty": "一致するコマンドはありません",
+  "ng_slash_suggestions_loading": "コマンドを読み込み中…",
+  "ng_slash_suggestions_skill": "スキル"
 }
