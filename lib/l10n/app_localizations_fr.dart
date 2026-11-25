@@ -6153,4 +6153,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ng_aux_curator_hint => 'Examine l’utilisation des compétences';
+
+  @override
+  String get ng_slash_suggestions_label => 'Suggestions de commandes';
+
+  @override
+  String get ng_slash_suggestions_empty => 'Aucune commande correspondante';
+
+  @override
+  String get ng_slash_suggestions_loading => 'Chargement des commandes…';
+
+  @override
+  String get ng_slash_suggestions_skill => 'Compétence';
 }

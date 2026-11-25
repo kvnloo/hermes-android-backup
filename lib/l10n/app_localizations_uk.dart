@@ -6138,4 +6138,16 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get ng_aux_curator_hint => 'Перевіряє, як використовуються навички';
+
+  @override
+  String get ng_slash_suggestions_label => 'Запропоновані команди';
+
+  @override
+  String get ng_slash_suggestions_empty => 'Немає відповідних команд';
+
+  @override
+  String get ng_slash_suggestions_loading => 'Завантаження команд…';
+
+  @override
+  String get ng_slash_suggestions_skill => 'Навичка';
 }

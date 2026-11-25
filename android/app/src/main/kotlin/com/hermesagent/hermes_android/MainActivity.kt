@@ -63,7 +63,7 @@ class MainActivity : FlutterActivity() {
         }
         attachmentPdfPreview?.close()
         attachmentPdfPreview = AttachmentPdfPreview(this, flutterEngine.dartExecutor.binaryMessenger)
-        if (!BuildConfig.PLAY_BUILD) {
+        if (!BuildConfig.PLAY_BUILD && !BuildConfig.PARKED_AUTOMOTIVE) {
             apkUpdateInstaller?.close()
             apkUpdateInstaller = ApkUpdateInstaller(this, flutterEngine.dartExecutor.binaryMessenger)
         }
@@ -71,8 +71,10 @@ class MainActivity : FlutterActivity() {
         attachmentFileSaver = AttachmentFileSaver(this, flutterEngine.dartExecutor.binaryMessenger)
         BackgroundWorkPlatform.install(this, flutterEngine.dartExecutor.binaryMessenger)
         MobilePushPlugin.install(flutterEngine)
-        AutoMessagingPlugin.install(flutterEngine)
-        handsFreeVoice = HandsFreeVoicePlugin.install(flutterEngine)
+        if (!BuildConfig.PARKED_AUTOMOTIVE) {
+            AutoMessagingPlugin.install(flutterEngine)
+            handsFreeVoice = HandsFreeVoicePlugin.install(flutterEngine)
+        }
         shareChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, shareChannelName).apply {
             setMethodCallHandler { call, result ->
                 when (call.method) {

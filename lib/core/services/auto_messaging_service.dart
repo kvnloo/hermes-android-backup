@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../parked_automotive.dart';
 import '../../nextgen/data/seen_chats.dart';
 import '../../nextgen/nextgen_preferences.dart';
 import 'connection_manager.dart';
@@ -31,7 +32,9 @@ class AutoMessagingService {
     lookup,
     bool? supported,
   }) : channel = channel ?? platform,
-       supported = supported ?? defaultTargetPlatform == TargetPlatform.android,
+       supported =
+           !isParkedAutomotive &&
+           (supported ?? defaultTargetPlatform == TargetPlatform.android),
        _sessionFor = sessionFor ?? turns.normalSessionFor,
        _lookup = lookup ?? _findSession;
   static const platform = MethodChannel('com.hermesagent.hermes_android/auto');

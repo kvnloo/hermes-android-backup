@@ -5962,4 +5962,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ng_aux_curator_hint => '스킬 사용 현황을 검토합니다';
+
+  @override
+  String get ng_slash_suggestions_label => '명령 제안';
+
+  @override
+  String get ng_slash_suggestions_empty => '일치하는 명령이 없습니다';
+
+  @override
+  String get ng_slash_suggestions_loading => '명령을 불러오는 중…';
+
+  @override
+  String get ng_slash_suggestions_skill => '스킬';
 }

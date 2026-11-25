@@ -1684,5 +1684,9 @@
   "ng_aux_profile_describer": "Profilbeschreibungen",
   "ng_aux_profile_describer_hint": "Schreibt die Kurzbeschreibung jedes Profils",
   "ng_aux_curator": "Kurator",
-  "ng_aux_curator_hint": "Prüft, wie Skills genutzt werden"
+  "ng_aux_curator_hint": "Prüft, wie Skills genutzt werden",
+  "ng_slash_suggestions_label": "Befehlsvorschläge",
+  "ng_slash_suggestions_empty": "Keine passenden Befehle",
+  "ng_slash_suggestions_loading": "Befehle werden geladen…",
+  "ng_slash_suggestions_skill": "Skill"
 }

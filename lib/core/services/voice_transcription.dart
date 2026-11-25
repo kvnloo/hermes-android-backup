@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import '../parked_automotive.dart';
 import 'connection_manager.dart';
 
 /// Uses the configured Hermes server's existing authenticated STT route.
@@ -9,6 +10,7 @@ Future<String> transcribeVoiceRecording(
   DashboardClient dashboard,
   String path,
 ) async {
+  if (isParkedAutomotive) throw const VoiceTranscriptionException();
   final file = File(path);
   final size = await file.length();
   if (size == 0 || size > 6 * 1024 * 1024) {

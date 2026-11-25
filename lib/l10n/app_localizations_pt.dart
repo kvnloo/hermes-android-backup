@@ -6141,6 +6141,18 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get ng_aux_curator_hint => 'Analisa a utilização das competências';
+
+  @override
+  String get ng_slash_suggestions_label => 'Sugestões de comandos';
+
+  @override
+  String get ng_slash_suggestions_empty => 'Nenhum comando correspondente';
+
+  @override
+  String get ng_slash_suggestions_loading => 'A carregar comandos…';
+
+  @override
+  String get ng_slash_suggestions_skill => 'Competência';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -12082,4 +12094,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get ng_aux_curator_hint => 'Analisa como as habilidades são usadas';
+
+  @override
+  String get ng_slash_suggestions_label => 'Sugestões de comandos';
+
+  @override
+  String get ng_slash_suggestions_empty => 'Nenhum comando correspondente';
+
+  @override
+  String get ng_slash_suggestions_loading => 'Carregando comandos…';
+
+  @override
+  String get ng_slash_suggestions_skill => 'Habilidade';
 }

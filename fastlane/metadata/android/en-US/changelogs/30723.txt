@@ -1,0 +1,1 @@
+NextGen chat lists get a right-click and ⋯ menu for pin, rename, archive and delete on desktop, and typing / now shows a box of suggested commands.

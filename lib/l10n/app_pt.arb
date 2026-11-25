@@ -1684,5 +1684,9 @@
   "ng_aux_profile_describer": "Descrições de perfil",
   "ng_aux_profile_describer_hint": "Escreve a descrição curta de cada perfil",
   "ng_aux_curator": "Curador",
-  "ng_aux_curator_hint": "Analisa a utilização das competências"
+  "ng_aux_curator_hint": "Analisa a utilização das competências",
+  "ng_slash_suggestions_label": "Sugestões de comandos",
+  "ng_slash_suggestions_empty": "Nenhum comando correspondente",
+  "ng_slash_suggestions_loading": "A carregar comandos…",
+  "ng_slash_suggestions_skill": "Competência"
 }

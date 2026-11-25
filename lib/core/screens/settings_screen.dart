@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../parked_automotive.dart';
 import '../services/app_licenses.dart';
 import '../utils/platform_capabilities.dart';
 import '../services/locale_preference.dart';
@@ -162,32 +163,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(height: 16),
 
         // ---- Section: Notifications ----
-        _buildSectionHeader(context.l10n.notifications),
-        const _NotificationSettings(),
-        // The embedded Android push bridge and foreground-service/battery
-        // prompts do not exist on iOS/macOS. Voice, appearance and gateway
-        // settings above/below are shared.
+        if (!isParkedAutomotive) ...[
+          _buildSectionHeader(context.l10n.notifications),
+          const _NotificationSettings(),
+          // The embedded Android push bridge and foreground-service/battery
+          // prompts do not exist on iOS/macOS. Voice, appearance and gateway
+          // settings above/below are shared.
+          if (!isApplePlatform) ...[
+            MobilePushSettings(
+              connection: widget.connection,
+              connectionManager: context
+                  .findAncestorStateOfType<HermesAppState>()!
+                  .widget
+                  .connManager,
+            ),
+            const SizedBox(height: 16),
+          ],
+        ],
         if (!isApplePlatform) ...[
-          MobilePushSettings(
-            connection: widget.connection,
-            connectionManager: context
-                .findAncestorStateOfType<HermesAppState>()!
-                .widget
-                .connManager,
-          ),
-          const SizedBox(height: 16),
           _buildSectionHeader(context.l10n.background_work),
           const BackgroundWorkSettings(),
           const SizedBox(height: 16),
         ],
 
         // ---- Section: Voice ----
-        _buildSectionHeader(context.l10n.voice, classicOnly: true),
-        _VoicePicker(),
-        const SizedBox(height: 8),
-        const _HandsFreeToggle(),
-        const SizedBox(height: 16),
-
+        if (!isParkedAutomotive) ...[
+          _buildSectionHeader(context.l10n.voice, classicOnly: true),
+          _VoicePicker(),
+          const SizedBox(height: 8),
+          const _HandsFreeToggle(),
+          const SizedBox(height: 16),
+        ],
         // ---- Section: Session Sources ----
         _buildSectionHeader(context.l10n.session_sources, classicOnly: true),
         _SessionSourcesFilter(connectionId: widget.connection.id),
@@ -453,7 +459,8 @@ class _AboutCardState extends State<_AboutCard> {
             ),
             // APK self-update is Android-only; Apple builds update through
             // their respective stores / ad-hoc distribution.
-            if (supportsApkSelfUpdate && !AppUpdateService.isPlayBuild) ...[
+            if (supportsApkSelfUpdate &&
+                AppUpdateService.selfUpdatesEnabled) ...[
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(context.l10n.check_for_updates),

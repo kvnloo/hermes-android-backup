@@ -1,0 +1,1 @@
+Parked Android Automotive preview packaging and driver-display checks are in place; the phone release is unchanged.

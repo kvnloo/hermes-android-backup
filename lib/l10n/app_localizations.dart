@@ -10259,6 +10259,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Reviews how skills are used'**
   String get ng_aux_curator_hint;
+
+  /// No description provided for @ng_slash_suggestions_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Command suggestions'**
+  String get ng_slash_suggestions_label;
+
+  /// No description provided for @ng_slash_suggestions_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching commands'**
+  String get ng_slash_suggestions_empty;
+
+  /// No description provided for @ng_slash_suggestions_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading commands…'**
+  String get ng_slash_suggestions_loading;
+
+  /// No description provided for @ng_slash_suggestions_skill.
+  ///
+  /// In en, this message translates to:
+  /// **'Skill'**
+  String get ng_slash_suggestions_skill;
 }
 
 class _AppLocalizationsDelegate

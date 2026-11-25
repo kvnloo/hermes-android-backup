@@ -6145,4 +6145,16 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ng_aux_curator_hint => 'Prüft, wie Skills genutzt werden';
+
+  @override
+  String get ng_slash_suggestions_label => 'Befehlsvorschläge';
+
+  @override
+  String get ng_slash_suggestions_empty => 'Keine passenden Befehle';
+
+  @override
+  String get ng_slash_suggestions_loading => 'Befehle werden geladen…';
+
+  @override
+  String get ng_slash_suggestions_skill => 'Skill';
 }

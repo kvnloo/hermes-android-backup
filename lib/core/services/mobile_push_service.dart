@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../parked_automotive.dart';
 import 'connection_manager.dart';
 import 'connection_mutation_barrier.dart';
 import 'mobile_push_api.dart';
@@ -44,8 +45,9 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
   }) : _channel = channel ?? const MethodChannel(channelName),
        _clientFactory = clientFactory ?? _dashboard,
        supported =
-           supported ??
-           (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
+           !isParkedAutomotive &&
+           (supported ??
+               (!kIsWeb && defaultTargetPlatform == TargetPlatform.android));
   static const channelName = 'com.hermesagent.hermes_android/mobile_push';
   static final shared = MobilePushService();
   final MethodChannel _channel;

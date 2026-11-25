@@ -32,7 +32,7 @@ Future<UpdatePromptAction?> showUpdateAvailableDialog(
   ReleaseLauncher launcher = launchReleaseInBrowser,
   ApkUpdateInstaller? installer,
 }) {
-  if (AppUpdateService.isPlayBuild) {
+  if (!AppUpdateService.selfUpdatesEnabled) {
     return Future<UpdatePromptAction?>.value(UpdatePromptAction.later);
   }
   return showDialog<UpdatePromptAction>(
@@ -82,7 +82,7 @@ class _UpdateAvailableDialogState extends State<UpdateAvailableDialog> {
   }
 
   Future<void> _findApk() async {
-    if (AppUpdateService.isPlayBuild) return;
+    if (!AppUpdateService.selfUpdatesEnabled) return;
     try {
       final abis = await _installer.supportedAbis();
       final apk = widget.release.apkForAbis(abis);

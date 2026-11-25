@@ -2,11 +2,14 @@
 // pinned chats, All / Running / Needs you filters and the gateway switcher.
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
 
 import '../../core/models/session.dart';
+import '../../core/services/dashboard_api_client.dart';
 import '../../core/utils/session_sources.dart';
 import '../data/seen_chats.dart';
 import '../theme/nextgen_theme.dart';
@@ -388,6 +391,26 @@ DateTime? ngSessionTime(Session s) {
   return DateTime.fromMillisecondsSinceEpoch((t * 1000).round());
 }
 
+/// One of a chat row's actions: the value [_NgSessionsSidebarState] runs,
+/// and how both the long-press sheet and the desktop menu show it.
+typedef _NgChatAction = ({
+  String value,
+  IconData icon,
+  String label,
+  bool danger,
+});
+
+/// Desktop platforms, where a mouse is the main pointer: the open chat's row
+/// keeps its ⋯ button in view there.
+bool get _desktopPointer => switch (defaultTargetPlatform) {
+  TargetPlatform.windows ||
+  TargetPlatform.macOS ||
+  TargetPlatform.linux => true,
+  TargetPlatform.android ||
+  TargetPlatform.iOS ||
+  TargetPlatform.fuchsia => false,
+};
+
 class NgSessionsSidebar extends StatefulWidget {
   const NgSessionsSidebar({
     super.key,
@@ -442,11 +465,62 @@ class _NgSessionsSidebarState extends State<NgSessionsSidebar> {
     super.dispose();
   }
 
-  Future<void> _actions(Session s) async {
-    final scope = NgScope.of(context);
-    final api = scope.gateway.api;
+  /// The actions offered for [s], in order. The long-press sheet and the
+  /// mouse/keyboard menu both show exactly these.
+  List<_NgChatAction> _actionItems(Session s) {
+    final unread = widget.model.isUnread(s);
+    return [
+      if (s.pinKnown)
+        (
+          value: 'pin',
+          icon: s.pinned ? Icons.push_pin_outlined : Icons.push_pin,
+          label: s.pinned ? ngL.ng_unpin : ngL.ng_pin,
+          danger: false,
+        ),
+      if (s.id != widget.currentSessionId)
+        (
+          value: 'read',
+          icon: unread
+              ? Icons.mark_chat_read_outlined
+              : Icons.mark_chat_unread_outlined,
+          label: unread ? ngL.ng_mark_as_read : ngL.ng_mark_as_unread,
+          danger: false,
+        ),
+      (
+        value: 'rename',
+        icon: Icons.edit_outlined,
+        label: ngL.ng_rename,
+        danger: false,
+      ),
+      (
+        value: 'archive',
+        icon: Icons.archive_outlined,
+        label: ngL.ng_archive,
+        danger: false,
+      ),
+      (
+        value: 'delete',
+        icon: Icons.delete_outline,
+        label: ngL.ng_delete,
+        danger: true,
+      ),
+    ];
+  }
+
+  /// Opens [s]'s actions: a menu at the global point [at] for a mouse or
+  /// keyboard, otherwise (long-press) the bottom sheet.
+  Future<void> _actions(Session s, {Offset? at}) async {
+    final api = NgScope.of(context).gateway.api;
+    final choice = at == null
+        ? await _actionSheet(s)
+        : await _actionMenu(s, at);
+    if (!mounted || choice == null) return;
+    await _runAction(s, choice, api);
+  }
+
+  Future<String?> _actionSheet(Session s) {
     final c = NgColors.of(context);
-    final choice = await showNgSheet<String>(
+    return showNgSheet<String>(
       context,
       builder: (context) => SafeArea(
         child: Column(
@@ -461,48 +535,67 @@ class _NgSessionsSidebarState extends State<NgSessionsSidebar> {
                 style: NgType.heading.copyWith(color: c.text),
               ),
             ),
-            if (s.pinKnown)
+            for (final a in _actionItems(s))
               ListTile(
-                leading: Icon(
-                  s.pinned ? Icons.push_pin_outlined : Icons.push_pin,
-                ),
-                title: Text(s.pinned ? ngL.ng_unpin : ngL.ng_pin),
-                onTap: () => Navigator.pop(context, 'pin'),
-              ),
-            if (s.id != widget.currentSessionId)
-              ListTile(
-                leading: Icon(
-                  widget.model.isUnread(s)
-                      ? Icons.mark_chat_read_outlined
-                      : Icons.mark_chat_unread_outlined,
-                ),
+                leading: Icon(a.icon, color: a.danger ? c.danger : null),
                 title: Text(
-                  widget.model.isUnread(s)
-                      ? ngL.ng_mark_as_read
-                      : ngL.ng_mark_as_unread,
+                  a.label,
+                  style: a.danger ? TextStyle(color: c.danger) : null,
                 ),
-                onTap: () => Navigator.pop(context, 'read'),
+                onTap: () => Navigator.pop(context, a.value),
               ),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: Text(ngL.ng_rename),
-              onTap: () => Navigator.pop(context, 'rename'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.archive_outlined),
-              title: Text(ngL.ng_archive),
-              onTap: () => Navigator.pop(context, 'archive'),
-            ),
-            ListTile(
-              leading: Icon(Icons.delete_outline, color: c.danger),
-              title: Text(ngL.ng_delete, style: TextStyle(color: c.danger)),
-              onTap: () => Navigator.pop(context, 'delete'),
-            ),
           ],
         ),
       ),
     );
-    if (!mounted || choice == null) return;
+  }
+
+  /// The desktop presentation: a compact menu anchored at [at].
+  Future<String?> _actionMenu(Session s, Offset at) {
+    final c = NgColors.of(context);
+    final overlay =
+        Navigator.of(context).overlay!.context.findRenderObject()! as RenderBox;
+    return showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        overlay.globalToLocal(at) & Size.zero,
+        Offset.zero & overlay.size,
+      ),
+      color: c.sheet,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(NgRadii.md),
+        side: BorderSide(color: c.stroke),
+      ),
+      items: [
+        for (final a in _actionItems(s))
+          PopupMenuItem<String>(
+            value: a.value,
+            height: 40,
+            child: Row(
+              children: [
+                Icon(a.icon, size: 18, color: a.danger ? c.danger : c.text3),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    a.label,
+                    style: NgType.bodySmall.copyWith(
+                      color: a.danger ? c.danger : c.text,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Future<void> _runAction(
+    Session s,
+    String choice,
+    DashboardApiClient api,
+  ) async {
     try {
       switch (choice) {
         case 'read':
@@ -862,79 +955,133 @@ class _NgSessionsSidebarState extends State<NgSessionsSidebar> {
       ),
       NgChatAttention.none => (c.accent, Colors.transparent, ''),
     };
+    final time = Text(
+      ngAgo(ngSessionTime(s)),
+      style: NgType.caption.copyWith(
+        color: marked ? c.text2 : c.textMuted,
+        fontWeight: marked ? FontWeight.w600 : null,
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 1),
-      child: Material(
-        key: ValueKey(
-          'ng-session-${s.id}${marked ? '-${attention.name}' : ''}',
-        ),
-        color: selected ? c.surface2 : tint,
-        borderRadius: BorderRadius.circular(NgRadii.sm),
-        child: InkWell(
+      child: _NgRowActions(
+        alwaysShow: selected && _desktopPointer,
+        onMenu: (at) => _actions(s, at: at),
+        builder: (context, showMore, openMenu) => Material(
+          key: ValueKey(
+            'ng-session-${s.id}${marked ? '-${attention.name}' : ''}',
+          ),
+          color: selected ? c.surface2 : tint,
           borderRadius: BorderRadius.circular(NgRadii.sm),
-          onTap: () => widget.onOpen(s),
-          onLongPress: () => _actions(s),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
-            child: Row(
-              children: [
-                if (waiting)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: Icon(Icons.pan_tool_alt, size: 15, color: c.warning),
-                  )
-                else if (s.isActive)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: SizedBox(
-                      width: 10,
-                      height: 10,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1.6,
-                        color: c.accent,
-                      ),
-                    ),
-                  ),
-                Expanded(
-                  child: Text(
-                    ngSessionTitle(s),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: NgType.label.copyWith(
-                      color: selected || marked ? c.text : c.text2,
-                      fontWeight: marked
-                          ? FontWeight.w700
-                          : selected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  ngAgo(ngSessionTime(s)),
-                  style: NgType.caption.copyWith(
-                    color: marked ? c.text2 : c.textMuted,
-                    fontWeight: marked ? FontWeight.w600 : null,
-                  ),
-                ),
-                if (marked)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Semantics(
-                      label: label,
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: tone,
-                          shape: BoxShape.circle,
+          child: Stack(
+            children: [
+              InkWell(
+                borderRadius: BorderRadius.circular(NgRadii.sm),
+                onTap: () => widget.onOpen(s),
+                onLongPress: () => _actions(s),
+                onSecondaryTapUp: (d) => openMenu(d.globalPosition),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 10, 8, 10),
+                  child: Row(
+                    children: [
+                      if (waiting)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Icon(
+                            Icons.pan_tool_alt,
+                            size: 15,
+                            color: c.warning,
+                          ),
+                        )
+                      else if (s.isActive)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: SizedBox(
+                            width: 10,
+                            height: 10,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 1.6,
+                              color: c.accent,
+                            ),
+                          ),
+                        ),
+                      Expanded(
+                        child: Text(
+                          ngSessionTitle(s),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: NgType.label.copyWith(
+                            color: selected || marked ? c.text : c.text2,
+                            fontWeight: marked
+                                ? FontWeight.w700
+                                : selected
+                                ? FontWeight.w600
+                                : FontWeight.w500,
+                          ),
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      // The ⋯ button takes the time's place rather than
+                      // adding width, so the title never moves.
+                      Visibility(
+                        visible: !showMore,
+                        maintainSize: true,
+                        maintainAnimation: true,
+                        maintainState: true,
+                        child: time,
+                      ),
+                      if (marked)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: Semantics(
+                            label: label,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: tone,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              if (showMore)
+                Positioned(
+                  top: 0,
+                  bottom: 0,
+                  // Over the time, clear of the unread dot.
+                  right: marked ? 20 : 4,
+                  child: Center(
+                    child: Builder(
+                      builder: (context) => IconButton(
+                        key: ValueKey('ng-session-more-${s.id}'),
+                        tooltip: ngL.chat_actions,
+                        icon: const Icon(Icons.more_horiz),
+                        iconSize: 18,
+                        color: c.text2,
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 28,
+                          height: 28,
+                        ),
+                        style: IconButton.styleFrom(
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onPressed: () {
+                          final box = context.findRenderObject()! as RenderBox;
+                          openMenu(
+                            box.localToGlobal(box.size.bottomLeft(Offset.zero)),
+                          );
+                        },
+                      ),
                     ),
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),
@@ -1060,4 +1207,87 @@ class _NgSessionsSidebarState extends State<NgSessionsSidebar> {
       await scope.switchTo(picked);
     }
   }
+}
+
+/// Tracks whether a chat row is under a mouse, holds keyboard focus or has
+/// its menu open, which is when its ⋯ button shows, and opens the row's menu
+/// from the keyboard (Shift+F10 or the context-menu key). Touch never hovers,
+/// so a phone's rows look exactly as they did.
+class _NgRowActions extends StatefulWidget {
+  const _NgRowActions({
+    required this.alwaysShow,
+    required this.onMenu,
+    required this.builder,
+  });
+
+  /// Show the ⋯ button even without hover or focus.
+  final bool alwaysShow;
+
+  /// Opens the row's menu at a global point and runs the chosen action.
+  final Future<void> Function(Offset at) onMenu;
+
+  /// Builds the row; `openMenu` opens its menu at a global point.
+  final Widget Function(
+    BuildContext context,
+    bool showMore,
+    ValueChanged<Offset> openMenu,
+  )
+  builder;
+
+  @override
+  State<_NgRowActions> createState() => _NgRowActionsState();
+}
+
+class _NgRowActionsState extends State<_NgRowActions> {
+  bool _hovered = false;
+  bool _focused = false;
+  bool _menuOpen = false;
+
+  void _update({bool? hovered, bool? focused, bool? menuOpen}) {
+    if (!mounted) return;
+    setState(() {
+      _hovered = hovered ?? _hovered;
+      _focused = focused ?? _focused;
+      _menuOpen = menuOpen ?? _menuOpen;
+    });
+  }
+
+  /// Keeps the ⋯ button up while its menu (and the chosen action) is open.
+  Future<void> _openMenu(Offset at) async {
+    _update(menuOpen: true);
+    try {
+      await widget.onMenu(at);
+    } finally {
+      _update(menuOpen: false);
+    }
+  }
+
+  void _keyboardMenu() {
+    final box = context.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return;
+    _openMenu(box.localToGlobal(box.size.bottomLeft(const Offset(12, 0))));
+  }
+
+  @override
+  Widget build(BuildContext context) => MouseRegion(
+    onEnter: (_) => _update(hovered: true),
+    onExit: (_) => _update(hovered: false),
+    child: Focus(
+      canRequestFocus: false,
+      skipTraversal: true,
+      onFocusChange: (focused) => _update(focused: focused),
+      child: CallbackShortcuts(
+        bindings: {
+          const SingleActivator(LogicalKeyboardKey.f10, shift: true):
+              _keyboardMenu,
+          const SingleActivator(LogicalKeyboardKey.contextMenu): _keyboardMenu,
+        },
+        child: widget.builder(
+          context,
+          widget.alwaysShow || _hovered || _focused || _menuOpen,
+          _openMenu,
+        ),
+      ),
+    ),
+  );
 }

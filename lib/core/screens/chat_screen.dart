@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
+import '../parked_automotive.dart';
 import '../widgets/session_name_dialog.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -905,9 +906,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Duration _followupTimeout = const Duration(seconds: 10);
   _HandsFreeTurnBinding? _voiceTurn;
   bool get _handsFreeSupported =>
-      widget.testHandsFreePlatform != null ||
-      (!kIsWeb && defaultTargetPlatform == TargetPlatform.android);
-  bool _voiceReplyEnabled = true;
+      !isParkedAutomotive &&
+      (widget.testHandsFreePlatform != null ||
+          (!kIsWeb && defaultTargetPlatform == TargetPlatform.android));
+  bool _voiceReplyEnabled = !isParkedAutomotive;
   bool _voicePlaybackConfigured = false;
   bool _awaitingVoiceReply = false;
   String? _voiceStatus;
@@ -2430,7 +2432,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _startHandsFree() async {
-    if (!handsFreeEnabled.value) return;
+    if (!handsFreeEnabled.value || !_handsFreeSupported) return;
     final authority = _captureVoiceAuthority();
     if (!_canStartHandsFree(authority)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -2560,6 +2562,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _initVoice({bool requestSpeechPermission = false}) async {
+    if (isParkedAutomotive) return;
     try {
       final prefs = await SharedPreferences.getInstance();
       final voiceName = prefs.getString('voice_name');
@@ -2615,6 +2618,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _startVoiceInput() async {
+    if (isParkedAutomotive) return;
     final intent = ++_manualAudioIntent;
     if (_streaming ||
         _sending ||
@@ -2682,6 +2686,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _readAssistantText(String text, {bool announce = false}) async {
+    if (isParkedAutomotive) return;
     final intent = ++_manualAudioIntent;
     final spokenText = text.trim();
     if (spokenText.isEmpty) return;
@@ -4426,6 +4431,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
   /// Send message via SSE streaming (Gateway API Server).
   Future<void> _startRecordedVoice() async {
+    if (isParkedAutomotive) return;
     final authority = _captureVoiceAuthority();
     if (!_isVoiceAuthorityCurrent(authority) || _sending || _streaming) return;
     try {
@@ -7108,19 +7114,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 }
               },
               itemBuilder: (_) => [
-                PopupMenuItem(
-                  value: 'record-voice',
-                  enabled:
-                      !_voiceComposer.listening &&
-                      !_voiceRecording.busy &&
-                      !_voiceRecording.recording &&
-                      !_voiceRecording.hasDraft &&
-                      !_pendingReattachResync,
-                  child: ListTile(
-                    leading: const Icon(Icons.mic),
-                    title: Text(context.l10n.voice_recording_start),
+                if (!isParkedAutomotive)
+                  PopupMenuItem(
+                    value: 'record-voice',
+                    enabled:
+                        !_voiceComposer.listening &&
+                        !_voiceRecording.busy &&
+                        !_voiceRecording.recording &&
+                        !_voiceRecording.hasDraft &&
+                        !_pendingReattachResync,
+                    child: ListTile(
+                      leading: const Icon(Icons.mic),
+                      title: Text(context.l10n.voice_recording_start),
+                    ),
                   ),
-                ),
                 PopupMenuItem(
                   value: 'rename',
                   enabled: _canRename,
@@ -7375,10 +7382,11 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_voiceRecording.recording ||
-                        _voiceRecording.hasDraft ||
-                        _voiceRecording.busy ||
-                        _voiceRecording.error != null)
+                    if (!isParkedAutomotive &&
+                        (_voiceRecording.recording ||
+                            _voiceRecording.hasDraft ||
+                            _voiceRecording.busy ||
+                            _voiceRecording.error != null))
                       VoiceRecordingControls(
                         controller: _voiceRecording,
                         canSend:
@@ -7643,7 +7651,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   const SizedBox(width: 8),
                   if (!separateVoiceAction && handsFreeAction != null)
                     handsFreeAction,
-                  if (!_voiceComposer.listening && !_streaming)
+                  if (!isParkedAutomotive &&
+                      !_voiceComposer.listening &&
+                      !_streaming)
                     VoiceComposerStartButton(
                       enabled:
                           !_transcriptLoadBlocksComposer &&
@@ -7654,40 +7664,43 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                           !_pendingReattachResync,
                       onPressed: _startVoiceInput,
                     ),
-                  Semantics(
-                    label: context.l10n.spoken_replies,
-                    value: _voiceReplyEnabled
-                        ? context.l10n.on
-                        : context.l10n.off,
-                    toggled: _voiceReplyEnabled,
-                    button: true,
-                    excludeSemantics: true,
-                    child: IconButton(
-                      icon: Icon(
-                        _voiceReplyEnabled ? Icons.volume_up : Icons.volume_off,
-                      ),
-                      onPressed: () {
-                        setState(
-                          () => _voiceReplyEnabled = !_voiceReplyEnabled,
-                        );
-                        if (!_voiceReplyEnabled) {
-                          _handsFree.revoke(
-                            HandsFreeStopReason.voiceReplyDisabled,
+                  if (!isParkedAutomotive)
+                    Semantics(
+                      label: context.l10n.spoken_replies,
+                      value: _voiceReplyEnabled
+                          ? context.l10n.on
+                          : context.l10n.off,
+                      toggled: _voiceReplyEnabled,
+                      button: true,
+                      excludeSemantics: true,
+                      child: IconButton(
+                        icon: Icon(
+                          _voiceReplyEnabled
+                              ? Icons.volume_up
+                              : Icons.volume_off,
+                        ),
+                        onPressed: () {
+                          setState(
+                            () => _voiceReplyEnabled = !_voiceReplyEnabled,
                           );
-                          unawaited(
-                            _replySpeaker.stop().catchError((Object _) {}),
-                          );
-                        }
-                      },
-                      tooltip: _voiceReplyEnabled
-                          ? context.l10n.spoken_replies_on
-                          : context.l10n.spoken_replies_off,
-                      constraints: const BoxConstraints.tightFor(
-                        width: 48,
-                        height: 48,
+                          if (!_voiceReplyEnabled) {
+                            _handsFree.revoke(
+                              HandsFreeStopReason.voiceReplyDisabled,
+                            );
+                            unawaited(
+                              _replySpeaker.stop().catchError((Object _) {}),
+                            );
+                          }
+                        },
+                        tooltip: _voiceReplyEnabled
+                            ? context.l10n.spoken_replies_on
+                            : context.l10n.spoken_replies_off,
+                        constraints: const BoxConstraints.tightFor(
+                          width: 48,
+                          height: 48,
+                        ),
                       ),
                     ),
-                  ),
                   const SizedBox(width: 4),
                   if (_streaming) ...[
                     _buildComposerAction(
@@ -8251,7 +8264,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       mediaReferencesFinal: msg['_gateway_pending_response'] != true,
       mediaSourceIdentity: (widget.connection, _storedSessionKey, source),
       mediaFilesClient: isUser ? null : _newMediaFilesClient,
-      onReadAloud: isUser
+      onReadAloud: isUser || isParkedAutomotive
           ? null
           : () => _readAssistantText(content, announce: true),
       onEdit: isUser ? () => _editAndResend(content) : null,

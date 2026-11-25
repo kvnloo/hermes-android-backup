@@ -5,12 +5,18 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      automotive_only:
+        description: 'Build the signed Automotive AAB only (no store or GitHub release)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 jobs:
   build:
+    if: github.event_name != 'workflow_dispatch' || !inputs.automotive_only
     name: Build and verify APK
     runs-on: ubuntu-latest
     env:
@@ -74,7 +80,7 @@ jobs:
       - name: Verify release identity and upgrade versionCode
         env:
           MINIMUM_INSTALLED_VERSION_CODE: '2127'
-          REQUIRED_BASE_VERSION_CODE: '3071'
+          REQUIRED_BASE_VERSION_CODE: '3073'
         run: |
           python3 - <<'PY'
           import os
@@ -309,3 +315,76 @@ jobs:
             --tag "$GITHUB_REF_NAME" \
             --target "$GITHUB_SHA" \
             --assets-dir build/app/outputs/flutter-apk
+
+  automotive:
+    name: Build and verify Automotive AAB (no publishing)
+    if: github.event_name == 'workflow_dispatch' && inputs.automotive_only
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.0'
+          channel: stable
+      - name: Prepare pinned verification tools and dependencies
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --output "$RUNNER_TEMP/bundletool.jar" \
+            https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar
+          printf '%s  %s\n' a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29 "$RUNNER_TEMP/bundletool.jar" | sha256sum --check
+          flutter pub get --enforce-lockfile
+      - name: Exercise cross-track and signature rejection controls before signing
+        run: python3 -m unittest scripts.test_verify_play_bundle
+      - name: Test the combined Play and parked policy
+        run: flutter test --no-pub --dart-define=ARES_PLAY_BUILD=true --dart-define=ARES_PARKED_AUTOMOTIVE=true test_automotive
+      - name: Build the Automotive-only bundle without signing credentials
+        env:
+          ARES_PLAY_BUILD: 'true'
+        run: |
+          flutter build appbundle --release --no-pub --dart-define=ARES_PLAY_BUILD=true \
+            --dart-define=ARES_PARKED_AUTOMOTIVE=true --split-debug-info=symbols-automotive
+          python3 scripts/verify_play_bundle.py --automotive --allow-unsigned \
+            --bundle build/app/outputs/bundle/release/app-release.aab --bundletool "$RUNNER_TEMP/bundletool.jar"
+      - name: Sign only the verified Automotive bundle
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          umask 077
+          key=$(mktemp "$RUNNER_TEMP/ares-upload.XXXXXX")
+          trap 'rm -f "$key"' EXIT
+          test -n "$KEYSTORE_BASE64" && test -n "$KEY_ALIAS"
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$key"
+          mkdir -p automotive-verified
+          jarsigner -keystore "$key" -storepass:env STORE_PASSWORD -keypass:env KEY_PASSWORD \
+            -signedjar automotive-verified/Ares-Automotive.aab build/app/outputs/bundle/release/app-release.aab "$KEY_ALIAS"
+      - name: Verify signed artifact and bind receipt to this revision
+        run: |
+          set -euo pipefail
+          aab=automotive-verified/Ares-Automotive.aab
+          status=0; jarsigner -verify -strict "$aab" || status=$?
+          # The Play upload certificate is self-signed (exit bit 4). Never
+          # accept unsigned entries, a broken signature, or an unexpected key.
+          test "$status" -eq 0 || test "$status" -eq 4
+          java -jar "$RUNNER_TEMP/bundletool.jar" validate --bundle="$aab"
+          python3 scripts/verify_play_bundle.py --automotive --bundle "$aab" \
+            --bundletool "$RUNNER_TEMP/bundletool.jar" > automotive-verified/verification.json
+          printf '%s\n' "$GITHUB_SHA" > automotive-verified/source-commit.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ares-automotive-play-app-bundle
+          path: automotive-verified/
+          if-no-files-found: error
+          retention-days: 30

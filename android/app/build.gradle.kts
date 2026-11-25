@@ -1,5 +1,6 @@
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import java.io.FileInputStream
+import java.util.Base64
 import java.util.Properties
 
 plugins {
@@ -15,8 +16,44 @@ val keystorePath = rootProject.projectDir.parentFile.resolve("key.properties")
 val minimumInstalledVersionCode = 2127
 // Google Play builds use Play-managed updates. The ordinary GitHub release keeps
 // its verified APK updater. CI sets this only for the separate Play AAB.
-val playBuild = System.getenv("ARES_PLAY_BUILD") == "true"
-if (keystorePath.exists()) {
+val dartDefines = providers.gradleProperty("dart-defines").orNull.orEmpty()
+    .split(',').filter { it.isNotEmpty() }
+    .map { String(Base64.getDecoder().decode(it), Charsets.UTF_8) }
+fun dartFlag(name: String): Boolean {
+    val flags = dartDefines.filter { it.substringBefore('=') == name }
+    require(flags.size <= 1 && flags.all { it == "$name=true" || it == "$name=false" }) {
+        "Set --dart-define=$name once, to true or false"
+    }
+    return flags.singleOrNull() == "$name=true"
+}
+val playEnvironment = providers.environmentVariable("ARES_PLAY_BUILD").orNull
+require(playEnvironment in setOf(null, "false", "true")) { "ARES_PLAY_BUILD must be true or false" }
+val playBuild = playEnvironment == "true"
+require(playBuild == dartFlag("ARES_PLAY_BUILD")) {
+    "ARES_PLAY_BUILD environment and Dart define must agree; set both for a Play build"
+}
+val parked = dartFlag("ARES_PARKED_AUTOMOTIVE")
+val parkedEnvironment = providers.environmentVariable("ARES_PARKED_AUTOMOTIVE").orNull
+require(parkedEnvironment == null || parkedEnvironment == parked.toString()) {
+    "Select Automotive using --dart-define=ARES_PARKED_AUTOMOTIVE, not the environment alone"
+}
+val parkedPreview = parked && !playBuild
+val parkedPlay = parked && playBuild
+val automotiveCodeOffset = 1_000_000_000
+val maxPlayVersionCode = 2_100_000_000
+if (parkedPlay) {
+    // Flutter also rewrites split APK codes; never run its split path in the AAB lane.
+    require(providers.gradleProperty("split-per-abi").orNull != "true") { "Build the Automotive Play AAB without --split-per-abi" }
+    require(flutter.versionCode <= maxPlayVersionCode - automotiveCodeOffset) { "Automotive versionCode exceeds the Play limit" }
+    val pubspec = rootProject.projectDir.parentFile.resolve("pubspec.yaml").readLines()
+    require(pubspec.single { it.startsWith("version:") }.substringAfter(':').trim() == "${flutter.versionName}+${flutter.versionCode}") {
+        "Automotive Play identity must come from pubspec.yaml, without Flutter version overrides"
+    }
+} else if (playBuild) {
+    require(flutter.versionCode < automotiveCodeOffset) { "Phone Play versionCode enters the reserved Automotive lane" }
+}
+
+if (keystorePath.exists() && !parkedPreview) {
    keystoreProperties.load(FileInputStream(keystorePath))
 }
 
@@ -36,12 +73,13 @@ android {
                "$minimumInstalledVersionCode to upgrade the accepted Hermes APK"
        }
        applicationId = "com.hermesagent.hermes_android"
-       minSdk = 24
+       minSdk = if (parked) 33 else 24
        targetSdk = 36
-       versionCode = flutter.versionCode
+       versionCode = if (parkedPlay) automotiveCodeOffset + flutter.versionCode else flutter.versionCode
        versionName = flutter.versionName
        manifestPlaceholders["appLabel"] = "Ares"
        buildConfigField("boolean", "PLAY_BUILD", playBuild.toString())
+       buildConfigField("boolean", "PARKED_AUTOMOTIVE", parked.toString())
        }
 
        buildFeatures {
@@ -64,9 +102,9 @@ android {
            // The guarded Flutter versionCode is the base. The F-Droid ABI-split
            // block below derives per-ABI codes as base * 10 + ABI code; CI
            // verifies the packaged arm64 code against that scheme.
-           applicationIdSuffix = ".dev"
-           versionNameSuffix = "-dev"
-           manifestPlaceholders["appLabel"] = "Ares Dev"
+           applicationIdSuffix = if (parkedPreview) ".automotive.preview" else ".dev"
+           versionNameSuffix = if (parkedPreview) "-parked-preview" else "-dev"
+           manifestPlaceholders["appLabel"] = if (parkedPreview) "Ares Parked" else "Ares Dev"
        }
        release {
            isMinifyEnabled = true
@@ -86,7 +124,10 @@ android {
       jniLibs.useLegacyPackaging = false
    }
 
-   if (playBuild) {
+   if (parked) {
+      // This overlay includes the Play install-permission and updater-provider removals.
+      sourceSets.getByName(if (parkedPlay) "release" else "debug").manifest.srcFile("src/parked/AndroidManifest.xml")
+   } else if (playBuild) {
       // A build-invocation-specific overlay keeps the default GitHub release
       // unchanged without introducing flavour-specific APK names.
       sourceSets.getByName("release").manifest.srcFile("src/play/AndroidManifest.xml")
@@ -100,6 +141,11 @@ android {
        includeInApk = false
        includeInBundle = false
    }
+}
+
+// No profile fallback, signed preview, or debug build with the production package.
+androidComponents.beforeVariants { variant ->
+    if (parked && variant.buildType != (if (parkedPlay) "release" else "debug")) variant.enable = false
 }
 
 kotlin {
@@ -139,7 +185,7 @@ android.applicationVariants.configureEach {
     variant.outputs.forEach { output ->
         val abiVersionCode =
             abiCodes[output.filters.find { it.filterType == "ABI" }?.identifier]
-        if (abiVersionCode != null) {
+        if (!parkedPlay && abiVersionCode != null) {
             (output as ApkVariantOutputImpl).versionCodeOverride =
                 variant.versionCode * 10 + abiVersionCode
         }

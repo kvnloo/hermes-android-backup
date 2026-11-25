@@ -20,6 +20,7 @@ class NgSlashCommandInfo extends StatefulWidget {
     required this.child,
     this.showsSentAsMessageNote = true,
     this.catalog,
+    this.suppressed = false,
   });
 
   final NgChatController chat;
@@ -34,6 +35,10 @@ class NgSlashCommandInfo extends StatefulWidget {
 
   /// Test hook: a reader with custom timing.
   final NgSlashCatalog? catalog;
+
+  /// True while the `/` suggestions box is open: it already describes the
+  /// command, so no card shows and an open one closes.
+  final bool suppressed;
 
   @override
   State<NgSlashCommandInfo> createState() => _NgSlashCommandInfoState();
@@ -106,6 +111,7 @@ class _NgSlashCommandInfoState extends State<NgSlashCommandInfo> {
       scope: widget.chat,
       refresh: _catalog,
       onToken: _onToken,
+      suppressed: widget.suppressed,
       // The composer's input container is 4 dp inside this child.
       gap: 2,
       child: widget.child,

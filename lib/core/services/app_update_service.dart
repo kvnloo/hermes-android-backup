@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../parked_automotive.dart';
+
 /// A published Hermes Android release, read from the project's GitHub Releases.
 class AppReleaseInfo {
   const AppReleaseInfo({
@@ -236,6 +238,7 @@ class AppUpdateService {
   /// The Play distribution uses Play-managed updates and never contacts GitHub
   /// for an APK. Set with `--dart-define=ARES_PLAY_BUILD=true` for the Play AAB.
   static const isPlayBuild = bool.fromEnvironment('ARES_PLAY_BUILD');
+  static const selfUpdatesEnabled = !isPlayBuild && !isParkedAutomotive;
 
   /// [client] and [preferences] are injectable so tests can drive the check
   /// against a fake GitHub and a mock store; the app passes neither.
@@ -274,7 +277,9 @@ class AppUpdateService {
     required String currentVersion,
     bool force = false,
   }) async {
-    if (isPlayBuild) return const AppUpdateResult(AppUpdateOutcome.failed);
+    if (!selfUpdatesEnabled) {
+      return const AppUpdateResult(AppUpdateOutcome.failed);
+    }
     final preferences = await _prefs;
     if (!force && await _isThrottled(preferences)) {
       return const AppUpdateResult(AppUpdateOutcome.throttled);
@@ -336,7 +341,7 @@ class AppUpdateService {
   Future<AppReleaseInfo?> launchPromptRelease({
     required String currentVersion,
   }) async {
-    if (isPlayBuild || !await checkOnLaunchEnabled()) return null;
+    if (!await checkOnLaunchEnabled()) return null;
     final result = await checkForUpdate(currentVersion: currentVersion);
     // Throttling applies to the network, not to presentation: "Later" should
     // prompt on the next launch even when no second request is due yet.
@@ -355,10 +360,10 @@ class AppUpdateService {
   }
 
   Future<bool> checkOnLaunchEnabled() async =>
-      !isPlayBuild && ((await _prefs).getBool(checkOnLaunchKey) ?? true);
+      selfUpdatesEnabled && ((await _prefs).getBool(checkOnLaunchKey) ?? true);
 
   Future<void> setCheckOnLaunchEnabled(bool enabled) async {
-    if (isPlayBuild) return;
+    if (!selfUpdatesEnabled) return;
     final preferences = await _prefs;
     await preferences.setBool(checkOnLaunchKey, enabled);
   }

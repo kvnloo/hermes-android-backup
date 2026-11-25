@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../parked_automotive.dart';
 import 'app_update_service.dart';
 
 /// The Android side owns the private download file and hands it only to the
@@ -14,7 +15,9 @@ class ApkUpdateInstaller {
   final MethodChannel _channel;
 
   bool get supported =>
-      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+      !isParkedAutomotive &&
+      !kIsWeb &&
+      defaultTargetPlatform == TargetPlatform.android;
 
   // MethodChannel handlers belong to the messenger, not this object. Keep
   // concurrent dialog instances from replacing one another's progress handler.
@@ -59,6 +62,7 @@ class ApkUpdateInstaller {
     required String tag,
     required void Function(int received, int total) onProgress,
   }) async {
+    if (isParkedAutomotive) throw UnsupportedError('APK updates disabled');
     if (_downloadActive) {
       throw StateError('An update download is already in progress');
     }
@@ -96,8 +100,9 @@ class ApkUpdateInstaller {
 
   /// Either opens the installer or Android's one-time unknown-source setting.
   /// Only a subsequent explicit tap after granting permission launches install.
-  Future<String> install() async =>
-      await _channel.invokeMethod<String>('install') ?? 'failed';
+  Future<String> install() async => isParkedAutomotive
+      ? 'failed'
+      : await _channel.invokeMethod<String>('install') ?? 'failed';
 
   Future<void> cancel() async {
     if (!_ownsDownload && (!_mayCancelPrepared || _downloadActive)) return;
