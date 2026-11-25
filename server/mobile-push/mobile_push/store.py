@@ -410,7 +410,21 @@ class Store:
                     event.get("turn_id"),
                     request_id,
                 )
-                hint = self.hint(event_id, kind, row["generation"], row["nonce"], expires)
+                extra = {}
+                if kind == "input_resolved" and request_id:
+                    # Name the attention hint this answers (only its opaque event id),
+                    # so the phone can take that notification down: the question may
+                    # have been answered on another device.
+                    asked = db.execute(
+                        "SELECT event_id FROM events WHERE provider=? AND user_id=? "
+                        "AND kind='input' AND session_id=? AND request_id=?",
+                        (*principal, sid, request_id),
+                    ).fetchone()
+                    if asked:
+                        extra["resolves"] = asked[0]
+                hint = self.hint(
+                    event_id, kind, row["generation"], row["nonce"], expires, **extra
+                )
                 self._queue(db, row["installation"], row["generation"], event_id, hint, now)
             self._prune(db, policy, now)
 

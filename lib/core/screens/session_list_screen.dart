@@ -1285,6 +1285,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
     await Navigator.push<void>(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(name: '/classic-session-chat'),
         builder: (_) =>
             widget.testSessionScreenBuilder?.call(session) ??
             widget.testChatScreenBuilder?.call(session, archive) ??

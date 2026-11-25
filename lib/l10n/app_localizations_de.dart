@@ -9,6 +9,10 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get slash_local_arguments =>
+      'Diese Verknüpfung unterstützt hier keine Argumente. Verwende die App-Steuerelemente; dein Entwurf wurde beibehalten.';
+
+  @override
   String get fallback_title => 'Ausweichmodelle';
 
   @override
@@ -3972,6 +3976,27 @@ class AppLocalizationsDe extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias ist ein Alias für $command';
+  }
+
+  @override
+  String get slash_command_info_no_description =>
+      'Keine Beschreibung verfügbar.';
+
+  @override
+  String get slash_command_info_arguments_options =>
+      'Erwartet eine Option aus einer festen Auswahl.';
+
+  @override
+  String get slash_command_info_arguments_text =>
+      'Erwartet Text nach dem Befehl.';
+
+  @override
+  String get slash_command_info_arguments_mixed =>
+      'Erwartet eine Option oder Text nach dem Befehl.';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3983,6 +4008,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported =>
+      'Dieser Befehl ist auf diesem Server nicht verfügbar.';
+
+  @override
+  String get slash_sessions_inline =>
+      'Öffne die Sitzungsliste, um einen Chat auszuwählen. Dein Entwurf wurde beibehalten.';
 
   @override
   String get nextgen_toggle => 'NextGen-Oberfläche';
@@ -4079,6 +4112,18 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => 'Der Durchlauf ist fehlgeschlagen.';
+
+  @override
+  String get ng_turn_changed =>
+      'dieser Durchlauf ist bereits beendet oder ein neuerer hat begonnen';
+
+  @override
+  String get ng_steer_rejected =>
+      'der laufende Durchlauf hat es nicht angenommen';
+
+  @override
+  String get ng_turn_not_known_yet =>
+      'der laufende Durchlauf ist noch nicht bekannt; versuche es gleich noch einmal';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4491,6 +4536,21 @@ class AppLocalizationsDe extends AppLocalizations {
   String get ng_retry => 'Erneut versuchen';
 
   @override
+  String get ng_project_home => 'Home';
+
+  @override
+  String get ng_choose_project => 'Projekt auswählen';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return 'Der Projektordner war nicht verfügbar. Dieser Chat läuft daher in $path.';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      'Das Gateway hat diesen Chat möglicherweise erstellt, aber nicht bestätigt. Prüfe die Chats, bevor du einen weiteren startest. Diese Anfrage wird nicht automatisch wiederholt.';
+
+  @override
   String get ng_what_should_we_work_on => 'Woran sollen wir arbeiten?';
 
   @override
@@ -4529,6 +4589,55 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ng_send => 'Senden';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias ist ein Alias für $command';
+  }
+
+  @override
+  String get ng_slash_command_no_description => 'Keine Beschreibung verfügbar.';
+
+  @override
+  String get ng_slash_command_arguments_options =>
+      'Erwartet eine Option aus einer festen Auswahl.';
+
+  @override
+  String get ng_slash_command_arguments_text =>
+      'Erwartet Text nach dem Befehl.';
+
+  @override
+  String get ng_slash_command_arguments_mixed =>
+      'Erwartet eine Option oder Text nach dem Befehl.';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen sendet dies als normale Nachricht an Hermes; der Befehl selbst wird nicht ausgeführt.';
+
+  @override
+  String get ng_slash_command_output => 'Befehlsausgabe';
+
+  @override
+  String get ng_slash_command_running => 'Befehl wird ausgeführt…';
+
+  @override
+  String get ng_slash_command_done => 'Fertig.';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return 'Befehl konnte nicht ausgeführt werden: $error';
+  }
+
+  @override
+  String get ng_slash_command_refused =>
+      'Hermes kann diesen Befehl hier nicht ausführen.';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      'Der Befehl wurde gesendet, aber es kam keine Antwort. Er läuft möglicherweise noch auf dem Gateway, daher wurde er nicht erneut gesendet und dein Entwurf wurde behalten.';
+
+  @override
+  String get ng_slash_command_nothing_running => 'Es läuft gerade nichts.';
 
   @override
   String get ng_steered => 'Angepasst';
@@ -5246,131 +5355,131 @@ class AppLocalizationsDe extends AppLocalizations {
   String get ng_no_chats_match => 'Keine passenden Chats gefunden.';
 
   @override
-  String get ng_no_chats_yet => 'Aún no hay chats.';
+  String get ng_no_chats_yet => 'Noch keine Chats.';
 
   @override
-  String get ng_nothing_is_running => 'No hay nada en ejecución.';
+  String get ng_nothing_is_running => 'Es läuft gerade nichts.';
 
   @override
-  String get ng_nothing_is_waiting_on_you => 'No hay nada pendiente de ti.';
+  String get ng_nothing_is_waiting_on_you => 'Nichts wartet auf dich.';
 
   @override
-  String get ng_settings => 'Ajustes';
+  String get ng_settings => 'Einstellungen';
 
   @override
-  String get ng_all => 'Todo';
+  String get ng_all => 'Alle';
 
   @override
   String ng_needs_you(Object count) {
-    return 'Requiere tu atención · $count';
+    return 'Braucht dich · $count';
   }
 
   @override
-  String get ng_needs_you_2 => 'Requiere tu atención';
+  String get ng_needs_you_2 => 'Braucht dich';
 
   @override
   String get ng_gateways => 'Gateways';
 
   @override
   String ng_classic_connection(Object address) {
-    return '$address · conexión clásica';
+    return '$address · klassische Verbindung';
   }
 
   @override
   String get ng_gateway_2 => 'Gateway';
 
   @override
-  String get ng_signed_in => 'Sesión iniciada';
+  String get ng_signed_in => 'Angemeldet';
 
   @override
-  String get ng_classic_connection_2 => 'Conexión clásica';
+  String get ng_classic_connection_2 => 'Klassische Verbindung';
 
   @override
-  String get ng_in_the_browser => 'En el navegador';
+  String get ng_in_the_browser => 'Im Browser';
 
   @override
   String ng_in_the_browser_as(Object name) {
-    return 'En el navegador como $name';
+    return 'Im Browser als $name';
   }
 
   @override
-  String get ng_not_required => 'No es necesario';
+  String get ng_not_required => 'Nicht erforderlich';
 
   @override
-  String get ng_test_connection => 'Probar conexión';
+  String get ng_test_connection => 'Verbindung testen';
 
   @override
-  String get ng_sign_in_again_2 => 'Iniciar sesión de nuevo';
+  String get ng_sign_in_again_2 => 'Erneut anmelden';
 
   @override
-  String get ng_sign_out => 'Cerrar sesión';
+  String get ng_sign_out => 'Abmelden';
 
   @override
   String get ng_saved_gateways => 'Gateways guardados';
 
   @override
-  String get ng_in_use => 'En uso';
+  String get ng_in_use => 'In Verwendung';
 
   @override
   String get ng_appearance => 'Aspecto';
 
   @override
-  String get ng_theme => 'Tema';
+  String get ng_theme => 'Design';
 
   @override
-  String get ng_system => 'Sistema';
+  String get ng_system => 'System';
 
   @override
-  String get ng_light => 'Claro';
+  String get ng_light => 'Hell';
 
   @override
-  String get ng_dark => 'Oscuro';
+  String get ng_dark => 'Dunkel';
 
   @override
-  String get ng_accent => 'Color de énfasis';
+  String get ng_accent => 'Akzent';
 
   @override
-  String get ng_pure_black => 'Negro puro';
+  String get ng_pure_black => 'Reines Schwarz';
 
   @override
   String get ng_dark_theme_uses_true_black_oled =>
-      'El tema oscuro usa negro puro (OLED)';
+      'Das dunkle Design nutzt reines Schwarz (OLED)';
 
   @override
-  String get ng_glow => 'Resplandor';
+  String get ng_glow => 'Leuchten';
 
   @override
   String get ng_soft_accent_light_behind_each_screen =>
-      'Un suave resplandor de color detrás de cada pantalla';
+      'Sanftes Akzentlicht hinter jedem Bildschirm';
 
   @override
   String get ng_the_new_interface_turn_off_to =>
-      'La nueva interfaz. Desactívala para volver a la clásica; tus gateways y chats se comparten.';
+      'Die neue Oberfläche. Zum Zurückwechseln zur klassischen ausschalten; deine Gateways und Chats werden geteilt.';
 
   @override
-  String get ng_more_settings => 'Más ajustes';
+  String get ng_more_settings => 'Weitere Einstellungen';
 
   @override
   String get ng_voice_notifications_language_backups_and_the =>
-      'Voz, notificaciones, idioma, copias de seguridad y configuración del gateway';
+      'Stimme, Benachrichtigungen, Sprache, Backups und die Gateway-Konfiguration';
 
   @override
-  String get ng_licences => 'Licencias';
+  String get ng_licences => 'Lizenzen';
 
   @override
   String ng_sign_out_of(Object name) {
-    return '¿Cerrar sesión en $name?';
+    return 'Von $name abmelden?';
   }
 
   @override
   String get ng_this_gateway_and_its_saved_sign =>
-      'Este gateway y sus credenciales guardadas se eliminarán de este teléfono en ambas interfaces. Tus chats seguirán en el gateway.';
+      'Dieses Gateway und die gespeicherte Anmeldung werden in beiden Oberflächen von diesem Telefon entfernt. Deine Chats bleiben auf dem Gateway.';
 
   @override
-  String get ng_password_or_browser => 'Contraseña o navegador';
+  String get ng_password_or_browser => 'Passwort oder Browser';
 
   @override
-  String get ng_unsupported => 'No compatible';
+  String get ng_unsupported => 'Nicht unterstützt';
 
   @override
   String get ng_background_task_finished => 'Hintergrundaufgabe abgeschlossen';

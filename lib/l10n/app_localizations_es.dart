@@ -9,6 +9,10 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get slash_local_arguments =>
+      'Este atajo no admite argumentos aquí. Usa los controles de la aplicación; se conservó tu borrador.';
+
+  @override
   String get fallback_title => 'Modelos de respaldo';
 
   @override
@@ -3967,6 +3971,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias es un alias de $command';
+  }
+
+  @override
+  String get slash_command_info_no_description =>
+      'No hay descripción disponible.';
+
+  @override
+  String get slash_command_info_arguments_options =>
+      'Admite una opción de una lista fija.';
+
+  @override
+  String get slash_command_info_arguments_text =>
+      'Admite texto después del comando.';
+
+  @override
+  String get slash_command_info_arguments_mixed =>
+      'Admite una opción o texto después del comando.';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3978,6 +4003,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported =>
+      'Este comando no está disponible en este servidor.';
+
+  @override
+  String get slash_sessions_inline =>
+      'Abre la lista de sesiones para elegir un chat. Se conservó tu borrador.';
 
   @override
   String get nextgen_toggle => 'Interfaz NextGen';
@@ -4075,6 +4108,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => 'La respuesta ha fallado.';
+
+  @override
+  String get ng_turn_changed =>
+      'esa respuesta ya terminó o empezó una más reciente';
+
+  @override
+  String get ng_steer_rejected => 'la respuesta en curso no lo aceptó';
+
+  @override
+  String get ng_turn_not_known_yet =>
+      'aún no se conoce la respuesta en curso; inténtalo de nuevo en un momento';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4488,6 +4532,21 @@ class AppLocalizationsEs extends AppLocalizations {
   String get ng_retry => 'Reintentar';
 
   @override
+  String get ng_project_home => 'Inicio';
+
+  @override
+  String get ng_choose_project => 'Elegir un proyecto';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return 'La carpeta del proyecto no estaba disponible, así que este chat se ejecuta en $path.';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      'Es posible que la pasarela haya creado este chat, pero no lo confirmó. Revisa los chats antes de iniciar otro; esta solicitud no se reintentará automáticamente.';
+
+  @override
   String get ng_what_should_we_work_on => '¿En qué trabajamos?';
 
   @override
@@ -4526,6 +4585,56 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get ng_send => 'Enviar';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias es un alias de $command';
+  }
+
+  @override
+  String get ng_slash_command_no_description =>
+      'No hay descripción disponible.';
+
+  @override
+  String get ng_slash_command_arguments_options =>
+      'Admite una opción de una lista fija.';
+
+  @override
+  String get ng_slash_command_arguments_text =>
+      'Admite texto después del comando.';
+
+  @override
+  String get ng_slash_command_arguments_mixed =>
+      'Admite una opción o texto después del comando.';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen envía esto a Hermes como un mensaje normal; el comando en sí no se ejecuta.';
+
+  @override
+  String get ng_slash_command_output => 'Salida del comando';
+
+  @override
+  String get ng_slash_command_running => 'Ejecutando el comando…';
+
+  @override
+  String get ng_slash_command_done => 'Hecho.';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return 'No se ha podido ejecutar el comando: $error';
+  }
+
+  @override
+  String get ng_slash_command_refused =>
+      'Hermes no puede ejecutar este comando aquí.';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      'El comando se envió, pero no llegó ninguna respuesta. Puede que siga ejecutándose en el gateway, así que no se ha vuelto a enviar y se ha conservado tu borrador.';
+
+  @override
+  String get ng_slash_command_nothing_running => 'No hay nada en ejecución.';
 
   @override
   String get ng_steered => 'Indicación enviada';

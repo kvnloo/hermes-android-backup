@@ -1,0 +1,1 @@
+NextGen projects and a project picker for new chats, slash commands that highlight, explain and run, desktop composer alignment, no repeat alerts for questions answered on another device, and Android Auto replies.

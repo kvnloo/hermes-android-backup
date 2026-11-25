@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 /// One slash command advertised by the gateway's `commands.catalog` RPC.
 class SlashCommand {
   const SlashCommand({
@@ -26,7 +28,7 @@ class SlashCommand {
 /// surfaces); a loaded catalogue is authoritative. This constant just keeps a
 /// cold session from treating the first typed command as prose before
 /// `commands.catalog` answers — the server's deterministic
-/// `unsupported_command` reply still falls back to a plain send.
+/// `unsupported_command` reply is shown locally, never resent as prose.
 const Set<String> kSlashExecutableCommands = {
   'help',
   'commands',
@@ -89,17 +91,30 @@ class SlashCommandCatalog {
   SlashCommandCatalog({
     required List<SlashCommand> commands,
     required Set<String> executable,
+    Map<String, String> aliases = const {},
   }) : commands = List<SlashCommand>.unmodifiable(commands),
-       executable = Set<String>.unmodifiable(executable);
+       executable = Set<String>.unmodifiable(executable),
+       _aliases = Map.unmodifiable(aliases);
 
   final List<SlashCommand> commands;
 
   /// Canonical (bare, lowercase) names the gateway dispatches.
   final Set<String> executable;
 
+  String canonicalName(String name) {
+    final bare = _canonicalName(name) ?? '';
+    return _aliases[bare]?.toLowerCase() ?? bare;
+  }
+
+  final Map<String, String> _aliases;
+
+  bool containsName(String name) => commands.any(
+    (command) => canonicalName(command.name) == canonicalName(name),
+  );
+
   bool canExecute(String name) {
-    final canonical = _canonicalName(name);
-    return canonical != null && executable.contains(canonical);
+    final canonical = canonicalName(name);
+    return executable.contains(canonical);
   }
 
   static SlashCommandCatalog fromResult(Object? result) {
@@ -148,21 +163,27 @@ class SlashCommandCatalog {
       }
     }
     // Tolerant legacy envelopes: a list under `commands`, `entries` or `items`.
-    for (final legacy in [result['commands'], result['entries'], result['items']]) {
+    for (final legacy in [
+      result['commands'],
+      result['entries'],
+      result['items'],
+    ]) {
       if (legacy is List) _addEntries(builder, legacy);
     }
     return _build(builder, result);
   }
 
-  static SlashCommandCatalog _build(
-    _CatalogBuilder builder,
-    Object? result,
-  ) {
+  static SlashCommandCatalog _build(_CatalogBuilder builder, Object? result) {
     return SlashCommandCatalog(
       commands: builder.commands,
       // A gateway that advertises its own execution set wins; otherwise every
       // catalogued name is dispatchable and the server still refuses politely.
-      executable: _advertisedExecutable(result) ?? builder.names,
+      executable:
+          _advertisedExecutable(result)
+              ?.map((name) => builder._canon[name]?.toLowerCase() ?? name)
+              .toSet() ??
+          builder.names,
+      aliases: builder._canon,
     );
   }
 
@@ -178,7 +199,7 @@ class SlashCommandCatalog {
       final name = _canonicalName(entry is Map ? _entryName(entry) : entry);
       if (name != null) names.add(name);
     }
-    return names.isEmpty ? null : names;
+    return names;
   }
 
   static void _addPairs(
@@ -267,9 +288,7 @@ class SlashCommandCatalog {
       if (entry is List && entry.isNotEmpty) {
         final name = _bareName(entry.first);
         if (name == null) continue;
-        pairs.add(
-          _CatalogPair(name, entry.length > 1 ? _text(entry[1]) : ''),
-        );
+        pairs.add(_CatalogPair(name, entry.length > 1 ? _text(entry[1]) : ''));
         continue;
       }
       if (entry is String) {
@@ -308,7 +327,8 @@ class SlashCommandCatalog {
     return name;
   }
 
-  static String? _canonicalName(Object? value) => _bareName(value)?.toLowerCase();
+  static String? _canonicalName(Object? value) =>
+      _bareName(value)?.toLowerCase();
 
   static String _text(Object? value) {
     if (value is! String) return '';
@@ -353,11 +373,7 @@ class _CatalogBuilder {
   /// Canonical names plus every alias the gateway said it accepts.
   Set<String> get names => {..._index.keys, ..._accepted};
 
-  void add(
-    Object? raw, {
-    String description = '',
-    String category = '',
-  }) {
+  void add(Object? raw, {String description = '', String category = ''}) {
     final bare = SlashCommandCatalog._bareName(raw);
     final unaliased = SlashCommandCatalog._canonicalName(raw);
     if (bare == null || unaliased == null) return;
@@ -401,7 +417,13 @@ enum SlashCommandResultKind { exec, prompt, prefill }
 /// `type`; `type` is only set when the gateway rerouted the command to
 /// `command.dispatch` (`exec`, `alias`, `plugin`, `send`, `skill`, `prefill`).
 class SlashCommandResult {
-  const SlashCommandResult._(this.kind, this.text);
+  const SlashCommandResult._(
+    this.kind,
+    this.text, {
+    this.display = '',
+    this.notice = '',
+    this.aliasTarget = '',
+  });
 
   const SlashCommandResult.exec(String output)
     : this._(SlashCommandResultKind.exec, output);
@@ -413,7 +435,20 @@ class SlashCommandResult {
     : this._(SlashCommandResultKind.prefill, message);
 
   final SlashCommandResultKind kind;
+
+  /// What to show (exec), submit (prompt) or put in the composer (prefill).
+  /// For a prompt this is model-facing: UIs show [display], never this.
   final String text;
+
+  /// The gateway's user-facing line for a send/skill directive, when given.
+  final String display;
+
+  /// A line a send/skill/prefill directive asks the UI to show first.
+  final String notice;
+
+  /// For an `alias` reply, the command it names (`/name args`); [text] still
+  /// carries what to show when the alias is not followed.
+  final String aliasTarget;
 
   bool get isExecuted => kind == SlashCommandResultKind.exec;
 
@@ -436,17 +471,32 @@ class SlashCommandResult {
         final message = _resultText(result['message']);
         return message.isEmpty
             ? const SlashCommandResult.exec('')
-            : SlashCommandResult.prompt(message);
+            : SlashCommandResult._(
+                SlashCommandResultKind.prompt,
+                message,
+                display: _resultText(result['display']).trim(),
+                notice: _resultText(result['notice']).trim(),
+              );
       case 'prefill':
         final message = _resultText(result['message']);
         return message.isEmpty
             ? const SlashCommandResult.exec('')
-            : SlashCommandResult.prefill(message);
+            : SlashCommandResult._(
+                SlashCommandResultKind.prefill,
+                message,
+                notice: _resultText(result['notice']).trim(),
+              );
       case 'alias':
-        // An alias reply names `target`; UIs render `display`. The app does not
-        // re-dispatch, so surface what the gateway told us and never re-send.
-        return SlashCommandResult.exec(
+        // An alias reply names `target`; UIs render `display`. Classic does
+        // not re-dispatch, so it surfaces what the gateway told us and never
+        // re-sends; NextGen follows [aliasTarget] once.
+        final target = _resultText(result['target']).trim();
+        return SlashCommandResult._(
+          SlashCommandResultKind.exec,
           _withWarning(_directiveText(result, slashTarget: true), warning),
+          aliasTarget: target.isEmpty || target.startsWith('/')
+              ? target
+              : '/$target',
         );
       case 'exec':
       case 'plugin':
@@ -506,7 +556,8 @@ class SlashCommandNotice {
 ///
 /// [DesktopGatewayClient] implements it; tests provide a double without a
 /// socket. `onSent` fires after the request is written to the transport, which
-/// separates "never sent, safe to fall back" from "delivery unknown".
+/// distinguishes a local failure from delivery uncertainty. Neither permits
+/// automatic retry or conversion of a failed command into a prompt.
 abstract interface class SlashCommandGateway {
   bool get slashCommandsSupported;
 
@@ -517,4 +568,31 @@ abstract interface class SlashCommandGateway {
     required String command,
     void Function()? onSent,
   });
+}
+
+/// Connection-owned learned bare-command refusals, shared by retained routes.
+/// Catalogues remain immutable; resetting a socket forgets only observations
+/// from that socket. Epochs fence responses which arrive after reconnect.
+class SlashCommandRefusals extends ChangeNotifier {
+  final Set<String> _names = {};
+  int _epoch = 0;
+  int get epoch => _epoch;
+  bool contains(String name) => _names.contains(name);
+  void mark(String name) {
+    if (_names.add(name)) notifyListeners();
+  }
+
+  void reset() {
+    _epoch++;
+    _names.clear();
+    notifyListeners();
+  }
+}
+
+// Weak keys prevent closed gateway clients from becoming process-wide caches.
+final _connectionRefusals = Expando<SlashCommandRefusals>();
+
+extension SlashCommandConnectionMemory on SlashCommandGateway {
+  SlashCommandRefusals get slashRefusals =>
+      _connectionRefusals[this] ??= SlashCommandRefusals();
 }

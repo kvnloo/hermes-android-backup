@@ -144,6 +144,9 @@ void main() {
       'Output price',
       'Tools',
       'Vision',
+      // The model list calls every model it has no record for a reasoning
+      // model, so only `model/info` counts.
+      'Reasoning',
       'Free',
     ]) {
       expect(inside(card, absent), findsNothing, reason: absent);
@@ -310,9 +313,10 @@ void main() {
   ) async {
     final fixture = await open(tester);
     await tapKey(tester, 'ng-models-change-default');
-    // Endpoints are not offered; a model that is not on the plan cannot be
-    // picked.
-    expect(choice('homelab/local-llm'), findsNothing);
+    // A named endpoint is offered like any provider, without its address;
+    // a model that is not on the plan cannot be picked.
+    expect(choice('homelab/local-llm'), findsOneWidget);
+    expect(find.textContaining('private.example'), findsNothing);
     await tester.tap(choice('openrouter/openai/gpt-pro'));
     await tester.pumpAndSettle();
     expect(fixture.modelWrites, isEmpty);
@@ -368,6 +372,34 @@ void main() {
     expect(inside('ng-models-default', 'claude-haiku-4.5'), findsOneWidget);
   });
 
+  testWidgets(
+    'agreeing after the page moved to another gateway sends nothing',
+    (tester) async {
+      final first = await open(
+        tester,
+        arrange: (f) => f.confirmMessage = 'claude-haiku-4.5 is expensive.',
+      );
+      await tapKey(tester, 'ng-models-change-default');
+      await tester.tap(choice('anthropic/claude-haiku-4.5'));
+      await tester.pumpAndSettle();
+      expect(find.text('claude-haiku-4.5 is expensive.'), findsOneWidget);
+
+      // The page is given another gateway while the warning is still open.
+      final second = ModelsFixture();
+      addTearDown(second.client.close);
+      await tester.pumpWidget(
+        app(NgModelsPage(connection: modelsConnection, client: second.client)),
+      );
+      await tester.pumpAndSettle();
+      expect(second.at('/model/info'), hasLength(1));
+
+      await tapKey(tester, 'ng-models-confirm');
+      expect(first.modelWrites, hasLength(1));
+      expect(second.modelWrites, isEmpty);
+      expect(find.textContaining('Profile default set to'), findsNothing);
+    },
+  );
+
   testWidgets('a save that cannot be confirmed says so', (tester) async {
     final fixture = await open(tester, arrange: (f) => f.persist = false);
     await tapKey(tester, 'ng-models-change-default');
@@ -384,9 +416,8 @@ void main() {
     expect(find.textContaining('Profile default set to'), findsNothing);
   });
 
-  testWidgets('a default on a custom endpoint is shown but not changeable', (
-    tester,
-  ) async {
+  testWidgets('a default whose endpoint would be lost is shown but not '
+      'changeable', (tester) async {
     final fixture = await open(
       tester,
       arrange: (f) => f.endpoint = 'https://private.example/v1',
@@ -405,6 +436,111 @@ void main() {
     );
     expect(find.textContaining('private.example'), findsNothing);
     expect(fixture.modelWrites, isEmpty);
+  });
+
+  testWidgets('a default on a provider plugin\'s own address is changed', (
+    tester,
+  ) async {
+    // A subscription plugin: the gateway keeps its address with the default
+    // model, and the model in use is a variant its list does not name.
+    final fixture = await open(
+      tester,
+      arrange: (f) {
+        f.providers.add({
+          'slug': 'plugin-subscription',
+          'name': 'Plugin subscription',
+          'models': ['big-model'],
+        });
+        f.info = {
+          ...f.info,
+          'provider': 'plugin-subscription',
+          'model': 'big-model[1m]',
+        };
+        f.endpoint = 'process://plugin-subscription';
+      },
+    );
+    expect(inside('ng-models-default', 'big-model[1m]'), findsOneWidget);
+    expect(
+      find.text('Runs on a custom endpoint. Change it on the gateway.'),
+      // Only the helper task that has its own endpoint says so.
+      findsOneWidget,
+    );
+    expect(find.textContaining('process://'), findsNothing);
+
+    await tapKey(tester, 'ng-models-change-default');
+    await tester.tap(choice('homelab/local-llm'));
+    await tester.pumpAndSettle();
+    expect(fixture.modelWrites.single, {
+      'scope': 'main',
+      'provider': 'homelab',
+      'model': 'local-llm',
+      'profile': profile,
+    });
+    expect(inside('ng-models-default', 'local-llm'), findsOneWidget);
+    // On a named endpoint now, and still changeable.
+    expect(
+      find.byKey(const ValueKey('ng-models-change-default')),
+      findsOneWidget,
+    );
+    expect(find.textContaining('private.example'), findsNothing);
+  });
+
+  testWidgets('a fallback row is given another model by tapping it', (
+    tester,
+  ) async {
+    final fixture = await open(
+      tester,
+      arrange: (f) => f.config = {
+        'fallback_providers': [
+          {'provider': 'openrouter', 'model': 'google/gemini-flash'},
+          {'provider': 'homelab', 'model': 'local-llm'},
+          {
+            'provider': 'lab',
+            'model': 'private-model',
+            'base_url': 'https://private.example/v1',
+            'key_env': 'LAB_KEY',
+          },
+        ],
+      },
+    );
+    // A row with routing details keeps its model: it has no change control.
+    expect(find.byKey(const ValueKey('ng-fallback-change-0')), findsOneWidget);
+    expect(find.byKey(const ValueKey('ng-fallback-change-1')), findsOneWidget);
+    expect(find.byKey(const ValueKey('ng-fallback-change-2')), findsNothing);
+
+    await tapKey(tester, 'ng-fallback-change-0');
+    // Another row's model cannot be picked: the sheet stays open.
+    await tester.tap(choice('homelab/local-llm'));
+    await tester.pumpAndSettle();
+    expect(choice('homelab/local-llm'), findsOneWidget);
+    await tester.tap(choice('anthropic/claude-haiku-4.5'));
+    await tester.pumpAndSettle();
+
+    expect(inside('ng-fallback-row-0', 'claude-haiku-4.5'), findsOneWidget);
+    expect(inside('ng-fallback-row-1', 'local-llm'), findsOneWidget);
+    expect(find.text('Unsaved changes'), findsOneWidget);
+    expect(fixture.configWrites, isEmpty);
+
+    await tapKey(tester, 'ng-fallback-save');
+    expect(fixture.configWrites.single, {
+      'config': {
+        'fallback_providers': [
+          {'provider': 'anthropic', 'model': 'claude-haiku-4.5'},
+          {'provider': 'homelab', 'model': 'local-llm'},
+          {
+            'provider': 'lab',
+            'model': 'private-model',
+            'base_url': 'https://private.example/v1',
+            'key_env': 'LAB_KEY',
+          },
+        ],
+      },
+      'profile': profile,
+    });
+    expect(find.text('Fallback list saved and verified.'), findsOneWidget);
+    for (final secret in ['private.example', 'LAB_KEY']) {
+      expect(find.textContaining(secret), findsNothing, reason: secret);
+    }
   });
 
   testWidgets('fallbacks are added, reordered and saved as one list', (

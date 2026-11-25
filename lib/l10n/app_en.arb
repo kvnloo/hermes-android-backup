@@ -1,4 +1,5 @@
 {
+  "slash_local_arguments": "This shortcut does not accept arguments here. Use the app controls; your draft was kept.",
   "fallback_title": "Fallback models",
   "fallback_notice": "Tried in order when the main model is unavailable. Changes apply to this profile only; save the complete list explicitly.",
   "fallback_unavailable": "Fallback settings are unavailable or invalid. Check the connection, selected profile and host version, then retry.",
@@ -1327,10 +1328,27 @@
   "slash_commands": "Slash commands",
   "slash_commands_loading": "Loading commands…",
   "slash_commands_empty": "No matching commands",
+  "slash_command_info_alias": "{alias} is an alias of {command}",
+  "@slash_command_info_alias": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      },
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "slash_command_info_no_description": "No description available.",
+  "slash_command_info_arguments_options": "Takes one option from a fixed list.",
+  "slash_command_info_arguments_text": "Takes text after the command.",
+  "slash_command_info_arguments_mixed": "Takes an option or text after the command.",
   "slash_command_output": "Command output",
   "slash_command_no_output": "The command completed with no output.",
   "slash_command_delivery_unknown": "The command was sent but its reply never arrived. It may still be running on the gateway, so your draft was kept. Check the gateway before retrying.",
   "slash_command_failed": "The command could not be run.",
+  "slash_command_unsupported": "This command is not available on this server.",
+  "slash_sessions_inline": "Open the session list to choose a chat. Your draft was kept.",
   "nextgen_toggle": "NextGen interface",
   "nextgen_toggle_subtitle": "A new design with one sign-in, live chats and network discovery. Your gateways and chats are shared with this interface.",
   "nextgen_single_login": "Sign in with one login",
@@ -1419,6 +1437,18 @@
     }
   },
   "ng_the_turn_failed": "The turn failed.",
+  "ng_turn_changed": "that turn already ended or a newer one started",
+  "@ng_turn_changed": {
+    "description": "Why Stop or Steer did nothing: the turn the user saw is no longer the running one."
+  },
+  "ng_steer_rejected": "the running turn didn't accept it",
+  "@ng_steer_rejected": {
+    "description": "Why a Steer was not delivered: the running turn refused it."
+  },
+  "ng_turn_not_known_yet": "the running turn isn't known yet; try again in a moment",
+  "@ng_turn_not_known_yet": {
+    "description": "Why Stop or Steer was not sent: the app has not learned the running turn yet."
+  },
   "ng_couldn_t_stop": "Couldn't stop: {error}",
   "@ng_couldn_t_stop": {
     "placeholders": {
@@ -1663,6 +1693,11 @@
   "ng_your_sign_in_expired": "Your sign-in expired.",
   "ng_sign_in_2": "Sign in",
   "ng_retry": "Retry",
+  "ng_project_home": "Home",
+  "ng_choose_project": "Choose a project",
+  "ng_project_cwd_fallback": "The project folder wasn't available, so this chat runs in {path}.",
+  "ng_project_create_uncertain": "The gateway may have created this chat, but did not confirm it. Check Chats before starting another; this request will not be retried automatically.",
+  "@ng_project_cwd_fallback": {"placeholders": {"path": {"type": "String"}}},
   "ng_what_should_we_work_on": "What should we work on?",
   "ng_ask_hermes_anything_it_can_run": "Ask Hermes anything. It can run tools, browse and work in your files on the server.",
   "ng_working_2": "Working · {frame}",
@@ -1682,6 +1717,36 @@
   "ng_dictate": "Dictate",
   "ng_stop": "Stop",
   "ng_send": "Send",
+  "ng_slash_command_alias": "{alias} is an alias of {command}",
+  "@ng_slash_command_alias": {
+    "placeholders": {
+      "alias": {
+        "type": "String"
+      },
+      "command": {
+        "type": "String"
+      }
+    }
+  },
+  "ng_slash_command_no_description": "No description available.",
+  "ng_slash_command_arguments_options": "Takes one option from a fixed list.",
+  "ng_slash_command_arguments_text": "Takes text after the command.",
+  "ng_slash_command_arguments_mixed": "Takes an option or text after the command.",
+  "ng_slash_command_sent_as_message": "NextGen sends this to Hermes as a normal message; the command itself doesn't run.",
+  "ng_slash_command_output": "Command output",
+  "ng_slash_command_running": "Running command…",
+  "ng_slash_command_done": "Done.",
+  "ng_slash_command_failed": "Couldn't run the command: {error}",
+  "@ng_slash_command_failed": {
+    "placeholders": {
+      "error": {
+        "type": "Object"
+      }
+    }
+  },
+  "ng_slash_command_refused": "Hermes can't run this command here.",
+  "ng_slash_command_delivery_unknown": "The command was sent but no reply came back. It may still be running on the gateway, so it wasn't sent again and your draft was kept.",
+  "ng_slash_command_nothing_running": "Nothing is running.",
   "ng_steered": "Steered",
   "ng_copied": "Copied",
   "ng_not_sent": "Not sent: {reason}",

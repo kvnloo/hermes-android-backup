@@ -1,0 +1,1 @@
+NextGen has a new Models page: the default model, the fallback list, helper-task models and providers in one place, with context windows and prices where your gateway reports them.

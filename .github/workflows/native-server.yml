@@ -15,8 +15,8 @@ jobs:
     name: Android native regressions
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
@@ -47,22 +47,43 @@ jobs:
               "flutter.buildMode=debug\n"
           )
           PY
-      - uses: gradle/actions/setup-gradle@v4
+      # Enhanced caching in v6 is proprietary; never load or opt into it.
+      - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: '9.1.0'
+          gradle-version: '9.9.2'
+          cache-provider: basic
+          cache-disabled: true
+      - name: Cache open-source Gradle dependencies
+        uses: actions/cache@v6
+        with:
+          # Do not cache credentials, init scripts or the configuration cache.
+          path: |
+            ~/.gradle/caches/modules-2
+            ~/.gradle/wrapper/dists
+          key: gradle-${{ runner.os }}-java17-${{ hashFiles('android/**/*.gradle*', 'android/gradle.properties', 'android/gradle/wrapper/gradle-wrapper.properties', 'pubspec.lock') }}
+          restore-keys: gradle-${{ runner.os }}-java17-
       - name: Verify voice preparation and native CI configuration
         run: python3 -m unittest scripts.test_prepare_voice_inputs scripts.test_native_ci_config
       - name: Cache hash-verified build-time voice artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/hermes-voice
           key: voice-inputs-${{ hashFiles('third_party/voice/manifest.json') }}
+      # Robolectric's Maven resolver writes outside Gradle's dependency cache.
+      # Include SDK annotations in the key so newly required runtimes are saved.
+      - name: Cache Robolectric runtimes
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository/org/robolectric/android-all-instrumented
+          key: robolectric-${{ runner.os }}-${{ hashFiles('android/gradle.properties', 'android/app/src/test/**', 'android/flutter_tts_tests/**') }}
+          restore-keys: |
+            robolectric-${{ runner.os }}-
       - name: Run native lifecycle, voice ownership and push tests
         working-directory: android
         run: gradle :app:testDebugUnitTest :flutter_tts:testDebugUnitTest --no-daemon --stacktrace
       - name: Preserve native test reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: native-test-reports
           path: |
@@ -76,8 +97,8 @@ jobs:
     name: Push companion and Dart TCP contract
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.11'
       - uses: subosito/flutter-action@v2

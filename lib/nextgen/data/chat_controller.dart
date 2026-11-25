@@ -13,11 +13,14 @@ import 'package:uuid/uuid.dart';
 import '../../core/models/attachment_draft.dart';
 import '../../core/models/background_report.dart';
 import '../../core/models/legacy_lcm_summary.dart';
+import '../../core/models/slash_command.dart';
 import '../../core/services/attachment_draft_service.dart';
+import '../../core/services/slash_command_errors.dart';
 import '../../core/services/ws_client.dart';
 import 'history_rows.dart';
 import 'nextgen_gateway.dart';
 import 'session_control.dart';
+import 'slash_exec.dart';
 import '../nextgen_l10n.dart';
 
 /// The gateway outcome for a per-chat model pick.
@@ -184,6 +187,11 @@ class NgUserItem extends NgItem {
   /// Client-generated UUID for `prompt.submit` idempotency on modern gateways.
   final String? submissionId;
 
+  /// The model-facing prompt when the bubble shows something else: a
+  /// command's send/skill directive shows its `display` line in [text] and
+  /// submits this. Null when [text] is what was sent.
+  final String? sentText;
+
   NgUserItem(
     super.key,
     this.text, {
@@ -193,7 +201,24 @@ class NgUserItem extends NgItem {
     this.attachments = const [],
     this.files = const [],
     this.submissionId,
+    this.sentText,
   });
+}
+
+/// A `/command` run on the gateway and what it answered: shown under the
+/// command, local to this view, never part of the stored transcript.
+class NgCommandItem extends NgItem {
+  /// The command as typed (`/title Trip`).
+  final String command;
+  final DateTime time;
+
+  /// The gateway's output (with any warning or notice), or why it failed.
+  String output = '';
+  bool running = true;
+  bool failed = false;
+  bool expanded = true;
+
+  NgCommandItem(super.key, this.command, {required this.time});
 }
 
 class NgAssistantItem extends NgItem {
@@ -290,7 +315,52 @@ bool ngNoticeIsLong(String text) =>
 class NgQueued {
   final String key;
   final String text;
-  NgQueued(this.key, this.text);
+
+  /// What to show instead of [text] (a command's send/skill directive).
+  final String? display;
+  NgQueued(this.key, this.text, {this.display});
+}
+
+/// What running a typed command came to (see [NgChatController.runCommand]).
+enum NgCommandResult {
+  /// The gateway ran it; its answer is on the card.
+  done,
+
+  /// It became a prompt (a send/skill directive), sent or queued.
+  sentAsPrompt,
+
+  /// The gateway handed text back for the composer ([NgCommandOutcome.text]).
+  prefill,
+
+  /// The gateway refused it before running anything.
+  refused,
+
+  /// It could not run (not sent, or the gateway answered with an error).
+  failed,
+
+  /// Sent, but no reply came back: it may still be running.
+  deliveryUnknown,
+
+  /// This connection has no `slash.exec`: nothing ran, send it as a prompt.
+  unsupported,
+}
+
+class NgCommandOutcome {
+  const NgCommandOutcome(this.result, {this.text = '', this.item});
+  final NgCommandResult result;
+
+  /// The prefill text.
+  final String text;
+
+  /// The command's card, when it has one.
+  final NgCommandItem? item;
+
+  /// The draft should come back: nothing ran, or it may not have.
+  bool get keepsDraft =>
+      result == NgCommandResult.refused ||
+      result == NgCommandResult.failed ||
+      result == NgCommandResult.deliveryUnknown ||
+      result == NgCommandResult.unsupported;
 }
 
 enum NgRequestKind { approval, clarify, secret, saveLogin }
@@ -509,19 +579,46 @@ class NgChatController extends ChangeNotifier {
     this.gateway, {
     String? sessionId,
     this.title = '',
-    this.workingDirectory,
+    String? workingDirectory,
     this.onCreated,
     this.onTurnFinished,
     AttachmentDraftService? attachmentService,
-  }) : storedId = sessionId,
+    // Keep the public named argument while the mutable field stays private.
+    // ignore: prefer_initializing_formals
+  }) : _workingDirectory = workingDirectory,
+       storedId = sessionId,
        attachmentService = attachmentService ?? AttachmentDraftService() {
     _subs.add(gateway.events.listen(_onEvent));
     _subs.add(gateway.serverRequests.listen(_onServerRequest));
     _subs.add(gateway.reconnected.listen((_) => unawaited(_reattach())));
+    // Answered on another device, withdrawn, or no longer open per the server.
+    _subs.add(gateway.withdrawnRequests.listen(forgetRequest));
   }
 
   final NextGenGateway gateway;
-  final String? workingDirectory;
+  String? _workingDirectory;
+  String? get workingDirectory => _workingDirectory;
+  bool _creatingSession = false;
+  bool _createUncertain = false;
+
+  /// A deliberate folder pick is local until the first session is created.
+  /// Acquire creation authority before its first await; never change a cwd
+  /// while create is in flight or after an ambiguous acknowledgement.
+  bool get canPickProject =>
+      !_disposed &&
+      !_creatingSession &&
+      !_createUncertain &&
+      runtimeId == null &&
+      storedId == null &&
+      items.isEmpty &&
+      !running;
+
+  bool startIn(String? folder) {
+    if (!canPickProject) return false;
+    _workingDirectory = folder?.trim().isNotEmpty == true ? folder : null;
+    _changed();
+    return true;
+  }
 
   /// Prepares and caches composer attachments (shared with classic chat).
   final AttachmentDraftService attachmentService;
@@ -706,6 +803,7 @@ class NgChatController extends ChangeNotifier {
     _attachCompleter = attaching;
     try {
       await gateway.connected();
+      final known = gateway.openRequestIdsFor([id, runtimeId]);
       final result = await gateway.call('session.resume', {
         'session_id': id,
         'source': 'desktop',
@@ -715,6 +813,12 @@ class NgChatController extends ChangeNotifier {
         if (!gateway.sessionAuthority) 'inline_images': false,
       });
       _withAuthority(result);
+      // The first canonical attach starts the cursor at the snapshot's
+      // watermark. A later one (a poll, a re-attach after a replay) keeps the
+      // cursor of what was actually applied, so the bridged frames count.
+      if (gateway.sessionAuthority && _cursor == null) {
+        _acceptSnapshot(result);
+      }
       runtimeId = result['session_id']?.toString() ?? runtimeId;
       if (runtimeId != null) gateway.bindRuntime(runtimeId!, id);
       final wasRunning = running;
@@ -725,10 +829,8 @@ class NgChatController extends ChangeNotifier {
       _attachedOnce = true;
       unawaited(refreshControl());
       unawaited(refreshSubagents());
-      final open = result['open_requests'];
-      if (open is List && open.isNotEmpty) {
-        gateway.socket?.deliverOpenRequests(open);
-      }
+      // The server's list is authoritative: one answered elsewhere is gone.
+      gateway.reconcileOpenRequests(result['open_requests'], known: known);
       // Requests that arrived before this chat bound its runtime id.
       for (final pending in gateway.openRequests.values) {
         _onServerRequest(pending);
@@ -1123,8 +1225,17 @@ class NgChatController extends ChangeNotifier {
 
   // ── Live events ─────────────────────────────────────────────────────
 
+  /// The last item that is not a command card: a command run mid-turn adds
+  /// its card under the streaming reply without ending it.
+  NgItem? get _lastTurnItem {
+    for (var i = items.length - 1; i >= 0; i--) {
+      if (items[i] is! NgCommandItem) return items[i];
+    }
+    return null;
+  }
+
   NgAssistantItem _openReply() {
-    final last = items.isNotEmpty ? items.last : null;
+    final last = _lastTurnItem;
     if (last is NgAssistantItem && last.open) return last;
     final reply = NgAssistantItem(_key('a'));
     items.add(reply);
@@ -1139,10 +1250,31 @@ class NgChatController extends ChangeNotifier {
 
   // ── Catch-up (Kyllene's ChatSession.catchUp) ──────────────────────────
 
-  /// The last live event applied (`seq`), and the gateway process it was
-  /// counted in (`replay_epoch`).
+  /// Legacy (non-authority) gateways number events per gateway process: the
+  /// last live event applied (`seq`) and the `gateway.ready` epoch it was
+  /// counted in.
   int? _lastSeq;
   String? _seqEpoch;
+
+  /// After a legacy reload found no turn running, turn frames held during
+  /// it belong to a turn the transcript already shows: dropped until the
+  /// next turn starts. Legacy frames carry no snapshot watermark to fence on.
+  bool _legacyDropSettledTurn = false;
+
+  /// The canonical session authority numbers each session's events per
+  /// SessionEvents lifetime (`replay_epoch` on its snapshots and frames),
+  /// unrelated to the process epoch in `gateway.ready`: the position of the
+  /// last event applied, or of the snapshot accepted in its place.
+  NgReplayCursor? _cursor;
+
+  /// This session's earlier event streams (a restart, a released stream):
+  /// their late frames are dropped, never read as a new stream.
+  final Set<String> _retiredEpochs = {};
+
+  /// The open reply is missing part of what its turn streamed (attached
+  /// mid-turn, reloaded, or a hole replay could not fill), so the turn's
+  /// final text replaces it instead of being spliced after the hole.
+  bool _replyGap = false;
 
   /// Live events held while a catch-up fills a gap, applied after it.
   List<StreamEvent>? _held;
@@ -1163,6 +1295,31 @@ class NgChatController extends ChangeNotifier {
     return find(frame)?.toString();
   }
 
+  static String? _frameEpoch(StreamEvent event) {
+    final epoch = event.envelope['replay_epoch'];
+    return epoch is String && epoch.isNotEmpty ? epoch : null;
+  }
+
+  /// Takes a canonical snapshot's watermark as the cursor: frames it covers
+  /// are not applied again, and an earlier stream's frames are dropped.
+  void _acceptSnapshot(Map<String, dynamic> snapshot) {
+    final epoch = snapshot['replay_epoch'];
+    final sequence = snapshot['last_sequence'];
+    if (epoch is! String || epoch.isEmpty || sequence is! int) return;
+    if (sequence < 0) return;
+    final next = NgReplayCursor(epoch, sequence);
+    final previous = _cursor;
+    if (previous != null && previous.epoch != epoch) {
+      _retiredEpochs.add(previous.epoch);
+    }
+    _retiredEpochs.remove(epoch);
+    final missed = previous == null
+        ? sequence > 0
+        : previous.epoch != epoch || previous.sequence < sequence;
+    if (snapshot['running'] == true && missed) _replyGap = true;
+    _cursor = next;
+  }
+
   void _onEvent(StreamEvent event) {
     if (_disposed || !_isMine(event)) return;
     _deliver(event);
@@ -1170,11 +1327,23 @@ class NgChatController extends ChangeNotifier {
 
   /// Applies a live event in order: one already applied is skipped, and one
   /// past a gap waits, with those after it, while [_catchUp] fills the gap.
-  void _deliver(StreamEvent event) {
+  /// [draining] marks the held events a finished catch-up lets through.
+  void _deliver(StreamEvent event, {bool draining = false}) {
     final held = _held;
     if (held != null) {
       held.add(event);
       return;
+    }
+    if (gateway.sessionAuthority) {
+      _deliverCanonical(event, draining: draining);
+      return;
+    }
+    if (draining && _legacyDropSettledTurn) {
+      if (event.type == 'message.start') {
+        _legacyDropSettledTurn = false;
+      } else if (_settledTurnFrames.contains(event.type)) {
+        return;
+      }
     }
     final seq = event.seq;
     final last = _lastSeq;
@@ -1191,6 +1360,64 @@ class NgChatController extends ChangeNotifier {
         unawaited(_catchUp());
         return;
       }
+    }
+    _applyEvent(event);
+  }
+
+  static const _settledTurnFrames = {
+    'message.delta',
+    'message.interim',
+    'message.complete',
+    'reasoning.delta',
+    'reasoning.available',
+    'thinking.delta',
+    'tool.start',
+    'tool.generating',
+    'tool.complete',
+    'status.update',
+    'turn.end',
+    'turn.error',
+    'error',
+  };
+
+  void _deliverCanonical(StreamEvent event, {required bool draining}) {
+    if (event.type == 'session.replay_gap') {
+      // The owner retired this socket's subscription (its backlog overflowed)
+      // while the socket stayed up: nothing more arrives live until the chat
+      // replays what it missed and attaches again.
+      _held = [];
+      unawaited(_catchUp(resubscribe: true));
+      return;
+    }
+    final seq = event.seq;
+    final epoch = _frameEpoch(event);
+    final cursor = _cursor;
+    if (seq == null || epoch == null || cursor == null) {
+      _applyEvent(event);
+      return;
+    }
+    if (epoch != cursor.epoch) {
+      // A retired stream's straggler; or, right after a catch-up settled
+      // the current stream, a frame from before what it accepted.
+      if (draining || _retiredEpochs.contains(epoch)) return;
+      _held = [event];
+      unawaited(_catchUp());
+      return;
+    }
+    if (seq <= cursor.sequence) return;
+    if (seq > cursor.sequence + 1) {
+      if (draining) {
+        // Past what the catch-up just settled. Never chase it with another
+        // catch-up straight away (an owner answering with an older
+        // watermark would loop): apply it, and the running reply's final
+        // text fills the hole.
+        if (running) _replyGap = true;
+        _applyEvent(event);
+        return;
+      }
+      _held = [event];
+      unawaited(_catchUp());
+      return;
     }
     _applyEvent(event);
   }
@@ -1215,34 +1442,65 @@ class NgChatController extends ChangeNotifier {
       return;
     }
     _held ??= [];
+    if (gateway.sessionAuthority && _cursor != null) {
+      // Replay first, then attach: the owner bridges whatever it publishes
+      // between the two onto this socket.
+      await _catchUp(resubscribe: true);
+      return;
+    }
     await _attach();
     await _catchUp();
   }
 
   bool _attachedOnce = false;
 
-  /// Replays the events after [_lastSeq] from the gateway's ring
+  /// Replays the events after the cursor from the gateway's ring
   /// (`session.events.since`), then lets held live events through. When the
-  /// ring can't (an older gateway, too long away, a restart) the transcript
-  /// is read again; a turn that ended meanwhile still finishes here, so its
-  /// reply notifies.
-  Future<void> _catchUp({bool foreground = false}) async {
+  /// ring can't (an older gateway, too long away, a restart, a new stream)
+  /// the gateway's state is read again ([_reconcile]); a turn that ended
+  /// meanwhile still finishes here, so its reply notifies. [resubscribe]
+  /// re-attaches after a successful replay, for a retired subscription.
+  Future<void> _catchUp({
+    bool foreground = false,
+    bool resubscribe = false,
+  }) async {
     final rt = runtimeId;
-    final from = _lastSeq;
     List<StreamEvent>? missed;
-    if (rt != null && from != null && _seqEpoch == _readyEpoch()) {
-      try {
-        final reply = await gateway.call('session.events.since', {
-          'session_id': rt,
-          'last_seen': from,
-        });
-        missed = ngParseReplay(reply, rt, from, _seqEpoch);
-        final open = reply['open_requests'];
-        if (open is List && open.isNotEmpty) {
-          gateway.socket?.deliverOpenRequests(open);
+    if (rt != null && gateway.sessionAuthority) {
+      final cursor = _cursor;
+      if (cursor != null) {
+        try {
+          final known = gateway.openRequestIdsFor([rt, storedId]);
+          final reply = await gateway.call('session.events.since', {
+            'session_id': rt,
+            'replay_epoch': cursor.epoch,
+            'last_sequence': cursor.sequence,
+          });
+          missed = ngParseCanonicalReplay(
+            reply,
+            rt,
+            cursor.epoch,
+            cursor.sequence,
+          );
+          gateway.reconcileOpenRequests(reply['open_requests'], known: known);
+        } catch (_) {
+          missed = null; // replay unavailable, or the link went again
         }
-      } catch (_) {
-        missed = null; // older gateway, or the link went again
+      }
+    } else if (rt != null) {
+      final from = _lastSeq;
+      if (from != null && _seqEpoch == _readyEpoch()) {
+        try {
+          final known = gateway.openRequestIdsFor([rt, storedId]);
+          final reply = await gateway.call('session.events.since', {
+            'session_id': rt,
+            'last_seen': from,
+          });
+          missed = ngParseReplay(reply, rt, from, _seqEpoch);
+          gateway.reconcileOpenRequests(reply['open_requests'], known: known);
+        } catch (_) {
+          missed = null; // older gateway, or the link went again
+        }
       }
     }
     if (_disposed) return;
@@ -1250,76 +1508,143 @@ class NgChatController extends ChangeNotifier {
       for (final e in missed) {
         _applyEvent(e);
       }
+      if (resubscribe) await _attach();
     } else {
-      final wasRunning = running;
-      // Back mid-turn with nothing to replay: keep the running reply as it
-      // shows rather than laying the stale copy over a fresh transcript.
-      final keep = foreground && running;
-      if (!keep) await _reloadForCatchUp(wasRunning: wasRunning);
-      _lastSeq = null;
+      await _reconcile(foreground: foreground);
     }
     if (_disposed) return;
     final held = _held ?? const <StreamEvent>[];
     _held = null;
     for (final e in held) {
-      _deliver(e);
+      _deliver(e, draining: true);
     }
+    _legacyDropSettledTurn = false;
     _changed();
   }
 
-  Future<void> _reloadForCatchUp({required bool wasRunning}) async {
+  /// Reads the gateway's own state when the missed events can't be
+  /// replayed: whether the turn still runs and what waits on the user
+  /// (`session.resume`), then the transcript — unless, back in sight
+  /// mid-turn, the live reply is kept because the transcript has none of
+  /// what it streamed. Nothing on screen changes until the reads are in; if
+  /// either fails the live view stays and the next resync tries again.
+  /// Nothing is ever sent again from here.
+  Future<void> _reconcile({required bool foreground}) async {
     final id = storedId;
     final rt = runtimeId;
-    if (id == null) return;
+    final canonical = gateway.sessionAuthority;
+    final wasRunning = running;
+    final shownGeneration = _executionGeneration;
+    if (id == null) {
+      _dropCursor(canonical);
+      return;
+    }
+    // The same window as shown, so a long scroll back isn't lost.
+    final limit = max(ngHistoryPage, _rowIds.length).clamp(1, 500);
+    Map<String, dynamic>? snapshot;
+    List<Map<String, dynamic>>? rows;
+    // Requests cached when the read started: the reply settles only these.
+    var known = const <String>{};
     try {
-      // Whether the turn still runs, as the gateway has it now.
       if (rt != null) {
-        final result = await gateway.call('session.resume', {
+        known = gateway.openRequestIdsFor([rt, id]);
+        snapshot = await gateway.call('session.resume', {
           'session_id': id,
           'source': 'desktop',
           'omit_messages': true,
           'defer_history': true,
           // The canonical resume model forbids inline_images (#291).
-          if (!gateway.sessionAuthority) 'inline_images': false,
+          if (!canonical) 'inline_images': false,
         });
-        _withAuthority(result);
-        runtimeId = result['session_id']?.toString() ?? runtimeId;
-        running = result['running'] == true;
-        // A question asked while the app was away comes back only here.
-        final open = result['open_requests'];
-        if (open is List && open.isNotEmpty) {
-          gateway.socket?.deliverOpenRequests(open);
-          for (final pending in gateway.openRequests.values.toList()) {
-            _onServerRequest(pending);
-          }
+      }
+      if (_disposed) return;
+      final nowRunning = snapshot == null
+          ? running
+          : snapshot['running'] == true;
+      // A canonical owner names its claim: a newer turn running now is not
+      // the reply on screen, so that one is reloaded, never continued.
+      final sameTurn =
+          !canonical ||
+          snapshot == null ||
+          snapshot['execution_generation'] == shownGeneration;
+      if (!(foreground && wasRunning && nowRunning && sameTurn)) {
+        rows = await _fetchRows(id, limit: limit);
+      }
+      if (_disposed) return;
+    } catch (_) {
+      // Nothing was admitted. Live events still come, and whatever this
+      // left out of the running reply is a hole its final text fills.
+      if (_disposed) return;
+      if (running) _replyGap = true;
+      _dropCursor(canonical);
+      return;
+    }
+    if (snapshot != null) {
+      _withAuthority(snapshot);
+      runtimeId = snapshot['session_id']?.toString() ?? runtimeId;
+      running = snapshot['running'] == true;
+      _withInfo(snapshot['info']);
+      if (canonical) {
+        _acceptSnapshot(snapshot);
+      } else {
+        _lastSeq = null;
+      }
+      // A question asked while the app was away comes back only here, and
+      // one answered on another device is dropped only here.
+      final open = snapshot['open_requests'];
+      gateway.reconcileOpenRequests(open, known: known);
+      if (open is List && open.isNotEmpty) {
+        for (final pending in gateway.openRequests.values.toList()) {
+          _onServerRequest(pending);
         }
       }
-      // The same window as shown, so a long scroll back isn't lost.
-      final limit = max(ngHistoryPage, _rowIds.length).clamp(1, 500);
-      final messages = await _fetchRows(id, limit: limit);
-      if (_disposed) return;
-      final keepQueued = List.of(queued);
-      _setRows(messages, limit);
-      queued
-        ..clear()
-        ..addAll(keepQueued);
-      if (running) {
-        _openReply();
-      } else if (wasRunning) {
+    } else {
+      _dropCursor(canonical);
+    }
+    if (rows == null) {
+      // Back mid-turn and it still runs: the live reply stays as it shows.
+      // What streamed while away is a hole its final text fills (a canonical
+      // snapshot said whether there was one).
+      if (running && (!canonical || snapshot == null)) _replyGap = true;
+      return;
+    }
+    final keepQueued = List.of(queued);
+    _setRows(rows, limit);
+    queued
+      ..clear()
+      ..addAll(keepQueued);
+    if (running) {
+      _openReply();
+      _replyGap = true;
+    } else {
+      if (!canonical) _legacyDropSettledTurn = true;
+      if (wasRunning) {
         // It ended while the app was away.
         lastTurnFailed = false;
         lastTurnInterrupted = false;
         _finishTurn();
       }
-    } catch (_) {
-      // Live events still come; the next resync tries again.
+    }
+  }
+
+  void _dropCursor(bool canonical) {
+    if (canonical) {
+      _cursor = null;
+    } else {
+      _lastSeq = null;
     }
   }
 
   void _applyEvent(StreamEvent event) {
-    if (event.seq != null) {
-      _lastSeq = event.seq;
-      _seqEpoch = _readyEpoch();
+    final seq = event.seq;
+    if (seq != null) {
+      if (gateway.sessionAuthority) {
+        final epoch = _frameEpoch(event);
+        if (epoch != null) _cursor = NgReplayCursor(epoch, seq);
+      } else {
+        _lastSeq = seq;
+        _seqEpoch = _readyEpoch();
+      }
     }
     final p = event.data;
     _adoptExecutionGeneration(
@@ -1335,6 +1660,7 @@ class NgChatController extends ChangeNotifier {
         // A new turn hasn't planned yet; the last plan is from before.
         todosLive = todosLive && running;
         running = true;
+        _replyGap = false;
         error = null;
         turnStartedAt ??= DateTime.now();
         for (final item in items.whereType<NgUserItem>()) {
@@ -1495,7 +1821,10 @@ class NgChatController extends ChangeNotifier {
       case 'message.complete' || 'turn.end':
         final reply = _openReply();
         final text = s('text');
-        if (reply.text.isEmpty && text != null) reply.text = text;
+        if (text != null &&
+            (reply.text.isEmpty || _replyGap && text.trim().isNotEmpty)) {
+          reply.text = text;
+        }
         final u = NgUsage.parse(p['usage']);
         if (u != null) {
           reply.inputTokens = u.input;
@@ -1691,11 +2020,10 @@ class NgChatController extends ChangeNotifier {
       }
     }
     // Drop the empty reply a cancelled turn leaves behind.
-    if (items.isNotEmpty) {
-      final last = items.last;
-      if (last is NgAssistantItem && last.isEmpty) items.removeLast();
-    }
+    final last = _lastTurnItem;
+    if (last is NgAssistantItem && last.isEmpty) items.remove(last);
     running = false;
+    _replyGap = false;
     todosLive = false;
     status = null;
     thinkingFrame = null;
@@ -1706,11 +2034,14 @@ class NgChatController extends ChangeNotifier {
     if (control?.goal != null) unawaited(refreshControl());
     if (queued.isNotEmpty && !failed) {
       final next = queued.removeAt(0);
-      scheduleMicrotask(() => unawaited(send(next.text)));
+      scheduleMicrotask(
+        () => unawaited(send(next.text, display: next.display)),
+      );
     }
   }
 
-  /// Drops the request [id] once it was answered elsewhere (a notification).
+  /// Drops the request [id] once it was answered elsewhere (a notification,
+  /// another device) or withdrawn.
   void forgetRequest(String id) {
     if (request?.request.id != id) return;
     request = null;
@@ -1730,44 +2061,99 @@ class NgChatController extends ChangeNotifier {
   // ── Actions ─────────────────────────────────────────────────────────
 
   Future<void> _ensureSession() async {
+    if (_disposed) {
+      throw StateError(ngL.ng_the_gateway_connection_dropped_try_again);
+    }
     if (runtimeId != null && storedId != null) return;
-    await gateway.connected();
-    final pickedModel = _pickedModel;
-    final pickedProvider = _pickedProvider;
-    final pickedEffort = _pickedEffort;
-    final result = await gateway.call('session.create', {
-      // CanonicalCreateParams.source refuses the legacy 'desktop' hint on
-      // the authority route; 'gui' is the canonical graphical surface (#291).
-      'source': gateway.sessionAuthority ? 'gui' : 'desktop',
-      if (workingDirectory != null && workingDirectory!.trim().isNotEmpty)
-        'cwd': workingDirectory,
-      'model': ?pickedModel,
-      if (pickedProvider != null && pickedProvider.trim().isNotEmpty)
-        'provider': pickedProvider,
-      if (pickedEffort != null)
-        if (gateway.sessionAuthority)
-          'reasoning': pickedEffort
-        else
-          'reasoning_effort': pickedEffort,
-    });
-    _withAuthority(result);
-    runtimeId = result['session_id']?.toString();
-    storedId = result['stored_session_id']?.toString() ?? runtimeId;
-    if (runtimeId != null) gateway.bindRuntime(runtimeId!, storedId!);
-    _withInfo(result['info']);
-    if (storedId != null) onCreated?.call(storedId!);
-    _pickedModel = null;
-    _pickedProvider = null;
-    _pickedEffort = null;
-    if (pickedModel != null) {
-      final info = result['info'];
-      final actualModel = info is Map ? info['model']?.toString() : null;
-      if (actualModel != null && actualModel != pickedModel) {
-        final message = ngL.ng_gateway_kept_default_model(actualModel);
-        error = message;
-        _changed();
-        throw StateError(message);
+    if (_createUncertain) throw StateError(ngL.ng_project_create_uncertain);
+    if (_creatingSession) {
+      throw StateError(ngL.ng_connecting);
+    }
+    _creatingSession = true;
+    _changed();
+    try {
+      await gateway.connected();
+      if (_disposed) {
+        throw StateError(ngL.ng_the_gateway_connection_dropped_try_again);
       }
+      final cwd = workingDirectory;
+      final pickedModel = _pickedModel;
+      final pickedProvider = _pickedProvider;
+      final pickedEffort = _pickedEffort;
+      late final Map<String, dynamic> result;
+      try {
+        result = await gateway.call('session.create', {
+          // CanonicalCreateParams.source refuses the legacy 'desktop' hint on
+          // the authority route; 'gui' is the canonical graphical surface (#291).
+          'source': gateway.sessionAuthority ? 'gui' : 'desktop',
+          if (cwd != null && cwd.trim().isNotEmpty) ...{
+            'cwd': cwd,
+            // Current legacy + canonical contracts declare this. Older closed
+            // validators reject before the handler: fail visibly, NEVER retry
+            // without provenance and silently run in a named profile's default.
+            'cwd_explicit': true,
+          },
+          'model': ?pickedModel,
+          if (pickedProvider != null && pickedProvider.trim().isNotEmpty)
+            'provider': pickedProvider,
+          if (pickedEffort != null)
+            if (gateway.sessionAuthority)
+              'reasoning': pickedEffort
+            else
+              'reasoning_effort': pickedEffort,
+        });
+      } on JsonRpcError catch (error) {
+        // Only pre-handler validation/method refusals prove no create ran.
+        // An internal RPC error may have happened after a session was minted.
+        if (!{-32601, -32602, 4000}.contains(error.code)) {
+          _createUncertain = true;
+        }
+        rethrow;
+      } catch (_) {
+        _createUncertain = true; // A timeout/disconnect may have created it.
+        rethrow;
+      }
+      // A scope switch can dispose this owner while the gateway creates it.
+      // Do not publish IDs, call its parent, or submit a prompt after that.
+      if (_disposed) {
+        throw StateError(ngL.ng_the_gateway_connection_dropped_try_again);
+      }
+      _withAuthority(result);
+      // A canonical create attaches with the same snapshot a resume returns.
+      if (gateway.sessionAuthority && _cursor == null) _acceptSnapshot(result);
+      runtimeId = result['session_id']?.toString();
+      storedId = result['stored_session_id']?.toString() ?? runtimeId;
+      if (runtimeId == null || storedId == null) {
+        _createUncertain = true;
+        throw StateError(ngL.ng_project_create_uncertain);
+      }
+      final info = result['info'];
+      final actualCwd = info is Map ? info['cwd']?.toString() : null;
+      if (cwd != null &&
+          actualCwd != null &&
+          cwd.replaceFirst(RegExp(r'[/\\]+$'), '') !=
+              actualCwd.replaceFirst(RegExp(r'[/\\]+$'), '')) {
+        error = ngL.ng_project_cwd_fallback(actualCwd);
+      }
+      if (runtimeId != null) gateway.bindRuntime(runtimeId!, storedId!);
+      _withInfo(result['info']);
+      if (storedId != null) onCreated?.call(storedId!);
+      _pickedModel = null;
+      _pickedProvider = null;
+      _pickedEffort = null;
+      if (pickedModel != null) {
+        final info = result['info'];
+        final actualModel = info is Map ? info['model']?.toString() : null;
+        if (actualModel != null && actualModel != pickedModel) {
+          final message = ngL.ng_gateway_kept_default_model(actualModel);
+          error = message;
+          _changed();
+          throw StateError(message);
+        }
+      }
+    } finally {
+      _creatingSession = false;
+      _changed();
     }
   }
 
@@ -1966,22 +2352,27 @@ class NgChatController extends ChangeNotifier {
 
   /// Sends [text] (and any [attachments]) as a new prompt. Returns whether
   /// the gateway accepted it; on failure the attachments stay with the
-  /// message so Retry can send them again.
+  /// message so Retry can send them again. A command's send/skill directive
+  /// passes the gateway's [display] line: the bubble shows that, never the
+  /// model-facing [text].
   Future<bool> send(
     String text, {
     List<AttachmentDraft> attachments = const [],
     String? submissionId,
+    String? display,
   }) async {
     final trimmed = text.trim();
     if (trimmed.isEmpty && attachments.isEmpty) return false;
+    final shown = display?.trim() ?? '';
     final effectiveSubmissionId = submissionId ?? const Uuid().v4();
     final item = NgUserItem(
       _key('u'),
-      trimmed,
+      shown.isEmpty ? trimmed : shown,
       time: DateTime.now(),
       pending: true,
       attachments: List.of(attachments),
       submissionId: effectiveSubmissionId,
+      sentText: shown.isEmpty ? null : trimmed,
     );
     items.add(item);
     error = null;
@@ -2013,8 +2404,10 @@ class NgChatController extends ChangeNotifier {
         'text': prompt,
       }, submissionId: effectiveSubmissionId);
       item.pending = false;
+      // A canonical receipt names the execution its admission started.
+      _adoptExecutionGeneration(result['execution_generation']);
       final status = result['status']?.toString();
-      if (status == 'queued') item.text = trimmed;
+      if (status == 'queued' && item.sentText == null) item.text = trimmed;
       _changed();
       if (item.attachments.isNotEmpty) {
         unawaited(attachmentService.removeAll(item.attachments));
@@ -2030,10 +2423,17 @@ class NgChatController extends ChangeNotifier {
     }
   }
 
-  /// Steers the running turn at its next safe boundary.
+  /// Steers the running turn at its next safe boundary. On the canonical
+  /// session authority the guidance names the exact execution the user saw
+  /// ([_executionGeneration] now); a turn that changed meanwhile refuses it
+  /// (`stale_generation`). Never sent again: it has no idempotency key, and
+  /// a newer turn must not get guidance meant for another.
   Future<void> steer(String text) async {
     final trimmed = text.trim();
-    if (trimmed.isEmpty || runtimeId == null) return;
+    final id = runtimeId;
+    if (trimmed.isEmpty || id == null) return;
+    final canonical = gateway.sessionAuthority;
+    final generation = _executionGeneration;
     final item = NgUserItem(
       _key('u'),
       trimmed,
@@ -2043,18 +2443,36 @@ class NgChatController extends ChangeNotifier {
     );
     items.add(item);
     _changed();
+    if (canonical && generation == null) {
+      item.pending = false;
+      item.failure = ngL.ng_turn_not_known_yet;
+      _changed();
+      return;
+    }
     try {
-      await gateway.call('session.steer', {
-        'session_id': runtimeId,
+      final ack = await gateway.call('session.steer', {
+        'session_id': id,
+        if (canonical) 'execution_generation': generation,
         'text': trimmed,
       });
       item.pending = false;
+      // Only `queued` is delivery; `rejected` (or anything unknown) is not,
+      // and is not sent again either.
+      if (ack['status'] != 'queued' && ack['voice_stopped'] != true) {
+        item.failure = ngL.ng_steer_rejected;
+      }
     } catch (e) {
       item.pending = false;
-      item.failure = _clean(e);
+      item.failure = _controlFailure(e);
     }
     _changed();
   }
+
+  /// A refused Stop/Steer, as the person reads it.
+  static String _controlFailure(Object e) =>
+      e is JsonRpcError && e.reason == 'stale_generation'
+      ? ngL.ng_turn_changed
+      : _clean(e);
 
   /// Queues [text] to send once the running turn ends.
   void enqueue(String text) {
@@ -2069,14 +2487,27 @@ class NgChatController extends ChangeNotifier {
     _changed();
   }
 
-  /// Stops the running turn.
+  /// Stops the running turn. On the canonical session authority the stop
+  /// names the exact execution the user saw ([_executionGeneration] now): a
+  /// later claim is never stopped by it, and `stale_generation` is reported,
+  /// not retried against the newer turn. Legacy gateways get their own shape.
   Future<void> stop() async {
     final id = runtimeId;
     if (id == null) return;
+    final canonical = gateway.sessionAuthority;
+    final generation = _executionGeneration;
+    if (canonical && generation == null) {
+      error = ngL.ng_couldn_t_stop(ngL.ng_turn_not_known_yet);
+      _changed();
+      return;
+    }
     try {
-      await gateway.call('session.interrupt', {'session_id': id});
+      await gateway.call('session.interrupt', {
+        'session_id': id,
+        if (canonical) 'execution_generation': generation,
+      });
     } catch (e) {
-      error = ngL.ng_couldn_t_stop(_clean(e));
+      error = ngL.ng_couldn_t_stop(_controlFailure(e));
       _changed();
     }
   }
@@ -2085,6 +2516,243 @@ class NgChatController extends ChangeNotifier {
   Future<void> stopAndSend(String text) async {
     queued.insert(0, NgQueued(_key('q'), text.trim()));
     await stop();
+  }
+
+  // ── Slash commands (Kyllene's ChatSession.runCommand) ─────────────────
+
+  /// Whether this connection said it has no `slash.exec` (an older gateway).
+  bool get slashExecUnsupported =>
+      ngSlashExecUnsupported(gateway.socket ?? gateway);
+
+  /// Runs [command] on the gateway the way Kyllene and Classic do, under a
+  /// card in the transcript: `slash.exec` first, then `command.dispatch`
+  /// (the gateway's stage for skills, bundles and quick commands) only after
+  /// a definite refusal. A lost reply (timeout, dropped socket) never falls
+  /// back or resends: both methods reach the same executor and the first may
+  /// already have run. A send/skill directive becomes a prompt through
+  /// [send] (queued while a turn runs), showing the gateway's `display`.
+  Future<NgCommandOutcome> runCommand(NgSlashLine command) async {
+    if (slashExecUnsupported) {
+      return const NgCommandOutcome(NgCommandResult.unsupported);
+    }
+    final card = NgCommandItem(_key('c'), command.label, time: DateTime.now());
+    items.add(card);
+    error = null;
+    _changedNow();
+    final String runtime;
+    try {
+      runtime = await _ensureCommandSession();
+    } catch (e) {
+      return _commandFailed(
+        card,
+        NgCommandResult.failed,
+        ngL.ng_slash_command_failed(_clean(e)),
+      );
+    }
+    return _execute(card, command, runtime, followAlias: true);
+  }
+
+  /// The live session a command runs in: a new chat is created as a prompt
+  /// would create it; a stored chat that is not attached yet attaches
+  /// rather than starting another session.
+  Future<String> _ensureCommandSession() async {
+    if (storedId == null) {
+      await _ensureSession();
+    } else if (runtimeId == null) {
+      await _attach();
+    }
+    final id = runtimeId;
+    if (id == null) throw StateError(error ?? ngL.ng_offline);
+    return id;
+  }
+
+  Future<NgCommandOutcome> _execute(
+    NgCommandItem card,
+    NgSlashLine command,
+    String runtime, {
+    required bool followAlias,
+  }) async {
+    final connection = gateway.socket ?? gateway;
+    Map<String, dynamic> reply;
+    try {
+      reply = await gateway.call('slash.exec', {
+        'session_id': runtime,
+        'command': command.line,
+      }, timeout: kNgSlashCommandTimeout);
+    } on JsonRpcError catch (e) {
+      if (ngIsMethodNotFound(e)) {
+        // Nothing ran: the line goes out as a prompt, as it always did here.
+        ngMarkSlashExecUnsupported(connection);
+        items.remove(card);
+        _changedNow();
+        return const NgCommandOutcome(NgCommandResult.unsupported);
+      }
+      if (isSlashDeliveryUnknown(e)) {
+        return _commandFailed(
+          card,
+          NgCommandResult.deliveryUnknown,
+          ngL.ng_slash_command_delivery_unknown,
+        );
+      }
+      if (!isSlashCommandRefusal(e) && !ngIsDispatchRedirect(e)) {
+        return _commandFailed(card, NgCommandResult.failed, _rpcFailure(e));
+      }
+      // A definite refusal: nothing ran, so the dispatch stage may try.
+      try {
+        reply = await gateway.call('command.dispatch', {
+          'session_id': runtime,
+          'name': command.name,
+          if (command.arg.isNotEmpty) 'arg': command.arg,
+        }, timeout: kNgSlashCommandTimeout);
+      } on JsonRpcError catch (d) {
+        if (isSlashDeliveryUnknown(d)) {
+          return _commandFailed(
+            card,
+            NgCommandResult.deliveryUnknown,
+            ngL.ng_slash_command_delivery_unknown,
+          );
+        }
+        if (ngIsMethodNotFound(d) ||
+            isSlashCommandRefusal(d) ||
+            ngIsNotDispatchable(d)) {
+          return _commandFailed(
+            card,
+            NgCommandResult.refused,
+            _refusalText(e) ?? _refusalText(d) ?? ngL.ng_slash_command_refused,
+          );
+        }
+        return _commandFailed(card, NgCommandResult.failed, _rpcFailure(d));
+      } catch (d) {
+        return _commandFailed(
+          card,
+          NgCommandResult.failed,
+          ngL.ng_slash_command_failed(_clean(d)),
+        );
+      }
+    } catch (e) {
+      return _commandFailed(
+        card,
+        NgCommandResult.failed,
+        ngL.ng_slash_command_failed(_clean(e)),
+      );
+    }
+    final result = SlashCommandResult.fromResult(reply);
+    if (followAlias && result.aliasTarget.isNotEmpty) {
+      // Once: an alias naming another alias shows what the gateway said.
+      final next = command.aliasedTo(result.aliasTarget);
+      if (next != null) {
+        return _execute(card, next, runtime, followAlias: false);
+      }
+    }
+    if (result.isPrompt) {
+      _settleCommandCard(card, result.notice);
+      final display = result.display.isNotEmpty
+          ? result.display
+          : command.label;
+      if (running) {
+        // Like any message sent mid-turn: it waits for the turn to end.
+        queued.add(NgQueued(_key('q'), result.text, display: display));
+        _changedNow();
+      } else {
+        await send(result.text, display: display);
+      }
+      return NgCommandOutcome(NgCommandResult.sentAsPrompt, item: card);
+    }
+    if (result.isPrefill) {
+      _settleCommandCard(card, result.notice, keep: true);
+      // `/undo` took turns off the stored transcript: show it without them.
+      await _reloadShownHistory();
+      return NgCommandOutcome(
+        NgCommandResult.prefill,
+        text: result.text,
+        item: card,
+      );
+    }
+    card
+      ..output = result.text.trim().isEmpty
+          ? ngL.ng_slash_command_done
+          : ngStripAnsi(result.text).trimRight()
+      ..running = false;
+    _changedNow();
+    return NgCommandOutcome(NgCommandResult.done, item: card);
+  }
+
+  NgCommandOutcome _commandFailed(
+    NgCommandItem card,
+    NgCommandResult result,
+    String message,
+  ) {
+    if (!items.contains(card)) items.add(card);
+    card
+      ..output = message
+      ..running = false
+      ..failed = true;
+    _changedNow();
+    return NgCommandOutcome(result, item: card);
+  }
+
+  /// Shows [notice] on the card, or drops the card when there is nothing to
+  /// show (and [keep] is false).
+  void _settleCommandCard(
+    NgCommandItem card,
+    String notice, {
+    bool keep = false,
+  }) {
+    card.running = false;
+    if (notice.trim().isNotEmpty) {
+      card.output = ngStripAnsi(notice).trim();
+    } else if (!keep) {
+      items.remove(card);
+    }
+    _changedNow();
+  }
+
+  /// Puts [text] on [card] (a prefill the composer could not take because
+  /// the user typed meanwhile), or drops a card with nothing to show.
+  void settleCommand(NgCommandItem card, {String? text}) {
+    final add = text?.trim() ?? '';
+    if (add.isNotEmpty) {
+      if (!items.contains(card)) items.add(card);
+      card.output = card.output.isEmpty ? add : '${card.output}\n\n$add';
+    } else if (card.output.isEmpty) {
+      items.remove(card);
+    }
+    card.running = false;
+    _changedNow();
+  }
+
+  static String? _refusalText(JsonRpcError error) {
+    final detail = error.data['detail'];
+    return detail is String && detail.trim().isNotEmpty ? detail.trim() : null;
+  }
+
+  static String _rpcFailure(JsonRpcError error) {
+    final detail = _refusalText(error);
+    final message = error.message.trim();
+    return ngL.ng_slash_command_failed(
+      detail ?? (message.isEmpty ? error.method : message),
+    );
+  }
+
+  /// Reads the shown window of the stored transcript again (after `/undo`
+  /// and the like), keeping the command cards since the last turn.
+  Future<void> _reloadShownHistory() async {
+    final id = storedId;
+    if (id == null || running || _disposed) return;
+    try {
+      final limit = max(ngHistoryPage, _rowIds.length).clamp(1, 500);
+      final rows = await _fetchRows(id, limit: limit);
+      if (_disposed || storedId != id || running) return;
+      final tail = <NgCommandItem>[];
+      for (var i = items.length - 1; i >= 0 && items[i] is NgCommandItem; i--) {
+        tail.insert(0, items[i] as NgCommandItem);
+      }
+      _setRows(rows, limit);
+      items.addAll(tail);
+      _changedNow();
+    } catch (_) {
+      // The transcript stays as shown; the next catch-up reads it again.
+    }
   }
 
   Future<Map<String, dynamic>> _submitPromptWithCompatibility(
@@ -2114,9 +2782,10 @@ class NgChatController extends ChangeNotifier {
       items.remove(last);
     }
     await send(
-      last.text,
+      last.sentText ?? last.text,
       attachments: last.failure != null ? last.attachments : const [],
       submissionId: last.failure != null ? last.submissionId : null,
+      display: last.sentText == null ? null : last.text,
     );
   }
 
@@ -2522,6 +3191,64 @@ List<StreamEvent>? ngParseReplay(
   }
   // A syntactically valid prefix is still incomplete when the server says it
   // had later events. Reload rather than silently advancing over missing work.
+  if (cursor != latest) return null;
+  return missed;
+}
+
+/// Where a canonical session's event stream stands for this chat: the
+/// session's own replay epoch and the last sequence applied (or covered by
+/// an accepted snapshot).
+@immutable
+class NgReplayCursor {
+  final String epoch;
+  final int sequence;
+  const NgReplayCursor(this.epoch, this.sequence);
+
+  @override
+  bool operator ==(Object other) =>
+      other is NgReplayCursor &&
+      other.epoch == epoch &&
+      other.sequence == sequence;
+
+  @override
+  int get hashCode => Object.hash(epoch, sequence);
+}
+
+/// The canonical events after [from] in [epoch] for [sessionId], oldest
+/// first, when the owner's `session.events.since` reply proves none is
+/// missing; null when a snapshot is needed instead: `snapshot_required` or
+/// `truncated`, another epoch (a restart or new stream), a frame of another
+/// epoch or session, a hole, or fewer events than `last_sequence` promises.
+List<StreamEvent>? ngParseCanonicalReplay(
+  Map<String, dynamic> reply,
+  String sessionId,
+  String epoch,
+  int from,
+) {
+  if (reply['snapshot_required'] != false || reply['truncated'] != false) {
+    return null;
+  }
+  final replyEpoch = reply['replay_epoch'] ?? reply['epoch'];
+  if (replyEpoch != epoch) return null;
+  final latest = reply['last_sequence'] ?? reply['latest_seq'];
+  final events = reply['events'];
+  if (latest is! int || events is! List || latest < from) return null;
+  var cursor = from;
+  final missed = <StreamEvent>[];
+  for (final raw in events) {
+    if (raw is! Map) return null;
+    final frame = Map<String, dynamic>.from(raw);
+    if (frame['session_id'] != sessionId) return null;
+    if (frame['replay_epoch'] != epoch) return null;
+    final seq = frame['seq'];
+    if (seq is! int) return null;
+    if (seq <= cursor) continue;
+    if (seq != cursor + 1) return null;
+    cursor = seq;
+    final event = WsClient.parseGatewayEvent(frame);
+    if (event == null) return null;
+    missed.add(event);
+  }
   if (cursor != latest) return null;
   return missed;
 }

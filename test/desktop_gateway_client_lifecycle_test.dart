@@ -4,10 +4,170 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/models/connection.dart';
+import 'package:hermes_android/core/models/slash_command.dart';
+import 'package:hermes_android/core/controllers/slash_command_controller.dart';
 import 'package:hermes_android/core/services/desktop_gateway_client.dart';
 import 'package:hermes_android/core/services/ws_client.dart';
 
 void main() {
+  test(
+    'notification revocation during real session.resume prevents prompt and create',
+    () async {
+      final gateway = await _Gateway.start();
+      final client = gateway.client();
+      addTearDown(() async {
+        client.close();
+        await gateway.close();
+      });
+      client.bindStoredSession('stored', 'stored');
+      gateway.held.add('session.resume');
+      var valid = true;
+      final flight = client.submitPrompt(
+        sessionId: 'stored',
+        text: 'dictated',
+        onEvent: (_) {},
+        onSent: () {},
+        beforeSend: () async => valid,
+      );
+      final outcome = _outcome(flight);
+      final held = await gateway.take('session.resume');
+      valid = false;
+      held.replyDefault();
+      expect(await outcome, isA<StateError>());
+      expect(gateway.calls('prompt.submit'), isEmpty);
+      expect(gateway.calls('session.create'), isEmpty);
+    },
+  );
+
+  test(
+    'slash refusal memory is reset by real disconnect, reconnect and close',
+    () async {
+      final gateway = await _Gateway.start();
+      final client = gateway.client();
+      client.setReconnectAllowed(false);
+      final catalog = SlashCommandCatalog.fromResult({
+        'pairs': [
+          ['/status', 'Status'],
+        ],
+      });
+      final first = SlashCommandController(
+        loadCatalog: () async => catalog,
+        refusals: client.slashRefusals,
+      );
+      final second = SlashCommandController(
+        loadCatalog: () async => catalog,
+        refusals: client.slashRefusals,
+      );
+      addTearDown(() async {
+        first.dispose();
+        second.dispose();
+        client.close();
+        await gateway.close();
+      });
+      await client.ensureSession('local');
+      await first.ensureCatalog();
+      await second.ensureCatalog();
+      first.markRefused('status');
+      expect(second.matches, isEmpty);
+      final oldEpoch = client.slashRefusals.epoch;
+      final disconnected = Completer<void>();
+      client.setConnectionListener((state) {
+        if (state == DesktopConnectionState.disconnected &&
+            !disconnected.isCompleted) {
+          disconnected.complete();
+        }
+      });
+      await gateway.sockets.last.close();
+      await disconnected.future.timeout(_deadline);
+      expect(client.slashRefusals.epoch, greaterThan(oldEpoch));
+      expect(first.catalogLoaded, isFalse);
+      await client.ensureSession('local');
+      await first.ensureCatalog();
+      await second.ensureCatalog();
+      expect(first.matches.single.name, 'status');
+      expect(second.matches.single.name, 'status');
+      first.markRefused('status');
+      client.close();
+      expect(client.slashRefusals.contains('status'), isFalse);
+      expect(first.catalogLoaded, isFalse);
+    },
+  );
+
+  test(
+    'slash result wire forms use one exact RPC with no implicit retry',
+    () async {
+      final gateway = await _Gateway.start();
+      final client = gateway.client();
+      client.setReconnectAllowed(false);
+      addTearDown(() async {
+        client.close();
+        await gateway.close();
+      });
+      await client.ensureSession('local');
+      gateway.held.add('slash.exec');
+      var sent = 0;
+      final worker = client.runSlashCommand(
+        sessionId: 'local',
+        command: '/status',
+        onSent: () => sent++,
+      );
+      final first = await gateway.take('slash.exec');
+      expect(first.params, {
+        'session_id': 'runtime-local',
+        'command': '/status',
+      });
+      first.reply({'output': 'worker output', 'warning': 'warning'});
+      expect((await worker).text, 'worker output\n\nwarning');
+      expect(sent, 1);
+      final directive = client.runSlashCommand(
+        sessionId: 'local',
+        command: '/plan',
+      );
+      (await gateway.take(
+        'slash.exec',
+      )).reply({'type': 'send', 'message': 'expanded body'});
+      expect((await directive).isPrompt, isTrue);
+      final refusal = client.runSlashCommand(
+        sessionId: 'local',
+        command: '/logs',
+      );
+      final observed = expectLater(
+        refusal,
+        throwsA(
+          isA<JsonRpcError>()
+              .having((e) => e.code, 'code', 4001)
+              .having((e) => e.reason, 'reason', 'unsupported_command')
+              .having((e) => e.data['detail'], 'detail', 'Use a terminal.'),
+        ),
+      );
+      final third = await gateway.take('slash.exec');
+      third.socket.add(
+        jsonEncode({
+          'jsonrpc': '2.0',
+          'id': third.frame['id'],
+          'error': {
+            'code': 4001,
+            'message': 'unsupported_command',
+            'data': {
+              'reason': 'unsupported_command',
+              'detail': 'Use a terminal.',
+            },
+          },
+        }),
+      );
+      await observed;
+      final unknown = _outcome(
+        client.runSlashCommand(sessionId: 'local', command: '/review'),
+      );
+      final fourth = await gateway.take('slash.exec');
+      await fourth.socket.close();
+      expect(await unknown, isA<JsonRpcError>());
+      expect(gateway.calls('slash.exec'), hasLength(4));
+      expect(gateway.calls('command.dispatch'), isEmpty);
+      expect(gateway.calls('prompt.submit'), isEmpty);
+    },
+  );
+
   for (final warmSocket in [false, true]) {
     for (final create in [false, true]) {
       test(

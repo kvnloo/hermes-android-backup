@@ -120,7 +120,7 @@ class _ModelChoiceSheetState extends State<_ModelChoiceSheet> {
         if (only != null
             ? p.slug == only
             : widget.selectable
-            ? !p.custom && p.models.isNotEmpty
+            ? !p.gatewayOnly && p.models.isNotEmpty
             : p.models.isNotEmpty)
           p,
     ];
@@ -140,7 +140,7 @@ class _ModelChoiceSheetState extends State<_ModelChoiceSheet> {
           widget.selectedModel == m.id && widget.selectedProvider == p.slug;
       final enabled =
           widget.selectable &&
-          !p.custom &&
+          !p.gatewayOnly &&
           !m.locked &&
           !widget.taken.contains('${p.slug}/${m.id}');
       final price = ngPriceLine(m.price);

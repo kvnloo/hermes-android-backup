@@ -502,8 +502,10 @@ class NgEmpty extends StatelessWidget {
     required this.title,
     this.body,
     this.action,
+    this.titleWidget,
   });
 
+  final Widget? titleWidget;
   final IconData icon;
   final String title;
   final String? body;
@@ -513,18 +515,19 @@ class NgEmpty extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = NgColors.of(context);
     return Center(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 36, color: c.text3),
             const SizedBox(height: 14),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: NgType.heading.copyWith(color: c.text),
-            ),
+            titleWidget ??
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: NgType.heading.copyWith(color: c.text),
+                ),
             if (body != null) ...[
               const SizedBox(height: 6),
               Text(

@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../core/l10n/l10n.dart';
+import '../../core/models/hermes_project.dart';
 import '../../core/models/session.dart';
 import '../../core/screens/cron_screen.dart';
 import '../../core/screens/memory_screen.dart';
@@ -17,14 +19,20 @@ import '../nextgen_preferences.dart';
 import '../theme/nextgen_theme.dart';
 import 'models_page.dart';
 import 'nextgen_scope.dart';
+import 'projects_page.dart';
 import 'scheduled_page.dart';
 import 'sessions_sidebar.dart';
 import 'widgets.dart';
 import '../nextgen_l10n.dart';
 
 class NgMorePage extends StatelessWidget {
-  const NgMorePage({super.key, required this.onOpenSession});
+  const NgMorePage({
+    super.key,
+    required this.onOpenSession,
+    this.onNewProjectChat,
+  });
   final ValueChanged<Session> onOpenSession;
+  final ValueChanged<HermesProject>? onNewProjectChat;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +61,17 @@ class NgMorePage extends StatelessWidget {
                   icon: Icons.folder_outlined,
                   title: ngL.ng_projects,
                   subtitle: ngL.ng_chats_grouped_by_project_and_workspace,
+                  onTap: () => push(
+                    NgProjectsPage(
+                      onOpenSession: onOpenSession,
+                      onNewProjectChat: onNewProjectChat,
+                    ),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.drive_file_move_outline,
+                  title: context.l10n.projects_root_title,
+                  subtitle: context.l10n.projects_root_more_subtitle,
                   onTap: () => push(ProjectsRootScreen(connection: conn)),
                 ),
               ],

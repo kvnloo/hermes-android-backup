@@ -5,8 +5,10 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../core/models/hermes_project.dart';
 import '../../core/models/session.dart';
 import '../../core/services/notification_prefs.dart';
+import '../../core/services/connection_mutation_barrier.dart';
 import '../../core/services/turn_notification_service.dart';
 import '../../core/utils/adaptive_layout.dart';
 import '../../core/widgets/desktop_shortcuts.dart';
@@ -24,14 +26,23 @@ import 'sessions_sidebar.dart';
 import 'settings_page.dart';
 import '../nextgen_l10n.dart';
 
-class NgMainPage extends StatefulWidget {
+class NgMainPage extends StatelessWidget {
   const NgMainPage({super.key});
 
   @override
-  State<NgMainPage> createState() => _NgMainPageState();
+  Widget build(BuildContext context) =>
+      _NgMainContent(key: ObjectKey(NgScope.of(context).gateway));
 }
 
-class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
+class _NgMainContent extends StatefulWidget {
+  const _NgMainContent({super.key});
+
+  @override
+  State<_NgMainContent> createState() => _NgMainPageState();
+}
+
+class _NgMainPageState extends State<_NgMainContent>
+    with WidgetsBindingObserver {
   final _scaffold = GlobalKey<ScaffoldState>();
 
   /// Keeps the sidebar's search/filter/scroll state alive when it moves
@@ -49,6 +60,8 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
   NgSessionsModel? _sessions;
   NgChatController? _chat;
   bool _foreground = true;
+  NextGenGateway? _notificationGateway;
+  Object? _notificationMutation;
 
   /// LRU cache of recently-viewed chat controllers. Keeps parsed transcripts
   /// in memory so switching back doesn't re-fetch multi-MB history pages.
@@ -71,6 +84,7 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
     nextGenOpenRequest.removeListener(_onOpenRequest);
     nextGenNotificationAnswer.removeListener(_onNotificationAnswer);
     _requestSub?.cancel();
+    _withdrawnSub?.cancel();
     _watchedGateway?.removeListener(_onGatewayChanged);
     _pendingAnswerTimeout?.cancel();
     _chat?.removeListener(_onChatChanged);
@@ -78,7 +92,8 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     _chat?.dispose();
     for (final c in _cache.values) {
-      c.dispose();
+      // A just-created Project chat may already be indexed by its stored id.
+      if (!identical(c, _chat)) c.dispose();
     }
     _cache.clear();
     _sessions?.dispose();
@@ -108,6 +123,12 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final scope = NgScope.of(context);
+    if (!identical(_notificationGateway, scope.gateway)) {
+      _notificationGateway = scope.gateway;
+      _notificationMutation = ConnectionMutationBarrier.capture(
+        scope.connection.id,
+      );
+    }
     final sessions = _sessions;
     if (sessions == null) {
       _sessions = NgSessionsModel(scope);
@@ -139,16 +160,16 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
     _sessions?.paused = !_foreground;
     if (!_foreground && wasForeground) {
       // A question that came in while in sight still needs its notification
-      // now that the app isn't.
-      final scope = NgScope.of(context);
-      for (final raw in scope.gateway.openRequests.values.toList()) {
-        unawaited(_notifyRequest(scope, raw));
-      }
+      // now that the app isn't — if the server still waits on it.
+      unawaited(_notifyOpenOnBackground(NgScope.of(context)));
     }
     if (_foreground && !wasForeground) {
+      _lifecycleTurn++;
       _cancelAttention();
-      // Catch the open chat up on what the socket may have missed.
+      // Catch the open chat up on what the socket may have missed, and drop
+      // questions another device answered meanwhile (the needs-you mark).
       chat?.resync();
+      unawaited(NgScope.of(context).gateway.revalidateOpenRequests());
     }
     if (_foreground) {
       _sessions?.currentId = chat?.storedId;
@@ -158,7 +179,12 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
     }
   }
 
-  void _openId(String? id, String title, {bool initial = false}) {
+  void _openId(
+    String? id,
+    String title, {
+    bool initial = false,
+    String? workingDirectory,
+  }) {
     final scope = NgScope.of(context);
     final old = _chat;
 
@@ -178,6 +204,7 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
         scope.gateway,
         sessionId: id,
         title: title,
+        workingDirectory: workingDirectory,
         onCreated: (stored) {
           unawaited(
             NextGenPreferences.setLastSession(
@@ -247,11 +274,33 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
   // so the socket survives the background.
 
   StreamSubscription<NgServerRequest>? _requestSub;
+  StreamSubscription<String>? _withdrawnSub;
   NextGenGateway? _watchedGateway;
 
   /// Requests posted, by request id: what to cancel once each is gone.
   final Map<String, ({HermesNotificationKind kind, String? sessionId})>
   _postedRequests = {};
+
+  /// Every request already notified (most recent last). Each one alerts at
+  /// most once: coming back in sight takes it down, and leaving again must not
+  /// post it anew.
+  final LinkedHashSet<String> _notifiedRequests = LinkedHashSet();
+  static const _maxNotifiedRequests = 256;
+
+  /// Bumped on every trip out of and back into sight, so a background
+  /// re-check that finishes after the app came back posts nothing.
+  int _lifecycleTurn = 0;
+
+  Future<void> _notifyOpenOnBackground(NgScope scope) async {
+    final turn = ++_lifecycleTurn;
+    // The socket only hears that a request was answered when the gateway says
+    // so; ask it which are still open before posting any of them.
+    await scope.gateway.revalidateOpenRequests();
+    if (!mounted || _foreground || turn != _lifecycleTurn) return;
+    for (final raw in scope.gateway.openRequests.values.toList()) {
+      await _notifyRequest(scope, raw);
+    }
+  }
 
   /// Chats whose reply notification is up.
   final Set<String> _postedReplies = {};
@@ -263,6 +312,10 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
     _requestSub = scope.gateway.serverRequests.listen(
       (raw) => unawaited(_notifyRequest(scope, raw)),
     );
+    // Answered here or elsewhere, withdrawn, or found settled by the server:
+    // its notification comes down. A dropped socket alone settles nothing.
+    _withdrawnSub?.cancel();
+    _withdrawnSub = scope.gateway.withdrawnRequests.listen(_cancelRequest);
     _watchedGateway?.removeListener(_onGatewayChanged);
     _watchedGateway = scope.gateway..addListener(_onGatewayChanged);
   }
@@ -274,8 +327,15 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
   Future<void> _notifyRequest(NgScope scope, NgServerRequest raw) async {
     if (_foreground || !mounted) return;
     if (_postedRequests.containsKey(raw.id)) return;
+    if (_notifiedRequests.contains(raw.id)) return;
+    // Answered elsewhere or withdrawn already: nothing to ask about.
+    if (!scope.gateway.openRequests.containsKey(raw.id)) return;
     final input = NgInputRequest.parse(raw);
     if (input == null) return;
+    _notifiedRequests.add(raw.id);
+    while (_notifiedRequests.length > _maxNotifiedRequests) {
+      _notifiedRequests.remove(_notifiedRequests.first);
+    }
     final stored = _storedFor(scope, raw.sessionId);
     final approval = input.kind == NgRequestKind.approval;
     final kind = approval
@@ -302,19 +362,17 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
         'requestId': raw.id,
       }),
     );
-    if (posted) _postedRequests[raw.id] = (kind: kind, sessionId: stored);
+    if (!posted) return;
+    _postedRequests[raw.id] = (kind: kind, sessionId: stored);
+    // Settled while the notification was being posted.
+    if (!mounted || !scope.gateway.awaitsAnswer(raw.id)) {
+      _cancelRequest(raw.id);
+    }
   }
 
-  /// Requests answered here, elsewhere or withdrawn take their notification
-  /// with them.
-  void _onGatewayChanged() {
-    final gateway = _watchedGateway;
-    if (gateway == null || _postedRequests.isEmpty) return;
-    for (final id in _postedRequests.keys.toList()) {
-      if (!gateway.openRequests.containsKey(id)) _cancelRequest(id);
-    }
-    _answerPending();
-  }
+  /// A request redelivered after a reconnect may be the one an approval
+  /// button is waiting for.
+  void _onGatewayChanged() => _answerPending();
 
   void _cancelRequest(String id) {
     final posted = _postedRequests.remove(id);
@@ -429,7 +487,21 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
         : text.length > 180
         ? '${text.substring(0, 180)}…'
         : text;
-    final connectionId = NgScope.of(context).connection.id;
+    final scope = NgScope.of(context);
+    final connectionId = chat.gateway.connection.id;
+    final conversation =
+        identical(chat.gateway, scope.gateway) &&
+            ConnectionMutationBarrier.isCurrent(
+              connectionId,
+              _notificationMutation,
+            ) &&
+            text.isNotEmpty
+        ? TurnNotificationService.conversationTarget(
+            scope.connManager,
+            chat.gateway.connection,
+            stored,
+          )
+        : null;
     final notifications = TurnNotificationService.shared;
     unawaited(
       failed
@@ -446,6 +518,7 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
               turnId: _replyTurnId,
               sessionId: stored,
               connectionId: connectionId,
+              conversation: conversation,
             ),
     );
     if (stored != null) _postedReplies.add(stored);
@@ -493,8 +566,20 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
 
   void _newChat() {
     _scaffold.currentState?.closeDrawer();
-    if (_chat?.isNew == true && _chat!.items.isEmpty) return;
+    if (_chat?.isNew == true &&
+        _chat!.items.isEmpty &&
+        _chat!.workingDirectory == null) {
+      return;
+    }
     _openId(null, '');
+  }
+
+  void _newProjectChat(HermesProject project) {
+    // Never let a stale/folderless Project silently become an unassigned chat.
+    final cwd = project.workingDirectory;
+    if (cwd == null || cwd.trim().isEmpty) return;
+    _scaffold.currentState?.closeDrawer();
+    _openId(null, '', workingDirectory: cwd);
   }
 
   void _go(NgDestination d) {
@@ -504,7 +589,10 @@ class _NgMainPageState extends State<NgMainPage> with WidgetsBindingObserver {
       NgDestination.insights => const NgInsightsPage(),
       NgDestination.capabilities => const NgCapabilitiesPage(),
       NgDestination.archived => NgArchivedPage(onOpenSession: _open),
-      NgDestination.more => NgMorePage(onOpenSession: _open),
+      NgDestination.more => NgMorePage(
+        onOpenSession: _open,
+        onNewProjectChat: _newProjectChat,
+      ),
       NgDestination.settings => const NgSettingsPage(),
     };
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));

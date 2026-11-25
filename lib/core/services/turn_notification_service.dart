@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +9,10 @@ import '../../l10n/app_localizations.dart';
 import '../l10n/l10n.dart' show resolvePreferredLocale;
 import 'notification_prefs.dart';
 import 'notification_approval_authority.dart';
+import 'auto_messaging_service.dart';
+import 'connection_manager.dart';
+import 'connection_mutation_barrier.dart';
+import 'mobile_push_service.dart';
 
 /// Delivered to the app root when the user taps a notification body or one of
 /// its action buttons. Set once by the root widget; every service instance
@@ -46,6 +51,26 @@ class TurnNotificationAction {
   const TurnNotificationAction({required this.id, required this.label});
 }
 
+/// Frozen producer authority. A delayed platform post cannot mint a new car
+/// action after an account mutation, including a same-value ABA edit.
+class ConversationNotificationTarget {
+  ConversationNotificationTarget(
+    this.manager,
+    SavedConnection connection,
+    this.data,
+  ) : mutation = ConnectionMutationBarrier.capture(connection.id);
+  final ConnectionManager manager;
+  final Map<String, dynamic> data;
+  final Object? mutation;
+  bool get isCurrent {
+    final id = data['connectionId'] as String;
+    final saved = manager.getConnections().where((c) => c.id == id).firstOrNull;
+    return ConnectionMutationBarrier.isCurrent(id, mutation) &&
+        saved != null &&
+        MobilePushService.binding(saved) == data['binding'];
+  }
+}
+
 /// A notification Hermes wants Android to post, described as plain data.
 class TurnNotification {
   final int id;
@@ -58,6 +83,7 @@ class TurnNotification {
   final bool ongoing;
   final bool silent;
   final bool onlyAlertOnce;
+  final ConversationNotificationTarget? conversation;
 
   const TurnNotification({
     required this.id,
@@ -70,6 +96,7 @@ class TurnNotification {
     this.ongoing = false,
     this.silent = false,
     this.onlyAlertOnce = false,
+    this.conversation,
   });
 }
 
@@ -217,6 +244,41 @@ class PluginTurnNotificationSink implements TurnNotificationSink {
 
   @override
   Future<void> show(TurnNotification notification) async {
+    // Only app-proven assistant finals become conversations. Attention,
+    // failures, tests and generic push hints keep their existing private path.
+    final target = notification.conversation;
+    if (target != null && defaultTargetPlatform == TargetPlatform.android) {
+      if (!notificationKindEnabled(HermesNotificationKind.turnDone)) {
+        throw StateError('Conversation disabled');
+      }
+      if (!target.isCurrent) throw StateError('Conversation account changed');
+      final ticket = await AutoMessagingService.platform.invokeMethod<int>(
+        'ticket',
+        target.data,
+      );
+      if (ticket == null || !target.isCurrent) {
+        throw StateError('Conversation account changed');
+      }
+      final locale = resolvePreferredLocale(
+        PlatformDispatcher.instance.locales,
+        AppLocalizations.supportedLocales,
+      );
+      final strings = lookupAppLocalizations(locale);
+      final sent = await AutoMessagingService.platform
+          .invokeMethod<bool>('show', {
+            'id': notification.id,
+            'title': notification.title,
+            'body': notification.body,
+            'replyLabel': strings.send,
+            'readLabel': strings.ng_mark_as_read,
+            'userLabel': strings.task_role_user,
+            'channelLabel': notification.channel.name,
+            ...target.data,
+            'ticket': ticket,
+          });
+      if (sent != true) throw StateError('Conversation authority unavailable');
+      return;
+    }
     final (importance, priority) = switch (notification.importance) {
       TurnNotificationImportance.high => (Importance.high, Priority.high),
       TurnNotificationImportance.low => (Importance.low, Priority.low),
@@ -279,10 +341,51 @@ class PluginTurnNotificationSink implements TurnNotificationSink {
   }
 
   @override
-  Future<void> cancel(int id) => _plugin.cancel(id);
+  Future<void> cancel(int id) async {
+    // Only terminal-namespace IDs can carry a native conversation (the native
+    // poster rejects every other ID). Ongoing/attention cleanup must neither
+    // depend on the car owner nor bump its ticket epoch for unrelated chats.
+    final failure =
+        defaultTargetPlatform == TargetPlatform.android &&
+            id >= _conversationIdMin &&
+            id <= _conversationIdMax
+        ? await _fenceConversations('cancel', {'id': id})
+        : null;
+    // The ordinary record is independent cleanup: a missing or failing car
+    // owner must never strand an ongoing/terminal notification.
+    await _plugin.cancel(id);
+    if (failure != null) Error.throwWithStackTrace(failure.$1, failure.$2);
+  }
 
   @override
-  Future<void> cancelAll() => _plugin.cancelAll();
+  Future<void> cancelAll() async {
+    final failure = defaultTargetPlatform == TargetPlatform.android
+        ? await _fenceConversations('cancelAll', null)
+        : null;
+    await _plugin.cancelAll();
+    if (failure != null) Error.throwWithStackTrace(failure.$1, failure.$2);
+  }
+
+  static const _conversationIdMin = 0x10000000;
+  static const _conversationIdMax = 0x1fffffff;
+
+  /// Revokes native conversation authority. An engine without the car owner
+  /// registered cannot have minted a conversation, so that is not a failure;
+  /// any other error is returned for the caller to report AFTER ordinary
+  /// cleanup, keeping the ID retained for a later retry.
+  static Future<(Object, StackTrace)?> _fenceConversations(
+    String method,
+    Map<String, Object?>? arguments,
+  ) async {
+    try {
+      await AutoMessagingService.platform.invokeMethod<void>(method, arguments);
+      return null;
+    } on MissingPluginException {
+      return null;
+    } catch (e, s) {
+      return (e, s);
+    }
+  }
 }
 
 /// Delivers Android notifications when a gateway turn completes while the app
@@ -468,7 +571,7 @@ class TurnNotificationService {
       }
     }
     for (final id in _ongoingIds.toList()) {
-      await _sink.cancel(id);
+      await _cancel(id);
       _ongoingIds.remove(id);
     }
     if (raw != null) await _persistOngoingIds();
@@ -539,7 +642,7 @@ class TurnNotificationService {
   });
 
   Future<void> _cancelOngoingId(int id) async {
-    await _sink.cancel(id);
+    await _cancel(id);
     _ongoingIds.remove(id);
     if (_ongoingPrefs != null) await _persistOngoingIds();
   }
@@ -577,6 +680,12 @@ class TurnNotificationService {
   };
 
   final TurnNotificationSink _sink;
+
+  /// Native conversation posts still awaiting their platform result. A
+  /// targeted cancellation (or cancelAll) during that window supersedes the
+  /// attempt, so a rejected conversation cannot fall back to an ordinary alert
+  /// that would recreate a notification the app has already taken down.
+  final Set<_ConversationFlight> _conversationFlights = {};
 
   bool _initialized = false;
   bool _permissionGranted = true;
@@ -720,6 +829,7 @@ class TurnNotificationService {
     required String turnId,
     String? sessionId,
     String? connectionId,
+    ConversationNotificationTarget? conversation,
   }) async {
     if (!notificationKindEnabled(HermesNotificationKind.turnDone)) {
       recordAttempt('reply', title, 'skipped', 'replies are off');
@@ -735,20 +845,154 @@ class TurnNotificationService {
       return;
     }
 
-    await _post(
-      'reply',
-      TurnNotification(
-        id: notificationIdFor(identity),
-        title: title,
-        body: turnSummary,
-        payload: _turnPayload(
-          turnId: turnId,
-          sessionId: sessionId,
-          connectionId: connectionId,
-        ),
-        channel: turnChannel,
+    final notification = TurnNotification(
+      id: notificationIdFor(identity),
+      title: title,
+      body: turnSummary,
+      payload: _turnPayload(
+        turnId: turnId,
+        sessionId: sessionId,
+        connectionId: connectionId,
       ),
+      channel: turnChannel,
     );
+    // A car conversation stands in for this alert only when the native owner
+    // accepts it: when that owner is absent or rejects the post, keep the
+    // existing ordinary notification rather than losing the alert.
+    if (conversation != null &&
+        await _postConversation('reply', notification, conversation) !=
+            _ConversationPost.unavailable) {
+      return;
+    }
+    await _post('reply', notification);
+  }
+
+  /// Posts an application-owned classic final as a native car conversation.
+  ///
+  /// Returns true when the alert is handled: the conversation was posted, a
+  /// replay was throttled, replies are off, or a targeted cancellation
+  /// superseded it. Returns false when the conversation owner is unavailable
+  /// or rejected the post, so the caller keeps its existing generic alert.
+  Future<bool> showConversationReply({
+    required String title,
+    required String body,
+    required String turnId,
+    required ConversationNotificationTarget conversation,
+    String? sessionId,
+    String? connectionId,
+  }) async {
+    if (!notificationKindEnabled(HermesNotificationKind.turnDone)) {
+      recordAttempt('reply', title, 'skipped', 'replies are off');
+      return true;
+    }
+    final identity = _turnIdentity(
+      turnId: turnId,
+      sessionId: sessionId,
+      connectionId: connectionId,
+    );
+    if (_throttled('${HermesNotificationKind.turnDone.name}:$identity')) {
+      return true;
+    }
+    return await _postConversation(
+          'reply',
+          TurnNotification(
+            id: notificationIdFor(identity),
+            title: title,
+            body: body,
+            payload: _turnPayload(
+              turnId: turnId,
+              sessionId: sessionId,
+              connectionId: connectionId,
+            ),
+            channel: turnChannel,
+          ),
+          conversation,
+        ) !=
+        _ConversationPost.unavailable;
+  }
+
+  Future<_ConversationPost> _postConversation(
+    String kind,
+    TurnNotification notification,
+    ConversationNotificationTarget conversation,
+  ) async {
+    if (defaultTargetPlatform != TargetPlatform.android ||
+        !AutoMessagingService.ownerAvailable) {
+      return _ConversationPost.unavailable;
+    }
+    if (!_initialized) await ensureInitialized(refreshPermission: false);
+    if (!_initialized) return _ConversationPost.unavailable;
+    final flight = _ConversationFlight(notification.id);
+    _conversationFlights.add(flight);
+    try {
+      await _sink.show(
+        TurnNotification(
+          id: notification.id,
+          title: notification.title,
+          body: notification.body,
+          payload: notification.payload,
+          channel: notification.channel,
+          actions: notification.actions,
+          importance: notification.importance,
+          ongoing: notification.ongoing,
+          silent: notification.silent,
+          onlyAlertOnce: notification.onlyAlertOnce,
+          conversation: conversation,
+        ),
+      );
+      recordAttempt(
+        kind,
+        notification.title,
+        'posted',
+        _permissionGranted ? 'conversation' : 'conversation; permission denied',
+      );
+      return _ConversationPost.posted;
+    } catch (e) {
+      recordAttempt(kind, notification.title, 'failed', 'conversation: $e');
+      return flight.superseded
+          ? _ConversationPost.superseded
+          : _ConversationPost.unavailable;
+    } finally {
+      _conversationFlights.remove(flight);
+    }
+  }
+
+  /// Every cancellation goes through here so an in-flight conversation post
+  /// for the same ID cannot later fall back to an ordinary alert.
+  Future<void> _cancel(int id) {
+    for (final flight in _conversationFlights) {
+      if (flight.id == id) flight.superseded = true;
+    }
+    return _sink.cancel(id);
+  }
+
+  /// Frozen account provenance at the producer, not a lookup from the currently
+  /// selected connection when a delayed notification finally posts.
+  static ConversationNotificationTarget? conversationTarget(
+    ConnectionManager manager,
+    SavedConnection connection,
+    String? sessionId,
+  ) {
+    // Car conversations are an Android notification feature only; other
+    // platforms keep their existing ordinary alerts.
+    if (defaultTargetPlatform != TargetPlatform.android ||
+        sessionId == null ||
+        sessionId.isEmpty ||
+        sessionId == '__new__' ||
+        !ConnectionMutationBarrier.isCurrent(
+          connection.id,
+          ConnectionMutationBarrier.capture(connection.id),
+        )) {
+      return null;
+    }
+    final metadata = manager.mobilePushConsentMetadata(connection.id);
+    if (metadata == null) return null;
+    return ConversationNotificationTarget(manager, connection, {
+      'connectionId': connection.id,
+      'sessionId': sessionId,
+      'binding': MobilePushService.binding(connection),
+      'metadata': metadata,
+    });
   }
 
   /// Cancels a specific turn notification.
@@ -758,7 +1002,7 @@ class TurnNotificationService {
     String? connectionId,
   }) async {
     if (!_initialized) return;
-    await _sink.cancel(
+    await _cancel(
       notificationIdFor(
         _turnIdentity(
           turnId: turnId,
@@ -845,7 +1089,8 @@ class TurnNotificationService {
   ///
   /// Callers gate on the app being backgrounded; this method enforces the
   /// user's per-kind preferences and the 1s replay throttle. Returns whether
-  /// the notification was handed to the platform.
+  /// the notification was handed to the platform. [onlyAlertOnce] updates one
+  /// already up for the same identity in place, without alerting again.
   Future<bool> showKind({
     required HermesNotificationKind kind,
     required String title,
@@ -855,6 +1100,7 @@ class TurnNotificationService {
     String? connectionId,
     List<TurnNotificationAction> actions = const [],
     String? payload,
+    bool onlyAlertOnce = false,
   }) async {
     if (!notificationKindEnabled(kind)) {
       recordAttempt(kind.name, title, 'skipped', '${kind.name} is off');
@@ -867,7 +1113,8 @@ class TurnNotificationService {
       sessionId ?? '',
       eventId,
     ]);
-    if (_throttled(identity)) return false;
+    // An in-place update is silent: the replay throttle is for new alerts.
+    if (!onlyAlertOnce && _throttled(identity)) return false;
 
     return _post(
       kind.name,
@@ -879,6 +1126,7 @@ class TurnNotificationService {
         channel: channelFor(kind),
         actions: actions,
         importance: importanceFor(kind),
+        onlyAlertOnce: onlyAlertOnce,
       ),
     );
   }
@@ -898,7 +1146,7 @@ class TurnNotificationService {
       sessionId ?? '',
       eventId,
     ]);
-    await _sink.cancel(notificationIdFor(identity));
+    await _cancel(notificationIdFor(identity));
   }
 
   /// Settings "send test": bypasses gating like the desktop panel does, so a
@@ -954,6 +1202,9 @@ class TurnNotificationService {
   /// Removes all Hermes turn notifications.
   Future<void> cancelAll() async {
     if (!_initialized) return;
+    for (final flight in _conversationFlights) {
+      flight.superseded = true;
+    }
     await _sink.cancelAll();
   }
 
@@ -1145,3 +1396,11 @@ bool claimNotificationApproval(PendingNotificationApproval approval) {
 
 void releaseNotificationApproval(PendingNotificationApproval approval) =>
     _answeringNotificationApprovals.remove(approval);
+
+enum _ConversationPost { posted, superseded, unavailable }
+
+class _ConversationFlight {
+  _ConversationFlight(this.id);
+  final int id;
+  bool superseded = false;
+}

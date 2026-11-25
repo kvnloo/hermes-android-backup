@@ -28,15 +28,33 @@ void main() {
 
   group('adaptive size classes (window size only)', () {
     test('600 / 840 breakpoints and useful-height guard', () {
-      expect(adaptiveSizeClassOf(const Size(599, 900)), AdaptiveSizeClass.compact);
-      expect(adaptiveSizeClassOf(const Size(600, 900)), AdaptiveSizeClass.medium);
-      expect(adaptiveSizeClassOf(const Size(839, 900)), AdaptiveSizeClass.medium);
-      expect(adaptiveSizeClassOf(const Size(840, 900)), AdaptiveSizeClass.expanded);
+      expect(
+        adaptiveSizeClassOf(const Size(599, 900)),
+        AdaptiveSizeClass.compact,
+      );
+      expect(
+        adaptiveSizeClassOf(const Size(600, 900)),
+        AdaptiveSizeClass.medium,
+      );
+      expect(
+        adaptiveSizeClassOf(const Size(839, 900)),
+        AdaptiveSizeClass.medium,
+      );
+      expect(
+        adaptiveSizeClassOf(const Size(840, 900)),
+        AdaptiveSizeClass.expanded,
+      );
       // Wide but short windows fall back to the medium rail.
-      expect(adaptiveSizeClassOf(const Size(1000, 400)), AdaptiveSizeClass.medium);
+      expect(
+        adaptiveSizeClassOf(const Size(1000, 400)),
+        AdaptiveSizeClass.medium,
+      );
       expect(
         adaptiveSizeClassOf(
-          Size(AdaptiveBreakpoints.expanded, AdaptiveBreakpoints.expandedMinHeight),
+          Size(
+            AdaptiveBreakpoints.expanded,
+            AdaptiveBreakpoints.expandedMinHeight,
+          ),
         ),
         AdaptiveSizeClass.expanded,
       );
@@ -172,6 +190,17 @@ void main() {
   group('NextGen wide docked sidebar', () {
     setUp(() => SharedPreferences.setMockInitialValues({}));
 
+    late NextGenGateway gateway;
+
+    // NgMainPage starts project discovery, which waits on the gateway
+    // connection with a timeout. Unmount, dispose and let those timers run
+    // out before the test ends, as the other NgMainPage tests do.
+    Future<void> unmount(WidgetTester tester) async {
+      await tester.pumpWidget(const SizedBox());
+      gateway.dispose();
+      await tester.pump(const Duration(seconds: 30));
+    }
+
     Future<void> pumpNextGen(WidgetTester tester, Size size) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
@@ -187,8 +216,7 @@ void main() {
         singleLogin: true,
         signInMethod: 'none',
       );
-      final gateway = NextGenGateway(conn);
-      addTearDown(gateway.dispose);
+      gateway = NextGenGateway(conn);
       await tester.pumpWidget(
         MaterialApp(
           theme: nextGenTheme(Brightness.light, NextGenLook.instance),
@@ -218,6 +246,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(scaffold.isDrawerOpen, isTrue);
       expect(find.byKey(const Key('ng-session-search')), findsOneWidget);
+      await unmount(tester);
     });
 
     testWidgets('unfolded/wide window docks the sessions pane', (tester) async {
@@ -226,6 +255,7 @@ void main() {
       expect(find.byType(Drawer), findsNothing);
       expect(find.byKey(const Key('ng-session-search')), findsOneWidget);
       expect(find.byKey(const ValueKey('ng-sidebar-button')), findsOneWidget);
+      await unmount(tester);
     });
   });
 }

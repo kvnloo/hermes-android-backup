@@ -9,6 +9,10 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get slash_local_arguments =>
+      'ここではこのショートカットに引数を指定できません。アプリの操作画面を使用してください。下書きは保持されています。';
+
+  @override
   String get fallback_title => 'フォールバックモデル';
 
   @override
@@ -3862,6 +3866,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias は $command の別名です';
+  }
+
+  @override
+  String get slash_command_info_no_description => '説明はありません。';
+
+  @override
+  String get slash_command_info_arguments_options => '決められた選択肢から1つを指定します。';
+
+  @override
+  String get slash_command_info_arguments_text => 'コマンドの後にテキストを指定します。';
+
+  @override
+  String get slash_command_info_arguments_mixed => 'コマンドの後に選択肢またはテキストを指定します。';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3873,6 +3894,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported => 'このコマンドはこのサーバーでは利用できません。';
+
+  @override
+  String get slash_sessions_inline => 'セッションリストを開いてチャットを選択してください。下書きは保持されています。';
 
   @override
   String get nextgen_toggle => 'NextGen インターフェース';
@@ -3969,6 +3996,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => '応答の生成に失敗しました。';
+
+  @override
+  String get ng_turn_changed => 'その応答はすでに終了したか、新しい応答が始まりました';
+
+  @override
+  String get ng_steer_rejected => '実行中の応答が受け付けませんでした';
+
+  @override
+  String get ng_turn_not_known_yet => '実行中の応答をまだ確認できません。少し待ってからもう一度お試しください';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4366,6 +4402,21 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ng_retry => '再試行';
 
   @override
+  String get ng_project_home => 'ホーム';
+
+  @override
+  String get ng_choose_project => 'プロジェクトを選択';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return 'プロジェクトフォルダーを利用できなかったため、このチャットは $path で実行されます。';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      'ゲートウェイがチャットを作成した可能性がありますが、確認できませんでした。別のチャットを開始する前にチャット一覧を確認してください。このリクエストは自動的に再試行されません。';
+
+  @override
   String get ng_what_should_we_work_on => '何に取り組みますか？';
 
   @override
@@ -4403,6 +4454,51 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get ng_send => '送信';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias は $command の別名です';
+  }
+
+  @override
+  String get ng_slash_command_no_description => '説明はありません。';
+
+  @override
+  String get ng_slash_command_arguments_options => '決められた選択肢から1つを指定します。';
+
+  @override
+  String get ng_slash_command_arguments_text => 'コマンドの後にテキストを指定します。';
+
+  @override
+  String get ng_slash_command_arguments_mixed => 'コマンドの後に選択肢またはテキストを指定します。';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen ではこれは通常のメッセージとして Hermes に送信され、コマンド自体は実行されません。';
+
+  @override
+  String get ng_slash_command_output => 'コマンドの出力';
+
+  @override
+  String get ng_slash_command_running => 'コマンドを実行中…';
+
+  @override
+  String get ng_slash_command_done => '完了しました。';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return 'コマンドを実行できませんでした: $error';
+  }
+
+  @override
+  String get ng_slash_command_refused => 'Hermes はここでこのコマンドを実行できません。';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      'コマンドは送信されましたが、応答がありませんでした。ゲートウェイでまだ実行中の可能性があるため、再送信せず下書きを残しました。';
+
+  @override
+  String get ng_slash_command_nothing_running => '実行中のものはありません。';
 
   @override
   String get ng_steered => '指示を反映しました';

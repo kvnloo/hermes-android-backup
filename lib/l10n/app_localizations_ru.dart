@@ -9,6 +9,10 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get slash_local_arguments =>
+      'Этот ярлык здесь не поддерживает аргументы. Используйте элементы управления приложения; черновик сохранён.';
+
+  @override
   String get fallback_title => 'Резервные модели';
 
   @override
@@ -3968,6 +3972,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias — псевдоним для $command';
+  }
+
+  @override
+  String get slash_command_info_no_description => 'Описание недоступно.';
+
+  @override
+  String get slash_command_info_arguments_options =>
+      'Принимает один из фиксированных вариантов.';
+
+  @override
+  String get slash_command_info_arguments_text =>
+      'Принимает текст после команды.';
+
+  @override
+  String get slash_command_info_arguments_mixed =>
+      'Принимает вариант или текст после команды.';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3979,6 +4003,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported =>
+      'Эта команда недоступна на этом сервере.';
+
+  @override
+  String get slash_sessions_inline =>
+      'Откройте список сессий, чтобы выбрать чат. Черновик сохранён.';
 
   @override
   String get nextgen_toggle => 'Интерфейс NextGen';
@@ -4075,6 +4107,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => 'Не удалось выполнить запрос.';
+
+  @override
+  String get ng_turn_changed =>
+      'этот запрос уже завершился или начался более новый';
+
+  @override
+  String get ng_steer_rejected => 'выполняющийся запрос не принял это';
+
+  @override
+  String get ng_turn_not_known_yet =>
+      'выполняющийся запрос пока неизвестен; повторите попытку через мгновение';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4484,6 +4527,21 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ng_retry => 'Повторить';
 
   @override
+  String get ng_project_home => 'Главная';
+
+  @override
+  String get ng_choose_project => 'Выбрать проект';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return 'Папка проекта недоступна, поэтому этот чат работает в $path.';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      'Шлюз мог создать этот чат, но не подтвердил это. Проверьте список чатов, прежде чем начинать новый. Запрос не будет повторён автоматически.';
+
+  @override
   String get ng_what_should_we_work_on => 'Над чем поработаем?';
 
   @override
@@ -4522,6 +4580,55 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get ng_send => 'Отправить';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias — псевдоним для $command';
+  }
+
+  @override
+  String get ng_slash_command_no_description => 'Описание недоступно.';
+
+  @override
+  String get ng_slash_command_arguments_options =>
+      'Принимает один из фиксированных вариантов.';
+
+  @override
+  String get ng_slash_command_arguments_text =>
+      'Принимает текст после команды.';
+
+  @override
+  String get ng_slash_command_arguments_mixed =>
+      'Принимает вариант или текст после команды.';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen отправляет это Hermes как обычное сообщение; сама команда не выполняется.';
+
+  @override
+  String get ng_slash_command_output => 'Вывод команды';
+
+  @override
+  String get ng_slash_command_running => 'Выполняется команда…';
+
+  @override
+  String get ng_slash_command_done => 'Готово.';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return 'Не удалось выполнить команду: $error';
+  }
+
+  @override
+  String get ng_slash_command_refused =>
+      'Hermes не может выполнить эту команду здесь.';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      'Команда отправлена, но ответ не пришёл. Возможно, она ещё выполняется на шлюзе, поэтому повторно не отправлялась, а черновик сохранён.';
+
+  @override
+  String get ng_slash_command_nothing_running => 'Ничего не выполняется.';
 
   @override
   String get ng_steered => 'Направлено';

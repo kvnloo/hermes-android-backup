@@ -9,6 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get slash_local_arguments =>
+      'This shortcut does not accept arguments here. Use the app controls; your draft was kept.';
+
+  @override
   String get fallback_title => 'Fallback models';
 
   @override
@@ -3939,6 +3943,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias is an alias of $command';
+  }
+
+  @override
+  String get slash_command_info_no_description => 'No description available.';
+
+  @override
+  String get slash_command_info_arguments_options =>
+      'Takes one option from a fixed list.';
+
+  @override
+  String get slash_command_info_arguments_text =>
+      'Takes text after the command.';
+
+  @override
+  String get slash_command_info_arguments_mixed =>
+      'Takes an option or text after the command.';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3950,6 +3974,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported =>
+      'This command is not available on this server.';
+
+  @override
+  String get slash_sessions_inline =>
+      'Open the session list to choose a chat. Your draft was kept.';
 
   @override
   String get nextgen_toggle => 'NextGen interface';
@@ -4046,6 +4078,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => 'The turn failed.';
+
+  @override
+  String get ng_turn_changed =>
+      'that turn already ended or a newer one started';
+
+  @override
+  String get ng_steer_rejected => 'the running turn didn\'t accept it';
+
+  @override
+  String get ng_turn_not_known_yet =>
+      'the running turn isn\'t known yet; try again in a moment';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4455,6 +4498,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ng_retry => 'Retry';
 
   @override
+  String get ng_project_home => 'Home';
+
+  @override
+  String get ng_choose_project => 'Choose a project';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return 'The project folder wasn\'t available, so this chat runs in $path.';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      'The gateway may have created this chat, but did not confirm it. Check Chats before starting another; this request will not be retried automatically.';
+
+  @override
   String get ng_what_should_we_work_on => 'What should we work on?';
 
   @override
@@ -4492,6 +4550,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ng_send => 'Send';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias is an alias of $command';
+  }
+
+  @override
+  String get ng_slash_command_no_description => 'No description available.';
+
+  @override
+  String get ng_slash_command_arguments_options =>
+      'Takes one option from a fixed list.';
+
+  @override
+  String get ng_slash_command_arguments_text => 'Takes text after the command.';
+
+  @override
+  String get ng_slash_command_arguments_mixed =>
+      'Takes an option or text after the command.';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen sends this to Hermes as a normal message; the command itself doesn\'t run.';
+
+  @override
+  String get ng_slash_command_output => 'Command output';
+
+  @override
+  String get ng_slash_command_running => 'Running command…';
+
+  @override
+  String get ng_slash_command_done => 'Done.';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return 'Couldn\'t run the command: $error';
+  }
+
+  @override
+  String get ng_slash_command_refused => 'Hermes can\'t run this command here.';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      'The command was sent but no reply came back. It may still be running on the gateway, so it wasn\'t sent again and your draft was kept.';
+
+  @override
+  String get ng_slash_command_nothing_running => 'Nothing is running.';
 
   @override
   String get ng_steered => 'Steered';

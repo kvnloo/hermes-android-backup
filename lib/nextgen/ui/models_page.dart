@@ -101,8 +101,12 @@ class _NgModelsPageState extends State<NgModelsPage> {
     Future<NgModelSave> Function(bool confirmed) run, {
     required String saved,
   }) async {
+    // The gateway this change was started for. If the page is given another
+    // one while a sheet or the warning is open, the change is dropped rather
+    // than sent there.
+    final c = _c;
     var result = await run(false);
-    if (!mounted) return;
+    if (!mounted || !identical(c, _c)) return;
     if (result case NgModelNeedsConfirmation(:final message)) {
       final agreed = await showDialog<bool>(
         context: context,
@@ -122,9 +126,9 @@ class _NgModelsPageState extends State<NgModelsPage> {
           ],
         ),
       );
-      if (agreed != true || !mounted) return;
+      if (agreed != true || !mounted || !identical(c, _c)) return;
       result = await run(true);
-      if (!mounted) return;
+      if (!mounted || !identical(c, _c)) return;
     }
     ngToast(
       context,
@@ -133,9 +137,10 @@ class _NgModelsPageState extends State<NgModelsPage> {
   }
 
   Future<void> _changeMain() async {
-    final catalog = _c.catalog;
-    final main = _c.main;
-    if (catalog == null || main == null || !_c.canChangeMain) return;
+    final c = _c;
+    final catalog = c.catalog;
+    final main = c.main;
+    if (catalog == null || main == null || !c.canChangeMain) return;
     final pick = await showNgModelChoice(
       context,
       catalog: catalog,
@@ -143,11 +148,10 @@ class _NgModelsPageState extends State<NgModelsPage> {
       selectedProvider: main.provider,
       selectedModel: main.model,
     );
-    if (pick is! NgPickModel || !mounted) return;
+    if (pick is! NgPickModel || !mounted || !identical(c, _c)) return;
     if (pick.provider == main.provider && pick.model == main.model) return;
     await _commit(
-      (confirmed) =>
-          _c.setMain(pick.provider, pick.model, confirmed: confirmed),
+      (confirmed) => c.setMain(pick.provider, pick.model, confirmed: confirmed),
       saved: ngL.profile_default_set_to_chats_with_their_own_model_keep(
         pick.model,
       ),
@@ -155,8 +159,9 @@ class _NgModelsPageState extends State<NgModelsPage> {
   }
 
   Future<void> _changeAux(NgAuxTask task) async {
-    final catalog = _c.catalog;
-    if (catalog == null || task.endpoint || !_c.canEditAux) return;
+    final c = _c;
+    final catalog = c.catalog;
+    if (catalog == null || task.endpoint || !c.canEditAux) return;
     final (label, hint) = ngAuxCopy(task);
     final pick = await showNgModelChoice(
       context,
@@ -169,45 +174,80 @@ class _NgModelsPageState extends State<NgModelsPage> {
       offerEffort: task.effortSupported,
       effort: task.effort,
     );
-    if (pick == null || !mounted) return;
+    if (pick == null || !mounted || !identical(c, _c)) return;
     final id = task.task;
     switch (pick) {
       case NgPickDefault():
         if (task.usesDefault) return;
         await _commit(
-          (confirmed) => _c.setAux(id, 'auto', '', confirmed: confirmed),
+          (confirmed) => c.setAux(id, 'auto', '', confirmed: confirmed),
           saved: ngL.ng_models_saved,
         );
       case NgPickModel(:final provider, :final model):
         if (provider == task.provider && model == task.model) return;
         await _commit(
-          (confirmed) => _c.setAux(id, provider, model, confirmed: confirmed),
+          (confirmed) => c.setAux(id, provider, model, confirmed: confirmed),
           saved: ngL.ng_models_saved,
         );
       case NgPickEffort(:final effort):
         if (effort == task.effort) return;
         await _commit(
-          (confirmed) => _c.setAuxEffort(id, effort, confirmed: confirmed),
+          (confirmed) => c.setAuxEffort(id, effort, confirmed: confirmed),
           saved: ngL.ng_models_saved,
         );
     }
   }
 
   Future<void> _addFallback() async {
-    final catalog = _c.catalog;
-    if (catalog == null || !_c.canEditFallbacks) return;
+    final c = _c;
+    final catalog = c.catalog;
+    if (catalog == null || !c.canEditFallbacks) return;
     final pick = await showNgModelChoice(
       context,
       catalog: catalog,
       title: ngL.fallback_add,
-      taken: {for (final e in _c.fallbackDraft) '${e.provider}/${e.model}'},
+      taken: {for (final e in c.fallbackDraft) '${e.provider}/${e.model}'},
     );
-    if (pick is NgPickModel) _c.addFallback(pick.provider, pick.model);
+    if (pick is NgPickModel && identical(c, _c)) {
+      c.addFallback(pick.provider, pick.model);
+    }
+  }
+
+  Future<void> _changeFallback(int index) async {
+    final c = _c;
+    final catalog = c.catalog;
+    if (catalog == null ||
+        !c.canEditFallbacks ||
+        index >= c.fallbackDraft.length) {
+      return;
+    }
+    final entry = c.fallbackDraft[index];
+    if (c.fallbackLocked(entry)) return;
+    final pick = await showNgModelChoice(
+      context,
+      catalog: catalog,
+      title: ngL.fallback_title,
+      selectedProvider: entry.provider,
+      selectedModel: entry.model,
+      taken: {
+        for (final e in c.fallbackDraft)
+          if (!identical(e, entry)) '${e.provider}/${e.model}',
+      },
+    );
+    // The list may have changed while the sheet was open; only the row that
+    // was tapped is replaced.
+    if (pick is NgPickModel &&
+        identical(c, _c) &&
+        index < c.fallbackDraft.length &&
+        identical(c.fallbackDraft[index], entry)) {
+      c.replaceFallback(index, pick.provider, pick.model);
+    }
   }
 
   Future<void> _saveFallbacks() async {
-    final result = await _c.saveFallbacks();
-    if (!mounted) return;
+    final c = _c;
+    final result = await c.saveFallbacks();
+    if (!mounted || !identical(c, _c)) return;
     ngToast(
       context,
       result is NgModelSaved ? ngL.fallback_saved : ngL.fallback_save_failed,
@@ -306,7 +346,9 @@ class _NgModelsPageState extends State<NgModelsPage> {
     final catalog = _c.catalog;
     final entry = catalog?.model(main.provider, main.model);
     final price = entry?.price;
-    final reasoning = main.reasoning ?? entry?.reasoning;
+    // Only `model/info` says this. The model list marks every model it has
+    // no record for as reasoning, so it cannot be used to fill the gap.
+    final reasoning = main.reasoning;
     String each(String value) =>
         value == 'free' ? ngL.ng_models_free : ngL.ng_models_per_million(value);
     final pills = [
@@ -348,7 +390,7 @@ class _NgModelsPageState extends State<NgModelsPage> {
     ];
     // Shown while a change is possible in principle, so the button does not
     // come and go while something else is being saved.
-    final changeable = _c.routeVerified && !_c.customRoute && catalog != null;
+    final changeable = !_c.endpointOnlyHere && catalog != null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -398,7 +440,7 @@ class _NgModelsPageState extends State<NgModelsPage> {
         ],
         if (!_c.routeVerified)
           _Note(ngL.model_management_unavailable)
-        else if (_c.customRoute)
+        else if (_c.endpointOnlyHere)
           _Note(ngL.ng_models_custom_endpoint)
         else if (catalog == null && _c.catalogFailed)
           _Note(ngL.fallback_discovery_unavailable),
@@ -445,6 +487,10 @@ class _NgModelsPageState extends State<NgModelsPage> {
                   entry: rows[i],
                   detail: _routeDetail(rows[i].provider, rows[i].model),
                   locked: _c.fallbackLocked(rows[i]),
+                  onChange:
+                      edit && _c.catalog != null && !_c.fallbackLocked(rows[i])
+                      ? () => _changeFallback(i)
+                      : null,
                   onUp: edit && i > 0 ? () => _c.moveFallback(i, -1) : null,
                   onDown: edit && i < rows.length - 1
                       ? () => _c.moveFallback(i, 1)
@@ -854,6 +900,7 @@ class _FallbackRow extends StatelessWidget {
     required this.entry,
     required this.detail,
     required this.locked,
+    required this.onChange,
     required this.onUp,
     required this.onDown,
     required this.onRemove,
@@ -863,6 +910,9 @@ class _FallbackRow extends StatelessWidget {
   final FallbackEntry entry;
   final String detail;
   final bool locked;
+
+  /// Chooses another model for this row; null when it cannot be changed.
+  final VoidCallback? onChange;
   final VoidCallback? onUp;
   final VoidCallback? onDown;
   final VoidCallback? onRemove;
@@ -894,7 +944,35 @@ class _FallbackRow extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: _RouteText(model: entry.model, detail: detail),
+                child: onChange == null
+                    ? _RouteText(model: entry.model, detail: detail)
+                    : Tooltip(
+                        message: ngL.ng_models_change,
+                        child: InkWell(
+                          key: ValueKey('ng-fallback-change-$index'),
+                          onTap: onChange,
+                          borderRadius: BorderRadius.circular(NgRadii.md),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: _RouteText(
+                                    model: entry.model,
+                                    detail: detail,
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.edit_outlined,
+                                  size: 16,
+                                  color: c.text3,
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
               ),
               button('up', Icons.arrow_upward, ngL.fallback_move_up, onUp),
               button(

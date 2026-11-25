@@ -38,10 +38,36 @@ class SlashCommandController extends ChangeNotifier {
     required this.loadCatalog,
     String cacheScope = '',
     this.limit = 8,
-  }) : _scope = cacheScope;
+    SlashCommandRefusals? refusals,
+  }) : _scope = cacheScope {
+    _refusals = refusals ?? SlashCommandRefusals();
+    _memoryEpoch = _refusals.epoch;
+    _refusals.addListener(_onMemoryChanged);
+  }
 
   final Future<SlashCommandCatalog> Function() loadCatalog;
   final int limit;
+
+  late SlashCommandRefusals _refusals;
+  int _memoryEpoch = 0;
+  void _onMemoryChanged() {
+    if (_memoryEpoch != _refusals.epoch) {
+      _memoryEpoch = _refusals.epoch;
+      invalidate();
+    } else {
+      _notify();
+    }
+  }
+
+  int get generation => _generation;
+  void useRefusals(SlashCommandRefusals refusals) {
+    if (identical(_refusals, refusals)) return;
+    _refusals.removeListener(_onMemoryChanged);
+    _refusals = refusals;
+    _memoryEpoch = _refusals.epoch;
+    _refusals.addListener(_onMemoryChanged);
+    invalidate();
+  }
 
   String _scope;
   SlashCommandCatalog? _catalog;
@@ -57,6 +83,9 @@ class SlashCommandController extends ChangeNotifier {
 
   bool get catalogLoaded => _catalog != null;
 
+  /// The loaded catalogue (read-only), or null before it loads.
+  SlashCommandCatalog? get catalog => _catalog;
+
   /// A failed catalogue fetch disables the feature without touching the
   /// composer; it never rethrows into the text field's listener.
   bool get catalogUnavailable => _catalogError != null;
@@ -67,12 +96,19 @@ class SlashCommandController extends ChangeNotifier {
     final catalog = _catalog;
     if (catalog == null) return const [];
     final query = _query.toLowerCase();
+    final visible = catalog.commands
+        .where(
+          (command) =>
+              catalog.canExecute(command.name) &&
+              !_refusals.contains(catalog.canonicalName(command.name)),
+        )
+        .toList();
     if (query.isEmpty) {
-      return List<SlashCommand>.unmodifiable(catalog.commands.take(limit));
+      return List<SlashCommand>.unmodifiable(visible.take(limit));
     }
     final prefix = <SlashCommand>[];
     final contains = <SlashCommand>[];
-    for (final command in catalog.commands) {
+    for (final command in visible) {
       final name = command.name.toLowerCase();
       if (name.startsWith(query)) {
         prefix.add(command);
@@ -103,11 +139,12 @@ class SlashCommandController extends ChangeNotifier {
     return isOpen;
   }
 
-  /// Loads the catalogue once per scope. Catalogues are read-only, so a
+  /// Loads the immutable catalogue once per scope. A
   /// successful response is cached until [invalidate]; a failure is sticky
   /// until the next explicit invalidation (connection change) and never
   /// retried per keystroke.
   Future<bool> ensureCatalog() {
+    if (_disposed) return Future<bool>.value(false);
     if (_catalog != null) return Future<bool>.value(true);
     if (_catalogError != null) return Future<bool>.value(false);
     final flight = _flight;
@@ -142,13 +179,26 @@ class SlashCommandController extends ChangeNotifier {
   /// A loaded catalogue is authoritative. Without one, the reviewed
   /// [kSlashExecutableCommands] set is only a last-resort hint: the dispatch
   /// path still attempts a `/`-line and the server's `unsupported_command`
-  /// reply falls back to a plain send.
+  /// reply is never permission to resend the command as prose.
   bool isExecutable(String name) {
     final catalog = _catalog;
     if (catalog != null) return catalog.canExecute(name);
     final bare = name.trim().replaceFirst(RegExp(r'^/+'), '').toLowerCase();
     return bare.isNotEmpty && kSlashExecutableCommands.contains(bare);
   }
+
+  /// Records that the gateway refused [name] with `unsupported_command`; the
+  /// dropdown stops offering it until the connection memory is reset.
+  void markRefused(String name) {
+    final catalog = _catalog;
+    if (_disposed) return;
+    _refusals.mark(
+      catalog?.canonicalName(name) ??
+          name.replaceFirst(RegExp(r'^/+'), '').toLowerCase(),
+    );
+  }
+
+  bool knowsCommand(String name) => _catalog?.containsName(name) ?? false;
 
   /// Drops the cache. Called on connection changes and scope switches.
   void invalidate() {
@@ -183,6 +233,8 @@ class SlashCommandController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    _generation++;
+    _refusals.removeListener(_onMemoryChanged);
     super.dispose();
   }
 }

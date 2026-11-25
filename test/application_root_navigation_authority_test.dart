@@ -22,10 +22,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'support/memory_turn_journal_store.dart';
 
 class _HeldList {
+  _HeldList({bool holdBody = false}) {
+    if (!holdBody) completeBody();
+  }
+
   final entered = Completer<void>();
   final release = Completer<void>();
+  final bodyStarted = Completer<void>();
+  final bodyRelease = Completer<void>();
+
   void complete() {
     if (!release.isCompleted) release.complete();
+  }
+
+  void completeBody() {
+    if (!bodyRelease.isCompleted) bodyRelease.complete();
   }
 }
 
@@ -34,6 +45,7 @@ class _NavigationServer {
   final HttpServer http;
   final sockets = <WebSocket>[];
   final lists = <_HeldList>[];
+  final heldLists = <_HeldList>[];
   final methods = <String>[];
   List<Map<String, dynamic>> events = [];
   int listRequests = 0;
@@ -48,9 +60,10 @@ class _NavigationServer {
     return server;
   }
 
-  _HeldList holdNextList() {
-    final held = _HeldList();
+  _HeldList holdNextList({bool holdBody = false}) {
+    final held = _HeldList(holdBody: holdBody);
     lists.add(held);
+    heldLists.add(held);
     return held;
   }
 
@@ -103,28 +116,37 @@ class _NavigationServer {
       listRequests++;
       final offset = int.parse(request.uri.queryParameters['offset']!);
       listOffsets.add(offset);
+      _HeldList? held;
       if (lists.isNotEmpty) {
-        final held = lists.removeAt(0);
+        held = lists.removeAt(0);
         held.entered.complete();
         await held.release.future;
       }
       listReplies++;
-      request.response.write(
-        jsonEncode({
-          'data': [
-            for (final id in offset == 0 ? ['shared', 'other'] : <String>[])
-              {
-                'id': id,
-                'title': 'Navigation $id',
-                'model': 'fixture',
-                'source': 'mobile',
-                'message_count': 0,
-                'started_at': 1,
-              },
-          ],
-          'has_more': false,
-        }),
-      );
+      final body = jsonEncode({
+        'data': [
+          for (final id in offset == 0 ? ['shared', 'other'] : <String>[])
+            {
+              'id': id,
+              'title': 'Navigation $id',
+              'model': 'fixture',
+              'source': 'mobile',
+              'message_count': 0,
+              'started_at': 1,
+            },
+        ],
+        'has_more': false,
+      });
+      if (held != null && !held.bodyRelease.isCompleted) {
+        // A server-side reply counter does not prove the client read the body.
+        request.response.write(body.substring(0, 1));
+        await request.response.flush();
+        held.bodyStarted.complete();
+        await held.bodyRelease.future;
+        request.response.write(body.substring(1));
+      } else {
+        request.response.write(body);
+      }
     } else if (path.endsWith('/messages')) {
       request.response.write('{"data":[]}');
     } else if (path == '/api/auth/ws-ticket') {
@@ -136,13 +158,33 @@ class _NavigationServer {
   }
 
   Future<void> close() async {
-    for (final held in lists) {
+    for (final held in heldLists) {
       held.complete();
+      held.completeBody();
     }
     for (final socket in sockets) {
       await socket.close();
     }
     await http.close(force: true);
+  }
+}
+
+class _ObservedNavigationClient extends ApiClient {
+  _ObservedNavigationClient(SavedConnection connection)
+    : super(
+        baseUrl: connection.baseUrl,
+        apiKey: connection.apiKey,
+        pathPrefix: connection.gatewayPrefix ?? '',
+        gatewayProfile: connection.gatewayProfile,
+        clientCertificate: connection.clientCertificate,
+      );
+
+  bool closed = false;
+
+  @override
+  void close() {
+    super.close();
+    closed = true;
   }
 }
 
@@ -158,7 +200,11 @@ class _Credentials implements CredentialStore {
   Future<void> delete(String key) async => entries.remove(key);
 }
 
-Future<void> _until(WidgetTester tester, bool Function() predicate) async {
+Future<void> _until(
+  WidgetTester tester,
+  bool Function() predicate, {
+  String Function()? diagnostics,
+}) async {
   for (var i = 0; i < 400; i++) {
     await tester.pump();
     if (predicate()) return;
@@ -166,7 +212,7 @@ Future<void> _until(WidgetTester tester, bool Function() predicate) async {
       () => Future<void>.delayed(const Duration(milliseconds: 5)),
     );
   }
-  fail('Navigation boundary did not arrive');
+  fail('Navigation boundary did not arrive: ${diagnostics?.call() ?? ''}');
 }
 
 Future<void> _drain(WidgetTester tester) async {
@@ -193,6 +239,7 @@ class _Root {
   late _NavigationServer server;
   late ConnectionManager manager;
   late SavedConnection connection;
+  final navigationClients = <_ObservedNavigationClient>[];
 
   Future<void> mount(WidgetTester tester) async {
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
@@ -242,6 +289,11 @@ class _Root {
         connManager: manager,
         turnApplicationController: controller,
         mobilePush: push,
+        notificationClientFactory: (connection) {
+          final client = _ObservedNavigationClient(connection);
+          navigationClients.add(client);
+          return client;
+        },
       ),
     );
     await _drain(tester);
@@ -289,6 +341,23 @@ class _Root {
       },
     ];
     await tester.runAsync(push.refresh);
+  }
+
+  Future<void> waitForChat(WidgetTester tester, String id) async {
+    final finder = find.byType(ChatScreen, skipOffstage: false);
+    await _until(
+      tester,
+      () =>
+          finder.evaluate().length == 1 &&
+          tester.widget<ChatScreen>(finder).session.id == id &&
+          ModalRoute.of(tester.state(finder).context)!.isCurrent,
+      diagnostics: () =>
+          'requests=${server.listRequests}, replies=${server.listReplies}, '
+          'offsets=${server.listOffsets}, '
+          'clientsClosed=${navigationClients.map((client) => client.closed).toList()}, '
+          'chatWidgets=${finder.evaluate().length}',
+    );
+    expectChat(tester, id);
   }
 
   void expectChat(WidgetTester tester, String? id) {
@@ -458,29 +527,57 @@ void main() {
     await f.mount(tester);
     final old = f.server.holdNextList();
     _HeldList? newer;
+    _HeldList? continuation;
     try {
       await f.pushTap(tester);
       await _until(tester, () => old.entered.isCompleted);
-      newer = f.server.holdNextList();
+      newer = f.server.holdNextList(holdBody: true);
       f.tap();
       await _until(tester, () => newer!.entered.isCompleted);
       await tester.runAsync(f.push.disable);
       old.complete();
-      await _until(tester, () => f.server.listReplies == 1);
-      await _drain(tester);
+      await _until(tester, () => f.navigationClients.first.closed);
+      // close() runs immediately before the old navigation's synchronous
+      // finally. Observe it, rather than assuming a server reply drained it.
+      await tester.pump();
       for (var i = 0; i < 4; i++) {
         f.tap();
         await tester.pump();
       }
+      await _drain(tester);
+      expect(f.navigationClients, hasLength(2));
       expect(f.server.listRequests, 2);
       f.expectChat(tester, null);
       newer.complete();
-      await _until(tester, () => f.server.listReplies == 2);
+      await _until(tester, () => newer!.bodyStarted.isCompleted);
+      expect(f.server.listReplies, 2);
+      await _drain(tester);
+      // Reproduce the old early assertion boundary deterministically: headers
+      // and one byte arrived, but the client cannot finish this lookup yet.
+      f.expectChat(tester, null);
+      expect(f.navigationClients.last.closed, isFalse);
+      expect(f.server.listRequests, 2);
+      continuation = f.server.holdNextList();
+      newer.completeBody();
+      await _until(tester, () => continuation!.entered.isCompleted);
+      await _drain(tester);
+      // A completed second server reply still precedes the production lookup's
+      // continuation and route push. Keep final equality behind the outcome.
+      f.expectChat(tester, null);
+      expect(f.server.listOffsets, [0, 0, 50]);
+      continuation.complete();
+      await f.waitForChat(tester, 'shared');
+      expect(f.server.listOffsets, [0, 0, 50]);
+      expect(f.navigationClients.every((client) => client.closed), isTrue);
+      f.tap();
       await _drain(tester);
       f.expectChat(tester, 'shared');
+      expect(f.server.listOffsets, [0, 0, 50]);
     } finally {
       old.complete();
       newer?.complete();
+      newer?.completeBody();
+      continuation?.complete();
       await f.close(tester);
     }
   });

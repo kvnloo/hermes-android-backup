@@ -9,6 +9,10 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get slash_local_arguments =>
+      'Ce raccourci n’accepte pas d’arguments ici. Utilisez les commandes de l’application ; votre brouillon a été conservé.';
+
+  @override
   String get fallback_title => 'Modèles de secours';
 
   @override
@@ -3975,6 +3979,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias est un alias de $command';
+  }
+
+  @override
+  String get slash_command_info_no_description =>
+      'Aucune description disponible.';
+
+  @override
+  String get slash_command_info_arguments_options =>
+      'Accepte une option parmi une liste fixe.';
+
+  @override
+  String get slash_command_info_arguments_text =>
+      'Accepte du texte après la commande.';
+
+  @override
+  String get slash_command_info_arguments_mixed =>
+      'Accepte une option ou du texte après la commande.';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3986,6 +4011,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported =>
+      'Cette commande n\'est pas disponible sur ce serveur.';
+
+  @override
+  String get slash_sessions_inline =>
+      'Ouvrez la liste des sessions pour choisir une conversation. Votre brouillon a été conservé.';
 
   @override
   String get nextgen_toggle => 'Interface NextGen';
@@ -4082,6 +4115,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => 'Le tour a échoué.';
+
+  @override
+  String get ng_turn_changed =>
+      'ce tour est déjà terminé ou un tour plus récent a commencé';
+
+  @override
+  String get ng_steer_rejected => 'le tour en cours ne l’a pas accepté';
+
+  @override
+  String get ng_turn_not_known_yet =>
+      'le tour en cours n’est pas encore connu ; réessayez dans un instant';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4495,6 +4539,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ng_retry => 'Réessayer';
 
   @override
+  String get ng_project_home => 'Accueil';
+
+  @override
+  String get ng_choose_project => 'Choisir un projet';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return 'Le dossier du projet n’était pas disponible ; cette conversation s’exécute donc dans $path.';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      'La passerelle a peut-être créé cette conversation sans le confirmer. Vérifiez les conversations avant d’en démarrer une autre ; cette demande ne sera pas relancée automatiquement.';
+
+  @override
   String get ng_what_should_we_work_on => 'Sur quoi voulez-vous travailler ?';
 
   @override
@@ -4533,6 +4592,56 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ng_send => 'Envoyer';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias est un alias de $command';
+  }
+
+  @override
+  String get ng_slash_command_no_description =>
+      'Aucune description disponible.';
+
+  @override
+  String get ng_slash_command_arguments_options =>
+      'Accepte une option parmi une liste fixe.';
+
+  @override
+  String get ng_slash_command_arguments_text =>
+      'Accepte du texte après la commande.';
+
+  @override
+  String get ng_slash_command_arguments_mixed =>
+      'Accepte une option ou du texte après la commande.';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen envoie ceci à Hermes comme un message normal ; la commande elle-même n’est pas exécutée.';
+
+  @override
+  String get ng_slash_command_output => 'Sortie de la commande';
+
+  @override
+  String get ng_slash_command_running => 'Exécution de la commande…';
+
+  @override
+  String get ng_slash_command_done => 'Terminé.';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return 'Impossible d\'exécuter la commande : $error';
+  }
+
+  @override
+  String get ng_slash_command_refused =>
+      'Hermes ne peut pas exécuter cette commande ici.';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      'La commande a été envoyée mais aucune réponse n’est arrivée. Elle est peut-être encore en cours sur la passerelle : elle n’a donc pas été renvoyée et votre brouillon a été conservé.';
+
+  @override
+  String get ng_slash_command_nothing_running => 'Rien n’est en cours.';
 
   @override
   String get ng_steered => 'Orienté';

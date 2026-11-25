@@ -1,0 +1,1 @@
+German NextGen copy corrected: the app_de catalogue now carries real German instead of leftover Spanish, with regression tests.

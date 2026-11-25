@@ -27,7 +27,7 @@ void main() {
     expect(c.loading, isFalse);
     expect(c.main!.model, 'claude-opus-4.5');
     expect(c.routeVerified, isTrue);
-    expect(c.customRoute, isFalse);
+    expect(c.endpointOnlyHere, isFalse);
     expect(c.canChangeMain, isTrue);
     expect(c.catalog!.providers, hasLength(3));
     expect(c.auxTasks, hasLength(5));
@@ -80,6 +80,63 @@ void main() {
       expect(f.modelWrites, hasLength(1));
       expect(c.main!.model, 'claude-opus-4.5');
       expect(c.saving, isFalse);
+    });
+
+    test('another model read back is shown, and is not a save', () async {
+      final (f, c) = await loaded();
+      final write = Completer<http.Response>();
+      f.heldWrite = write;
+      final pending = c.setMain('openrouter', 'google/gemini-flash');
+      await pumpEventQueue();
+      // The gateway accepts the write but ends up on a different model.
+      f.heldWrite = null;
+      f.info = {
+        ...f.info,
+        'provider': 'anthropic',
+        'model': 'claude-haiku-4.5',
+      };
+      write.complete(http.Response(jsonEncode({'ok': true}), 200));
+      expect(await pending, isA<NgModelSaveFailed>());
+      expect(c.main!.provider, 'anthropic');
+      expect(c.main!.model, 'claude-haiku-4.5');
+      expect(c.saving, isFalse);
+    });
+
+    test('a write or a read-back that fails leaves nothing stuck', () async {
+      final (f, c) = await loaded();
+      // The gateway answers the write with an error.
+      final write = Completer<http.Response>();
+      f.heldWrite = write;
+      final refused = c.setMain('openrouter', 'google/gemini-flash');
+      await pumpEventQueue();
+      expect(c.saving, isTrue);
+      write.complete(
+        http.Response(jsonEncode({'detail': 'secret-detail'}), 500),
+      );
+      expect(await refused, isA<NgModelSaveFailed>());
+      expect(c.saving, isFalse);
+      expect(c.canChangeMain, isTrue);
+
+      // The write is accepted, then the read-back fails.
+      f.heldWrite = null;
+      f.failInfo = true;
+      expect(
+        await c.setMain('openrouter', 'google/gemini-flash'),
+        isA<NgModelSaveFailed>(),
+      );
+      expect(c.saving, isFalse);
+
+      // The connection drops while a write is on its way.
+      f.failInfo = false;
+      final dropped = Completer<http.Response>();
+      f.heldWrite = dropped;
+      final lost = c.setAux('vision', 'anthropic', 'claude-haiku-4.5');
+      await pumpEventQueue();
+      expect(c.saving, isTrue);
+      dropped.completeError(http.ClientException('connection closed'));
+      expect(await lost, isA<NgModelSaveFailed>());
+      expect(c.saving, isFalse);
+      expect(c.canEditAux, isTrue);
     });
 
     test('a refused write is not a save', () async {
@@ -135,10 +192,16 @@ void main() {
       );
     });
 
-    test('only standard catalogue models can be chosen', () async {
-      final (f, c) = await loaded();
+    test('only models the gateway lists can be chosen', () async {
+      final (f, c) = await loaded(
+        (f) => f.providers.add({
+          'slug': 'custom',
+          'name': 'Custom',
+          'models': ['private-model'],
+        }),
+      );
       for (final (provider, model) in [
-        ('homelab', 'local-llm'), // endpoint on the gateway
+        ('custom', 'private-model'), // an endpoint with no name
         ('openrouter', 'openai/gpt-pro'), // not on the plan
         ('anthropic', 'made-up'), // not offered
         ('', ''),
@@ -152,19 +215,220 @@ void main() {
       expect(f.modelWrites, isEmpty);
     });
 
-    test('a default on a custom endpoint is never changed', () async {
-      final (f, c) = await loaded(
+    // The three cases where assigning another model would lose an endpoint
+    // the app could not choose again.
+    for (final (name, arrange) in <(String, void Function(ModelsFixture))>[
+      (
+        'an address that replaces the provider\'s own',
         (f) => f.endpoint = 'https://private.example/v1',
+      ),
+      (
+        'an endpoint with no name',
+        (f) {
+          f.info = {...f.info, 'provider': 'custom', 'model': 'private-model'};
+          f.endpoint = 'https://private.example/v1';
+        },
+      ),
+      (
+        'a named endpoint used at another address',
+        (f) {
+          f.info = {...f.info, 'provider': 'homelab', 'model': 'local-llm'};
+          f.endpoint = 'https://elsewhere.example/v1';
+        },
+      ),
+      (
+        'a local server name the gateway routes as an unnamed endpoint',
+        (f) {
+          f.info = {...f.info, 'provider': 'ollama', 'model': 'qwen3'};
+          f.endpoint = 'http://nas.example:11434/v1';
+        },
+      ),
+      (
+        'an unnamed endpoint spelt in capitals',
+        (f) {
+          f.info = {...f.info, 'provider': 'Custom', 'model': 'qwen3'};
+          f.endpoint = 'http://nas.example:11434/v1';
+        },
+      ),
+      (
+        'an address typed for a provider the app has no address for',
+        (f) {
+          f.info = {...f.info, 'provider': 'kilocode', 'model': 'm'};
+          f.endpoint = 'https://proxy.example/v1';
+        },
+      ),
+      (
+        'a bare custom default at a providers: entry\'s address',
+        (f) {
+          f.info = {...f.info, 'provider': 'custom', 'model': 'local-llm'};
+          f.endpoint = 'http://private.example:8000/v1/';
+        },
+      ),
+      (
+        'a legacy custom: default at another address',
+        (f) {
+          f.providers.add({
+            'slug': 'custom:legacy',
+            'name': 'Legacy',
+            'models': ['legacy-model'],
+            'is_user_defined': true,
+            'api_url': 'http://legacy.example:9000/v1',
+          });
+          f.info = {...f.info, 'provider': 'custom:legacy', 'model': 'm'};
+          f.endpoint = 'http://other.example:9000/v1';
+        },
+      ),
+      (
+        'a legacy custom: default with no entry',
+        (f) {
+          f.info = {...f.info, 'provider': 'custom:gone', 'model': 'm'};
+          f.endpoint = 'http://other.example:9000/v1';
+        },
+      ),
+    ]) {
+      test('a default on $name is never changed', () async {
+        final (f, c) = await loaded(arrange);
+        expect(c.routeVerified, isTrue);
+        expect(c.endpointOnlyHere, isTrue);
+        expect(c.canChangeMain, isFalse);
+        expect(
+          await c.setMain('openrouter', 'google/gemini-flash'),
+          isA<NgModelSaveFailed>(),
+        );
+        expect(f.modelWrites, isEmpty);
+      });
+    }
+
+    test('a default on a named endpoint is changed and changed back', () async {
+      final (f, c) = await loaded(
+        (f) =>
+            f.info = {...f.info, 'provider': 'homelab', 'model': 'local-llm'},
       );
       expect(c.routeVerified, isTrue);
-      expect(c.customRoute, isTrue);
-      expect(c.canChangeMain, isFalse);
+      expect(c.endpointOnlyHere, isFalse);
+      expect(c.canChangeMain, isTrue);
+
       expect(
         await c.setMain('openrouter', 'google/gemini-flash'),
-        isA<NgModelSaveFailed>(),
+        isA<NgModelSaved>(),
       );
-      expect(f.modelWrites, isEmpty);
+      expect(c.main!.provider, 'openrouter');
+      // The named endpoint is chosen by name; no address is sent.
+      expect(await c.setMain('homelab', 'local-llm'), isA<NgModelSaved>());
+      expect(f.modelWrites.last, {
+        'scope': 'main',
+        'provider': 'homelab',
+        'model': 'local-llm',
+        'profile': profile,
+      });
+      expect(c.main!.provider, 'homelab');
+      expect(c.canChangeMain, isTrue);
     });
+
+    test('a default on a provider plugin\'s own address is changed, '
+        'whether or not its model is listed', () async {
+      // An external-process provider plugin registers `process://<name>`,
+      // and the gateway writes it back whenever that provider is chosen.
+      final (f, c) = await loaded((f) {
+        f.providers.add({
+          'slug': 'plugin-subscription',
+          'name': 'Plugin subscription',
+          'models': ['big-model'],
+        });
+        f.info = {
+          ...f.info,
+          'provider': 'plugin-subscription',
+          'model': 'big-model[1m]',
+        };
+        f.endpoint = 'process://Plugin-Subscription';
+      });
+      expect(c.routeVerified, isTrue);
+      expect(c.endpointOnlyHere, isFalse);
+      expect(c.canChangeMain, isTrue);
+      expect(
+        await c.setMain('anthropic', 'claude-haiku-4.5'),
+        isA<NgModelSaved>(),
+      );
+      expect(c.main!.model, 'claude-haiku-4.5');
+      expect(
+        await c.setMain('plugin-subscription', 'big-model'),
+        isA<NgModelSaved>(),
+      );
+    });
+
+    for (final (name, arrange) in <(String, void Function(ModelsFixture))>[
+      (
+        'a bare custom default at a legacy entry\'s address',
+        (f) {
+          f.providers.add({
+            'slug': 'custom:legacy',
+            'name': 'Legacy',
+            'models': ['legacy-model'],
+            'is_user_defined': true,
+            'api_url': 'http://legacy.example:9000/v1',
+          });
+          f.info = {...f.info, 'provider': 'custom', 'model': 'legacy-model'};
+          f.endpoint = 'HTTP://legacy.example:9000/v1/ ';
+        },
+      ),
+      (
+        'a legacy custom: default at its entry\'s address',
+        (f) {
+          f.providers.add({
+            'slug': 'custom:legacy',
+            'name': 'Legacy',
+            'models': ['legacy-model'],
+            'is_user_defined': true,
+            'api_url': 'http://legacy.example:9000/v1',
+          });
+          f.info = {...f.info, 'provider': 'custom:legacy', 'model': 'm'};
+          f.endpoint = 'http://legacy.example:9000/v1';
+        },
+      ),
+      (
+        'a reviewed provider at its standard address in another spelling',
+        (f) {
+          f.info = {...f.info, 'provider': 'openrouter', 'model': 'm'};
+          f.endpoint = ' https://OpenRouter.ai/api/v1/';
+        },
+      ),
+    ]) {
+      test('$name can be changed', () async {
+        final (f, c) = await loaded(arrange);
+        expect(c.endpointOnlyHere, isFalse);
+        expect(c.canChangeMain, isTrue);
+        expect(
+          await c.setMain('anthropic', 'claude-haiku-4.5'),
+          isA<NgModelSaved>(),
+        );
+        expect(f.modelWrites, hasLength(1));
+      });
+    }
+
+    test(
+      'route rows the app cannot read leave the default unchangeable',
+      () async {
+        for (final endpoints in [
+          ['not a row'],
+          [
+            {'id': 'a', 'is_current': 'yes'},
+          ],
+        ]) {
+          final (f, c) = await loaded(
+            (f) => f.routeOverride = {
+              'current': {
+                'provider': 'anthropic',
+                'model': 'claude-opus-4.5',
+                'base_url': '',
+              },
+              'endpoints': endpoints,
+            },
+          );
+          expect(c.routeVerified, isFalse, reason: '$endpoints');
+          expect(c.canChangeMain, isFalse, reason: '$endpoints');
+        }
+      },
+    );
 
     test('an unreadable route leaves the default unchangeable', () async {
       final (f, c) = await loaded((f) => f.routeStatus = 500);
@@ -183,7 +447,8 @@ void main() {
       expect(c.canChangeMain, isTrue);
     });
 
-    test('a change that lands on a custom endpoint is not confirmed', () async {
+    test('a change after which the old address is still there is not '
+        'confirmed', () async {
       final fixture = ModelsFixture();
       final controller = NgModelSettingsController(fixture.client);
       addTearDown(controller.dispose);
@@ -200,7 +465,7 @@ void main() {
       fixture.endpoint = 'https://private.example/v1';
       write.complete(http.Response('{"ok":true}', 200));
       expect(await pending, isA<NgModelSaveFailed>());
-      expect(controller.customRoute, isTrue);
+      expect(controller.endpointOnlyHere, isTrue);
       expect(controller.canChangeMain, isFalse);
     });
   });
@@ -261,6 +526,20 @@ void main() {
       },
     );
 
+    test('a thinking level the gateway did not keep is not a save', () async {
+      final (f, c) = await loaded((f) => f.persist = false);
+      expect(
+        await c.setAuxEffort('compression', 'high'),
+        isA<NgModelSaveFailed>(),
+      );
+      expect(f.modelWrites.single['reasoning_effort'], 'high');
+      expect(
+        c.auxTasks!.firstWhere((t) => t.task == 'compression').effort,
+        'low',
+      );
+      expect(c.saving, isFalse);
+    });
+
     test('no thinking level is sent to a gateway that reports none', () async {
       final (f, c) = await loaded();
       expect(
@@ -277,12 +556,26 @@ void main() {
         () => c.setAux('custom_route', 'auto', ''),
         () => c.setAuxEffort('custom_route', 'high'),
         () => c.setAux('never_listed', 'anthropic', 'claude-haiku-4.5'),
-        () => c.setAux('vision', 'homelab', 'local-llm'),
+        () => c.setAux('vision', 'custom', 'private-model'),
         () => c.setAux('vision', 'openrouter', 'openai/gpt-pro'),
       ]) {
         expect(await attempt(), isA<NgModelSaveFailed>());
       }
       expect(f.modelWrites, isEmpty);
+
+      // A named endpoint is assigned by name, like any other provider.
+      expect(
+        await c.setAux('vision', 'homelab', 'local-llm'),
+        isA<NgModelSaved>(),
+      );
+      expect(f.modelWrites.single, {
+        'scope': 'auxiliary',
+        'task': 'vision',
+        'provider': 'homelab',
+        'model': 'local-llm',
+        'confirm_expensive_model': false,
+        'profile': profile,
+      });
     });
 
     test('a save the gateway did not keep is not a save', () async {
@@ -326,10 +619,11 @@ void main() {
       final (f, c) = await loaded();
       expect(c.addFallback('anthropic', 'claude-haiku-4.5'), isTrue);
       expect(c.fallbackDirty, isTrue);
-      // The same route twice, an endpoint and a plan-locked model are refused.
+      // The same route twice, a plan-locked model and one that is not
+      // listed are refused.
       expect(c.addFallback('anthropic', 'claude-haiku-4.5'), isFalse);
-      expect(c.addFallback('homelab', 'local-llm'), isFalse);
       expect(c.addFallback('openrouter', 'openai/gpt-pro'), isFalse);
+      expect(c.addFallback('anthropic', 'made-up'), isFalse);
       expect(c.fallbackDraft.map((e) => e.model), [
         'google/gemini-flash',
         'claude-haiku-4.5',
@@ -348,6 +642,88 @@ void main() {
       expect(c.fallbackDirty, isFalse);
       expect(f.configWrites, isEmpty);
     });
+
+    test(
+      'a row is given another model in place, named endpoints included',
+      () async {
+        final (f, c) = await loaded(
+          (f) => f.config = {
+            'fallback_providers': [
+              {'provider': 'openrouter', 'model': 'google/gemini-flash'},
+              {'provider': 'homelab', 'model': 'local-llm'},
+              {
+                'provider': 'lab',
+                'model': 'private-model',
+                'base_url': r'${LAB_URL}',
+                'key_env': 'LAB_KEY',
+              },
+              {'provider': 'retired', 'model': 'old-model'},
+            ],
+          },
+        );
+        // A named endpoint is an ordinary row; routing details and a provider
+        // the gateway no longer lists keep the model they have.
+        expect(c.fallbackLocked(c.fallbackDraft[1]), isFalse);
+        expect(c.fallbackLocked(c.fallbackDraft[2]), isTrue);
+        expect(c.fallbackLocked(c.fallbackDraft[3]), isTrue);
+
+        expect(c.replaceFallback(0, 'anthropic', 'claude-haiku-4.5'), isTrue);
+        expect(c.fallbackDirty, isTrue);
+        // Refused: a row already in the list, the same model again, a model
+        // that cannot be assigned, a row that must keep its model, no row.
+        expect(c.replaceFallback(0, 'homelab', 'local-llm'), isFalse);
+        expect(c.replaceFallback(0, 'anthropic', 'claude-haiku-4.5'), isFalse);
+        expect(c.replaceFallback(0, 'openrouter', 'openai/gpt-pro'), isFalse);
+        expect(c.replaceFallback(2, 'anthropic', 'claude-opus-4.5'), isFalse);
+        expect(c.replaceFallback(3, 'anthropic', 'claude-opus-4.5'), isFalse);
+        expect(c.replaceFallback(9, 'anthropic', 'claude-opus-4.5'), isFalse);
+        expect(
+          c.replaceFallback(1, 'openrouter', 'google/gemini-flash'),
+          isTrue,
+        );
+        expect(f.configWrites, isEmpty);
+
+        expect(await c.saveFallbacks(), isA<NgModelSaved>());
+        final sent = f.configWrites.single['config'] as Map<String, dynamic>;
+        expect(sent['fallback_providers'], [
+          {'provider': 'anthropic', 'model': 'claude-haiku-4.5'},
+          {'provider': 'openrouter', 'model': 'google/gemini-flash'},
+          {
+            'provider': 'lab',
+            'model': 'private-model',
+            'base_url': r'${LAB_URL}',
+            'key_env': 'LAB_KEY',
+          },
+          {'provider': 'retired', 'model': 'old-model'},
+        ]);
+        expect(c.fallbackDirty, isFalse);
+
+        // Not while a save is being read back, nor while the list cannot be
+        // read.
+        final held = Completer<http.Response>();
+        f.heldWrite = held;
+        final saving = c.saveFallbacks();
+        await pumpEventQueue();
+        expect(c.saving, isTrue);
+        expect(c.replaceFallback(1, 'anthropic', 'claude-opus-4.5'), isFalse);
+        f.heldWrite = null;
+        held.complete(http.Response('{"ok":true}', 200));
+        await saving;
+        f.schemaStatus = 404;
+        await c.load();
+        expect(c.fallbackFailed, isTrue);
+        expect(c.replaceFallback(1, 'anthropic', 'claude-opus-4.5'), isFalse);
+        f.schemaStatus = 200;
+        await c.load();
+
+        // A named endpoint is added by name as well.
+        expect(c.addFallback('homelab', 'local-llm'), isTrue);
+        expect(c.fallbackDraft.last.toJson(), {
+          'provider': 'homelab',
+          'model': 'local-llm',
+        });
+      },
+    );
 
     test('saving sends only the list, in order, and reads it back', () async {
       final (f, c) = await loaded();
@@ -466,6 +842,32 @@ void main() {
       c.revertFallbacks();
       expect(c.fallbackDraft.single.model, 'meta/llama-free');
     });
+
+    test('unsaved edits survive a refresh that fails', () async {
+      final (f, c) = await loaded();
+      c.addFallback('anthropic', 'claude-haiku-4.5');
+      f.schemaStatus = 404;
+      await c.load();
+      expect(c.fallbackFailed, isTrue);
+      // Kept, but not editable or saveable until the list can be read again.
+      expect(c.fallbackDraft, hasLength(2));
+      expect(c.canEditFallbacks, isFalse);
+      c.removeFallback(0);
+      expect(c.addFallback('openrouter', 'meta/llama-free'), isFalse);
+      expect(c.fallbackDraft, hasLength(2));
+      expect(await c.saveFallbacks(), isA<NgModelSaveFailed>());
+      expect(f.configWrites, isEmpty);
+
+      f.schemaStatus = 200;
+      await c.load();
+      expect(c.fallbackFailed, isFalse);
+      expect(c.fallbackDraft.map((e) => e.model), [
+        'google/gemini-flash',
+        'claude-haiku-4.5',
+      ]);
+      expect(c.fallbackDirty, isTrue);
+      expect(c.canEditFallbacks, isTrue);
+    });
   });
 
   group('sections fail on their own', () {
@@ -562,6 +964,28 @@ void main() {
       expect(c.main!.model, 'claude-opus-4.5');
       // No read-back was attempted for a page that is gone.
       expect(fixture.at('/model/info'), hasLength(1));
+    });
+
+    test('a page that has closed sends nothing', () async {
+      final fixture = ModelsFixture();
+      addTearDown(fixture.client.close);
+      final c = NgModelSettingsController(fixture.client);
+      await c.load();
+      c.addFallback('anthropic', 'claude-haiku-4.5');
+      final requests = fixture.requests.length;
+      c.dispose();
+      expect(c.canChangeMain, isFalse);
+      expect(c.canEditAux, isFalse);
+      expect(c.canEditFallbacks, isFalse);
+      for (final attempt in [
+        () => c.setMain('openrouter', 'google/gemini-flash'),
+        () => c.setAux('vision', 'anthropic', 'claude-haiku-4.5'),
+        () => c.setAuxEffort('compression', 'high'),
+        () => c.saveFallbacks(),
+      ]) {
+        expect(await attempt(), isA<NgModelSaveFailed>());
+      }
+      expect(fixture.requests, hasLength(requests));
     });
 
     test('a slow first read cannot overwrite a newer one', () async {

@@ -48,6 +48,12 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
+        <!-- Notification-only messaging. No car launcher/category service. -->
+        <meta-data android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon"
+            android:resource="@drawable/ic_stat_mobile_push" />
+        <receiver android:name=".AutoMessageReceiver" android:exported="false" />
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.update_provider"

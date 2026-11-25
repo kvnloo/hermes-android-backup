@@ -57,27 +57,50 @@ void main() {
     expect(c.model('p', 'c')!.price!.output, '');
   });
 
-  test('models can only be assigned from standard providers', () {
+  test('models are assigned from every provider the gateway names', () {
     final c = catalog();
-    expect(c.assignable.map((p) => p.slug), ['anthropic', 'openrouter']);
+    expect(c.assignable.map((p) => p.slug), [
+      'anthropic',
+      'openrouter',
+      'homelab',
+    ]);
     expect(c.canAssign('anthropic', 'claude-haiku-4.5'), isTrue);
     expect(c.canAssign('anthropic', 'not-listed'), isFalse);
     // Not on the signed-in plan.
     expect(c.model('openrouter', 'openai/gpt-pro')!.locked, isTrue);
     expect(c.canAssign('openrouter', 'openai/gpt-pro'), isFalse);
-    // An endpoint set up on the gateway: shown, never assigned.
-    expect(c.provider('homelab')!.custom, isTrue);
-    expect(c.canAssign('homelab', 'local-llm'), isFalse);
+    // A named endpoint is assigned by name like any other provider.
+    expect(c.provider('homelab')!.gatewayOnly, isFalse);
+    expect(c.canAssign('homelab', 'local-llm'), isTrue);
   });
 
-  test('every way a provider can be an endpoint counts as custom', () {
+  test('endpoints with no name and legacy custom: rows are not chosen', () {
+    for (final slug in [
+      'custom',
+      'local',
+      'Custom',
+      'ollama',
+      'llama.cpp',
+      'custom:lab',
+      'custom:ollama',
+    ]) {
+      final c = catalog([
+        {
+          'slug': slug,
+          'models': ['m'],
+        },
+      ]);
+      expect(c.providers.single.gatewayOnly, isTrue, reason: slug);
+      expect(c.assignable, isEmpty, reason: slug);
+      expect(c.canAssign(slug, 'm'), isFalse, reason: slug);
+    }
+    // `providers:` entries, however the gateway marks them, are chosen by
+    // name.
     for (final row in [
-      {'slug': 'custom'},
-      {'slug': 'local'},
-      {'slug': 'custom:lab'},
-      {'slug': 'openai', 'is_user_defined': true},
-      {'slug': 'openai', 'api_url': 'https://private.example/v1'},
-      {'slug': 'openai', 'base_url': 'https://private.example/v1'},
+      {'slug': 'lab', 'is_user_defined': true},
+      {'slug': 'lab', 'api_url': 'https://private.example/v1'},
+      {'slug': 'lab', 'base_url': 'https://private.example/v1'},
+      {'slug': 'customer-cloud'},
     ]) {
       final c = catalog([
         {
@@ -85,19 +108,10 @@ void main() {
           'models': ['m'],
         },
       ]);
-      expect(c.providers.single.custom, isTrue, reason: '$row');
-      expect(c.assignable, isEmpty, reason: '$row');
+      final slug = row['slug'] as String;
+      expect(c.providers.single.gatewayOnly, isFalse, reason: '$row');
+      expect(c.canAssign(slug, 'm'), isTrue, reason: '$row');
     }
-    expect(
-      catalog([
-        {
-          'slug': 'openai',
-          'api_url': '',
-          'models': ['m'],
-        },
-      ]).providers.single.custom,
-      isFalse,
-    );
   });
 
   test('skips rows it cannot name and repeats', () {
@@ -201,7 +215,7 @@ void main() {
     expect(pooled.accounts.last.resetsAt, DateTime.utc(2030, 3));
   });
 
-  test('default model: context, abilities and endpoint', () {
+  test('default model: context and abilities', () {
     final main = NgMainModel.fromInfo(fixture.info);
     expect(main.provider, 'anthropic');
     expect(main.model, 'claude-opus-4.5');
@@ -212,7 +226,6 @@ void main() {
     expect(main.tools, isTrue);
     expect(main.vision, isTrue);
     expect(main.reasoning, isTrue);
-    expect(main.customEndpoint, isFalse);
     expect(main.assigned, isTrue);
 
     final bare = NgMainModel.fromInfo({'model': 7, 'provider': null});
@@ -220,19 +233,6 @@ void main() {
     expect(bare.effectiveContext, 0);
     expect(bare.maxOutput, isNull);
     expect(bare.tools, isNull);
-
-    expect(
-      NgMainModel.fromInfo({
-        'provider': 'anthropic',
-        'model': 'm',
-        'base_url': 'https://private.example/v1',
-      }).customEndpoint,
-      isTrue,
-    );
-    expect(
-      NgMainModel.fromInfo({'provider': 'custom', 'model': 'm'}).customEndpoint,
-      isTrue,
-    );
   });
 
   test('helper tasks: defaults, endpoints and thinking levels', () {

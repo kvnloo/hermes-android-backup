@@ -198,12 +198,28 @@ class ResumedGatewaySession {
   final Map<String, dynamic>? inflight;
   final List<dynamic> openRequests;
 
+  /// Canonical session authority only (absent on legacy gateways): the
+  /// session's current execution claim, which Stop and Steer must name.
+  final int? executionGeneration;
+
+  /// Canonical only: the snapshot's position in this session's own event
+  /// stream (its SessionEvents epoch, not the `gateway.ready` epoch).
+  final String? replayEpoch;
+  final int? lastSequence;
+
+  /// Canonical only: admissions not yet settled, as the owner lists them.
+  final List<Map<String, dynamic>> pending;
+
   const ResumedGatewaySession({
     required this.runtimeSessionId,
     this.running,
     this.status,
     this.inflight,
     this.openRequests = const [],
+    this.executionGeneration,
+    this.replayEpoch,
+    this.lastSequence,
+    this.pending = const [],
   });
 }
 
@@ -288,6 +304,12 @@ class WsClient {
   /// per-session listeners so one active session cannot consume another one's
   /// streamed response.
   final Map<String, List<StreamCallback>> _sessionStreams = {};
+
+  /// Canonical session authority: the newest execution generation this
+  /// socket admitted per runtime session (resume/create snapshot, submit
+  /// receipt, or an event's stamp). Stop and Steer name it; it is never
+  /// guessed or advanced to a claim the socket has not seen.
+  final Map<String, int> _executionGenerations = {};
   final Map<int, _ConnectionClosedListener> _connectionClosedListeners = {};
   Completer<Map<String, dynamic>>? _gatewayReadyCompleter;
   Map<String, dynamic>? _gatewayReadyFrame;
@@ -483,6 +505,7 @@ class WsClient {
     );
     _streams.clear();
     _sessionStreams.clear();
+    _executionGenerations.clear();
     for (final listener in listenersToNotify) {
       try {
         listener();
@@ -883,6 +906,10 @@ class WsClient {
   }
 
   void _dispatchEvent(StreamEvent event) {
+    _noteExecutionGeneration(
+      event.sessionId,
+      event.envelope['execution_generation'],
+    );
     try {
       onStreamEvent?.call(event);
     } catch (_) {
@@ -899,6 +926,36 @@ class WsClient {
         // One session observer cannot block other listeners or cleanup.
       }
     }
+  }
+
+  /// The execution generation this socket last admitted for [sessionId] on
+  /// the canonical session authority, or null when none was seen.
+  int? executionGenerationFor(String sessionId) =>
+      _executionGenerations[sessionId];
+
+  void _noteExecutionGeneration(String? sessionId, Object? value) {
+    if (sessionId == null || sessionId.isEmpty || value is! int) return;
+    final known = _executionGenerations[sessionId];
+    if (known == null || value > known) {
+      _executionGenerations[sessionId] = value;
+    }
+  }
+
+  /// The generation a canonical Stop/Steer for [sessionId] must carry,
+  /// captured before anything awaits; null on a legacy gateway, whose strict
+  /// params refuse the key. A canonical socket that has admitted no
+  /// generation for the session refuses locally rather than guess one.
+  int? _controlGeneration(String method, String sessionId) {
+    if (!sessionAuthority) return null;
+    final generation = _executionGenerations[sessionId];
+    if (generation == null) {
+      throw JsonRpcError(
+        method,
+        'The running turn is not known yet.',
+        reason: 'execution_generation_unknown',
+      );
+    }
+    return generation;
   }
 
   /// Dispatch a streaming event to a specific request's subscribers.
@@ -1011,11 +1068,15 @@ class WsClient {
     void Function()? onSent,
     void Function()? onAccepted,
     bool Function()? maySend,
+    Future<bool> Function()? beforeSend,
     String? submissionId,
     Duration timeout = const Duration(minutes: 10),
   }) async {
     final source = _channel;
     final promptText = await _androidPromptText(message);
+    if (beforeSend != null && !await beforeSend()) {
+      throw StateError('Notification admission revoked');
+    }
     // The read-only configuration lookup is an async boundary, not admission
     // authority. Never lend its result to a replacement socket or stale owner.
     if (!_connected || !identical(source, _channel)) {
@@ -1104,6 +1165,9 @@ class WsClient {
           // The refusal crossed an async boundary: re-validate admission and
           // socket ownership before the compatibility retry writes again, so
           // a stale owner or a replacement socket never receives the prompt.
+          if (beforeSend != null && !await beforeSend()) {
+            throw StateError('Notification admission revoked');
+          }
           if (!_connected || !identical(source, _channel)) {
             throw JsonRpcError(
               'prompt.submit',
@@ -1130,6 +1194,10 @@ class WsClient {
       // Stock typed voice controls acknowledge without starting an agent turn
       // or emitting a terminal frame. Do not wait ten minutes for one.
       final result = response['result'];
+      if (result is Map) {
+        // A canonical receipt names the execution its admission started.
+        _noteExecutionGeneration(sessionId, result['execution_generation']);
+      }
       if (result is Map &&
           (result['voice_stopped'] == true ||
               const {
@@ -1158,12 +1226,17 @@ class WsClient {
   }
 
   /// Queues guidance at a safe boundary without interrupting the active turn.
-  /// Never retry this RPC automatically: it has no idempotency key.
+  /// Never retry this RPC automatically: it has no idempotency key. On the
+  /// canonical session authority it names the execution generation this
+  /// socket last admitted for [sessionId]; a turn that changed meanwhile
+  /// refuses it (`stale_generation`), which is surfaced, not retried.
   Future<bool> steerSession(String sessionId, String text) async {
     final guidance = text.trim();
     if (guidance.isEmpty) return false;
+    final generation = _controlGeneration('session.steer', sessionId);
     final response = await send('session.steer', {
       'session_id': sessionId,
+      'execution_generation': ?generation,
       'text': guidance,
     });
     final error = response['error'];
@@ -1255,9 +1328,17 @@ class WsClient {
   // Older saved turns that carried the note are still decoded for display.
   Future<String> _androidPromptText(String message) async => message;
 
-  /// Cooperatively interrupts the active turn for one gateway session.
+  /// Cooperatively interrupts the active turn for one gateway session. On
+  /// the canonical session authority it names the execution generation this
+  /// socket last admitted, so a later claim is never stopped by it; its
+  /// `stale_generation` refusal is surfaced, never retried against the newer
+  /// turn. Legacy gateways keep the bare shape their params require.
   Future<void> interruptSession(String sessionId) async {
-    final response = await send('session.interrupt', {'session_id': sessionId});
+    final generation = _controlGeneration('session.interrupt', sessionId);
+    final response = await send('session.interrupt', {
+      'session_id': sessionId,
+      'execution_generation': ?generation,
+    });
     final error = response['error'];
     if (error != null) {
       throw _gatewayResponseError(
@@ -1423,6 +1504,11 @@ class WsClient {
       );
     }
     final rawInflight = payload['inflight'];
+    final generation = payload['execution_generation'];
+    final replayEpoch = payload['replay_epoch'];
+    final lastSequence = payload['last_sequence'];
+    final pending = payload['pending'];
+    _noteExecutionGeneration(runtimeSessionId, generation);
     return ResumedGatewaySession(
       runtimeSessionId: runtimeSessionId,
       running: payload['running'] as bool?,
@@ -1432,6 +1518,15 @@ class WsClient {
           : null,
       openRequests: payload['open_requests'] is List
           ? List<dynamic>.from(payload['open_requests'] as List)
+          : const [],
+      executionGeneration: generation is int ? generation : null,
+      replayEpoch: replayEpoch is String ? replayEpoch : null,
+      lastSequence: lastSequence is int ? lastSequence : null,
+      pending: pending is List
+          ? [
+              for (final row in pending)
+                if (row is Map) Map<String, dynamic>.from(row),
+            ]
           : const [],
     );
   }
@@ -1594,6 +1689,8 @@ class WsClient {
         'Gateway returned incomplete session identities',
       );
     }
+    // A canonical create attaches with the resume snapshot's fields.
+    _noteExecutionGeneration(runtimeSessionId, payload['execution_generation']);
     return CreatedGatewaySession(
       runtimeSessionId: runtimeSessionId,
       storedSessionId: storedSessionId,

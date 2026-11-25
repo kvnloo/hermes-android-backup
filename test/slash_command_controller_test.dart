@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/controllers/slash_command_controller.dart';
@@ -97,11 +99,15 @@ class _FakeSlashGateway implements SlashCommandGateway {
     SlashCommandCatalog? catalog,
     this.result = const SlashCommandResult.exec('ok'),
     this.error,
+    this.catalogError,
+    this.pendingResult,
   }) : catalog = catalog ?? _catalog();
 
   final SlashCommandCatalog? catalog;
   final SlashCommandResult result;
   final Object? error;
+  final Object? catalogError;
+  final Completer<SlashCommandResult>? pendingResult;
   final List<String> commands = [];
   var catalogLoads = 0;
 
@@ -111,6 +117,7 @@ class _FakeSlashGateway implements SlashCommandGateway {
   @override
   Future<SlashCommandCatalog> fetchSlashCommands({String? sessionId}) async {
     catalogLoads += 1;
+    if (catalogError != null) throw catalogError!;
     final cached = catalog;
     if (cached == null) throw StateError('gateway offline');
     return cached;
@@ -126,6 +133,25 @@ class _FakeSlashGateway implements SlashCommandGateway {
     onSent?.call();
     final failure = error;
     if (failure != null) throw failure;
+    return pendingResult == null ? result : await pendingResult!.future;
+  }
+}
+
+class _HeldCatalogGateway extends _FakeSlashGateway {
+  Object? failure;
+  final pending = Completer<SlashCommandCatalog>();
+  @override
+  Future<SlashCommandCatalog> fetchSlashCommands({String? sessionId}) =>
+      pending.future;
+  @override
+  Future<SlashCommandResult> runSlashCommand({
+    required String sessionId,
+    required String command,
+    void Function()? onSent,
+  }) async {
+    commands.add(command);
+    onSent?.call();
+    if (failure case final error?) throw error;
     return result;
   }
 }
@@ -137,44 +163,89 @@ String _composerText(WidgetTester tester) =>
 /// test needs its own session identity.
 var _pumpedSessions = 0;
 
+ChatScreen _chatScreen({
+  required SlashCommandGateway slashGateway,
+  TestRemotePromptSubmit? remoteSubmit,
+  required String sessionId,
+  http.Client? apiClient,
+  TestDesktopConnectionHook? connectionHook,
+}) {
+  return ChatScreen(
+    connection: SavedConnection(
+      id: 'slash-fixture',
+      label: 'Slash fixture',
+      host: 'slash.invalid',
+      port: 8642,
+      apiKey: 'fixture-key',
+    ),
+    session: Session(
+      id: sessionId,
+      title: 'Slash chat',
+      model: 'fixture-model',
+      source: 'test',
+      messageCount: 0,
+      isActive: true,
+      preview: '',
+      startedAt: 1,
+    ),
+    testApiClient: ApiClient(
+      baseUrl: 'http://slash.invalid',
+      apiKey: 'fixture-key',
+      httpClient:
+          apiClient ??
+          MockClient((_) async => http.Response('{"data":[]}', 200)),
+    ),
+    testVoiceComposerAdapter: FakeVoiceComposerAdapter(),
+    testSlashGateway: slashGateway,
+    testDesktopConnectionHook: connectionHook,
+    testRemotePromptSubmit: completedStockTurn(remoteSubmit),
+  );
+}
+
 Future<void> _pumpChat(
   WidgetTester tester, {
   required SlashCommandGateway slashGateway,
   TestRemotePromptSubmit? remoteSubmit,
   String? sessionId,
+  http.Client? apiClient,
+  TestDesktopConnectionHook? connectionHook,
 }) async {
   final id = sessionId ?? 'slash-session-${_pumpedSessions++}';
   await tester.pumpWidget(
     MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: ChatScreen(
-        connection: SavedConnection(
-          id: 'slash-fixture',
-          label: 'Slash fixture',
-          host: 'slash.invalid',
-          port: 8642,
-          apiKey: 'fixture-key',
-        ),
-        session: Session(
-          id: id,
-          title: 'Slash chat',
-          model: 'fixture-model',
-          source: 'test',
-          messageCount: 0,
-          isActive: true,
-          preview: '',
-          startedAt: 1,
-        ),
-        testApiClient: ApiClient(
-          baseUrl: 'http://slash.invalid',
-          apiKey: 'fixture-key',
-          httpClient: MockClient((_) async => http.Response('{"data":[]}', 200)),
-        ),
-        testVoiceComposerAdapter: FakeVoiceComposerAdapter(),
-        testSlashGateway: slashGateway,
-        testRemotePromptSubmit: completedStockTurn(remoteSubmit),
+      home: _chatScreen(
+        slashGateway: slashGateway,
+        remoteSubmit: remoteSubmit,
+        sessionId: id,
+        apiClient: apiClient,
+        connectionHook: connectionHook,
       ),
+    ),
+  );
+  await pumpChatUpdates(tester);
+}
+
+/// Pumps the chat as a PUSHED route over a stand-in session list, so
+/// navigation away (the `/sessions` intercept) is observable.
+Future<void> _pushChat(
+  WidgetTester tester, {
+  required SlashCommandGateway slashGateway,
+}) async {
+  final id = 'slash-session-${_pumpedSessions++}';
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: const Scaffold(body: SizedBox(key: Key('session-list-page'))),
+    ),
+  );
+  final context = tester.element(find.byKey(const Key('session-list-page')));
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      settings: const RouteSettings(name: '/classic-session-chat'),
+      builder: (_) => _chatScreen(slashGateway: slashGateway, sessionId: id),
     ),
   );
   await pumpChatUpdates(tester);
@@ -482,6 +553,44 @@ void main() {
     });
   });
 
+  group('learned refusals', () {
+    test('a refused command disappears from the dropdown matches', () async {
+      final controller = SlashCommandController(
+        loadCatalog: () async => _catalog(),
+        limit: 20,
+      );
+      addTearDown(controller.dispose);
+      controller.updateText('/');
+      await controller.ensureCatalog();
+      expect(controller.matches.map((c) => c.name), contains('status'));
+
+      controller.markRefused('/status');
+      expect(controller.matches.map((c) => c.name), isNot(contains('status')));
+      controller.updateText('/st');
+      expect(controller.matches.map((c) => c.name), isNot(contains('status')));
+    });
+
+    test(
+      'reconnect drops the learned refusals even with a reused catalog',
+      () async {
+        final memory = SlashCommandRefusals();
+        final catalog = _catalog();
+        final controller = SlashCommandController(
+          loadCatalog: () async => catalog,
+          refusals: memory,
+          limit: 20,
+        );
+        addTearDown(controller.dispose);
+        await controller.ensureCatalog();
+        controller.markRefused('status');
+        memory.reset();
+        controller.invalidate();
+        await controller.ensureCatalog();
+        expect(controller.matches.map((c) => c.name), contains('status'));
+      },
+    );
+  });
+
   group('dropdown', () {
     testWidgets('lists the filtered commands and reports a choice', (
       tester,
@@ -581,15 +690,17 @@ void main() {
     });
 
     test('plugin commands carry a slash and their description', () {
-      final deploy = _catalog().commands
-          .firstWhere((command) => command.name == 'deploy');
+      final deploy = _catalog().commands.firstWhere(
+        (command) => command.name == 'deploy',
+      );
       expect(deploy.invocation, '/deploy');
       expect(deploy.description, 'Deploy the current build');
     });
 
     test('a skill without a pairs row keeps an empty description', () {
-      final orphan = _catalog().commands
-          .firstWhere((command) => command.name == 'skill:orphan');
+      final orphan = _catalog().commands.firstWhere(
+        (command) => command.name == 'skill:orphan',
+      );
       expect(orphan.description, isEmpty);
       expect(orphan.invocation, '/skill:orphan');
     });
@@ -611,7 +722,10 @@ void main() {
         'plugin_commands': {'logs': 'Plugin copy'},
       });
       expect(catalog.commands.map((command) => command.name), ['logs']);
-      expect(catalog.commands.single.description, 'Show recent gateway log lines');
+      expect(
+        catalog.commands.single.description,
+        'Show recent gateway log lines',
+      );
       expect(catalog.commands.single.category, 'TUI');
     });
 
@@ -939,15 +1053,57 @@ void main() {
       );
     });
 
-    testWidgets('an unsupported command falls back to the plain send', (
+    testWidgets(
+      'a catalogued unsupported command shows a refusal notice, not prose',
+      (tester) async {
+        final submitted = <String>[];
+        final gateway = _FakeSlashGateway(
+          error: JsonRpcError(
+            'slash.exec',
+            'not a quick/plugin/bundle/skill command: /status',
+            code: 4018,
+          ),
+        );
+        await _pumpChat(
+          tester,
+          slashGateway: gateway,
+          remoteSubmit:
+              ({
+                required sessionId,
+                required text,
+                required onEvent,
+                required onSent,
+              }) async {
+                onSent();
+                submitted.add(text);
+              },
+        );
+
+        await tester.enterText(find.byKey(_composerKey), '/status');
+        await tester.pump();
+        await _send(tester);
+
+        expect(gateway.commands, ['/status']);
+        expect(submitted, isEmpty);
+        expect(_composerText(tester), '/status');
+        expect(find.byKey(Key('slash-command-notice')), findsOneWidget);
+        expect(
+          find.textContaining('not available on this server'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('the gateway refusal hint rides the notice card', (
       tester,
     ) async {
       final submitted = <String>[];
       final gateway = _FakeSlashGateway(
         error: JsonRpcError(
           'slash.exec',
-          'not a quick/plugin/bundle/skill command: /status',
+          'unsupported_command',
           code: 4018,
+          data: {'detail': 'Run `hermes backup --quick` in a terminal.'},
         ),
       );
       await _pumpChat(
@@ -969,9 +1125,778 @@ void main() {
       await tester.pump();
       await _send(tester);
 
-      expect(gateway.commands, ['/status']);
-      expect(submitted, ['/status']);
+      expect(submitted, isEmpty);
+      expect(
+        find.textContaining('Run `hermes backup --quick` in a terminal.'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('not available on this server'), findsNothing);
+    });
+
+    testWidgets(
+      'a transport-level 4001 keeps the draft and the dropdown intact',
+      (tester) async {
+        final submitted = <String>[];
+        final gateway = _FakeSlashGateway(
+          error: JsonRpcError('slash.exec', 'session not found', code: 4001),
+        );
+        await _pumpChat(
+          tester,
+          slashGateway: gateway,
+          remoteSubmit:
+              ({
+                required sessionId,
+                required text,
+                required onEvent,
+                required onSent,
+              }) async {
+                onSent();
+                submitted.add(text);
+              },
+        );
+
+        await tester.enterText(find.byKey(_composerKey), '/status');
+        await tester.pump();
+        await _send(tester);
+
+        // A failure is not permission to send the command a second time.
+        expect(submitted, isEmpty);
+        expect(_composerText(tester), '/status');
+        expect(find.byKey(Key('slash-command-notice')), findsNothing);
+
+        await tester.enterText(find.byKey(_composerKey), '/stat');
+        await pumpChatUpdates(tester);
+        expect(find.byKey(ValueKey('slash-command-status')), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'the control-socket refusal shape (4001 + data.reason) gets the card',
+      (tester) async {
+        final submitted = <String>[];
+        final gateway = _FakeSlashGateway(
+          error: JsonRpcError(
+            'slash.exec',
+            'unsupported_command',
+            code: 4001,
+            // What `JsonRpcError.fromGateway` produces from the wire: the
+            // verdict rides data.reason and is surfaced on `.reason`.
+            reason: 'unsupported_command',
+            data: {
+              'reason': 'unsupported_command',
+              'detail':
+                  'Run `hermes profile export [name] -o <file>` in a terminal.',
+            },
+          ),
+        );
+        await _pumpChat(
+          tester,
+          slashGateway: gateway,
+          remoteSubmit:
+              ({
+                required sessionId,
+                required text,
+                required onEvent,
+                required onSent,
+              }) async {
+                onSent();
+                submitted.add(text);
+              },
+        );
+
+        await tester.enterText(find.byKey(_composerKey), '/status');
+        await tester.pump();
+        await _send(tester);
+
+        // Live stock gateways refuse with code 4001 and ride the verdict in
+        // data.reason — this is the shape shipped servers actually send.
+        expect(submitted, isEmpty);
+        expect(
+          find.textContaining('Run `hermes profile export'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'an unsupported_session_field verdict is not a command refusal',
+      (tester) async {
+        final submitted = <String>[];
+        final gateway = _FakeSlashGateway(
+          error: JsonRpcError(
+            'slash.exec',
+            'refused',
+            code: 4001,
+            reason: 'unsupported_session_field',
+            data: {'reason': 'unsupported_session_field'},
+          ),
+        );
+        await _pumpChat(
+          tester,
+          slashGateway: gateway,
+          remoteSubmit:
+              ({
+                required sessionId,
+                required text,
+                required onEvent,
+                required onSent,
+              }) async {
+                onSent();
+                submitted.add(text);
+              },
+        );
+
+        await tester.enterText(find.byKey(_composerKey), '/status');
+        await tester.pump();
+        await _send(tester);
+
+        expect(submitted, isEmpty);
+        expect(_composerText(tester), '/status');
+        expect(find.byKey(Key('slash-command-notice')), findsNothing);
+      },
+    );
+
+    testWidgets('a refused command is no longer offered by the dropdown', (
+      tester,
+    ) async {
+      final gateway = _FakeSlashGateway(
+        error: JsonRpcError('slash.exec', 'unsupported_command', code: 4018),
+      );
+      await _pumpChat(tester, slashGateway: gateway);
+
+      await tester.enterText(find.byKey(_composerKey), '/status');
+      await tester.pump();
+      await _send(tester);
+
+      await tester.enterText(find.byKey(_composerKey), '/stat');
+      await pumpChatUpdates(tester);
+      expect(find.byType(SlashCommandDropdown), findsOneWidget);
+      expect(find.byKey(ValueKey('slash-command-status')), findsNothing);
+      expect(find.text('No matching commands'), findsOneWidget);
+    });
+
+    testWidgets(
+      'an unsupported command outside the catalogue still falls back to the plain send',
+      (tester) async {
+        final submitted = <String>[];
+        final gateway = _FakeSlashGateway(
+          error: JsonRpcError(
+            'slash.exec',
+            'not a quick/plugin/bundle/skill command: /notacommand',
+            code: 4018,
+          ),
+        );
+        await _pumpChat(
+          tester,
+          slashGateway: gateway,
+          remoteSubmit:
+              ({
+                required sessionId,
+                required text,
+                required onEvent,
+                required onSent,
+              }) async {
+                onSent();
+                submitted.add(text);
+              },
+        );
+
+        await tester.enterText(find.byKey(_composerKey), '/notacommand');
+        await tester.pump();
+        await _send(tester);
+
+        expect(submitted, ['/notacommand']);
+        expect(_composerText(tester), isEmpty);
+      },
+    );
+  });
+
+  group('screen local intercepts', () {
+    // A model inventory (plus session metadata the picker's getSession call
+    // insists on) so `/model` can actually open the picker sheet.
+    http.Client inventoryClient() => MockClient((req) async {
+      if (req.url.path.contains('api/model/options')) {
+        return http.Response(
+          '{"model":"fixmodel","providers":[{"slug":"fixprov","models":["fixmodel"]}]}',
+          200,
+        );
+      }
+      if (req.url.path.startsWith('/api/sessions/')) {
+        return http.Response(
+          '{"object":"hermes.session","session":{"id":"x","model":"fixmodel"}}',
+          200,
+        );
+      }
+      return http.Response('{"data":[]}', 200);
+    });
+
+    Future<void> expectModelPicker(WidgetTester tester, String line) async {
+      final gateway = _FakeSlashGateway();
+      final submitted = <String>[];
+      await _pumpChat(
+        tester,
+        slashGateway: gateway,
+        apiClient: inventoryClient(),
+        remoteSubmit:
+            ({
+              required sessionId,
+              required text,
+              required onEvent,
+              required onSent,
+            }) async {
+              onSent();
+              submitted.add(text);
+            },
+      );
+
+      await tester.enterText(find.byKey(_composerKey), line);
+      await tester.pump();
+      // Not _send(): its pumpAndSettle never settles once the picker's
+      // spinner opens, so drive the tap with timed pumps instead.
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(gateway.commands, isEmpty);
+      expect(submitted, isEmpty);
       expect(_composerText(tester), isEmpty);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(BottomSheet), findsOneWidget);
+    }
+
+    testWidgets('/model opens the model picker instead of asking the gateway', (
+      tester,
+    ) async {
+      await expectModelPicker(tester, '/model');
+    });
+
+    testWidgets('//model canonicalizes to the same local path', (tester) async {
+      await expectModelPicker(tester, '//model');
+    });
+
+    testWidgets('/MODEL casefolds to the same local path', (tester) async {
+      await expectModelPicker(tester, '/MODEL');
+    });
+
+    testWidgets('/sessions pops back to the session list', (tester) async {
+      final gateway = _FakeSlashGateway();
+      await _pushChat(tester, slashGateway: gateway);
+
+      await tester.enterText(find.byKey(_composerKey), '/sessions');
+      await tester.pump();
+      await _send(tester);
+
+      expect(gateway.commands, isEmpty);
+      expect(find.byKey(_composerKey), findsNothing);
+      expect(find.byKey(Key('session-list-page')), findsOneWidget);
+    });
+
+    testWidgets('/resume pops back to the session list too', (tester) async {
+      final gateway = _FakeSlashGateway();
+      await _pushChat(tester, slashGateway: gateway);
+
+      await tester.enterText(find.byKey(_composerKey), '/resume');
+      await tester.pump();
+      await _send(tester);
+
+      expect(gateway.commands, isEmpty);
+      expect(find.byKey(_composerKey), findsNothing);
+      expect(find.byKey(Key('session-list-page')), findsOneWidget);
+    });
+
+    testWidgets('/sessions in an embedded chat answers with a notice', (
+      tester,
+    ) async {
+      final gateway = _FakeSlashGateway();
+      await _pumpChat(tester, slashGateway: gateway);
+
+      await tester.enterText(find.byKey(_composerKey), '/sessions');
+      await tester.pump();
+      await _send(tester);
+
+      expect(gateway.commands, isEmpty);
+      expect(_composerText(tester), '/sessions');
+      expect(find.byKey(Key('slash-command-notice')), findsOneWidget);
+      expect(find.textContaining('session list'), findsOneWidget);
+    });
+  });
+  group('review regressions', () {
+    Future<List<String>> prepare(
+      WidgetTester tester,
+      _FakeSlashGateway gateway, {
+      http.Client? apiClient,
+    }) async {
+      final submitted = <String>[];
+      await _pumpChat(
+        tester,
+        slashGateway: gateway,
+        apiClient: apiClient,
+        remoteSubmit:
+            ({
+              required sessionId,
+              required text,
+              required onEvent,
+              required onSent,
+            }) async {
+              onSent();
+              submitted.add(text);
+            },
+      );
+      return submitted;
+    }
+
+    testWidgets(
+      'a fresh send directive submits its expanded prompt exactly once',
+      (tester) async {
+        final gateway = _FakeSlashGateway(
+          result: SlashCommandResult.fromResult({
+            'type': 'send',
+            'message': 'expanded body',
+          }),
+        );
+        final submitted = await prepare(tester, gateway);
+        await tester.enterText(find.byKey(_composerKey), '/plan');
+        await _send(tester);
+        expect(gateway.commands, ['/plan']);
+        expect(submitted, ['expanded body']);
+        expect(_composerText(tester), isEmpty);
+      },
+    );
+
+    testWidgets('refusal after a catalog timeout never becomes prose', (
+      tester,
+    ) async {
+      final gateway = _HeldCatalogGateway()
+        ..failure = JsonRpcError(
+          'slash.exec',
+          'unsupported_command',
+          code: 4001,
+          reason: 'unsupported_command',
+        );
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/logs');
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 4));
+      await pumpChatUpdates(tester);
+      expect(gateway.commands, ['/logs']);
+      expect(submitted, isEmpty);
+      expect(_composerText(tester), '/logs');
+      expect(find.byKey(const Key('slash-command-notice')), findsOneWidget);
+      gateway.pending.complete(_catalog());
+      await pumpChatUpdates(tester);
+      await tester.enterText(find.byKey(_composerKey), '/log');
+      await pumpChatUpdates(tester);
+      expect(find.byKey(const ValueKey('slash-command-logs')), findsNothing);
+    });
+
+    testWidgets('refusal without a loaded catalog never becomes prose', (
+      tester,
+    ) async {
+      final gateway = _FakeSlashGateway(
+        catalogError: StateError('offline'),
+        error: JsonRpcError.fromGateway('slash.exec', {
+          'code': 4001,
+          'message': 'unsupported_command',
+          'data': {
+            'reason': 'unsupported_command',
+            'detail': 'Use a terminal.',
+          },
+        }, fallbackMessage: 'Slash failed'),
+      );
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/logs');
+      await _send(tester);
+      expect(gateway.commands, ['/logs']);
+      expect(submitted, isEmpty);
+      expect(_composerText(tester), '/logs');
+      expect(find.textContaining('Use a terminal.'), findsOneWidget);
+    });
+
+    testWidgets('an argument refusal does not hide the bare command', (
+      tester,
+    ) async {
+      final gateway = _FakeSlashGateway(
+        error: JsonRpcError(
+          'slash.exec',
+          'unsupported_command',
+          code: 4001,
+          reason: 'unsupported_command',
+        ),
+      );
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/cron add');
+      await _send(tester);
+      expect(submitted, isEmpty);
+      expect(_composerText(tester), '/cron add');
+      await tester.enterText(find.byKey(_composerKey), '/cron');
+      await pumpChatUpdates(tester);
+      expect(find.byKey(const ValueKey('slash-command-cron')), findsOneWidget);
+    });
+
+    testWidgets('4018 execution failures do not poison the command dropdown', (
+      tester,
+    ) async {
+      final gateway = _FakeSlashGateway(
+        error: JsonRpcError(
+          'slash.exec',
+          'quick command failed with exit code 1',
+          code: 4018,
+        ),
+      );
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/status');
+      await _send(tester);
+      expect(submitted, isEmpty);
+      expect(_composerText(tester), '/status');
+      expect(
+        find.byKey(const ValueKey('slash-command-status')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('model discovery failure preserves the shortcut draft', (
+      tester,
+    ) async {
+      final gateway = _FakeSlashGateway();
+      final submitted = await prepare(
+        tester,
+        gateway,
+        apiClient: MockClient((_) async => http.Response('{"data":[]}', 200)),
+      );
+      await tester.enterText(find.byKey(_composerKey), '/model');
+      await _send(tester);
+      expect(submitted, isEmpty);
+      expect(gateway.commands, isEmpty);
+      expect(_composerText(tester), '/model');
+      expect(find.byType(BottomSheet), findsNothing);
+    });
+
+    for (final line in ['/model gpt-5', '/resume old-chat', '/sessions all']) {
+      testWidgets('$line does not silently discard arguments', (tester) async {
+        final gateway = _FakeSlashGateway();
+        final submitted = await prepare(tester, gateway);
+        await tester.enterText(find.byKey(_composerKey), line);
+        await _send(tester);
+        expect(submitted, isEmpty);
+        expect(gateway.commands, isEmpty);
+        expect(_composerText(tester), line);
+        expect(find.byKey(const Key('slash-command-notice')), findsOneWidget);
+      });
+    }
+
+    testWidgets('new typing wins over a delayed prefill response', (
+      tester,
+    ) async {
+      final pending = Completer<SlashCommandResult>();
+      final gateway = _FakeSlashGateway(pendingResult: pending);
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/plan');
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      expect(gateway.commands, ['/plan']);
+      await tester.enterText(find.byKey(_composerKey), 'newer draft');
+      pending.complete(const SlashCommandResult.prefill('obsolete prefill'));
+      await pumpChatUpdates(tester);
+      expect(_composerText(tester), 'newer draft');
+      expect(submitted, isEmpty);
+    });
+
+    testWidgets('two taps during slash execution run exactly once', (
+      tester,
+    ) async {
+      final pending = Completer<SlashCommandResult>();
+      final gateway = _FakeSlashGateway(pendingResult: pending);
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/status');
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      expect(gateway.commands, ['/status']);
+      expect(submitted, isEmpty);
+      pending.complete(const SlashCommandResult.exec('done'));
+      await pumpChatUpdates(tester);
+      expect(gateway.commands, ['/status']);
+      expect(submitted, isEmpty);
+    });
+
+    testWidgets('old refusal cannot poison a reconnected catalog', (
+      tester,
+    ) async {
+      final pending = Completer<SlashCommandResult>();
+      final gateway = _FakeSlashGateway(pendingResult: pending);
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/status');
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      gateway.slashRefusals.reset();
+      pending.completeError(
+        JsonRpcError('slash.exec', 'unsupported_command', code: 4018),
+      );
+      await pumpChatUpdates(tester);
+      expect(_composerText(tester), '/status');
+      expect(submitted, isEmpty);
+      expect(find.byKey(const Key('slash-command-notice')), findsNothing);
+      await tester.enterText(find.byKey(_composerKey), '/stat');
+      await pumpChatUpdates(tester);
+      expect(
+        find.byKey(const ValueKey('slash-command-status')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      'delayed send directive preserves a newer draft without sending',
+      (tester) async {
+        final pending = Completer<SlashCommandResult>();
+        final gateway = _FakeSlashGateway(pendingResult: pending);
+        final submitted = await prepare(tester, gateway);
+        await tester.enterText(find.byKey(_composerKey), '/plan');
+        await tester.tap(find.byTooltip('Send'));
+        await tester.pump();
+        await tester.enterText(find.byKey(_composerKey), 'new draft');
+        pending.complete(const SlashCommandResult.prompt('expanded prompt'));
+        await pumpChatUpdates(tester);
+        expect(_composerText(tester), 'new draft');
+        expect(submitted, isEmpty);
+        expect(find.text('expanded prompt'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'model discovery completing after route disposal does not consume draft',
+      (tester) async {
+        final inventory = Completer<http.Response>();
+        final gateway = _FakeSlashGateway();
+        await prepare(
+          tester,
+          gateway,
+          apiClient: MockClient((req) {
+            if (req.url.path.contains('/api/model/options')) {
+              return inventory.future;
+            }
+            return Future.value(http.Response('{"data":[]}', 200));
+          }),
+        );
+        await tester.enterText(find.byKey(_composerKey), '/model');
+        await tester.tap(find.byTooltip('Send'));
+        await tester.pump();
+        await tester.enterText(find.byKey(_composerKey), 'newer model draft');
+        await tester.pumpWidget(const SizedBox());
+        inventory.complete(
+          http.Response(
+            '{"model":"m","providers":[{"slug":"p","models":["m"]}]}',
+            200,
+          ),
+        );
+        await pumpChatUpdates(tester);
+        expect(tester.takeException(), isNull);
+        expect(gateway.commands, isEmpty);
+      },
+    );
+
+    testWidgets(
+      'a refused draft survives disposing and reopening the real route',
+      (tester) async {
+        final gateway = _FakeSlashGateway(
+          error: JsonRpcError(
+            'slash.exec',
+            'unsupported_command',
+            code: 4001,
+            reason: 'unsupported_command',
+          ),
+        );
+        final submitted = <String>[];
+        const sessionId = 'refused-draft-reopen';
+        await _pumpChat(
+          tester,
+          slashGateway: gateway,
+          sessionId: sessionId,
+          remoteSubmit:
+              ({
+                required sessionId,
+                required text,
+                required onEvent,
+                required onSent,
+              }) async {
+                submitted.add(text);
+                onSent();
+              },
+        );
+        await tester.enterText(find.byKey(_composerKey), '/status');
+        await _send(tester);
+        await tester.pumpWidget(const SizedBox());
+        await pumpChatUpdates(tester);
+        await _pumpChat(tester, slashGateway: gateway, sessionId: sessionId);
+        expect(_composerText(tester), '/status');
+        expect(submitted, isEmpty);
+        expect(gateway.commands, ['/status']);
+        expect(
+          find.byKey(const ValueKey('slash-command-status')),
+          findsNothing,
+        );
+      },
+    );
+
+    testWidgets('new typing survives successful model discovery', (
+      tester,
+    ) async {
+      final inventory = Completer<http.Response>();
+      final gateway = _FakeSlashGateway();
+      await prepare(
+        tester,
+        gateway,
+        apiClient: MockClient((req) {
+          if (req.url.path.contains('/api/model/options')) {
+            return inventory.future;
+          }
+          if (req.url.path.startsWith('/api/sessions/') &&
+              !req.url.path.endsWith('/messages')) {
+            return Future.value(
+              http.Response(
+                '{"object":"hermes.session","session":{"id":"x","model":"m"}}',
+                200,
+              ),
+            );
+          }
+          return Future.value(http.Response('{"data":[]}', 200));
+        }),
+      );
+      await tester.enterText(find.byKey(_composerKey), '/model');
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      await tester.enterText(find.byKey(_composerKey), 'new model draft');
+      inventory.complete(
+        http.Response(
+          '{"model":"m","providers":[{"slug":"p","models":["m"]}]}',
+          200,
+        ),
+      );
+      for (
+        var i = 0;
+        i < 20 && find.byType(BottomSheet).evaluate().isEmpty;
+        i++
+      ) {
+        await tester.pump(const Duration(milliseconds: 50));
+      }
+      expect(find.byType(BottomSheet), findsOneWidget);
+      expect(_composerText(tester), 'new model draft');
+    });
+
+    testWidgets(
+      'a sessions shortcut never blindly pops an unrelated pushed route',
+      (tester) async {
+        final gateway = _FakeSlashGateway();
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const Scaffold(body: SizedBox(key: Key('not-a-browser'))),
+          ),
+        );
+        Navigator.of(
+          tester.element(find.byKey(const Key('not-a-browser'))),
+        ).push(
+          MaterialPageRoute(
+            builder: (_) => _chatScreen(
+              slashGateway: gateway,
+              sessionId: 'not-a-browser-chat',
+            ),
+          ),
+        );
+        await pumpChatUpdates(tester);
+        await tester.enterText(find.byKey(_composerKey), '/sessions');
+        await _send(tester);
+        expect(find.byKey(_composerKey), findsOneWidget);
+        expect(_composerText(tester), '/sessions');
+        expect(find.byKey(const Key('slash-command-notice')), findsOneWidget);
+        expect(gateway.commands, isEmpty);
+      },
+    );
+
+    testWidgets('disposing a route during catalog load never sends prose', (
+      tester,
+    ) async {
+      final gateway = _HeldCatalogGateway();
+      final submitted = await prepare(tester, gateway);
+      await tester.enterText(find.byKey(_composerKey), '/status');
+      await tester.tap(find.byTooltip('Send'));
+      await tester.pump();
+      await tester.pumpWidget(const SizedBox());
+      gateway.pending.complete(_catalog());
+      await tester.pump();
+      expect(submitted, isEmpty);
+      expect(gateway.commands, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  });
+  group('connection refusal authority', () {
+    test(
+      'aliases absent from pairs still execute and share refusals',
+      () async {
+        final catalog = SlashCommandCatalog.fromResult({
+          'pairs': [
+            ['/help', 'Help'],
+          ],
+          'canon': {'/h': '/help'},
+        });
+        final memory = SlashCommandRefusals();
+        final first = SlashCommandController(
+          loadCatalog: () async => catalog,
+          refusals: memory,
+        );
+        final second = SlashCommandController(
+          loadCatalog: () async => catalog,
+          refusals: memory,
+        );
+        addTearDown(second.dispose);
+        await first.ensureCatalog();
+        await second.ensureCatalog();
+        expect(first.isExecutable('h'), isTrue);
+        var changes = 0;
+        second.addListener(() => changes++);
+        first.markRefused('/H');
+        expect(second.matches, isEmpty);
+        expect(changes, greaterThan(0));
+        first.dispose();
+        // Disposed retained routes have detached from shared memory.
+        memory.reset();
+        await second.ensureCatalog();
+        expect(second.matches.single.name, 'help');
+      },
+    );
+
+    test('explicit empty execution set is authoritative in dropdown', () async {
+      final controller = SlashCommandController(
+        loadCatalog: () async => _catalog(executable: {}),
+      );
+      addTearDown(controller.dispose);
+      await controller.ensureCatalog();
+      expect(controller.matches, isEmpty);
+      expect(controller.isExecutable('status'), isFalse);
+    });
+
+    test('a held old catalog cannot return after a memory reset', () async {
+      final memory = SlashCommandRefusals();
+      final old = Completer<SlashCommandCatalog>();
+      var loads = 0;
+      final controller = SlashCommandController(
+        refusals: memory,
+        loadCatalog: () {
+          loads++;
+          return loads == 1
+              ? old.future
+              : Future.value(_catalog(executable: {'help'}));
+        },
+      );
+      addTearDown(controller.dispose);
+      final held = controller.ensureCatalog();
+      memory.reset();
+      expect(await controller.ensureCatalog(), isTrue);
+      old.complete(_catalog());
+      expect(await held, isFalse);
+      expect(controller.matches.single.name, 'help');
     });
   });
 }

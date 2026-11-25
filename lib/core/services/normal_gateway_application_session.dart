@@ -169,6 +169,7 @@ class NormalGatewayApplicationSession {
   final NormalGatewayResume _resume;
   final NormalGatewayHistory _history;
   final TurnNotificationService notifications;
+  ConversationNotificationTarget? Function(String)? conversationFor;
   final void Function()? onActivityChanged;
   final ChatPresentationRegistry? presentation;
   final Map<String, NormalGatewayChatOwner> _aliases = {};
@@ -253,6 +254,7 @@ class NormalGatewayApplicationSession {
     ChatPresentationRegistry? presentation,
     OperationalActivityStore? activityStore,
     void Function()? onActivityChanged,
+    ConversationNotificationTarget? Function(String)? conversationFor,
   }) {
     return NormalGatewayApplicationSession(
       connection: connection,
@@ -262,7 +264,7 @@ class NormalGatewayApplicationSession {
       client: DesktopGatewayClient.fromConnection(connection),
       historyClient: ApiClient.forConnection(connection),
       onActivityChanged: onActivityChanged,
-    );
+    )..conversationFor = conversationFor;
   }
 
   Iterable<NormalGatewayChatOwner> get chats => _aliases.values.toSet();
@@ -511,6 +513,8 @@ class NormalGatewayApplicationSession {
     for (final chat in chats) {
       if (state != DesktopConnectionState.connected) {
         chat._pendingInput.clear(); // exact socket identity is no longer valid
+        chat._parkAttention(); // ...but nothing was answered
+
         if (chat.wireEmitted && chat.snapshot.hasActiveTurn) {
           chat.phase = NormalGatewayTurnPhase.reconciling;
         }
@@ -524,9 +528,15 @@ class NormalGatewayApplicationSession {
   }
 
   void setLifecycle({required bool background, bool? backgroundWorkEnabled}) {
+    final returning = _background && !background;
     _background = background;
     if (backgroundWorkEnabled != null) {
       _backgroundWorkEnabled = backgroundWorkEnabled;
+    }
+    if (returning) {
+      // A legacy gateway never says a request was answered on another
+      // device; ask which are still open (no answer is sent).
+      unawaited(client?.revalidateServerRequests());
     }
     client?.setReconnectAllowed(_canRecover);
     if (_canRecover) {
@@ -685,6 +695,7 @@ class NormalGatewayApplicationSession {
     );
     if (!_closed && identical(chat._pendingInput[requestId], pending)) {
       chat._pendingInput.remove(requestId);
+      chat._withdrawAttention(requestId);
       chat._notify();
     }
     return true;
@@ -692,7 +703,10 @@ class NormalGatewayApplicationSession {
 
   void forgetAnsweredInput(String requestId) {
     for (final chat in chats) {
-      if (chat._pendingInput.remove(requestId) != null) chat._notify();
+      if (chat._pendingInput.remove(requestId) != null) {
+        chat._withdrawAttention(requestId);
+        chat._notify();
+      }
     }
   }
 
@@ -726,6 +740,15 @@ class _PendingActivityWrite {
 
   _PendingActivityWrite(this.record);
 }
+
+/// One attention notification a chat posted: what its cancellation needs.
+typedef _PostedAttention = ({
+  HermesNotificationKind kind,
+  String sessionId,
+  String eventId,
+  String wire,
+  Future<void> shown,
+});
 
 class NormalGatewayChatOwner {
   final NormalGatewayApplicationSession _session;
@@ -789,6 +812,21 @@ class NormalGatewayChatOwner {
   _observedSubagents = [];
   ChatTimeline _timeline = const ChatTimeline();
   final Map<String, StreamEvent> _pendingInput = {};
+
+  /// Attention notifications posted for this chat, by local request id: taken
+  /// down once the request is answered (here or on another device), withdrawn
+  /// by the server, or settled with the turn.
+  final Map<String, _PostedAttention> _postedAttention = {};
+
+  /// Posted notifications whose socket dropped, by server (wire) request id.
+  /// A lost connection answers nothing, so they stay up: a redelivery of the
+  /// same server request adopts one, an authoritative resume without it or
+  /// the turn's settlement takes it down.
+  final Map<String, _PostedAttention> _parkedAttention = {};
+
+  /// Server request ids already notified (oldest first). A reconnect replays a
+  /// still-open request under a new local key; it must not alert again.
+  final Set<String> _notifiedAttention = <String>{};
   final List<StreamEvent> _inputUpdates = [];
   final List<StreamEvent> _auxiliaryEvents = [];
   final Map<Object, void Function(NormalGatewayChatSnapshot)> _listeners = {};
@@ -1604,6 +1642,7 @@ class NormalGatewayChatOwner {
     bool canRestoreDraft = false,
     ComposerDraftHandle? draftHandle,
     bool Function()? maySubmit,
+    Future<bool> Function()? beforeSend,
     void Function()? onAccepted,
   }) async {
     if (_redirect != null) {
@@ -1617,6 +1656,7 @@ class NormalGatewayChatOwner {
         canRestoreDraft: canRestoreDraft,
         draftHandle: draftHandle,
         maySubmit: maySubmit,
+        beforeSend: beforeSend,
         onAccepted: onAccepted,
       );
     }
@@ -1642,6 +1682,7 @@ class NormalGatewayChatOwner {
     _tools.clear();
     _subagents.clear();
     _pendingInput.clear();
+    _withdrawAttention();
     _display.add({
       'role': 'user',
       'content': localContent,
@@ -1658,6 +1699,12 @@ class NormalGatewayChatOwner {
     _boundSettledPresentation();
     _notify();
     try {
+      if (beforeSend != null && !await beforeSend()) {
+        throw StateError('Notification admission revoked');
+      }
+      if (!_submissionCurrent(generation) || maySubmit?.call() == false) {
+        throw StateError('Prompt admission revoked');
+      }
       if (storedSessionId == null && knownStoredSessionId != null) {
         _session._bind(this, knownStoredSessionId);
       }
@@ -1687,6 +1734,9 @@ class NormalGatewayChatOwner {
       if (!_historyKnown && !createdEmpty) {
         final stored = storedSessionId!;
         final baseline = await _readAdmissionBaseline(stored);
+        if (beforeSend != null && !await beforeSend()) {
+          throw StateError('Notification admission revoked');
+        }
         if (!_submissionCurrent(generation)) return;
         if (maySubmit?.call() == false) {
           throw StateError('Voice admission revoked');
@@ -1719,6 +1769,9 @@ class NormalGatewayChatOwner {
         updatedAt: now,
       );
       await _session.pendingStore.put(_marker!);
+      if (beforeSend != null && !await beforeSend()) {
+        throw StateError('Notification admission revoked');
+      }
       if (!_submissionCurrent(generation)) return;
       if (maySubmit?.call() == false) {
         throw StateError('Voice admission revoked');
@@ -1741,6 +1794,7 @@ class NormalGatewayChatOwner {
                   onAccepted: () {
                     if (_current(generation)) onAccepted?.call();
                   },
+                  beforeSend: beforeSend,
                   maySend: () =>
                       _current(generation) &&
                       snapshot.hasActiveTurn &&
@@ -1880,6 +1934,7 @@ class NormalGatewayChatOwner {
         final questions = previous?.data['questions'];
         if (remaining.isEmpty) {
           _pendingInput.remove(id);
+          _withdrawAttention(id);
         } else if (previous != null && questions is List) {
           _pendingInput[id!] = StreamEvent(
             type: previous.type,
@@ -1901,6 +1956,13 @@ class NormalGatewayChatOwner {
       }
       if (event.type == 'request.cancel' || event.type.endsWith('.expire')) {
         _pendingInput.remove(id);
+        if (event.data['settled'] == false) {
+          // Only this client's copy went (its socket closed): the server may
+          // still wait, so the notification stays up for a redelivery.
+          _parkAttention(id);
+        } else {
+          _withdrawAttention(id);
+        }
       } else if (id != null) {
         _pendingInput[id] = event;
         if (_pendingInput.length > 64) {
@@ -2383,6 +2445,7 @@ class NormalGatewayChatOwner {
       // cannot become settlement authority merely by arriving after the ACK.
       // Generation plus this immutable observation boundary identify its epoch.
       final submissionWasPending = _submissionPending;
+      final parkedAttention = {..._parkedAttention.keys};
       final resumed = await (_session.client == null
           ? _session._resume(
               localSessionId: localSessionId,
@@ -2398,6 +2461,7 @@ class NormalGatewayChatOwner {
                   !submissionWasPending &&
                   !_submissionPending,
             ));
+      _reconcileParkedAttention(parkedAttention, resumed.openRequests);
       if (!_current(generation) || !snapshot.hasActiveTurn || _settling) return;
       if (_terminalReceipt != null) {
         // An owned terminal received during this read outranks the older
@@ -2626,6 +2690,7 @@ class NormalGatewayChatOwner {
             )
           : null;
       _pendingInput.clear();
+      _withdrawAttention();
       if (wireEmitted) {
         _session.client?.forgetSettledServerRequestsForSession(localSessionId);
       }
@@ -2662,19 +2727,40 @@ class NormalGatewayChatOwner {
             ? HermesNotificationKind.turnDone
             : HermesNotificationKind.turnError;
         if (notificationKindEnabled(kind)) {
-          await _session.notifications.showKind(
-            kind: kind,
-            title: completed ? 'Hermes response ready' : 'Hermes turn failed',
-            body: settledTitle,
-            eventId: settledTurnId,
-            sessionId: settledSessionId,
-            connectionId: _session.connection.id,
-            payload: jsonEncode({
-              'sessionId': settledSessionId,
-              'connectionId': _session.connection.id,
-              'turnId': settledTurnId,
-            }),
-          );
+          // A car conversation is posted only when the root supplied a producer
+          // for this current account AND its native owner accepts it.
+          // Otherwise (no producer, non-Android, owner absent or rejecting)
+          // the existing generic terminal alert is preserved exactly.
+          final conversation =
+              completed &&
+                  publicFinal != null &&
+                  publicFinal.isNotEmpty &&
+                  _session.hasCurrentAccount
+              ? _session.conversationFor?.call(settledSessionId)
+              : null;
+          if (conversation == null ||
+              !await _session.notifications.showConversationReply(
+                title: settledTitle,
+                body: publicFinal!,
+                turnId: settledTurnId,
+                sessionId: settledSessionId,
+                connectionId: _session.connection.id,
+                conversation: conversation,
+              )) {
+            await _session.notifications.showKind(
+              kind: kind,
+              title: completed ? 'Hermes response ready' : 'Hermes turn failed',
+              body: settledTitle,
+              eventId: settledTurnId,
+              sessionId: settledSessionId,
+              connectionId: _session.connection.id,
+              payload: jsonEncode({
+                'sessionId': settledSessionId,
+                'connectionId': _session.connection.id,
+                'turnId': settledTurnId,
+              }),
+            );
+          }
         }
       }
     } catch (_) {
@@ -2725,38 +2811,135 @@ class NormalGatewayChatOwner {
   }
 
   void _notifyAttention(StreamEvent event, String requestId) {
+    final wire = event.data['wire_request_id']?.toString() ?? requestId;
+    final parked = _parkedAttention.remove(wire);
+    if (parked != null) {
+      // The same server request, redelivered after a reconnect under a new
+      // local key: its notification is still up. Repost it in place, without
+      // a sound, so its buttons answer the live key.
+      _postAttention(event, requestId, wire, identity: parked.eventId);
+      return;
+    }
     if (!_session._background) return;
+    if (!_notifiedAttention.add(wire)) return;
+    if (_notifiedAttention.length > 256) {
+      _notifiedAttention.remove(_notifiedAttention.first);
+    }
+    _postAttention(event, requestId, wire);
+  }
+
+  /// Posts (or, given the [identity] of one already up, silently updates)
+  /// the notification of [requestId].
+  void _postAttention(
+    StreamEvent event,
+    String requestId,
+    String wire, {
+    String? identity,
+  }) {
+    final eventId = identity ?? requestId;
     final approval = event.type == 'approval.request';
+    final kind = approval
+        ? HermesNotificationKind.approval
+        : HermesNotificationKind.input;
+    final sessionId = storedSessionId ?? localSessionId;
+    final shown = _session.notifications
+        .showKind(
+          kind: kind,
+          title: approval
+              ? 'Approval needed — $title'
+              : 'Input needed — $title',
+          // Sensitive request text and secrets never enter a notification.
+          body: approval
+              ? 'Open the chat to review the requested action.'
+              : 'Open the chat to respond.',
+          // Kept across a reconnect's new local key: one notification per
+          // request. Same identity the chat route uses for its own post.
+          eventId: eventId,
+          sessionId: sessionId,
+          connectionId: _session.connection.id,
+          actions: approval
+              ? const [
+                  TurnNotificationAction(id: 'approve', label: 'Approve'),
+                  TurnNotificationAction(id: 'reject', label: 'Deny'),
+                ]
+              : const [],
+          payload: jsonEncode({
+            'sessionId': sessionId,
+            'connectionId': _session.connection.id,
+            'requestId': requestId,
+            ..._session._approvalOrigin,
+          }),
+          onlyAlertOnce: identity != null,
+        )
+        .then<void>((_) {}, onError: (Object _) {});
+    _postedAttention[requestId] = (
+      kind: kind,
+      sessionId: sessionId,
+      eventId: eventId,
+      wire: wire,
+      shown: shown,
+    );
+  }
+
+  /// Keeps the notification of [requestId] (or of every request of this
+  /// chat) up while its socket is gone: nothing answered it.
+  void _parkAttention([String? requestId]) {
+    final ids = requestId == null
+        ? _postedAttention.keys.toList()
+        : [requestId];
+    for (final id in ids) {
+      final posted = _postedAttention.remove(id);
+      if (posted != null) _parkedAttention[posted.wire] = posted;
+    }
+  }
+
+  /// Takes down the attention notification of [requestId], or of every
+  /// request of this chat (parked ones too). Runs after a still-pending post
+  /// so it cannot be overtaken by it.
+  void _withdrawAttention([String? requestId]) {
+    final ids = requestId == null
+        ? _postedAttention.keys.toList()
+        : [requestId];
+    for (final id in ids) {
+      final posted = _postedAttention.remove(id);
+      if (posted != null) _cancelAttention(posted);
+    }
+    if (requestId == null) {
+      for (final posted in _parkedAttention.values.toList()) {
+        _cancelAttention(posted);
+      }
+      _parkedAttention.clear();
+    }
+  }
+
+  /// After a resume that started once [parked] were parked: the server's
+  /// `open_requests` is authoritative for them, so those it no longer lists
+  /// were answered (perhaps on another device) or withdrawn meanwhile.
+  void _reconcileParkedAttention(Set<String> parked, List<dynamic> open) {
+    if (parked.isEmpty) return;
+    final listed = {
+      for (final raw in open)
+        if (raw is Map && raw['id'] is String) raw['id'] as String,
+    };
+    for (final wire in parked) {
+      if (listed.contains(wire)) continue;
+      final posted = _parkedAttention.remove(wire);
+      if (posted != null) _cancelAttention(posted);
+    }
+  }
+
+  void _cancelAttention(_PostedAttention posted) {
     unawaited(
-      _session.notifications
-          .showKind(
-            kind: approval
-                ? HermesNotificationKind.approval
-                : HermesNotificationKind.input,
-            title: approval
-                ? 'Approval needed — $title'
-                : 'Input needed — $title',
-            // Sensitive request text and secrets never enter a notification.
-            body: approval
-                ? 'Open the chat to review the requested action.'
-                : 'Open the chat to respond.',
-            eventId: requestId,
-            sessionId: storedSessionId ?? localSessionId,
-            connectionId: _session.connection.id,
-            actions: approval
-                ? const [
-                    TurnNotificationAction(id: 'approve', label: 'Approve'),
-                    TurnNotificationAction(id: 'reject', label: 'Deny'),
-                  ]
-                : const [],
-            payload: jsonEncode({
-              'sessionId': storedSessionId ?? localSessionId,
-              'connectionId': _session.connection.id,
-              'requestId': requestId,
-              ..._session._approvalOrigin,
-            }),
+      posted.shown
+          .then(
+            (_) => _session.notifications.cancelKind(
+              kind: posted.kind,
+              eventId: posted.eventId,
+              sessionId: posted.sessionId,
+              connectionId: _session.connection.id,
+            ),
           )
-          .catchError((Object _) => false),
+          .catchError((Object _) {}),
     );
   }
 

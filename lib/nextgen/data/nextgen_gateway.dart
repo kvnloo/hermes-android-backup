@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/services/connection_manager.dart';
 import '../../core/services/dashboard_api_client.dart';
@@ -13,6 +14,7 @@ import '../../core/services/desktop_gateway_client.dart';
 import '../../core/services/hermes_sign_in.dart';
 import '../../core/services/ws_client.dart';
 import '../nextgen_l10n.dart';
+import 'nextgen_projects.dart';
 
 enum NgConnectionPhase {
   idle,
@@ -73,6 +75,11 @@ class NextGenGateway extends ChangeNotifier {
     writes = DashboardSessionWrites(this.dashboard, profile: profile);
   }
 
+  NgProjects? _projects;
+
+  NgProjects projects(SharedPreferences preferences) =>
+      _projects ??= NgProjects(this, preferences);
+
   final SavedConnection connection;
   final GatewayUrl url;
   final DashboardClient dashboard;
@@ -99,6 +106,7 @@ class NextGenGateway extends ChangeNotifier {
   final _events = StreamController<StreamEvent>.broadcast();
   final _requests = StreamController<NgServerRequest>.broadcast();
   final _reconnected = StreamController<void>.broadcast();
+  final _withdrawn = StreamController<String>.broadcast();
 
   /// Every server event on the current socket.
   Stream<StreamEvent> get events => _events.stream;
@@ -131,9 +139,195 @@ class NextGenGateway extends ChangeNotifier {
       if (r.sessionId != null) _storedByRuntime[r.sessionId!] ?? r.sessionId!,
   };
 
+  /// Requests a dropped socket took with it, by id → live session id. A
+  /// dropped connection is no answer: the server may still wait on each, so
+  /// its notification stays up until a redelivery confirms it, or a
+  /// `request.cancel` or an authoritative read settles it.
+  final Map<String, String> _dropped = {};
+  static const _maxDropped = 64;
+
+  /// The socket is gone: its requests can no longer be answered on it.
+  void _forgetSocket() {
+    _ws = null;
+    _rememberDropped();
+    openRequests.clear();
+    _storedByRuntime.clear();
+  }
+
+  /// Drops the socket as a lost connection does (tests only).
+  @visibleForTesting
+  void debugDropSocket() {
+    _forgetSocket();
+    if (!_disposed) notifyListeners();
+  }
+
+  void _rememberDropped() {
+    for (final entry in openRequests.entries) {
+      final sid = entry.value.sessionId;
+      if (sid != null) _dropped[entry.key] = sid;
+    }
+    while (_dropped.length > _maxDropped) {
+      _dropped.remove(_dropped.keys.first);
+    }
+  }
+
+  /// Whether [id] may still be waiting for an answer: open on this socket,
+  /// or open on a dropped one and not settled since.
+  bool awaitsAnswer(String id) =>
+      openRequests.containsKey(id) || _dropped.containsKey(id);
+
   /// Marks [id] answered (or cancelled) and tells listeners.
   void resolveRequest(String id) {
-    if (openRequests.remove(id) != null && !_disposed) notifyListeners();
+    final open = openRequests.remove(id) != null;
+    final dropped = _dropped.remove(id) != null;
+    if (!open && !dropped) return;
+    if (!_withdrawn.isClosed) _withdrawn.add(id);
+    if (open && !_disposed) notifyListeners();
+  }
+
+  /// Ids of requests answered, withdrawn by the server, or found settled by
+  /// an authoritative read: a chat showing one takes its card down.
+  Stream<String> get withdrawnRequests => _withdrawn.stream;
+
+  /// Ids of the cached requests (open, or taken by a dropped socket) that
+  /// belong to any of [sessionIds] (runtime or stored ids). Capture this
+  /// before an authoritative read so a request that arrives while the read is
+  /// in flight is never mistaken for settled.
+  Set<String> openRequestIdsFor(Iterable<String?> sessionIds) {
+    final ids = sessionIds.whereType<String>().toSet();
+    if (ids.isEmpty) return const {};
+    return {
+      for (final entry in openRequests.entries)
+        if (_belongsTo(entry.value.sessionId, ids)) entry.key,
+      for (final entry in _dropped.entries)
+        if (_belongsTo(entry.value, ids)) entry.key,
+    };
+  }
+
+  bool _belongsTo(String? sid, Set<String> sessionIds) {
+    if (sid == null) return false;
+    return sessionIds.contains(sid) ||
+        sessionIds.contains(_storedByRuntime[sid]);
+  }
+
+  /// Applies the server's authoritative `open_requests` for one session (a
+  /// `session.resume` or `session.events.since` reply): every request in
+  /// [known] (cached when the read started) that the server no longer lists
+  /// was settled — answered on another device, timed out or withdrawn — and
+  /// is dropped; the listed ones are (re)delivered. A reply without the list
+  /// ([open] not a List) says nothing and changes nothing. Never answers
+  /// anything.
+  void reconcileOpenRequests(Object? open, {required Set<String> known}) {
+    if (open is! List) return;
+    _dropUnlisted(open, known);
+    if (open.isNotEmpty) socket?.deliverOpenRequests(open);
+  }
+
+  void _dropUnlisted(Object? open, Set<String> known) {
+    if (open is! List) return;
+    final listed = {
+      for (final raw in open)
+        if (raw is Map && raw['id'] is String) raw['id'] as String,
+    };
+    for (final id in known) {
+      if (!listed.contains(id)) resolveRequest(id);
+    }
+  }
+
+  /// Re-reads which cached requests the server still has open and drops the
+  /// rest. Needed for the legacy sidecar gateway only: when another client
+  /// answers, it settles the request without telling the other viewers
+  /// (`tui_gateway/server_requests.py` sends `request.cancel` only for a
+  /// timeout or withdrawal). A session-authority gateway always withdraws a
+  /// settled request with `request.cancel reason: resolved` to every attached
+  /// viewer, and its `session.events.since` moves this connection's replay
+  /// cursor, so it is not probed. A failed read leaves the cache as it is.
+  Future<void> revalidateOpenRequests({Set<String>? sessions}) async {
+    if (_disposed || sessionAuthority) return;
+    final bySession = <String, Set<String>>{};
+    void add(String id, String? sid) {
+      if (sid == null || (sessions != null && !sessions.contains(sid))) return;
+      bySession.putIfAbsent(sid, () => <String>{}).add(id);
+    }
+
+    for (final entry in openRequests.entries) {
+      add(entry.key, entry.value.sessionId);
+    }
+    for (final entry in _dropped.entries) {
+      add(entry.key, entry.value);
+    }
+    await Future.wait([
+      for (final entry in bySession.entries)
+        _revalidateSession(entry.key, entry.value),
+    ]);
+  }
+
+  /// Larger than any event seq, so the read carries `open_requests` and no
+  /// replayed events.
+  static const _probeLastSeen = 9007199254740991;
+
+  Future<void> _revalidateSession(String sessionId, Set<String> known) async {
+    final inFlight = _probing[sessionId];
+    if (inFlight != null) return inFlight;
+    final probe = () async {
+      try {
+        final reply = await call('session.events.since', {
+          'session_id': sessionId,
+          'last_seen': _probeLastSeen,
+        }, timeout: const Duration(seconds: 10));
+        if (_disposed) return;
+        final open = reply['open_requests'];
+        _dropUnlisted(open, known);
+        if (open is List) {
+          // A dropped socket's request the server still waits on is
+          // answerable again on this one.
+          final restore = [
+            for (final raw in open)
+              if (raw is Map && _dropped.containsKey(raw['id'])) raw,
+          ];
+          if (restore.isNotEmpty) socket?.deliverOpenRequests(restore);
+        }
+      } catch (_) {
+        // Unknown: keep what the socket delivered.
+      }
+    }();
+    _probing[sessionId] = probe;
+    try {
+      await probe;
+    } finally {
+      if (identical(_probing[sessionId], probe)) _probing.remove(sessionId);
+    }
+  }
+
+  final Map<String, Future<void>> _probing = {};
+  final Map<String, Timer> _activityProbes = {};
+
+  /// Every server event on the socket, before chats see it. A withdrawal is
+  /// applied here for every session — not only the one whose chat is open —
+  /// so the needs-you highlight and notifications follow it. On the legacy
+  /// gateway, activity in a session parked on a request (the agent carried
+  /// on: someone answered elsewhere) re-reads that session's open requests.
+  void _onSocketEvent(StreamEvent event) {
+    if (event.type == 'request.cancel') {
+      final id = (event.data['id'] ?? event.data['request_id'])?.toString();
+      if (id != null && id.isNotEmpty) resolveRequest(id);
+    } else {
+      _scheduleActivityProbe(event.sessionId);
+    }
+    if (!_events.isClosed) _events.add(event);
+  }
+
+  void _scheduleActivityProbe(String? sessionId) {
+    if (sessionId == null || _disposed || sessionAuthority) return;
+    if (_activityProbes.containsKey(sessionId)) return;
+    if (!openRequests.values.any((r) => r.sessionId == sessionId) &&
+        !_dropped.containsValue(sessionId)) {
+      return;
+    }
+    _activityProbes[sessionId] = Timer(const Duration(seconds: 1), () {
+      _activityProbes.remove(sessionId);
+      unawaited(revalidateOpenRequests(sessions: {sessionId}));
+    });
   }
 
   bool _running = false;
@@ -141,6 +335,7 @@ class NextGenGateway extends ChangeNotifier {
   int _attempt = 0;
   int _ticketRejections = 0;
   Completer<void>? _wake;
+  final _connectionWaits = <Completer<WsClient>>{};
   DateTime? _connectedAt;
 
   static const _backoff = [1, 2, 4, 8, 16, 30];
@@ -219,7 +414,7 @@ class NextGenGateway extends ChangeNotifier {
           }
           rethrow;
         }
-        if (ticket == null) return;
+        if (ticket == null || !_running || _disposed) return;
         client = WsClient(
           dashboard.baseUrl,
           ticket: ticket,
@@ -228,24 +423,29 @@ class NextGenGateway extends ChangeNotifier {
           ticketInSubprotocol: true,
         );
         final closed = Completer<void>();
-        client.onStreamEvent = (event) {
-          if (!_events.isClosed) _events.add(event);
-        };
+        client.onStreamEvent = _onSocketEvent;
         client.onServerRequest = acceptServerRequest;
         client.onConnectionClosed = () {
           if (!closed.isCompleted) closed.complete();
         };
         await client.connect();
-        readyFrame = await client.waitForGatewayReady();
+        final ready = await client.waitForGatewayReady();
+        if (!_running || _disposed) {
+          client.close();
+          return;
+        }
+        readyFrame = ready;
         _ws = client;
         _connectedAt = DateTime.now();
         _ticketRejections = 0;
         _set(const NgConnectionState(NgConnectionPhase.connected));
         if (!_reconnected.isClosed) _reconnected.add(null);
+        // Requests the last socket took with it: ask which are still open.
+        if (_dropped.isNotEmpty) {
+          unawaited(revalidateOpenRequests(sessions: {..._dropped.values}));
+        }
         await closed.future;
-        _ws = null;
-        openRequests.clear();
-        _storedByRuntime.clear();
+        _forgetSocket();
         if (!_running || _disposed) return;
         final held =
             _connectedAt != null &&
@@ -255,6 +455,7 @@ class NextGenGateway extends ChangeNotifier {
         await _backoffWait(ngL.ng_connection_lost);
       } on _Retry catch (e) {
         client?.close();
+        if (!_running || _disposed) return;
         await _backoffWait(e.message);
       } catch (e) {
         client?.close();
@@ -311,10 +512,14 @@ class NextGenGateway extends ChangeNotifier {
       ),
     );
     final wake = _wake = Completer<void>();
-    await Future.any([
-      wake.future,
-      Future<void>.delayed(Duration(seconds: seconds)),
-    ]);
+    final timer = Timer(Duration(seconds: seconds), () {
+      if (!wake.isCompleted) wake.complete();
+    });
+    try {
+      await wake.future;
+    } finally {
+      timer.cancel();
+    }
   }
 
   /// Sends one JSON-RPC call on the live socket and returns its `result`.
@@ -352,7 +557,11 @@ class NextGenGateway extends ChangeNotifier {
     if (ws != null && ws.isConnected) return ws;
     start();
     retry();
+    if (_disposed) {
+      throw StateError(ngL.ng_the_gateway_connection_dropped_try_again);
+    }
     final done = Completer<WsClient>();
+    _connectionWaits.add(done);
     void check() {
       final current = _ws;
       if (current != null && current.isConnected && !done.isCompleted) {
@@ -371,6 +580,7 @@ class NextGenGateway extends ChangeNotifier {
     } on TimeoutException {
       throw StateError(_state.reason ?? "Couldn't reach the gateway.");
     } finally {
+      _connectionWaits.remove(done);
       removeListener(check);
     }
   }
@@ -383,6 +593,7 @@ class NextGenGateway extends ChangeNotifier {
   bool acceptServerRequest(GatewayServerRequest request) {
     if (!answerableMethods.contains(request.method)) return false;
     final wrapped = NgServerRequest(request);
+    _dropped.remove(request.id); // still open: redelivered on this socket
     openRequests[request.id] = wrapped;
     if (!_requests.isClosed) _requests.add(wrapped);
     if (!_disposed) notifyListeners();
@@ -391,12 +602,13 @@ class NextGenGateway extends ChangeNotifier {
 
   /// Feeds a server event as if it arrived on the socket.
   @visibleForTesting
-  void debugEmit(StreamEvent event) => _events.add(event);
+  void debugEmit(StreamEvent event) => _onSocketEvent(event);
 
   /// Feeds a server request as if it arrived on the socket.
   @visibleForTesting
   void debugRequest(GatewayServerRequest request) {
     final wrapped = NgServerRequest(request);
+    _dropped.remove(request.id);
     openRequests[request.id] = wrapped;
     _requests.add(wrapped);
     notifyListeners();
@@ -404,6 +616,13 @@ class NextGenGateway extends ChangeNotifier {
 
   void stop() {
     _running = false;
+    for (final pending in _connectionWaits.toList()) {
+      if (!pending.isCompleted) {
+        pending.completeError(
+          StateError(ngL.ng_the_gateway_connection_dropped_try_again),
+        );
+      }
+    }
     final wake = _wake;
     if (wake != null && !wake.isCompleted) wake.complete();
     _ws?.close();
@@ -413,11 +632,17 @@ class NextGenGateway extends ChangeNotifier {
 
   @override
   void dispose() {
+    _projects?.close();
     stop();
     _disposed = true;
+    for (final timer in _activityProbes.values) {
+      timer.cancel();
+    }
+    _activityProbes.clear();
     _events.close();
     _requests.close();
     _reconnected.close();
+    _withdrawn.close();
     api.close();
     dashboard.close();
     super.dispose();

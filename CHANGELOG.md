@@ -21,6 +21,129 @@ Publication correction: tag v4.0.6 has no published APK assets; its release
 workflow failed the identity gate because the tag preceded the version bump.
 The paging change it names (#284) first ships in the published 4.0.7 APKs.
 
+## [4.0.15] - 2026-11-25
+
+Stable release `4.0.15+3071`, with release APK codes `30711`, `30712` and
+`30713`. Each split exceeds the published 4.0.14 stable splits (`30703`).
+Installs over the existing app.
+
+### Added
+
+- **NextGen Projects (#304).** More → Projects reuses the Classic project
+  browser for the selected connection and profile, opens project chats and
+  starts new chats in a project's folder (#367).
+- **Project picker on new chats.** An empty NextGen chat names its project in
+  the greeting; tap it to choose Home or another project. A deliberate pick
+  sends `cwd_explicit` so a named profile's default folder cannot override it
+  (#367).
+- **Slash command highlight and usage card** in both composers (#369).
+- **NextGen runs slash commands** through `slash.exec` / `command.dispatch`
+  like Classic and Kyllene, with no resend after a lost reply (#370).
+- **Android Auto notification replies (#356, @davidKooreman).** Completed
+  replies post as car-ready conversations with reply and mark-as-read; reply
+  actions are sealed, single-use and bound to the existing chat.
+
+### Fixed
+
+- **Refused slash commands** show a refusal instead of leaking into the chat as
+  prose, and keep the draft (#303, @Thaeland; audit #302).
+- **Repeat alerts after answering elsewhere.** Questions and approvals answered
+  on another device no longer re-notify or keep their highlight, and the push
+  "answered" hint now clears the original notification (#371).
+- **NextGen composer** mic and send sit flush right on wide windows (#363).
+- **NextGen chat list** excludes one-shot, subagent, kanban and tool runs,
+  respecting the profile's Show subagents setting (#362, #364).
+- **Canonical gateways:** Stop and Steer send the running turn's generation, and
+  NextGen replay uses the session's own epoch with a reconciling foreground
+  fallback (#84 items 1–3, #366).
+- **CI:** one Robolectric version with cached runtimes (#360) and a
+  deterministic root-navigation test (#361) (#365).
+
+### Dependencies
+
+- Gradle 9.9.2, Android Gradle plugin 9.5.2, embedded relink Kotlin 2.4.21 and
+  coroutines 1.11.0, `flutter_riverpod` 3.5.0, push companion `cryptography`
+  50.0.2, `actions/setup-java` v6, `actions/cache` v6 and
+  `gradle/actions/setup-gradle` v6 with its proprietary caching disabled (#368).
+
+## [4.0.14] - 2026-11-25
+
+Stable release `4.0.14+3070`, with release APK codes `30701`, `30702` and
+`30703`. Each split exceeds the published 4.0.13 stable splits (`30693`).
+Installs over the existing app.
+
+### Fixed
+
+- **NextGen German copy corrected (#359).** The German catalogue had carried
+  Spanish wording through the NextGen screens; `app_de.arb` now carries real
+  German copy with matching regression tests.
+
+## [4.0.13] - 2026-11-25
+
+Stable release `4.0.13+3069`, with release APK codes `30691`, `30692` and
+`30693`. Each split exceeds the published 4.0.12 stable splits (`30683`).
+Installs over the existing app.
+
+### Fixed
+
+- **The NextGen Models page can change the default model and fallback models
+  (#357).** In 4.0.12 the default was read-only whenever its provider had an
+  address saved with it that the app did not recognise, which included every
+  provider plugin and every named endpoint, and a fallback row could not be
+  given another model. Any provider the gateway lists by name can now be chosen
+  as the default, a fallback or a helper-task model, and tapping a fallback row
+  gives it another model. The default stays read-only only when its address
+  would not come back on switching back: an endpoint with no name, a named
+  endpoint at another address, or an address typed for a provider the app has
+  no reviewed address for. Fallback rows with routing details keep their model.
+  The classic model screen is unchanged. See
+  [model management](docs/model-management.md).
+
+## [4.0.12] - 2026-11-25
+
+Stable release `4.0.12+3068`, with release APK codes `30681`, `30682` and
+`30683`. Each split exceeds the published 4.0.11 stable splits (`30673`).
+Installs over the existing app.
+
+### Added
+
+- **A Models page in NextGen (#347).** NextGen's model settings are now one
+  page, opened from Settings, More and the top of a chat's model picker. It
+  shows the default model with what the gateway reports about it (context
+  window, maximum output, prices, and whether it supports tools, vision,
+  reasoning and fast mode), the ordered fallback list, every helper task with
+  the model and thinking level it uses, and each provider with its model count,
+  allowance and rate limits. A change counts as saved only after it has been
+  read back from the gateway, one change runs at a time, and a model the
+  gateway warns is expensive is assigned only after you agree. Anything the
+  gateway does not report is left out rather than guessed. The classic model
+  screen is unchanged. See [model management](docs/model-management.md).
+
+## [4.0.11] - 2026-11-24
+
+Stable release `4.0.11+3067`, with release APK codes `30671`, `30672` and
+`30673`. Each split exceeds the published 4.0.10 stable splits (`30663`).
+Installs over the existing app.
+
+### Fixed
+
+- **The transcript scrolls to the end when the keyboard opens (#300).** Opening
+  the composer keyboard mid-conversation used to leave the last message behind
+  the keyboard with no scroll, forcing a manual scroll to reply. The
+  keyboard-rise edge now triggers one composer-focused end-scroll, edge-triggered
+  and re-armed on the keyboard-drop reset, so parked readers stay put when a
+  dialog steals focus and the follow-after-stream re-arm still works.
+- **`/new` starts a fresh session locally like the desktop (#301).** Typing
+  `/new` and hitting send used to route to the slash worker's headless
+  `slash.exec`, which always answered "cancelled, no input". The bare `/new`
+  command (and `/reset`) is now intercepted locally before the gateway round
+  trip and pushes a fresh chat carrying the parent model, project name and
+  working directory, exactly like the desktop's `/new` handling.
+
+### Thanks
+
+- @Thaeland — both of these, with regression tests and a focused review pass.
+
 ## [4.0.10] - 2026-11-20
 
 Stable release `4.0.10+3066`, with release APK codes `30661`, `30662` and

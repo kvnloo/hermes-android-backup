@@ -295,3 +295,32 @@ def test_revoke_serialises_with_inflight_send(env):
     assert not worker.is_alive()
     assert env.client.delete(PREFIX + "/registrations/phone").status_code == 200
     assert len(sender.hints) == 1
+
+
+def test_resolution_hint_names_the_question_it_answers(env):
+    # Answered on another device: the phone must take the earlier "input"
+    # notification down. The hint carries no session/request, only the opaque
+    # event id of the input hint it resolves.
+    activate(env)
+    sender = RecordingSender()
+    env.runtime.sender = sender
+    env.runtime.human_input(kind="clarify", session_id="session-a", request_id="observer-id")
+    assert env.runtime.deliver_one()
+    asked = sender.hints[-1]
+    assert asked["kind"] == "input"
+    env.runtime.human_resolved(kind="clarify", session_id="session-a", request_id="observer-id")
+    assert env.runtime.deliver_one()
+    resolved = sender.hints[-1]
+    assert resolved["kind"] == "input_resolved"
+    assert resolved["resolves"] == asked["event_id"]
+    assert "session_id" not in resolved and "request_id" not in resolved
+
+
+def test_resolution_of_an_unknown_question_names_nothing(env):
+    activate(env)
+    sender = RecordingSender()
+    env.runtime.sender = sender
+    env.runtime.human_resolved(kind="approval", session_id="session-a", request_id="never-asked")
+    assert env.runtime.deliver_one()
+    assert sender.hints[-1]["kind"] == "input_resolved"
+    assert "resolves" not in sender.hints[-1]

@@ -44,12 +44,34 @@ class NgSessionsModel extends ChangeNotifier {
       _scope = value;
       return;
     }
+    _generation++;
     _scope = value;
     _seen = null;
+    _showSubagents = null;
+    sessions = [];
+    _serverOffset = 0;
+    hasMore = false;
     _listen();
   }
 
   List<Session> sessions = [];
+
+  bool _browsingCrons = false;
+  bool? _showSubagents;
+
+  /// Search retains its existing source scope. Normal chat presentation and
+  /// filling share one policy, including badges and attention summaries.
+  bool includesChat(Session session) =>
+      !isCronSession(session) &&
+      (query.isNotEmpty ||
+          !isInternalListingSession(session, showSubagents: _showSubagents));
+
+  void browseCrons(bool value) {
+    if (_browsingCrons == value) return;
+    _browsingCrons = value;
+    _generation++;
+    unawaited(refresh());
+  }
 
   /// The chat on screen: never unread while it's shown.
   String? currentId;
@@ -101,7 +123,7 @@ class NgSessionsModel extends ChangeNotifier {
   int get unreadCount => sessions
       .where(
         (s) =>
-            !isCronSession(s) &&
+            includesChat(s) &&
             s.id != currentId &&
             attentionOf(s) != NgChatAttention.none,
       )
@@ -112,7 +134,7 @@ class NgSessionsModel extends ChangeNotifier {
     final needsYou = scope.gateway.needsYou;
     var top = NgChatAttention.none;
     for (final s in sessions) {
-      if (isCronSession(s) || s.id == currentId) continue;
+      if (!includesChat(s) || s.id == currentId) continue;
       final a = attentionOf(s, needsYou: needsYou);
       if (a.index < top.index) top = a;
     }
@@ -162,8 +184,8 @@ class NgSessionsModel extends ChangeNotifier {
   bool loading = false;
   bool hasMore = false;
 
-  /// One server page. The browse refresh reads several when cron runs fill
-  /// the first pages with rows the chat list hides.
+  /// One server page. Browse reads several when cron or internal runs fill
+  /// an older server's first pages with rows the chat list hides.
   static const int _pageSize = 60;
 
   /// Stop filling once the chat list has this many rows to show.
@@ -173,8 +195,8 @@ class NgSessionsModel extends ChangeNotifier {
   /// unbounded scan; Load more continues past it.
   static const int _maxRefreshPages = 10;
 
-  /// Raw rows consumed from the server for the current list. The shell
-  /// filter shrinks [sessions], so its length is not a server offset.
+  /// Raw rows consumed from the current server scope. Shell suppression and
+  /// visible-source filtering must never be used as a server offset.
   int _serverOffset = 0;
 
   String? error;
@@ -204,34 +226,40 @@ class NgSessionsModel extends ChangeNotifier {
 
   Future<void> _refreshOnce() async {
     final generation = ++_generation;
+    final api = scope.gateway.api;
+    final browsingCrons = _browsingCrons;
     loading = true;
     error = null;
     notifyListeners();
     try {
       if (query.isNotEmpty) {
         // Search is one server-side read; it does not page.
-        final page = await scope.gateway.api.getSessionsPage(
-          limit: _pageSize,
-          title: query,
-        );
+        final page = await api.getSessionsPage(limit: _pageSize, title: query);
         if (generation != _generation) return;
         sessions = page.sessions.where((s) => !s.isUntitledCronShell).toList();
         _serverOffset = 0;
         hasMore = false;
       } else {
-        // A cron-heavy gateway fills the first pages with runs the chat list
-        // hides. One page can leave one or two chats and no scroll extent,
-        // so scroll-only paging never reaches the rest (#297). Read bounded
-        // pages until the list is usable or the store ends.
+        // A profile-local read preserves the gateway's Show subagents choice
+        // even on servers that ignore exclude_sources. Never write config.
+        if (!browsingCrons) {
+          final showSubagents = await api.showSubagentSessions();
+          if (generation != _generation) return;
+          _showSubagents = showSubagents;
+        }
+        // Older gateways may ignore exclusions. Count only visible rows, but
+        // advance through raw windows so machine-heavy pages cannot starve
+        // real chats (#297, #362). Crons retains its unfiltered transport.
         final collected = <Session>[];
         final seenIds = <String>{};
         var offset = 0;
         var pages = 0;
         var more = false;
         while (pages < _maxRefreshPages) {
-          final page = await scope.gateway.api.getSessionsPage(
+          final page = await api.getSessionsPage(
             limit: _pageSize,
             offset: offset,
+            excludeSources: browsingCrons ? null : kChatListingExcludedSources,
           );
           if (generation != _generation) return;
           pages++;
@@ -242,8 +270,10 @@ class NgSessionsModel extends ChangeNotifier {
           }
           more = page.hasMore;
           if (!more || page.sessions.isEmpty) break;
-          final chats = collected.where((s) => !isCronSession(s)).length;
-          if (chats >= _targetChats) break;
+          final visible = collected
+              .where(browsingCrons ? isCronSession : includesChat)
+              .length;
+          if (visible >= _targetChats) break;
         }
         if (generation != _generation) return;
         sessions = collected;
@@ -275,20 +305,30 @@ class NgSessionsModel extends ChangeNotifier {
     loading = true;
     notifyListeners();
     try {
-      final page = await scope.gateway.api.getSessionsPage(
-        limit: _pageSize,
-        offset: _serverOffset,
-      );
-      if (generation != _generation) return;
-      _serverOffset += page.sessions.length;
-      final known = sessions.map((s) => s.id).toSet();
-      sessions = [
-        ...sessions,
-        ...page.sessions.where(
-          (s) => !s.isUntitledCronShell && !known.contains(s.id),
-        ),
-      ];
-      hasMore = page.sessions.isEmpty ? false : page.hasMore;
+      final api = scope.gateway.api;
+      final browsingCrons = _browsingCrons;
+      final collected = [...sessions];
+      final known = collected.map((s) => s.id).toSet();
+      var addedVisible = 0;
+      for (var pages = 0; pages < _maxRefreshPages; pages++) {
+        final page = await api.getSessionsPage(
+          limit: _pageSize,
+          offset: _serverOffset,
+          excludeSources: browsingCrons ? null : kChatListingExcludedSources,
+        );
+        if (generation != _generation) return;
+        _serverOffset += page.sessions.length;
+        for (final session in page.sessions) {
+          if (session.isUntitledCronShell || !known.add(session.id)) continue;
+          collected.add(session);
+          if (browsingCrons ? isCronSession(session) : includesChat(session)) {
+            addedVisible++;
+          }
+        }
+        sessions = [...collected];
+        hasMore = page.sessions.isNotEmpty && page.hasMore;
+        if (!hasMore || addedVisible >= _targetChats) break;
+      }
     } catch (_) {
       if (generation != _generation) return;
       hasMore = false;
@@ -327,6 +367,8 @@ class NgSessionsModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _generation++;
+    _refreshPending = false;
     _debounce?.cancel();
     _changedDebounce?.cancel();
     _changes?.cancel();
@@ -382,6 +424,11 @@ class _NgSessionsSidebarState extends State<NgSessionsSidebar> {
   void initState() {
     super.initState();
     _search.text = widget.model.query;
+    // The model and its server cursor outlive the drawer. Reopening it must
+    // not show All while still paging the unfiltered Crons authority.
+    _filter = widget.model._browsingCrons
+        ? NgSidebarFilter.crons
+        : NgSidebarFilter.all;
     _scroll.addListener(() {
       if (_scroll.position.extentAfter < 400) widget.model.loadMore();
     });
@@ -509,7 +556,7 @@ class _NgSessionsSidebarState extends State<NgSessionsSidebar> {
         builder: (context, _) {
           final needsYou = scope.gateway.needsYou;
           final all = widget.model.sessions;
-          final chats = all.where((s) => !isCronSession(s)).toList();
+          final chats = all.where(widget.model.includesChat).toList();
           final filtered = switch (_filter) {
             NgSidebarFilter.all => chats,
             NgSidebarFilter.running => chats.where((s) => s.isActive).toList(),
@@ -763,7 +810,10 @@ class _NgSessionsSidebarState extends State<NgSessionsSidebar> {
         backgroundColor: Colors.transparent,
         side: BorderSide(color: _filter == f ? c.strokeStrong : c.stroke),
         shape: const StadiumBorder(),
-        onSelected: (_) => setState(() => _filter = f),
+        onSelected: (_) {
+          setState(() => _filter = f);
+          widget.model.browseCrons(f == NgSidebarFilter.crons);
+        },
       ),
     );
     // Scrolls sideways when translated labels don't fit the drawer.

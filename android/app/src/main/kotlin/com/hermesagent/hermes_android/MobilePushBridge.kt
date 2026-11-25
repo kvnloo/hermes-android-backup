@@ -122,6 +122,8 @@ internal object MobilePushBridge {
      * transaction. Narrow current consent before the physical metadata write,
      * and invalidate old enable tickets even if its acknowledgement is lost. */
     @Synchronized fun beforeMetadataWrite(context: Context, next: Any?) {
+        // Revoke car actions before physical metadata commits (including ABA).
+        HermesAutoNotifications.invalidate(context)
         connectionFences.clear()
         val state = MobilePushStore.read(context)
         if (!state.optBoolean("enabled")) return
@@ -133,6 +135,12 @@ internal object MobilePushBridge {
         if (oldRow == null || nextRow == null || oldRow != nextRow) {
             command(context, "disable", mapOf("connection" to id))
         }
+    }
+    @Synchronized fun autoAccountCurrent(context: Context, id: String, expected: JSONObject?): Boolean {
+        if (expected == null || !storageReady() || connectionChanges.values.any { id in it.connections }) return false
+        val raw = context.getSharedPreferences("FlutterSharedPreferences", Context.MODE_PRIVATE)
+            .all[EngineScopedPreferencesPlugin.SAVED_CONNECTIONS]
+        return metadataRow(raw, id) == map(expected)
     }
     private fun metadataRow(raw: Any?, id: String): Map<String, Any?>? = runCatching {
         val rows = when (raw) {
@@ -150,6 +158,11 @@ internal object MobilePushBridge {
 
     @Synchronized fun command(context: Context, method: String, args: Map<*, *>, owner: EngineOwner = directOwner): Any? {
         check(owner.attached) { "Detached push owner" }
+        // Reload below after car invalidation; never overwrite its sealed writes
+        // using an older push snapshot from this shared envelope.
+        if (method == "beginConnectionChange") HermesAutoNotifications.invalidate(context,
+            (args["connections"] as List<*>).map { it as String }.toSet())
+        if (method == "connectionChanged") HermesAutoNotifications.invalidate(context, setOf(args["connection"] as String))
         if (method == "distributors") return MobilePushTransport.discover(context)
         if (method == "transportOptions") return MobilePushTransport.options(context)
         val state = MobilePushStore.read(context)
@@ -190,7 +203,7 @@ internal object MobilePushBridge {
                 if (state.optBoolean("enabled") && state.optString("connection") in ids) {
                     return command(context, "disable", mapOf("connection" to state.getString("connection")))
                 }
-                return map(state)
+                return snapshotMap(state)
             }
             "endConnectionChange" -> {
                 val mutation = args["mutation"] as String
@@ -198,16 +211,16 @@ internal object MobilePushBridge {
                 check(change == null || change.owner === owner) { "Foreign account change" }
                 check(owner.storageOperations == 0) { "Account storage pending" }
                 connectionChanges.remove(mutation)
-                return map(state)
+                return snapshotMap(state)
             }
             "connectionChanged" -> {
                 connectionFences.remove(args["connection"] as String)
                 if (state.optBoolean("enabled") && state.optString("connection") == args["connection"]) {
                     return command(context, "disable", mapOf("connection" to state.getString("connection")))
                 }
-                return map(state)
+                return snapshotMap(state)
             }
-            "retryDistributor" -> { retryDistributor(context); return map(MobilePushStore.read(context)) }
+            "retryDistributor" -> { retryDistributor(context); return snapshotMap(MobilePushStore.read(context)) }
             "enable" -> {
                 check(!state.optBoolean("enabled")) { "Disable the existing binding first" }
                 val sessions = JSONArray(args["sessions"] as List<*>)
@@ -242,10 +255,12 @@ internal object MobilePushBridge {
                     .put("distributor", distributor).put("vapid", args["vapid"])
                     .put("revocations", revoke).put("master", args["master"])
                     .put("kinds", JSONArray(args["kinds"] as List<*>))
+                    .put("auto_epoch", state.optLong("auto_epoch"))
+                state.optJSONObject("auto_notifications")?.let { fresh.put("auto_notifications", it) }
                 MobilePushStore.write(context, fresh) // consent before connector registration
                 MobilePushTransport.register(context, distributor, fresh.getString("installation"), fresh.getString("vapid"))
                 changed()
-                return map(fresh)
+                return snapshotMap(fresh)
             }
             "disable" -> {
                 // Explicit opt-out fences all pending starts, even while OFF.
@@ -266,14 +281,14 @@ internal object MobilePushBridge {
                 cancelNotifications(context)
                 if (id.isNotEmpty()) runCatching { UnifiedPush.unregister(context, id) }
                 changed()
-                return map(state)
+                return snapshotMap(state)
             }
             "preferences" -> {
                 state.put("master", args["master"]).put("kinds", JSONArray(args["kinds"] as List<*>))
                 MobilePushStore.write(context, state)
                 // Cancel already visible hints when any kind changes as well.
                 cancelNotifications(context)
-                return map(state)
+                return snapshotMap(state)
             }
             "revoked" -> {
                 val remaining = JSONArray()
@@ -284,7 +299,7 @@ internal object MobilePushBridge {
                 }
                 state.put("revocations", remaining)
                 MobilePushStore.write(context, state)
-                return map(state)
+                return snapshotMap(state)
             }
             "recoverRegistration", "beginRegistration", "beginConfirmation" -> {
                 check(MobilePushPolicy.current(state, expected) &&
@@ -298,7 +313,7 @@ internal object MobilePushBridge {
                         invalidateRegistration(state)
                         MobilePushStore.write(context, state)
                         cancelNotifications(context)
-                        return map(state)
+                        return snapshotMap(state)
                     }
                     "beginRegistration" -> {
                         check(state.optLong("generation") == 0L && !state.optBoolean("registration_attempt"))
@@ -313,7 +328,7 @@ internal object MobilePushBridge {
                     }
                 }
                 MobilePushStore.write(context, state) // write-ahead before HTTP
-                return map(state)
+                return snapshotMap(state)
             }
             "generation", "activate" -> {
                 check(MobilePushPolicy.current(state, expected)) { "Stale registration" }
@@ -328,7 +343,7 @@ internal object MobilePushBridge {
                     listOf("challenges", "confirmation_attempt", "pending_until").forEach { state.remove(it) }
                 }
                 MobilePushStore.write(context, state)
-                return map(state)
+                return snapshotMap(state)
             }
             "takeTap" -> {
                 val tap = state.optJSONObject("tap")
@@ -338,7 +353,7 @@ internal object MobilePushBridge {
             }
             else -> error("Unsupported mobile push method")
         }
-        return map(state)
+        return snapshotMap(state)
     }
 
     @Synchronized fun retryDistributor(context: Context) {
@@ -398,6 +413,13 @@ internal object MobilePushBridge {
             changed()
             return
         }
+        if (clean.getString("kind") == "input_resolved") {
+            // Answered (possibly on another device) or withdrawn: no news to post.
+            // Take down the question it answers; `resolves` is that hint's opaque
+            // event id (older servers omit it, and then nothing is posted either).
+            resolve(context, state, clean.getString("event_id"), hint.optString("resolves"))
+            return
+        }
         if (!state.optBoolean("master") || !allowed(context)) return
         val kinds = state.optJSONArray("kinds") ?: JSONArray()
         if ((0 until kinds.length()).none { kinds.optString(it) == clean.getString("kind") }) return
@@ -421,6 +443,25 @@ internal object MobilePushBridge {
         manager.notify("mobile_push", event.hashCode(), builder.setSmallIcon(R.drawable.ic_stat_mobile_push)
             .setContentTitle("Hermes").setContentText("Server activity is available. Open Hermes to check.")
             .setVisibility(android.app.Notification.VISIBILITY_SECRET).setAutoCancel(true).setContentIntent(pending).build())
+        changed()
+    }
+
+    private fun resolve(context: Context, state: JSONObject, event: String, resolves: String) {
+        val seen = state.optJSONArray("seen") ?: JSONArray()
+        if ((0 until seen.length()).any { seen.optString(it) == event }) return
+        seen.put(event); state.put("seen", last(seen, 256))
+        val answered = resolves.isNotEmpty() && resolves.length <= 256
+        if (answered) {
+            val issued = state.optJSONArray("issued") ?: JSONArray()
+            val kept = JSONArray()
+            for (i in 0 until issued.length()) {
+                val tap = issued.getJSONObject(i)
+                if (tap.optString("event_id") != resolves) kept.put(tap)
+            }
+            state.put("issued", kept)
+        }
+        MobilePushStore.write(context, state)
+        if (answered) context.getSystemService(NotificationManager::class.java).cancel("mobile_push", resolves.hashCode())
         changed()
     }
 
@@ -462,5 +503,10 @@ internal object MobilePushBridge {
         is JSONArray -> (0 until value.length()).map { value(value.get(it)) }
         else -> value
     }
-    private fun map(json: JSONObject): Map<String, Any?> = json.keys().asSequence().associateWith { value(json.get(it)) }
+    // Filter only a push snapshot's envelope, never arbitrary account metadata.
+    // Exact metadata comparison must not erase same-named saved fields.
+    private fun snapshotMap(json: JSONObject): Map<String, Any?> = map(json)
+        .filterKeys { it != "auto_notifications" && it != "auto_epoch" }
+    private fun map(json: JSONObject): Map<String, Any?> = json.keys().asSequence()
+        .associateWith { value(json.get(it)) }
 }

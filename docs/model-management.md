@@ -21,9 +21,9 @@ The page has four sections:
   gateway does not report is left out rather than guessed. **Change** opens a
   searchable list of every model that can be assigned, with its price.
 - **Fallback models.** The ordered list with each entry's provider and price.
-  Entries are added from the same list, moved and removed; nothing is sent until
-  **Save fallback list**, and **Discard** returns to the saved list. Unsaved
-  edits survive a refresh.
+  Entries are added from the same list, moved and removed, and tapping an entry
+  gives it another model; nothing is sent until **Save fallback list**, and
+  **Discard** returns to the saved list. Unsaved edits survive a refresh.
 - **Auxiliary models.** Each helper task by name with a line on what it does,
   and the model it uses. Tapping a task chooses a model, returns it to the
   default model, or sets its thinking level. The thinking level is only offered
@@ -35,10 +35,42 @@ The page has four sections:
 
 The rules in the sections below apply to this page as they do to the classic
 screen: selected-profile requests only, read-back before a save is reported,
-one change at a time, endpoint-bearing routes shown but never reassigned, the
-raw-config capability check before every fallback read or write, and no
-endpoint address, credential or key name on screen. Two things differ:
+one change at a time, the raw-config capability check before every fallback
+read or write, and no endpoint address, credential or key name on screen.
+Three things differ:
 
+- **What can be assigned.** The classic screen assigns only providers whose
+  address it can match against its reviewed list, so a default on a provider
+  plugin, a newer provider or a named endpoint is read-only there. This page
+  assigns any provider the gateway lists under a `providers:` name, named
+  endpoints included, as a default, a fallback or a helper-task model. It
+  sends the provider and model only, and the gateway applies that provider's
+  address and key (`model_assignment.validated_main_model_selection`,
+  `model_switch.model_selection_config_updates`). The gateway validates a
+  default-model pick and refuses one it cannot validate; it does not validate
+  helper-task or fallback picks, so the page offers only models the gateway
+  lists for those. Not offered anywhere: endpoints with no name (`custom`,
+  `local` and the local-server names the gateway routes there, such as
+  `ollama`, `vllm` and `llama.cpp`, in any letter case) and the `custom:` rows
+  the picker makes up for legacy `custom_providers` entries.
+
+  The default model stays read-only unless its address is known to come back
+  when its provider is chosen again. It can be changed when it has no saved
+  address, when it is a `providers:` entry at that entry's own address, when
+  it is a bare `custom` default at a legacy entry's address, when it is a
+  `custom:` default at its legacy entry's address, when the address is a
+  reviewed provider's standard address (compared without case, spaces or
+  trailing slash), or when it is the `process://<provider>` address a provider
+  plugin registers for itself. Everything else, including an address on a
+  provider the app has no reviewed address for, is read-only. After a change
+  the route is read again, and a default that is read-only by these rules is
+  not reported as saved.
+
+  Helper tasks that carry their own endpoint stay read-only, because the
+  gateway drops that endpoint when the task is reassigned. Fallback entries
+  with routing details (`base_url`, `key_env`, `api_key` and the like), or on
+  a provider the gateway no longer lists, keep their model; they can still be
+  moved or removed.
 - When the gateway answers a default or auxiliary assignment with
   `confirm_required`, the page shows the gateway's own warning and sends the
   assignment again with `confirm_expensive_model: true` only if the user
@@ -47,9 +79,9 @@ endpoint address, credential or key name on screen. Two things differ:
   current provider and model. It is omitted from every other assignment, so
   choosing a model never changes the level; an explicit `null` clears it.
 
-Not on this page: Mixture-of-Agents presets, custom endpoints, the context
-window override and the default thinking level. Those are still edited on the
-gateway or in **More → Config file**.
+Not on this page: Mixture-of-Agents presets, creating or editing custom
+endpoints, the context window override and the default thinking level. Those
+are still edited on the gateway or in **More → Config file**.
 
 `test/nextgen_model_catalog_test.dart`, `test/nextgen_models_controller_test.dart`,
 `test/nextgen_models_page_test.dart` and `test/nextgen_models_l10n_test.dart`

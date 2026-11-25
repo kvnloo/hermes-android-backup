@@ -9,6 +9,10 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get slash_local_arguments =>
+      '이 바로 가기는 여기서 인수를 지원하지 않습니다. 앱의 컨트롤을 사용하세요. 초안은 보관되었습니다.';
+
+  @override
   String get fallback_title => '대체 모델';
 
   @override
@@ -3863,6 +3867,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias은(는) $command의 별칭입니다';
+  }
+
+  @override
+  String get slash_command_info_no_description => '설명이 없습니다.';
+
+  @override
+  String get slash_command_info_arguments_options => '정해진 옵션 중 하나를 받습니다.';
+
+  @override
+  String get slash_command_info_arguments_text => '명령 뒤에 텍스트를 받습니다.';
+
+  @override
+  String get slash_command_info_arguments_mixed => '명령 뒤에 옵션이나 텍스트를 받습니다.';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3874,6 +3895,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported => '이 명령은 이 서버에서 사용할 수 없습니다.';
+
+  @override
+  String get slash_sessions_inline => '세션 목록을 열어 채팅을 선택하세요. 초안은 보관되었습니다.';
 
   @override
   String get nextgen_toggle => 'NextGen 인터페이스';
@@ -3970,6 +3997,15 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => '응답 생성에 실패했습니다.';
+
+  @override
+  String get ng_turn_changed => '해당 응답이 이미 끝났거나 새 응답이 시작되었습니다';
+
+  @override
+  String get ng_steer_rejected => '진행 중인 응답이 받아들이지 않았습니다';
+
+  @override
+  String get ng_turn_not_known_yet => '진행 중인 응답을 아직 확인할 수 없습니다. 잠시 후 다시 시도하세요';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4366,6 +4402,21 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ng_retry => '다시 시도';
 
   @override
+  String get ng_project_home => '홈';
+
+  @override
+  String get ng_choose_project => '프로젝트 선택';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return '프로젝트 폴더를 사용할 수 없어 이 채팅은 $path에서 실행됩니다.';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      '게이트웨이가 채팅을 만들었을 수 있지만 확인하지 못했습니다. 새 채팅을 시작하기 전에 채팅 목록을 확인하세요. 이 요청은 자동으로 재시도되지 않습니다.';
+
+  @override
   String get ng_what_should_we_work_on => '무엇을 해볼까요?';
 
   @override
@@ -4403,6 +4454,51 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ng_send => '보내기';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias은(는) $command의 별칭입니다';
+  }
+
+  @override
+  String get ng_slash_command_no_description => '설명이 없습니다.';
+
+  @override
+  String get ng_slash_command_arguments_options => '정해진 옵션 중 하나를 받습니다.';
+
+  @override
+  String get ng_slash_command_arguments_text => '명령 뒤에 텍스트를 받습니다.';
+
+  @override
+  String get ng_slash_command_arguments_mixed => '명령 뒤에 옵션이나 텍스트를 받습니다.';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen에서는 이 내용이 일반 메시지로 Hermes에 전송되며, 명령 자체는 실행되지 않습니다.';
+
+  @override
+  String get ng_slash_command_output => '명령 출력';
+
+  @override
+  String get ng_slash_command_running => '명령 실행 중…';
+
+  @override
+  String get ng_slash_command_done => '완료되었습니다.';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return '명령을 실행하지 못했습니다: $error';
+  }
+
+  @override
+  String get ng_slash_command_refused => 'Hermes는 여기에서 이 명령을 실행할 수 없습니다.';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      '명령을 보냈지만 응답이 오지 않았습니다. 게이트웨이에서 아직 실행 중일 수 있으므로 다시 보내지 않았고 초안은 그대로 두었습니다.';
+
+  @override
+  String get ng_slash_command_nothing_running => '실행 중인 작업이 없습니다.';
 
   @override
   String get ng_steered => '지시 반영됨';

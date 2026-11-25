@@ -1,0 +1,1 @@
+NextGen scrolls the transcript to the end when the keyboard opens, and handles /new locally like the desktop.

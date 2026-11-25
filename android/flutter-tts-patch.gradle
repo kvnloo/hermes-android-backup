@@ -2,6 +2,7 @@
 import java.security.MessageDigest
 
 def plugin = project(':flutter_tts')
+def robolectricVersion = providers.gradleProperty('robolectricVersion').get()
 def patchDir = rootProject.file('../third_party/flutter_tts_android')
 plugin.afterEvaluate {
     def manifest = new groovy.json.JsonSlurper().parse(new File(patchDir, 'manifest.json'))
@@ -34,5 +35,5 @@ plugin.afterEvaluate {
     }
     plugin.android.sourceSets.test.java.srcDir(rootProject.file('flutter_tts_tests'))
     plugin.dependencies.add('testImplementation', 'junit:junit:4.13.2')
-    plugin.dependencies.add('testImplementation', 'org.robolectric:robolectric:4.16')
+    plugin.dependencies.add('testImplementation', "org.robolectric:robolectric:${robolectricVersion}")
 }

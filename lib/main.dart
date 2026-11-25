@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'core/models/client_certificate.dart';
 import 'core/services/android_launch_intent_service.dart';
 import 'core/services/android_share_intent_service.dart';
+import 'core/services/auto_messaging_service.dart';
 import 'core/services/client_certificate_service.dart';
 import 'core/services/composer_draft_store.dart';
 import 'core/services/config_backup.dart';
@@ -345,6 +346,7 @@ class _NotificationNavigationIntent {
 
 class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
   late final GatewayTurnApplicationController _turnApplicationController;
+  late final AutoMessagingService _autoMessaging;
   late final TurnNotificationService _notifications;
   late final MobilePushService _mobilePush;
   late final void Function(NotificationResponse) _notificationHandler;
@@ -440,6 +442,14 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
     );
     notificationPrefs.addListener(_syncOngoingChats);
     _mobilePush.addListener(_onMobilePushChanged);
+    _turnApplicationController.conversationTarget = (c, id) =>
+        TurnNotificationService.conversationTarget(widget.connManager, c, id);
+    _autoMessaging = AutoMessagingService(
+      manager: widget.connManager,
+      turns: _turnApplicationController,
+      onOpen: (c, id) => _openNotificationSession(c, id),
+    );
+    _autoMessaging.initialize();
     notificationResponseHandler = _notificationHandler;
     ConnectionMutationBarrier.addListener(_pruneApprovalActions);
     // A notification that launched a terminated app carries its tap/action in
@@ -1279,6 +1289,7 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     final token = _keepAliveTurnActivityToken;
     _closingTurnOwner = true;
+    _autoMessaging.dispose();
     _pendingNormalResponse = null;
     _pendingApprovalResponses.clear();
     ConnectionMutationBarrier.removeListener(_pruneApprovalActions);

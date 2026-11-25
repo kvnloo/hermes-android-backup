@@ -270,12 +270,41 @@ class DashboardApiClient extends ApiClient {
     ];
   }
 
+  /// Reads only the selected profile's listing preference. A missing setting
+  /// is off; a failed/unsupported read is unknown, so callers preserve the
+  /// server's subagent admission instead of silently overriding it.
+  Future<bool?> showSubagentSessions({String? profile}) async {
+    try {
+      final data = await _getMap(
+        'config',
+        query: {'profile': ?profile},
+        timeout: const Duration(seconds: 3),
+      );
+      final sessions = data['sessions'];
+      if (sessions == null) return false;
+      if (sessions is! Map) return null;
+      final value = sessions['show_subagents'];
+      if (value is String) {
+        return const {
+          '1',
+          'true',
+          'yes',
+          'on',
+        }.contains(value.trim().toLowerCase());
+      }
+      return value == true || (value is num && value != 0);
+    } catch (_) {
+      return null;
+    }
+  }
+
   /// How many chats NextGen would list for each of [profiles]: the first page
-  /// of the same list, minus the cron rows it hides. The all-profiles totals
-  /// cannot be used for this, as they count cron runs and other sources too.
+  /// of the same list, minus cron and internal rows. All-profiles totals count
+  /// automated runs too and cannot establish which profile has human chats.
   Future<Map<String, int>> visibleChatCounts(List<String> profiles) async {
     final counts = <String, int>{};
     for (final profile in profiles) {
+      final showSubagents = await showSubagentSessions(profile: profile);
       final res = await dashboard.apiRequest(
         'GET',
         'sessions',
@@ -284,6 +313,7 @@ class DashboardApiClient extends ApiClient {
           'limit': '100',
           'order': 'recent',
           'archived': 'exclude',
+          'exclude_sources': sources.kChatListingExcludedSources,
         },
       );
       if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -295,7 +325,14 @@ class DashboardApiClient extends ApiClient {
       counts[profile] = (_decodeMap(res)['sessions'] as List? ?? const [])
           .whereType<Map<String, dynamic>>()
           .map(Session.fromJson)
-          .where((s) => !sources.isCronSession(s) && !s.isUntitledCronShell)
+          .where(
+            (s) =>
+                !sources.isCronSession(s) &&
+                !sources.isInternalListingSession(
+                  s,
+                  showSubagents: showSubagents,
+                ),
+          )
           .length;
     }
     return counts;
@@ -326,6 +363,7 @@ class DashboardApiClient extends ApiClient {
     int limit = 50,
     int offset = 0,
     String? title,
+    String? excludeSources,
     Duration timeout = ApiClient.requestTimeout,
   }) async {
     if (title != null && title.trim().isNotEmpty) {
@@ -348,6 +386,7 @@ class DashboardApiClient extends ApiClient {
         'offset': '$offset',
         'order': 'recent',
         'archived': 'exclude',
+        'exclude_sources': ?excludeSources,
       },
       timeout: timeout,
     );

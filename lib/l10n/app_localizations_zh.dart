@@ -9,6 +9,9 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get slash_local_arguments => '此处的快捷命令不支持参数。请使用应用中的控件；草稿已保留。';
+
+  @override
   String get fallback_title => '备用模型';
 
   @override
@@ -3804,6 +3807,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias 是 $command 的别名';
+  }
+
+  @override
+  String get slash_command_info_no_description => '暂无说明。';
+
+  @override
+  String get slash_command_info_arguments_options => '接受固定选项中的一个。';
+
+  @override
+  String get slash_command_info_arguments_text => '在命令后接受文本。';
+
+  @override
+  String get slash_command_info_arguments_mixed => '在命令后接受选项或文本。';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -3815,6 +3835,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported => '此命令在此服务器上不可用。';
+
+  @override
+  String get slash_sessions_inline => '请打开会话列表选择聊天。草稿已保留。';
 
   @override
   String get nextgen_toggle => 'NextGen 界面';
@@ -3909,6 +3935,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ng_the_turn_failed => '本轮对话失败。';
+
+  @override
+  String get ng_turn_changed => '该轮对话已结束或已开始新一轮';
+
+  @override
+  String get ng_steer_rejected => '正在进行的对话未接受此内容';
+
+  @override
+  String get ng_turn_not_known_yet => '尚不清楚正在进行的对话；请稍后再试';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -4297,6 +4332,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ng_retry => '重试';
 
   @override
+  String get ng_project_home => '主页';
+
+  @override
+  String get ng_choose_project => '选择项目';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return '项目文件夹不可用，因此此聊天在 $path 中运行。';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      '网关可能已创建此聊天，但未确认。开始新聊天前请检查聊天列表；此请求不会自动重试。';
+
+  @override
   String get ng_what_should_we_work_on => '我们要做些什么？';
 
   @override
@@ -4334,6 +4384,51 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ng_send => '发送';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias 是 $command 的别名';
+  }
+
+  @override
+  String get ng_slash_command_no_description => '暂无说明。';
+
+  @override
+  String get ng_slash_command_arguments_options => '接受固定选项中的一个。';
+
+  @override
+  String get ng_slash_command_arguments_text => '在命令后接受文本。';
+
+  @override
+  String get ng_slash_command_arguments_mixed => '在命令后接受选项或文本。';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen 会将此作为普通消息发送给 Hermes，不会执行该命令。';
+
+  @override
+  String get ng_slash_command_output => '命令输出';
+
+  @override
+  String get ng_slash_command_running => '正在运行命令…';
+
+  @override
+  String get ng_slash_command_done => '完成。';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return '无法运行命令：$error';
+  }
+
+  @override
+  String get ng_slash_command_refused => 'Hermes 无法在此运行此命令。';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      '命令已发送，但未收到回复。它可能仍在网关上运行，因此没有重新发送，并保留了你的草稿。';
+
+  @override
+  String get ng_slash_command_nothing_running => '当前没有正在运行的任务。';
 
   @override
   String get ng_steered => '已调整指示';
@@ -5783,6 +5878,9 @@ class AppLocalizationsZh extends AppLocalizations {
 /// The translations for Chinese, using the Han script (`zh_Hans`).
 class AppLocalizationsZhHans extends AppLocalizationsZh {
   AppLocalizationsZhHans() : super('zh_Hans');
+
+  @override
+  String get slash_local_arguments => '此处的快捷命令不支持参数。请使用应用中的控件；草稿已保留。';
 
   @override
   String get fallback_title => '备用模型';
@@ -9388,6 +9486,23 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get slash_commands_empty => 'No matching commands';
 
   @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias 是 $command 的别名';
+  }
+
+  @override
+  String get slash_command_info_no_description => '暂无说明。';
+
+  @override
+  String get slash_command_info_arguments_options => '接受固定选项中的一个。';
+
+  @override
+  String get slash_command_info_arguments_text => '在命令后接受文本。';
+
+  @override
+  String get slash_command_info_arguments_mixed => '在命令后接受选项或文本。';
+
+  @override
   String get slash_command_output => 'Command output';
 
   @override
@@ -9399,6 +9514,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get slash_command_failed => 'The command could not be run.';
+
+  @override
+  String get slash_command_unsupported => '此命令在此服务器上不可用。';
+
+  @override
+  String get slash_sessions_inline => '请打开会话列表选择聊天。草稿已保留。';
 
   @override
   String get nextgen_toggle => 'NextGen 界面';
@@ -9493,6 +9614,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get ng_the_turn_failed => '本轮对话失败。';
+
+  @override
+  String get ng_turn_changed => '该轮对话已结束或已开始新一轮';
+
+  @override
+  String get ng_steer_rejected => '正在进行的对话未接受此内容';
+
+  @override
+  String get ng_turn_not_known_yet => '尚不清楚正在进行的对话；请稍后再试';
 
   @override
   String ng_couldn_t_stop(Object error) {
@@ -9881,6 +10011,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get ng_retry => '重试';
 
   @override
+  String get ng_project_home => '主页';
+
+  @override
+  String get ng_choose_project => '选择项目';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return '项目文件夹不可用，因此此聊天在 $path 中运行。';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      '网关可能已创建此聊天，但未确认。开始新聊天前请检查聊天列表；此请求不会自动重试。';
+
+  @override
   String get ng_what_should_we_work_on => '我们要做些什么？';
 
   @override
@@ -9918,6 +10063,51 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get ng_send => '发送';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias 是 $command 的别名';
+  }
+
+  @override
+  String get ng_slash_command_no_description => '暂无说明。';
+
+  @override
+  String get ng_slash_command_arguments_options => '接受固定选项中的一个。';
+
+  @override
+  String get ng_slash_command_arguments_text => '在命令后接受文本。';
+
+  @override
+  String get ng_slash_command_arguments_mixed => '在命令后接受选项或文本。';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen 会将此作为普通消息发送给 Hermes，不会执行该命令。';
+
+  @override
+  String get ng_slash_command_output => '命令输出';
+
+  @override
+  String get ng_slash_command_running => '正在运行命令…';
+
+  @override
+  String get ng_slash_command_done => '完成。';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return '无法运行命令：$error';
+  }
+
+  @override
+  String get ng_slash_command_refused => 'Hermes 无法在此运行此命令。';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      '命令已发送，但未收到回复。它可能仍在网关上运行，因此没有重新发送，并保留了你的草稿。';
+
+  @override
+  String get ng_slash_command_nothing_running => '当前没有正在运行的任务。';
 
   @override
   String get ng_steered => '已调整指示';

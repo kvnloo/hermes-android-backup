@@ -116,6 +116,12 @@ abstract class AppLocalizations {
     Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
   ];
 
+  /// No description provided for @slash_local_arguments.
+  ///
+  /// In en, this message translates to:
+  /// **'This shortcut does not accept arguments here. Use the app controls; your draft was kept.'**
+  String get slash_local_arguments;
+
   /// No description provided for @fallback_title.
   ///
   /// In en, this message translates to:
@@ -6642,6 +6648,36 @@ abstract class AppLocalizations {
   /// **'No matching commands'**
   String get slash_commands_empty;
 
+  /// No description provided for @slash_command_info_alias.
+  ///
+  /// In en, this message translates to:
+  /// **'{alias} is an alias of {command}'**
+  String slash_command_info_alias(String alias, String command);
+
+  /// No description provided for @slash_command_info_no_description.
+  ///
+  /// In en, this message translates to:
+  /// **'No description available.'**
+  String get slash_command_info_no_description;
+
+  /// No description provided for @slash_command_info_arguments_options.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes one option from a fixed list.'**
+  String get slash_command_info_arguments_options;
+
+  /// No description provided for @slash_command_info_arguments_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes text after the command.'**
+  String get slash_command_info_arguments_text;
+
+  /// No description provided for @slash_command_info_arguments_mixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes an option or text after the command.'**
+  String get slash_command_info_arguments_mixed;
+
   /// No description provided for @slash_command_output.
   ///
   /// In en, this message translates to:
@@ -6665,6 +6701,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The command could not be run.'**
   String get slash_command_failed;
+
+  /// No description provided for @slash_command_unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This command is not available on this server.'**
+  String get slash_command_unsupported;
+
+  /// No description provided for @slash_sessions_inline.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the session list to choose a chat. Your draft was kept.'**
+  String get slash_sessions_inline;
 
   /// No description provided for @nextgen_toggle.
   ///
@@ -6815,6 +6863,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The turn failed.'**
   String get ng_the_turn_failed;
+
+  /// Why Stop or Steer did nothing: the turn the user saw is no longer the running one.
+  ///
+  /// In en, this message translates to:
+  /// **'that turn already ended or a newer one started'**
+  String get ng_turn_changed;
+
+  /// Why a Steer was not delivered: the running turn refused it.
+  ///
+  /// In en, this message translates to:
+  /// **'the running turn didn\'t accept it'**
+  String get ng_steer_rejected;
+
+  /// Why Stop or Steer was not sent: the app has not learned the running turn yet.
+  ///
+  /// In en, this message translates to:
+  /// **'the running turn isn\'t known yet; try again in a moment'**
+  String get ng_turn_not_known_yet;
 
   /// No description provided for @ng_couldn_t_stop.
   ///
@@ -7488,6 +7554,30 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get ng_retry;
 
+  /// No description provided for @ng_project_home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get ng_project_home;
+
+  /// No description provided for @ng_choose_project.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a project'**
+  String get ng_choose_project;
+
+  /// No description provided for @ng_project_cwd_fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'The project folder wasn\'t available, so this chat runs in {path}.'**
+  String ng_project_cwd_fallback(String path);
+
+  /// No description provided for @ng_project_create_uncertain.
+  ///
+  /// In en, this message translates to:
+  /// **'The gateway may have created this chat, but did not confirm it. Check Chats before starting another; this request will not be retried automatically.'**
+  String get ng_project_create_uncertain;
+
   /// No description provided for @ng_what_should_we_work_on.
   ///
   /// In en, this message translates to:
@@ -7559,6 +7649,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send'**
   String get ng_send;
+
+  /// No description provided for @ng_slash_command_alias.
+  ///
+  /// In en, this message translates to:
+  /// **'{alias} is an alias of {command}'**
+  String ng_slash_command_alias(String alias, String command);
+
+  /// No description provided for @ng_slash_command_no_description.
+  ///
+  /// In en, this message translates to:
+  /// **'No description available.'**
+  String get ng_slash_command_no_description;
+
+  /// No description provided for @ng_slash_command_arguments_options.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes one option from a fixed list.'**
+  String get ng_slash_command_arguments_options;
+
+  /// No description provided for @ng_slash_command_arguments_text.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes text after the command.'**
+  String get ng_slash_command_arguments_text;
+
+  /// No description provided for @ng_slash_command_arguments_mixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes an option or text after the command.'**
+  String get ng_slash_command_arguments_mixed;
+
+  /// No description provided for @ng_slash_command_sent_as_message.
+  ///
+  /// In en, this message translates to:
+  /// **'NextGen sends this to Hermes as a normal message; the command itself doesn\'t run.'**
+  String get ng_slash_command_sent_as_message;
+
+  /// No description provided for @ng_slash_command_output.
+  ///
+  /// In en, this message translates to:
+  /// **'Command output'**
+  String get ng_slash_command_output;
+
+  /// No description provided for @ng_slash_command_running.
+  ///
+  /// In en, this message translates to:
+  /// **'Running command…'**
+  String get ng_slash_command_running;
+
+  /// No description provided for @ng_slash_command_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done.'**
+  String get ng_slash_command_done;
+
+  /// No description provided for @ng_slash_command_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t run the command: {error}'**
+  String ng_slash_command_failed(Object error);
+
+  /// No description provided for @ng_slash_command_refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Hermes can\'t run this command here.'**
+  String get ng_slash_command_refused;
+
+  /// No description provided for @ng_slash_command_delivery_unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'The command was sent but no reply came back. It may still be running on the gateway, so it wasn\'t sent again and your draft was kept.'**
+  String get ng_slash_command_delivery_unknown;
+
+  /// No description provided for @ng_slash_command_nothing_running.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is running.'**
+  String get ng_slash_command_nothing_running;
 
   /// No description provided for @ng_steered.
   ///

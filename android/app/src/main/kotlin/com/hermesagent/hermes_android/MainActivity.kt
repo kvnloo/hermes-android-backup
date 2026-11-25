@@ -35,6 +35,7 @@ class MainActivity : FlutterActivity() {
         initialLaunchAction = launchActionFor(intent)
         super.onCreate(savedInstanceState)
         runCatching { MobilePushBridge.captureTap(this, intent) }
+        if (intent?.action == HermesAutoNotifications.OPEN) runCatching { HermesAutoNotifications.receive(this, intent) }
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -70,6 +71,7 @@ class MainActivity : FlutterActivity() {
         attachmentFileSaver = AttachmentFileSaver(this, flutterEngine.dartExecutor.binaryMessenger)
         BackgroundWorkPlatform.install(this, flutterEngine.dartExecutor.binaryMessenger)
         MobilePushPlugin.install(flutterEngine)
+        AutoMessagingPlugin.install(flutterEngine)
         handsFreeVoice = HandsFreeVoicePlugin.install(flutterEngine)
         shareChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, shareChannelName).apply {
             setMethodCallHandler { call, result ->
@@ -174,6 +176,7 @@ class MainActivity : FlutterActivity() {
         setIntent(intent)
         WindowViewport.refresh(window.decorView)
         runCatching { MobilePushBridge.captureTap(this, intent) }
+        if (intent?.action == HermesAutoNotifications.OPEN) runCatching { HermesAutoNotifications.receive(this, intent) }
         launchActionFor(intent)?.let { action ->
             launchChannel?.invokeMethod("launchAction", action)
             return

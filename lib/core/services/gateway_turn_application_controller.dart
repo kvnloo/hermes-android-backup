@@ -180,6 +180,8 @@ class GatewayTurnApplicationController {
   final Set<GatewayTurnApplicationSession> _forwardedSessions = {};
   final Set<Object> _legacyTurns = {};
   bool _closed = false;
+  ConversationNotificationTarget? Function(SavedConnection, String)?
+  conversationTarget;
 
   GatewayTurnApplicationController({
     GatewayTurnApplicationSessionFactory? sessionFactory,
@@ -260,6 +262,7 @@ class GatewayTurnApplicationController {
               presentation: presentationFor(connection),
               activityStore: _activityStore,
               onActivityChanged: _notifyActivityListeners,
+              conversationFor: (id) => conversationTarget?.call(connection, id),
             )
           : NormalGatewayApplicationSession(
               connection: connection,

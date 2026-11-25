@@ -18,11 +18,11 @@ the POM/source discrepancy and distribution checklist.
   the Library's LGPL licence or the retained upstream bytes.
 - Application source, Flutter lockfile, Android Gradle/build scripts and a local
   AAR substitution path. The exact-commit source/relink ZIP is generated below.
-- `tools/embedded-push-rebuild/`: a separate build adapter using the app's cached
-  AGP 9.0.1 / SDK 36 toolchain, without upstream Dokka/publishing. It does **not**
+- `tools/embedded-push-rebuild/`: a separate build adapter using the app's
+  AGP 9.5.2 / SDK 36 toolchain, without upstream Dokka/publishing. It does **not**
   modify the Library source. It uses Kotlin language level 2.1, JVM target 1.8,
-  coroutines 1.10.2, and the app-aligned Kotlin stdlib 2.3.20. This is not a claim
-  of a bit-identical rebuild of Maven's AAR.
+  coroutines 1.11.0, and the app-aligned Kotlin plugin/stdlib 2.4.21. This is not
+  a claim of a bit-identical rebuild of Maven's AAR.
 
 ## Verify and obtain editable source (offline)
 
@@ -47,7 +47,7 @@ An offline rebuild in the RC workspace could not resolve Dokka 2.2.0; no package
 was installed to conceal that failure.
 
 The alternative build adapter avoids documentation/publishing plugins. With JDK
-17, an installed Gradle 9.1.0 and Android SDK 36, the following builds the unchanged
+17, an installed Gradle 9.9.2 and Android SDK 36, the following builds the unchanged
 or recipient-edited source using the app's toolchain:
 
 ```sh

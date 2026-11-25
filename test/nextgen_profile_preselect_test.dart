@@ -119,6 +119,11 @@ void main() {
       'visibleChatCounts ignores cron rows, as the NextGen list does',
       () async {
         final client = clientFor((request) async {
+          if (request.url.path == '/api/config') {
+            return json({
+              'sessions': {'show_subagents': false},
+            });
+          }
           expect(request.url.path, '/api/sessions');
           final cron = {'id': 'x', 'source': 'cron', 'title': 'run'};
           return json({

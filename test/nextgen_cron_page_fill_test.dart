@@ -58,10 +58,14 @@ class _PagedApi extends DashboardApiClient {
   final _pages = <Completer<SessionListPage>>[];
 
   @override
+  Future<bool?> showSubagentSessions({String? profile}) async => false;
+
+  @override
   Future<SessionListPage> getSessionsPage({
     int limit = 50,
     int offset = 0,
     String? title,
+    String? excludeSources,
     Duration timeout = ApiClient.requestTimeout,
   }) {
     calls.add((offset: offset, limit: limit, title: title));

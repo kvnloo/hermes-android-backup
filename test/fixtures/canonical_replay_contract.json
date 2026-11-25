@@ -1,0 +1,1189 @@
+{
+  "_provenance": {
+    "backend_commit": "caafe5389ae585ef77387a962aee05b1bcf17029",
+    "generator": "tools/capture_canonical_replay_fixture.py",
+    "note": "Epochs are random per run; tests read them from this file."
+  },
+  "controls": {
+    "canonical_params": {
+      "events_since": {
+        "last_sequence": 2,
+        "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+        "session_id": "local-0123456789abcdef"
+      },
+      "interrupt": {
+        "execution_generation": 4,
+        "session_id": "local-0123456789abcdef"
+      },
+      "steer": {
+        "execution_generation": 4,
+        "session_id": "local-0123456789abcdef",
+        "text": "Focus"
+      }
+    },
+    "interrupt_ack": {
+      "authority_epoch": 7,
+      "execution_generation": 4,
+      "execution_state": "running",
+      "instance_id": "instance-fixture",
+      "ref": {
+        "profile_id": "default",
+        "session_id": "local-0123456789abcdef"
+      },
+      "revision": 1
+    },
+    "interrupt_without_generation": {
+      "code": 4001,
+      "data": {
+        "reason": "stale_generation"
+      },
+      "message": "stale_generation"
+    },
+    "snapshot_with_pending": {
+      "authority_epoch": 7,
+      "execution_generation": 3,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 2,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [
+        {
+          "admission_id": "adm-q",
+          "authority_epoch": 7,
+          "controls": [
+            "steer"
+          ],
+          "execution_generation": null,
+          "input_id": "input-q",
+          "outcome": null,
+          "ref": {
+            "profile_id": "default",
+            "session_id": "local-0123456789abcdef"
+          },
+          "sequence": 3,
+          "status": "queued",
+          "steering": false,
+          "text": "Then summarise"
+        }
+      ],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "stale_interrupt": {
+      "code": 4001,
+      "data": {
+        "reason": "stale_generation"
+      },
+      "message": "stale_generation"
+    },
+    "stale_steer": {
+      "code": 4001,
+      "data": {
+        "reason": "stale_generation"
+      },
+      "message": "stale_generation"
+    },
+    "steer_queued": {
+      "authority_epoch": 7,
+      "execution_generation": 4,
+      "status": "queued",
+      "text": "Focus"
+    },
+    "steer_rejected": {
+      "authority_epoch": 7,
+      "delivered": false,
+      "execution_generation": 4,
+      "status": "rejected",
+      "text": "Focus"
+    },
+    "steer_without_generation": {
+      "code": 4001,
+      "data": {
+        "reason": "invalid_params"
+      },
+      "message": "invalid_params"
+    },
+    "submit_ack": {
+      "admission_id": "adm-b",
+      "authority_epoch": 7,
+      "execution_generation": 4,
+      "outcome": null,
+      "ref": {
+        "profile_id": "default",
+        "session_id": "local-0123456789abcdef"
+      },
+      "sequence": 2,
+      "status": "started"
+    }
+  },
+  "held_terminal": {
+    "frames": [
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-g",
+          "authority_epoch": 7,
+          "execution_generation": 9,
+          "payload": {},
+          "replay_epoch": "97e22160b7ae4713944b825c87790975",
+          "seq": 1,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.start"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-g",
+          "authority_epoch": 7,
+          "execution_generation": 9,
+          "payload": {
+            "text": "Done "
+          },
+          "replay_epoch": "97e22160b7ae4713944b825c87790975",
+          "seq": 2,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-g",
+          "authority_epoch": 7,
+          "execution_generation": 9,
+          "payload": {
+            "text": "now"
+          },
+          "replay_epoch": "97e22160b7ae4713944b825c87790975",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-g",
+          "authority_epoch": 7,
+          "execution_generation": 9,
+          "payload": {
+            "admission_id": "adm-g",
+            "content": "Done now",
+            "outcome": "completed",
+            "status": "complete",
+            "text": "Done now"
+          },
+          "replay_epoch": "97e22160b7ae4713944b825c87790975",
+          "seq": 4,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.complete"
+        }
+      }
+    ],
+    "since_after_2": {
+      "count": 2,
+      "epoch": "97e22160b7ae4713944b825c87790975",
+      "events": [
+        {
+          "admission_id": "adm-g",
+          "authority_epoch": 7,
+          "execution_generation": 9,
+          "payload": {
+            "text": "now"
+          },
+          "replay_epoch": "97e22160b7ae4713944b825c87790975",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        },
+        {
+          "admission_id": "adm-g",
+          "authority_epoch": 7,
+          "execution_generation": 9,
+          "payload": {
+            "admission_id": "adm-g",
+            "content": "Done now",
+            "outcome": "completed",
+            "status": "complete",
+            "text": "Done now"
+          },
+          "replay_epoch": "97e22160b7ae4713944b825c87790975",
+          "seq": 4,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.complete"
+        }
+      ],
+      "last_sequence": 4,
+      "latest_seq": 4,
+      "open_requests": [],
+      "replay_epoch": "97e22160b7ae4713944b825c87790975",
+      "snapshot_required": false,
+      "truncated": false
+    },
+    "since_without_epoch": {
+      "count": 0,
+      "epoch": "97e22160b7ae4713944b825c87790975",
+      "events": [],
+      "last_sequence": 4,
+      "latest_seq": 4,
+      "open_requests": [],
+      "replay_epoch": "97e22160b7ae4713944b825c87790975",
+      "snapshot_required": true,
+      "truncated": true
+    },
+    "snapshot": {
+      "authority_epoch": 7,
+      "execution_generation": 9,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 4,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "97e22160b7ae4713944b825c87790975",
+      "revision": 1,
+      "running": false,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "snapshot_running": {
+      "authority_epoch": 7,
+      "execution_generation": 9,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 2,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "97e22160b7ae4713944b825c87790975",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "snapshot_start": {
+      "authority_epoch": 7,
+      "execution_generation": 9,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 1,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "97e22160b7ae4713944b825c87790975",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    }
+  },
+  "legacy": {
+    "controls": {
+      "events_since_canonical_keys": {
+        "error": {
+          "code": 4000,
+          "message": "invalid params for session.events.since: last_sequence: Extra inputs are not permitted \u2014 the client and the Hermes backend are out of sync (different versions); run `hermes update` and restart both"
+        },
+        "id": 1,
+        "jsonrpc": "2.0"
+      },
+      "interrupt_with_generation": {
+        "error": {
+          "code": 4000,
+          "message": "invalid params for session.interrupt: execution_generation: Extra inputs are not permitted \u2014 the client and the Hermes backend are out of sync (different versions); run `hermes update` and restart both"
+        },
+        "id": 1,
+        "jsonrpc": "2.0"
+      },
+      "steer_with_generation": {
+        "error": {
+          "code": 4000,
+          "message": "invalid params for session.steer: execution_generation: Extra inputs are not permitted \u2014 the client and the Hermes backend are out of sync (different versions); run `hermes update` and restart both"
+        },
+        "id": 1,
+        "jsonrpc": "2.0"
+      }
+    },
+    "frames": [
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "payload": {},
+          "seq": 1,
+          "session_id": "legacy-runtime-1",
+          "type": "message.start"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "payload": {
+            "text": "Le"
+          },
+          "seq": 2,
+          "session_id": "legacy-runtime-1",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "payload": {
+            "text": "gacy"
+          },
+          "seq": 3,
+          "session_id": "legacy-runtime-1",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "payload": {
+            "status": "complete",
+            "text": "Legacy"
+          },
+          "seq": 4,
+          "session_id": "legacy-runtime-1",
+          "type": "message.complete"
+        }
+      }
+    ],
+    "ready_frame": {
+      "jsonrpc": "2.0",
+      "method": "event",
+      "params": {
+        "payload": {
+          "change_events": true,
+          "heartbeat": true,
+          "replay_epoch": "8323dd3ca7f648b584d08726c7a332c6"
+        },
+        "type": "gateway.ready"
+      }
+    },
+    "since_after_1": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "result": {
+        "count": 3,
+        "epoch": "8323dd3ca7f648b584d08726c7a332c6",
+        "events": [
+          {
+            "payload": {
+              "text": "Le"
+            },
+            "seq": 2,
+            "session_id": "legacy-runtime-1",
+            "type": "message.delta"
+          },
+          {
+            "payload": {
+              "text": "gacy"
+            },
+            "seq": 3,
+            "session_id": "legacy-runtime-1",
+            "type": "message.delta"
+          },
+          {
+            "payload": {
+              "status": "complete",
+              "text": "Legacy"
+            },
+            "seq": 4,
+            "session_id": "legacy-runtime-1",
+            "type": "message.complete"
+          }
+        ],
+        "latest_seq": 4,
+        "open_requests": [],
+        "truncated": false
+      }
+    }
+  },
+  "new_stream": {
+    "frames": [
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-d",
+          "authority_epoch": 7,
+          "execution_generation": 8,
+          "payload": {},
+          "replay_epoch": "3ffa2febab194039ad71988f4dad6676",
+          "seq": 1,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.start"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-d",
+          "authority_epoch": 7,
+          "execution_generation": 8,
+          "payload": {
+            "text": "Before release"
+          },
+          "replay_epoch": "3ffa2febab194039ad71988f4dad6676",
+          "seq": 2,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-d",
+          "authority_epoch": 7,
+          "execution_generation": 8,
+          "payload": {
+            "text": "New stream"
+          },
+          "replay_epoch": "0a8ec8e0ad5c475e8cdcda0ad0727aed",
+          "seq": 1,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-d",
+          "authority_epoch": 7,
+          "execution_generation": 8,
+          "payload": {
+            "text": " continues"
+          },
+          "replay_epoch": "0a8ec8e0ad5c475e8cdcda0ad0727aed",
+          "seq": 2,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      }
+    ],
+    "old_epoch": "3ffa2febab194039ad71988f4dad6676",
+    "since_old_epoch": {
+      "count": 0,
+      "epoch": "0a8ec8e0ad5c475e8cdcda0ad0727aed",
+      "events": [],
+      "last_sequence": 1,
+      "latest_seq": 1,
+      "open_requests": [],
+      "replay_epoch": "0a8ec8e0ad5c475e8cdcda0ad0727aed",
+      "snapshot_required": true,
+      "truncated": true
+    },
+    "snapshot": {
+      "authority_epoch": 7,
+      "execution_generation": 8,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 1,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "0a8ec8e0ad5c475e8cdcda0ad0727aed",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "snapshot_before": {
+      "authority_epoch": 7,
+      "execution_generation": 8,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 1,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "3ffa2febab194039ad71988f4dad6676",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    }
+  },
+  "overflow": {
+    "first_frames": [
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-e",
+          "authority_epoch": 7,
+          "execution_generation": 6,
+          "payload": {},
+          "replay_epoch": "f471405f2daf4243bd8c8f45c245122e",
+          "seq": 1,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.start"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-e",
+          "authority_epoch": 7,
+          "execution_generation": 6,
+          "payload": {
+            "text": "x"
+          },
+          "replay_epoch": "f471405f2daf4243bd8c8f45c245122e",
+          "seq": 2,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-e",
+          "authority_epoch": 7,
+          "execution_generation": 6,
+          "payload": {
+            "text": "."
+          },
+          "replay_epoch": "f471405f2daf4243bd8c8f45c245122e",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      }
+    ],
+    "last_frame": {
+      "jsonrpc": "2.0",
+      "method": "event",
+      "params": {
+        "admission_id": "adm-e",
+        "authority_epoch": 7,
+        "execution_generation": 6,
+        "payload": {
+          "text": "."
+        },
+        "replay_epoch": "f471405f2daf4243bd8c8f45c245122e",
+        "seq": 554,
+        "session_id": "local-0123456789abcdef",
+        "type": "message.delta"
+      }
+    },
+    "since_after_2": {
+      "count": 0,
+      "epoch": "f471405f2daf4243bd8c8f45c245122e",
+      "events": [],
+      "last_sequence": 554,
+      "latest_seq": 554,
+      "open_requests": [],
+      "replay_epoch": "f471405f2daf4243bd8c8f45c245122e",
+      "snapshot_required": true,
+      "truncated": true
+    },
+    "snapshot": {
+      "authority_epoch": 7,
+      "execution_generation": 6,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 554,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "f471405f2daf4243bd8c8f45c245122e",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "snapshot_before": {
+      "authority_epoch": 7,
+      "execution_generation": 6,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 2,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "f471405f2daf4243bd8c8f45c245122e",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    }
+  },
+  "process_epoch": "8323dd3ca7f648b584d08726c7a332c6",
+  "ready_frame": {
+    "jsonrpc": "2.0",
+    "method": "event",
+    "params": {
+      "payload": {
+        "change_events": true,
+        "heartbeat": true,
+        "replay_epoch": "8323dd3ca7f648b584d08726c7a332c6",
+        "session_authority": true
+      },
+      "type": "gateway.ready"
+    }
+  },
+  "replay_gap": {
+    "frames": [
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-f",
+          "authority_epoch": 7,
+          "execution_generation": 6,
+          "payload": {},
+          "replay_epoch": "4db441ab84244689a10155763712b093",
+          "seq": 1,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.start"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-f",
+          "authority_epoch": 7,
+          "execution_generation": 6,
+          "payload": {
+            "text": "Kept "
+          },
+          "replay_epoch": "4db441ab84244689a10155763712b093",
+          "seq": 2,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-f",
+          "authority_epoch": 7,
+          "execution_generation": 6,
+          "payload": {
+            "text": "replayed"
+          },
+          "replay_epoch": "4db441ab84244689a10155763712b093",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      }
+    ],
+    "notice": {
+      "jsonrpc": "2.0",
+      "method": "event",
+      "params": {
+        "payload": {
+          "latest_seq": 3,
+          "replay_epoch": "4db441ab84244689a10155763712b093"
+        },
+        "session_id": "local-0123456789abcdef",
+        "type": "session.replay_gap"
+      }
+    },
+    "since_after_2": {
+      "count": 1,
+      "epoch": "4db441ab84244689a10155763712b093",
+      "events": [
+        {
+          "admission_id": "adm-f",
+          "authority_epoch": 7,
+          "execution_generation": 6,
+          "payload": {
+            "text": "replayed"
+          },
+          "replay_epoch": "4db441ab84244689a10155763712b093",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      ],
+      "last_sequence": 3,
+      "latest_seq": 3,
+      "open_requests": [],
+      "replay_epoch": "4db441ab84244689a10155763712b093",
+      "snapshot_required": false,
+      "truncated": false
+    },
+    "snapshot_after": {
+      "authority_epoch": 7,
+      "execution_generation": 6,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 3,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "4db441ab84244689a10155763712b093",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "snapshot_before": {
+      "authority_epoch": 7,
+      "execution_generation": 6,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 2,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "4db441ab84244689a10155763712b093",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    }
+  },
+  "restart": {
+    "frames": [
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-c",
+          "authority_epoch": 7,
+          "execution_generation": 5,
+          "payload": {},
+          "replay_epoch": "bcdf2e99f3cb4bab9b2bbde417112751",
+          "seq": 1,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.start"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-c",
+          "authority_epoch": 7,
+          "execution_generation": 5,
+          "payload": {
+            "text": "After "
+          },
+          "replay_epoch": "bcdf2e99f3cb4bab9b2bbde417112751",
+          "seq": 2,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-c",
+          "authority_epoch": 7,
+          "execution_generation": 5,
+          "payload": {
+            "text": "restart"
+          },
+          "replay_epoch": "bcdf2e99f3cb4bab9b2bbde417112751",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-c",
+          "authority_epoch": 7,
+          "execution_generation": 5,
+          "payload": {
+            "admission_id": "adm-c",
+            "content": "After restart",
+            "outcome": "completed",
+            "status": "complete",
+            "text": "After restart"
+          },
+          "replay_epoch": "bcdf2e99f3cb4bab9b2bbde417112751",
+          "seq": 4,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.complete"
+        }
+      }
+    ],
+    "since_old_epoch": {
+      "count": 0,
+      "epoch": "bcdf2e99f3cb4bab9b2bbde417112751",
+      "events": [],
+      "last_sequence": 2,
+      "latest_seq": 2,
+      "open_requests": [],
+      "replay_epoch": "bcdf2e99f3cb4bab9b2bbde417112751",
+      "snapshot_required": true,
+      "truncated": true
+    },
+    "snapshot": {
+      "authority_epoch": 7,
+      "execution_generation": 5,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 2,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "bcdf2e99f3cb4bab9b2bbde417112751",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    }
+  },
+  "session_id": "local-0123456789abcdef",
+  "turn": {
+    "frames": [
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {},
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 1,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.start"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {
+            "text": "Autumn "
+          },
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 2,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {
+            "text": "moon "
+          },
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {
+            "text": "rises"
+          },
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 4,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {
+            "admission_id": "adm-a",
+            "content": "Autumn moon rises",
+            "outcome": "completed",
+            "status": "complete",
+            "text": "Autumn moon rises"
+          },
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 5,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.complete"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "method": "event",
+        "params": {
+          "admission_id": "adm-b",
+          "authority_epoch": 7,
+          "execution_generation": 4,
+          "payload": {},
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 6,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.start"
+        }
+      }
+    ],
+    "since_after_2": {
+      "count": 3,
+      "epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "events": [
+        {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {
+            "text": "moon "
+          },
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 3,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        },
+        {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {
+            "text": "rises"
+          },
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 4,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.delta"
+        },
+        {
+          "admission_id": "adm-a",
+          "authority_epoch": 7,
+          "execution_generation": 3,
+          "payload": {
+            "admission_id": "adm-a",
+            "content": "Autumn moon rises",
+            "outcome": "completed",
+            "status": "complete",
+            "text": "Autumn moon rises"
+          },
+          "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+          "seq": 5,
+          "session_id": "local-0123456789abcdef",
+          "type": "message.complete"
+        }
+      ],
+      "last_sequence": 5,
+      "latest_seq": 5,
+      "open_requests": [],
+      "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "snapshot_required": false,
+      "truncated": false
+    },
+    "since_process_epoch": {
+      "count": 0,
+      "epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "events": [],
+      "last_sequence": 5,
+      "latest_seq": 5,
+      "open_requests": [],
+      "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "snapshot_required": true,
+      "truncated": true
+    },
+    "since_without_epoch": {
+      "count": 0,
+      "epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "events": [],
+      "last_sequence": 5,
+      "latest_seq": 5,
+      "open_requests": [],
+      "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "snapshot_required": true,
+      "truncated": true
+    },
+    "snapshot_complete": {
+      "authority_epoch": 7,
+      "execution_generation": 3,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 5,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "revision": 1,
+      "running": false,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "snapshot_next": {
+      "authority_epoch": 7,
+      "execution_generation": 4,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 6,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    },
+    "snapshot_running": {
+      "authority_epoch": 7,
+      "execution_generation": 3,
+      "info": {
+        "desktop_protocol": "hermes-gateway-v1",
+        "model": "fixture-model"
+      },
+      "last_sequence": 2,
+      "message_count": 2,
+      "messages": [],
+      "messages_omitted": true,
+      "open_requests": [],
+      "pending": [],
+      "pending_connection": null,
+      "prompts": [],
+      "replay_epoch": "6ad1aa8d181a4a6c96c1643e935c09d4",
+      "revision": 1,
+      "running": true,
+      "session_id": "local-0123456789abcdef",
+      "stored_session_id": "local-0123456789abcdef",
+      "subscription_id": "sub-fixture",
+      "todo_state": null
+    }
+  }
+}

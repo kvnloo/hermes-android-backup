@@ -13,6 +13,7 @@ import 'package:hermes_android/nextgen/theme/nextgen_theme.dart';
 import 'package:hermes_android/nextgen/ui/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/canonical_replay_fixture.dart';
 import 'support/recording_turn_notification_sink.dart';
 
 SavedConnection _conn() => SavedConnection(
@@ -26,16 +27,27 @@ SavedConnection _conn() => SavedConnection(
   signInMethod: 'none',
 );
 
+// These cover LEGACY (non-authority) gateways: their seqs are numbered per
+// process, so the replay epoch is the `gateway.ready` one and every session
+// shares it. The ready frame and epoch are the legacy dispatcher's own
+// (`canonical_replay_contract.json`); canonical per-session epochs are covered
+// in nextgen_canonical_replay_test.dart.
+final _legacyReady = fixtureMap(['legacy', 'ready_frame']);
+final _e1 =
+    ((_legacyReady['params'] as Map)['payload'] as Map)['replay_epoch']
+        as String;
+
+/// A legacy event's `params` (`tui_gateway` stamps only `seq`).
 Map<String, dynamic> _frame(
   int seq,
   String type, [
   Map<String, dynamic>? p,
   String sessionId = 'rt',
-]) => {'type': type, 'session_id': sessionId, 'seq': seq, 'payload': p ?? {}};
+]) => {'type': type, 'session_id': sessionId, 'payload': p ?? {}, 'seq': seq};
 
 class _ReplayGateway extends NextGenGateway {
   _ReplayGateway(super.connection, {required this.onReplay}) {
-    readyFrame = const {'replay_epoch': 'e1'};
+    readyFrame = _legacyReady;
   }
 
   final Future<Map<String, dynamic>> Function(Map<String, dynamic> params)
@@ -68,11 +80,11 @@ void main() {
           ],
           'latest_seq': 5,
           'truncated': false,
-          'epoch': 'e1',
+          'epoch': _e1,
         },
         'rt',
         3,
-        'e1',
+        _e1,
       )!;
       expect(events.map((e) => e.type), ['message.delta', 'message.complete']);
       expect(events.first.seq, 4);
@@ -83,31 +95,31 @@ void main() {
       Map<String, dynamic> reply({
         List<Map<String, dynamic>>? events,
         bool truncated = false,
-        String epoch = 'e1',
+        String? epoch,
         int latest = 5,
       }) => {
         'events': events ?? [_frame(4, 'x'), _frame(5, 'y')],
         'latest_seq': latest,
         'truncated': truncated,
-        'epoch': epoch,
+        'epoch': epoch ?? _e1,
       };
-      expect(ngParseReplay(reply(truncated: true), 'rt', 3, 'e1'), isNull);
-      expect(ngParseReplay(reply(epoch: 'e2'), 'rt', 3, 'e1'), isNull);
+      expect(ngParseReplay(reply(truncated: true), 'rt', 3, _e1), isNull);
+      expect(ngParseReplay(reply(epoch: 'e2'), 'rt', 3, _e1), isNull);
       final missingEpoch = reply()..remove('epoch');
-      expect(ngParseReplay(missingEpoch, 'rt', 3, 'e1'), isNull);
-      expect(ngParseReplay(reply(latest: 2), 'rt', 3, 'e1'), isNull);
+      expect(ngParseReplay(missingEpoch, 'rt', 3, _e1), isNull);
+      expect(ngParseReplay(reply(latest: 2), 'rt', 3, _e1), isNull);
       expect(
         ngParseReplay(
           reply(events: [_frame(4, 'only-a-prefix')]),
           'rt',
           3,
-          'e1',
+          _e1,
         ),
         isNull,
         reason: 'latest_seq=5 means event 5 is still missing',
       );
       expect(
-        ngParseReplay(reply(events: [_frame(5, 'gap')]), 'rt', 3, 'e1'),
+        ngParseReplay(reply(events: [_frame(5, 'gap')]), 'rt', 3, _e1),
         isNull,
       );
       expect(
@@ -119,11 +131,11 @@ void main() {
           ),
           'rt',
           3,
-          'e1',
+          _e1,
         ),
         isNull,
       );
-      expect(ngParseReplay(const {}, 'rt', 3, 'e1'), isNull);
+      expect(ngParseReplay(const {}, 'rt', 3, _e1), isNull);
     });
   });
 
@@ -199,7 +211,7 @@ void main() {
           ],
           'latest_seq': 4,
           'truncated': false,
-          'epoch': 'e1',
+          'epoch': _e1,
         });
         await pumpEventQueue(times: 50);
 
@@ -224,7 +236,7 @@ void main() {
             ],
             'latest_seq': 3,
             'truncated': false,
-            'epoch': 'e1',
+            'epoch': _e1,
           };
         },
       );
@@ -282,6 +294,72 @@ void main() {
       expect(chat.lastTurnFailed, isTrue);
     });
   });
+
+  test(
+    'a legacy reload that found the turn over drops its held frames: one reply',
+    () async {
+      final frames = fixtureFrames(['legacy', 'frames']);
+      final live = await greetingSocket(_legacyReady);
+      addTearDown(() async {
+        live.socket.close();
+        await live.server.close(force: true);
+      });
+      var resumes = 0;
+      final gateway = FixtureGateway(
+        readyFrame: _legacyReady,
+        liveSocket: live.socket,
+        history: [
+          {'id': 1, 'role': 'user', 'content': 'Say legacy'},
+        ],
+        handlers: {
+          'session.resume': (_) => {
+            'session_id': 'legacy-runtime-1',
+            'running': resumes++ == 0,
+          },
+          // The link dropped again before the replay could answer.
+          'session.events.since': (_) => throw StateError('Not connected'),
+        },
+      );
+      final chat = NgChatController(gateway, sessionId: 'stored-legacy');
+      addTearDown(() {
+        chat.dispose();
+        gateway.dispose();
+      });
+      await chat.open();
+      gateway.debugEmit(fixtureEvent(frames[0]));
+      gateway.debugEmit(fixtureEvent(frames[1]));
+      await pumpEventQueue();
+      expect(chat.items.whereType<NgAssistantItem>().map((i) => i.text), [
+        'Le',
+      ]);
+
+      gateway.rest.rows = [
+        {'id': 1, 'role': 'user', 'content': 'Say legacy'},
+        {'id': 2, 'role': 'assistant', 'content': 'Legacy'},
+      ];
+      final hold = Completer<void>();
+      gateway.rest.hold = hold;
+      gateway.reconnects.add(null);
+      await pumpEventQueue(times: 50);
+      // The rest of the turn arrives while the reload is reading.
+      gateway.debugEmit(fixtureEvent(frames[2]));
+      gateway.debugEmit(fixtureEvent(frames[3]));
+      await pumpEventQueue(times: 50);
+      hold.complete();
+      gateway.rest.hold = null;
+      await pumpEventQueue(times: 100);
+
+      expect(chat.items.whereType<NgAssistantItem>().map((i) => i.text), [
+        'Legacy',
+      ]);
+      expect(chat.running, isFalse);
+      expect(gateway.callsTo('session.events.since').single.params, {
+        'session_id': 'legacy-runtime-1',
+        'last_seen': 2,
+      });
+      expect(gateway.callsTo('prompt.submit'), isEmpty);
+    },
+  );
 
   test('a posted request notification can be taken down again', () async {
     final sink = RecordingTurnNotificationSink()..permissionResult = true;

@@ -1,0 +1,57 @@
+# Dependabot configuration
+version: 2
+updates:
+  # Flutter/Dart packages (pubspec.yaml and pubspec.lock)
+  - package-ecosystem: "pub"
+    directory: "/"
+    labels:
+      - "pr: dependency-update"
+    schedule:
+      interval: weekly
+      time: "06:00"
+    open-pull-requests-limit: 10
+  # Android build: Gradle plugins, libraries and the wrapper
+  - package-ecosystem: "gradle"
+    directory: "/android"
+    labels:
+      - "pr: dependency-update"
+    schedule:
+      interval: weekly
+      time: "06:00"
+    open-pull-requests-limit: 10
+  # Build adapter for the embedded push distributor
+  - package-ecosystem: "gradle"
+    directory: "/tools/embedded-push-rebuild"
+    labels:
+      - "pr: dependency-update"
+    schedule:
+      interval: weekly
+      time: "06:00"
+    open-pull-requests-limit: 10
+  # Actions used by the workflows in .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    labels:
+      - "pr: dependency-update"
+    schedule:
+      interval: weekly
+      time: "06:00"
+    open-pull-requests-limit: 10
+  # Push companion server (pyproject.toml)
+  - package-ecosystem: "pip"
+    directory: "/server/mobile-push"
+    labels:
+      - "pr: dependency-update"
+    schedule:
+      interval: weekly
+      time: "06:00"
+    open-pull-requests-limit: 10
+  # Fake gateway used by the tests (requirements.txt)
+  - package-ecosystem: "pip"
+    directory: "/tools/fake_gateway"
+    labels:
+      - "pr: dependency-update"
+    schedule:
+      interval: weekly
+      time: "06:00"
+    open-pull-requests-limit: 10

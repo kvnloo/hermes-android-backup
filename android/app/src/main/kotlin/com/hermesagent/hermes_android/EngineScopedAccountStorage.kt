@@ -64,6 +64,10 @@ internal class EngineScopedPreferencesPlugin(
         super.onDetachedFromEngine(binding)
     }
     private fun <T> metadata(key: String, next: Any?, write: () -> T): T {
+        if (key == "flutter.hermes_notification_prefs") return synchronized(MobilePushBridge) {
+            val complete = MobilePushBridge.beginStorage(owner, metadata = true)
+            try { HermesAutoNotifications.invalidate(context); write() } finally { complete() }
+        }
         if (key != SAVED_CONNECTIONS) return write()
         val complete = MobilePushBridge.beginStorage(owner, metadata = true)
         try {
