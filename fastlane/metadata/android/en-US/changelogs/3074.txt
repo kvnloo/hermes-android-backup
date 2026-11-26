@@ -1,0 +1,1 @@
+The in-app update check and installer are removed. Ares no longer looks for new versions or installs them itself: updates come from the store you installed it from. The app also no longer asks Android for permission to install packages.

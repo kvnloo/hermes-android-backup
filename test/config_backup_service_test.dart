@@ -272,6 +272,34 @@ void main() {
       expect(result.preferencesApplied, 1);
     });
 
+    test(
+      'a backup from 4.0.17 with update preferences still restores',
+      () async {
+        final backup = ConfigBackup(
+          createdAt: DateTime.utc(2026, 11, 25),
+          appVersion: '4.0.17',
+          connections: const <SavedConnection>[],
+          preferences: const <String, Object>{
+            'theme_mode': 'light',
+            'app_update_check_on_launch_v1': false,
+            'app_update_skipped_version_v1': '4.0.16',
+          },
+        );
+
+        final (service, _, prefs) = await buildService(<String, Object>{});
+        final result = await service.import(
+          backup,
+          mode: ConfigImportMode.merge,
+        );
+
+        expect(prefs.getString('theme_mode'), 'light');
+        expect(prefs.containsKey('app_update_check_on_launch_v1'), isFalse);
+        expect(prefs.containsKey('app_update_skipped_version_v1'), isFalse);
+        expect(result.preferencesApplied, 1);
+        expect(result.preferencesSkipped, 2);
+      },
+    );
+
     test('survives a full export → import → export round trip', () async {
       final (source, sourceManager, _) = await buildService(<String, Object>{
         'theme_mode': 'dark',

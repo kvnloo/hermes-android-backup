@@ -3199,54 +3199,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось сохранить пространства чатов на этом устройстве';
 
   @override
-  String get update_available => 'Доступно обновление';
-
-  @override
-  String get update_now => 'Update now';
-
-  @override
-  String get update_install => 'Install update';
-
-  @override
-  String get update_downloading => 'Downloading and verifying update…';
-
-  @override
-  String get update_allow_install =>
-      'Allow Hermes to install this update, then return here and tap Install update.';
-
-  @override
-  String get update_failed =>
-      'The update could not be downloaded, verified, or opened. Try again or view the release page.';
-
-  @override
-  String get a_newer_hermes_android_build_is_available_on_github =>
-      'На GitHub доступна более новая сборка Ares.';
-
-  @override
-  String get release_notes => 'Примечания к выпуску';
-
-  @override
-  String get view_release => 'Открыть выпуск';
-
-  @override
-  String get skip_this_version => 'Пропустить эту версию';
-
-  @override
-  String get later => 'Позже';
-
-  @override
-  String get check_for_updates => 'Проверить обновления';
-
-  @override
-  String get check_for_updates_on_launch => 'Проверять обновления при запуске';
-
-  @override
-  String get you_re_on_the_latest_version => 'У вас уже последняя версия.';
-
-  @override
-  String get couldn_t_check_for_updates => 'Не удалось проверить обновления.';
-
-  @override
   String get chat_density => 'Плотность чата';
 
   @override

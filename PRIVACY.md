@@ -1,6 +1,6 @@
 # Ares privacy policy
 
-**Effective: 14 November 2026**
+**Effective: 26 November 2026**
 
 Ares (formerly Hermes Android) is a free, open-source client for a Hermes Agent server chosen by you or your organisation. The app developer does not operate that server and does not receive your chats by default.
 
@@ -26,9 +26,9 @@ The server operator controls that server's retention, logging, model providers a
 
 ## Distribution and update services
 
-The GitHub APK build can check GitHub Releases for updates. That request discloses ordinary connection metadata such as your IP address and user agent to GitHub. An in-app APK download also retrieves the selected release from GitHub. GitHub's own privacy terms apply.
+Ares does not check for updates or download them itself. Updates are delivered by the store or site you installed the app from, such as Google Play, F-Droid or GitHub. That service's own privacy terms apply to how it operates.
 
-The Google Play build uses Play-managed updates and does not perform the GitHub update check. Google Play's operation is covered by Google's privacy terms.
+Versions up to 4.0.17 that were not installed from Google Play checked GitHub Releases when the app opened, which sent ordinary connection metadata such as your IP address and user agent to GitHub, and could download an update from GitHub. Later versions do not.
 
 ## Optional notifications and push
 

@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:hermes_android/core/controllers/hands_free_conversation_controller.dart';
 import 'package:hermes_android/core/parked_automotive.dart';
-import 'package:hermes_android/core/services/apk_update_installer.dart';
-import 'package:hermes_android/core/services/app_update_service.dart';
 import 'package:hermes_android/core/services/attachment_video_service.dart';
 import 'package:hermes_android/core/services/hands_free_speech.dart';
 import 'package:hermes_android/core/services/hands_free_voice_platform.dart';
@@ -14,8 +12,6 @@ import 'package:hermes_android/core/services/mobile_push_service.dart';
 import 'package:hermes_android/core/services/turn_notification_service.dart';
 import 'package:hermes_android/core/services/voice_composer_adapter.dart';
 import 'package:hermes_android/nextgen/data/read_aloud.dart';
-import 'package:http/testing.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -128,56 +124,6 @@ void main() {
     expect(session.controller, isNull);
     await session.close();
   });
-
-  test(
-    'cached launch opt-in and manual checks cannot fetch or install an APK',
-    () async {
-      // The analyzer does not recognize test_automotive as a test directory.
-      // ignore: invalid_use_of_visible_for_testing_member
-      SharedPreferences.setMockInitialValues({
-        AppUpdateService.checkOnLaunchKey: true,
-      });
-      var requests = 0;
-      final service = AppUpdateService(
-        client: MockClient((_) async {
-          requests++;
-          throw StateError('Unexpected update request');
-        }),
-      );
-      expect(await service.checkOnLaunchEnabled(), isFalse);
-      expect(
-        await service.launchPromptRelease(currentVersion: '1.0.0'),
-        isNull,
-      );
-      expect(
-        (await service.checkForUpdate(
-          currentVersion: '1.0.0',
-          force: true,
-        )).outcome,
-        AppUpdateOutcome.failed,
-      );
-      expect(requests, 0);
-      final calls = watch('com.hermesagent.hermes_android/apk_update');
-      final installer = ApkUpdateInstaller();
-      final apk = AppReleaseApk(
-        abi: 'arm64-v8a',
-        name: 'test.apk',
-        url: Uri.parse('https://example.invalid/test.apk'),
-        sha256: '0' * 64,
-        size: 8,
-      );
-      expect(installer.supported, isFalse);
-      expect(await installer.supportedAbis(), isEmpty);
-      expect(await installer.hasPreparedUpdate(apk, 'v1'), isFalse);
-      await expectLater(
-        installer.download(apk: apk, tag: 'v1', onProgress: (_, _) {}),
-        throwsUnsupportedError,
-      );
-      expect(await installer.install(), 'failed');
-      await installer.cancel();
-      expect(calls, isEmpty);
-    },
-  );
 
   test(
     'the manifest without notification permission never prompts or posts',

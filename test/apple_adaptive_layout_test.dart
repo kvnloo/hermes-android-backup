@@ -108,7 +108,6 @@ void main() {
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
         expect(isApplePlatform, isTrue);
         expect(supportsAndroidBackgroundWork, isFalse);
-        expect(supportsApkSelfUpdate, isFalse);
         expect(supportsEmbeddedMobilePush, isFalse);
         expect(supportsHandsFreeWakeService, isFalse);
       }
@@ -116,7 +115,6 @@ void main() {
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       expect(isApplePlatform, isFalse);
       expect(supportsAndroidBackgroundWork, isTrue);
-      expect(supportsApkSelfUpdate, isTrue);
     });
   });
 
@@ -154,7 +152,6 @@ void main() {
               ),
             ],
             turnSignalsLoader: (_) async => HomeTurnSignals.empty,
-            installedVersionLoader: () async => null,
           ),
         ),
       );

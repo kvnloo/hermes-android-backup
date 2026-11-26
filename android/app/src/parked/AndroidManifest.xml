@@ -16,7 +16,5 @@
         <meta-data android:name="com.google.android.gms.car.application" tools:node="remove" />
         <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" tools:node="remove" />
         <receiver android:name=".AutoMessageReceiver" tools:node="remove" />
-        <provider android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.update_provider" tools:node="remove" />
     </application>
 </manifest>

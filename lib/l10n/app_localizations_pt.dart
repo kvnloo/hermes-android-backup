@@ -3192,55 +3192,6 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não foi possível guardar os espaços de conversa neste dispositivo';
 
   @override
-  String get update_available => 'Atualização disponível';
-
-  @override
-  String get update_now => 'Update now';
-
-  @override
-  String get update_install => 'Install update';
-
-  @override
-  String get update_downloading => 'Downloading and verifying update…';
-
-  @override
-  String get update_allow_install =>
-      'Allow Hermes to install this update, then return here and tap Install update.';
-
-  @override
-  String get update_failed =>
-      'The update could not be downloaded, verified, or opened. Try again or view the release page.';
-
-  @override
-  String get a_newer_hermes_android_build_is_available_on_github =>
-      'Está disponível no GitHub uma compilação mais recente do Ares.';
-
-  @override
-  String get release_notes => 'Notas de lançamento';
-
-  @override
-  String get view_release => 'Ver a versão';
-
-  @override
-  String get skip_this_version => 'Ignorar esta versão';
-
-  @override
-  String get later => 'Mais tarde';
-
-  @override
-  String get check_for_updates => 'Procurar atualizações';
-
-  @override
-  String get check_for_updates_on_launch => 'Procurar atualizações ao iniciar';
-
-  @override
-  String get you_re_on_the_latest_version => 'Já tem a versão mais recente.';
-
-  @override
-  String get couldn_t_check_for_updates =>
-      'Não foi possível procurar atualizações.';
-
-  @override
   String get chat_density => 'Densidade do chat';
 
   @override
@@ -9258,56 +9209,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get could_not_save_chat_spaces =>
       'Não foi possível salvar os espaços de conversa neste dispositivo';
-
-  @override
-  String get update_available => 'Atualização disponível';
-
-  @override
-  String get update_now => 'Update now';
-
-  @override
-  String get update_install => 'Install update';
-
-  @override
-  String get update_downloading => 'Downloading and verifying update…';
-
-  @override
-  String get update_allow_install =>
-      'Allow Hermes to install this update, then return here and tap Install update.';
-
-  @override
-  String get update_failed =>
-      'The update could not be downloaded, verified, or opened. Try again or view the release page.';
-
-  @override
-  String get a_newer_hermes_android_build_is_available_on_github =>
-      'Há uma versão mais recente do Ares no GitHub.';
-
-  @override
-  String get release_notes => 'Notas da versão';
-
-  @override
-  String get view_release => 'Ver a versão';
-
-  @override
-  String get skip_this_version => 'Ignorar esta versão';
-
-  @override
-  String get later => 'Mais tarde';
-
-  @override
-  String get check_for_updates => 'Verificar atualizações';
-
-  @override
-  String get check_for_updates_on_launch => 'Verificar atualizações ao iniciar';
-
-  @override
-  String get you_re_on_the_latest_version =>
-      'Você já está na versão mais recente.';
-
-  @override
-  String get couldn_t_check_for_updates =>
-      'Não foi possível verificar atualizações.';
 
   @override
   String get chat_density => 'Densidade do chat';

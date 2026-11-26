@@ -551,7 +551,6 @@ Future<void> _openClassic(
               c.row(now, look.model, source: 'gateway', live: false),
           ],
           turnSignalsLoader: (_) async => HomeTurnSignals.empty,
-          installedVersionLoader: () async => null,
           testChatApiClientFactory: () => classicApi(chats),
         ),
       ),

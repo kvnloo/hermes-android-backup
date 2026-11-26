@@ -14,8 +14,8 @@ val robolectricVersion = providers.gradleProperty("robolectricVersion").get()
 val keystoreProperties = Properties()
 val keystorePath = rootProject.projectDir.parentFile.resolve("key.properties")
 val minimumInstalledVersionCode = 2127
-// Google Play builds use Play-managed updates. The ordinary GitHub release keeps
-// its verified APK updater. CI sets this only for the separate Play AAB.
+// No build installs packages or checks for updates. CI sets this only for the
+// separate Play AAB, which gets its own manifest overlay and version-code lane.
 val dartDefines = providers.gradleProperty("dart-defines").orNull.orEmpty()
     .split(',').filter { it.isNotEmpty() }
     .map { String(Base64.getDecoder().decode(it), Charsets.UTF_8) }
@@ -125,7 +125,7 @@ android {
    }
 
    if (parked) {
-      // This overlay includes the Play install-permission and updater-provider removals.
+      // This overlay includes the Play install-permission removal.
       sourceSets.getByName(if (parkedPlay) "release" else "debug").manifest.srcFile("src/parked/AndroidManifest.xml")
    } else if (playBuild) {
       // A build-invocation-specific overlay keeps the default GitHub release

@@ -26,7 +26,6 @@ class MainActivity : FlutterActivity() {
     private var initialShareIntent: Intent? = null
     private var initialLaunchAction: String? = null
     private var attachmentPdfPreview: AttachmentPdfPreview? = null
-    private var apkUpdateInstaller: ApkUpdateInstaller? = null
     private var attachmentFileSaver: AttachmentFileSaver? = null
     private var handsFreeVoice: HandsFreeVoicePlugin? = null
 
@@ -63,9 +62,10 @@ class MainActivity : FlutterActivity() {
         }
         attachmentPdfPreview?.close()
         attachmentPdfPreview = AttachmentPdfPreview(this, flutterEngine.dartExecutor.binaryMessenger)
-        if (!BuildConfig.PLAY_BUILD && !BuildConfig.PARKED_AUTOMOTIVE) {
-            apkUpdateInstaller?.close()
-            apkUpdateInstaller = ApkUpdateInstaller(this, flutterEngine.dartExecutor.binaryMessenger)
+        // Versions up to 4.0.17 downloaded update APKs here; nothing reads them now.
+        val staleUpdates = File(cacheDir, "apk_update")
+        runCatching {
+            if (staleUpdates.exists()) Thread { runCatching { staleUpdates.deleteRecursively() } }.start()
         }
         attachmentFileSaver?.close()
         attachmentFileSaver = AttachmentFileSaver(this, flutterEngine.dartExecutor.binaryMessenger)
@@ -136,8 +136,6 @@ class MainActivity : FlutterActivity() {
         handsFreeVoice?.setForeground(false)
         attachmentPdfPreview?.close()
         attachmentPdfPreview = null
-        apkUpdateInstaller?.close()
-        apkUpdateInstaller = null
         attachmentFileSaver?.close()
         attachmentFileSaver = null
         // Finishing with Back removes the Activity without calling the

@@ -9,50 +9,6 @@ import 'package:hermes_android/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('update controls remain available if dashboard settings fail', (
-    tester,
-  ) async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
-    await tester.pumpWidget(HermesApp(connManager: ConnectionManager(prefs)));
-    await tester.pumpAndSettle();
-    unawaited(
-      Navigator.of(tester.element(find.byType(HomeScreen))).push(
-        MaterialPageRoute<void>(
-          builder: (_) => SettingsScreen(
-            connection: SavedConnection(
-              id: 'offline-dashboard',
-              label: 'Offline dashboard',
-              host: '127.0.0.1',
-              port: 8642,
-              dashboardPortOverride: 1,
-              apiKey: 'test-only',
-            ),
-          ),
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    expect(find.text('Failed to load settings'), findsNothing);
-    await tester.scrollUntilVisible(
-      find.text('Check for updates on launch'),
-      300,
-      scrollable: find
-          .descendant(
-            of: find.byType(SettingsScreen),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    await tester.pumpAndSettle();
-    expect(find.text('Check for updates'), findsOneWidget);
-    expect(find.text('Check for updates on launch'), findsOneWidget);
-    await tester.tap(find.text('Check for updates on launch'));
-    await tester.pumpAndSettle();
-    expect(prefs.getBool('app_update_check_on_launch_v1'), isFalse);
-  });
-
   testWidgets('chat density remains usable if dashboard settings fail', (
     tester,
   ) async {
