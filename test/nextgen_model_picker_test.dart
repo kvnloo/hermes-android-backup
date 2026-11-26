@@ -554,6 +554,119 @@ void main() {
     client.close();
   });
 
+  testWidgets('NextGen pinned row survives search and its provider chip', (
+    tester,
+  ) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:halogen',
+            'name': 'Halogen',
+            'models': ['chat-a'],
+            'is_user_defined': true,
+            'is_current': true,
+          },
+          {
+            'slug': 'huggingface',
+            'name': 'HuggingFace',
+            'models': ['hidden-model'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    chat.model = 'hidden-model';
+    chat.provider = 'huggingface';
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    // Searching for the pinned model keeps its synthesized row visible.
+    await tester.enterText(
+      find.byKey(const ValueKey('ng-model-search')),
+      'hidden',
+    );
+    await tester.pumpAndSettle();
+    expect(inSheet(find.text('hidden-model')), findsOneWidget);
+    expect(inSheet(find.text('chat-a')), findsNothing);
+    await tester.enterText(
+      find.byKey(const ValueKey('ng-model-search')),
+      '',
+    );
+    await tester.pumpAndSettle();
+
+    // The synthesized provider's chip filters to exactly the pinned pair.
+    await tester.tap(find.byKey(const ValueKey('ng-model-provider-huggingface')));
+    await tester.pumpAndSettle();
+    expect(inSheet(find.text('hidden-model')), findsOneWidget);
+    expect(inSheet(find.text('chat-a')), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
+  testWidgets('NextGen pinned pair moved out of its provider shows no row', (
+    tester,
+  ) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:halogen',
+            'name': 'Halogen',
+            'models': ['chat-a'],
+            'is_user_defined': true,
+            'is_current': true,
+          },
+          {
+            'slug': 'nous',
+            'name': 'Nous',
+            'models': ['moved-model'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    // Pinned to (custom:halogen, moved-model), but halogen no longer offers
+    // it — the exact pair is absent, so no row is synthesized and the other
+    // provider's copy is NOT shown under the pinned provider's name.
+    chat.model = 'moved-model';
+    chat.provider = 'custom:halogen';
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    expect(inSheet(find.text('chat-a')), findsOneWidget);
+    await scrollSheetToEnd(tester);
+    expect(inSheetAll(find.text('moved-model')), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
   testWidgets('NextGen assistant reply exposes the AI output report action', (
     tester,
   ) async {
