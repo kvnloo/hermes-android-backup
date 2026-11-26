@@ -800,6 +800,155 @@ void main() {
     expect(_inPicker(find.text('chat-llm')), findsOneWidget);
   });
 
+  testWidgets('phantom fallback row is not pre-selected when it is configured',
+      (tester) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/deleted-config-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'deleted-config-session', 'model': 'deleted-model'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'chat-llm',
+              'provider': 'custom:halogen',
+              'providers': [
+                {
+                  'slug': 'custom:halogen',
+                  'models': ['chat-llm'],
+                  'is_user_defined': true,
+                  'is_current': true,
+                },
+                {
+                  'slug': 'nous',
+                  'models': ['ghost-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'deleted-config-session',
+        title: 'Deleted config',
+        model: 'deleted-model',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    // The session's model is gone; _initialModelChoice falls back to the
+    // first inventory row (chat-llm, configured). It may be listed, but it
+    // must NOT be pre-selected — one tap must not silently re-point the
+    // session without an explicit choice.
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.widgetWithText(FilledButton, 'Apply to this chat'),
+          )
+          .onPressed,
+      isNull,
+    );
+  });
+
+  testWidgets('provider-choice banner is hidden when filtering leaves one copy',
+      (tester) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/ambig-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'ambig-session', 'model': 'shared-model'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'shared-model',
+              'provider': 'custom:halogen',
+              'providers': [
+                {
+                  'slug': 'nous',
+                  'models': ['shared-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                },
+                {
+                  'slug': 'custom:halogen',
+                  'models': ['shared-model'],
+                  'is_user_defined': true,
+                  'is_current': true,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'ambig-session',
+        title: 'Ambiguous',
+        model: 'shared-model',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    // The model id is ambiguous across the full inventory, but the filter
+    // leaves exactly one visible copy — the "choose a provider" banner
+    // would contradict the list.
+    expect(
+      find.text(
+        'This model is available from multiple providers. '
+        'Choose a provider to continue.',
+      ),
+      findsNothing,
+    );
+    expect(_inPicker(find.text('shared-model')), findsOneWidget);
+  });
+
   testWidgets('picker falls back to the full list when nothing is configured', (
     tester,
   ) async {

@@ -4308,14 +4308,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           configuredSlugs.isEmpty || visibleChoices.isEmpty
           ? choices
           : visibleChoices;
-      final initialChoice = pickerChoices.any(
-            (choice) =>
-                selectedChoice != null &&
-                choice.provider == selectedChoice.provider &&
-                choice.model == selectedChoice.model,
-          )
-          ? selectedChoice
-          : null;
+      // Only a choice that provably matches the session's model may be
+      // pre-selected: a phantom fallback row (session model absent from the
+      // inventory) must never masquerade as the current model, even when it
+      // happens to be a configured row.
+      final initialChoice = pinnedChoice;
+      // The "choose a provider" banner only makes sense while the displayed
+      // list actually offers the same model id under multiple providers.
+      final providerChoiceRequired =
+          selectedChoice == null &&
+          pickerChoices.where((c) => c.model == selectedModel).length > 1;
       final selectionFuture = showModalBottomSheet<_ModelSelection>(
         context: context,
         showDragHandle: true,
@@ -4325,7 +4327,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           modelInfo: modelInfo,
           initialChoice: initialChoice,
           initialEffort: currentEffort,
-          providerChoiceRequired: selectedChoice == null,
+          providerChoiceRequired: providerChoiceRequired,
         ),
       );
       onOpened?.call();
