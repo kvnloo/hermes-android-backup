@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../parked_automotive.dart';
 import '../services/app_licenses.dart';
 import '../utils/platform_capabilities.dart';
 import '../services/locale_preference.dart';
@@ -24,9 +25,7 @@ import '../theme/hermes_theme.dart';
 import '../../main.dart';
 import '../../nextgen/nextgen_preferences.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import '../services/app_update_service.dart';
 import '../services/legal_links.dart';
-import '../widgets/update_available_dialog.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
 
@@ -162,15 +161,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(height: 16),
 
         // ---- Section: Notifications ----
-        // Hidden where the app cannot post notifications (Windows).
-        if (supportsLocalNotifications) ...[
+        // Hidden where the app cannot post notifications (Windows) and in the
+        // parked Automotive preview.
+        if (supportsLocalNotifications && !isParkedAutomotive) ...[
           _buildSectionHeader(context.l10n.notifications),
           const _NotificationSettings(),
         ],
         // The embedded Android push bridge and foreground-service/battery
         // prompts do not exist on iOS, macOS or Windows. Voice, appearance
         // and gateway settings above/below are shared.
-        if (!isApplePlatform && !isWindowsPlatform) ...[
+        if (!isApplePlatform && !isWindowsPlatform && !isParkedAutomotive) ...[
           MobilePushSettings(
             connection: widget.connection,
             connectionManager: context
@@ -179,18 +179,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 .connManager,
           ),
           const SizedBox(height: 16),
+        ],
+        if (!isApplePlatform && !isWindowsPlatform) ...[
           _buildSectionHeader(context.l10n.background_work),
           const BackgroundWorkSettings(),
           const SizedBox(height: 16),
         ],
 
         // ---- Section: Voice ----
-        _buildSectionHeader(context.l10n.voice, classicOnly: true),
-        _VoicePicker(),
-        const SizedBox(height: 8),
-        const _HandsFreeToggle(),
-        const SizedBox(height: 16),
-
+        if (!isParkedAutomotive) ...[
+          _buildSectionHeader(context.l10n.voice, classicOnly: true),
+          _VoicePicker(),
+          const SizedBox(height: 8),
+          const _HandsFreeToggle(),
+          const SizedBox(height: 16),
+        ],
         // ---- Section: Session Sources ----
         _buildSectionHeader(context.l10n.session_sources, classicOnly: true),
         _SessionSourcesFilter(connectionId: widget.connection.id),
@@ -337,15 +340,11 @@ class _AboutCard extends StatefulWidget {
 
 class _AboutCardState extends State<_AboutCard> {
   String _version = '';
-  bool _checking = false;
-  bool _checkOnLaunch = true;
-  String? _updateStatus;
 
   @override
   void initState() {
     super.initState();
     _loadVersion();
-    _loadUpdatePreference();
   }
 
   Future<void> _loadVersion() async {
@@ -356,57 +355,6 @@ class _AboutCardState extends State<_AboutCard> {
     } catch (_) {
       if (!mounted) return;
       setState(() => _version = 'unknown');
-    }
-  }
-
-  Future<void> _loadUpdatePreference() async {
-    final enabled = await AppUpdateService().checkOnLaunchEnabled();
-    if (!mounted) return;
-    setState(() => _checkOnLaunch = enabled);
-  }
-
-  Future<void> _setCheckOnLaunch(bool enabled) async {
-    setState(() => _checkOnLaunch = enabled);
-    await AppUpdateService().setCheckOnLaunchEnabled(enabled);
-  }
-
-  /// The manual path: always a real check, and always an answer — the
-  /// launch-time prompt is the one that stays quiet when GitHub cannot be
-  /// reached, because there the user did not ask.
-  Future<void> _checkForUpdates() async {
-    setState(() {
-      _checking = true;
-      _updateStatus = null;
-    });
-    final service = AppUpdateService();
-    AppUpdateResult result;
-    try {
-      final current = await installedAppVersion() ?? _version;
-      result = await service.checkForUpdate(
-        currentVersion: current,
-        force: true,
-      );
-    } catch (_) {
-      result = const AppUpdateResult(AppUpdateOutcome.failed);
-    }
-    if (!mounted) return;
-    setState(() => _checking = false);
-    final l10n = context.l10n;
-    switch (result.outcome) {
-      case AppUpdateOutcome.updateAvailable:
-        final release = result.release!;
-        final action = await showUpdateAvailableDialog(
-          context,
-          release: release,
-        );
-        if (action == UpdatePromptAction.skipVersion) {
-          await service.skipVersion(release.version);
-        }
-      case AppUpdateOutcome.upToDate:
-        setState(() => _updateStatus = l10n.you_re_on_the_latest_version);
-      case AppUpdateOutcome.throttled:
-      case AppUpdateOutcome.failed:
-        setState(() => _updateStatus = l10n.couldn_t_check_for_updates);
     }
   }
 
@@ -454,29 +402,6 @@ class _AboutCardState extends State<_AboutCard> {
                 );
               },
             ),
-            // APK self-update is Android-only; Apple builds update through
-            // their respective stores / ad-hoc distribution.
-            if (supportsApkSelfUpdate && !AppUpdateService.isPlayBuild) ...[
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(context.l10n.check_for_updates),
-                subtitle: _updateStatus == null ? null : Text(_updateStatus!),
-                trailing: _checking
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh),
-                onTap: _checking ? null : _checkForUpdates,
-              ),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(context.l10n.check_for_updates_on_launch),
-                value: _checkOnLaunch,
-                onChanged: _setCheckOnLaunch,
-              ),
-            ],
           ],
         ),
       ),

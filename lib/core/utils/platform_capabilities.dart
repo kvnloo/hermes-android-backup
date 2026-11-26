@@ -25,10 +25,6 @@ bool get supportsLocalNotifications => !isWindowsPlatform;
 bool get supportsAndroidBackgroundWork =>
     defaultTargetPlatform == TargetPlatform.android;
 
-/// APK self-update is meaningless on Apple platforms (App Store / ad-hoc).
-bool get supportsApkSelfUpdate =>
-    defaultTargetPlatform == TargetPlatform.android;
-
 /// Embedded FCM / companion push app is an Android-only transport.
 bool get supportsEmbeddedMobilePush =>
     defaultTargetPlatform == TargetPlatform.android;

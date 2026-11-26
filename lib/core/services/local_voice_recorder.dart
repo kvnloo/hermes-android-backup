@@ -11,6 +11,7 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
+import '../parked_automotive.dart';
 import 'windows_voice_tools.dart';
 
 /// Platform boundary shared by recording, private draft storage and preview.
@@ -73,11 +74,13 @@ class LocalVoiceRecorder implements VoiceRecorder {
   }();
 
   @override
-  Future<bool> hasPermission({bool request = false}) =>
-      (_recorder ??= AudioRecorder()).hasPermission(request: request);
+  Future<bool> hasPermission({bool request = false}) => isParkedAutomotive
+      ? Future.value(false)
+      : (_recorder ??= AudioRecorder()).hasPermission(request: request);
 
   @override
-  Future<bool> restore() => _serial(_restore);
+  Future<bool> restore() =>
+      isParkedAutomotive ? Future.value(false) : _serial(_restore);
 
   Future<bool> _restore() async {
     try {
@@ -95,6 +98,7 @@ class LocalVoiceRecorder implements VoiceRecorder {
   Future<void> start() => _serial(_start);
 
   Future<void> _start() async {
+    if (isParkedAutomotive) throw UnsupportedError('Voice recording disabled');
     if (_activePath == null && await restoreFileExists()) {
       throw StateError('A voice draft already exists.');
     }
@@ -114,6 +118,7 @@ class LocalVoiceRecorder implements VoiceRecorder {
   Future<void> stop() => _serial(_stop);
 
   Future<void> _stop() async {
+    if (isParkedAutomotive) return;
     if (_recording) await _recorder?.stop();
     _recording = false;
     _activePath = null;
@@ -235,6 +240,7 @@ class LocalVoiceRecorder implements VoiceRecorder {
   Future<void> resumeRecording() => _serial(_resumeRecording);
 
   Future<void> _resumeRecording() async {
+    if (isParkedAutomotive) throw UnsupportedError('Voice recording disabled');
     if (_recording) return;
     await _player?.stop();
     await _recoverContinuation();
@@ -255,6 +261,7 @@ class LocalVoiceRecorder implements VoiceRecorder {
 
   @override
   Future<void> play(void Function() onComplete) async {
+    if (isParkedAutomotive) throw UnsupportedError('Audio playback disabled');
     _player ??= AudioPlayer();
     await _completion?.cancel();
     _completion = _player!.onPlayerComplete.listen((_) => onComplete());

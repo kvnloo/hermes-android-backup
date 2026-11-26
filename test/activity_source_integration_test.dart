@@ -61,7 +61,6 @@ void main() {
           sessionsLoader: () => ++reads == 1
               ? oldHome.future
               : Future.value([_row('chat', title: 'New title')]),
-          installedVersionLoader: () async => null,
         ),
       ),
     );
@@ -110,7 +109,6 @@ void main() {
                   ),
                 ]);
               },
-              installedVersionLoader: () async => null,
             ),
           ),
         );
@@ -185,7 +183,6 @@ void main() {
             connection: _connection,
             turnApplicationController: controller,
             testSessionsHttpClient: client,
-            installedVersionLoader: () async => null,
           ),
         ),
       );
@@ -221,7 +218,6 @@ void main() {
           turnApplicationController: controller,
           sessionsLoader: () async => sessions,
           onOpenSession: (session) => opened.add(session.id),
-          installedVersionLoader: () async => null,
         ),
       ),
     );
@@ -306,7 +302,6 @@ void main() {
             connection: _connection,
             turnApplicationController: controller,
             testSessionsHttpClient: client,
-            installedVersionLoader: () async => null,
           ),
         ),
       );
@@ -378,7 +373,6 @@ void main() {
           connection: _connection,
           turnApplicationController: controller,
           testSessionsHttpClient: client,
-          installedVersionLoader: () async => null,
         ),
       ),
     );

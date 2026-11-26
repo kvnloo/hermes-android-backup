@@ -599,31 +599,33 @@ void main() {
           unrelated.apiKey,
           clearClientCertificate: true,
         );
-        await gate.entered.future;
-        // Observe actual commit/rename before the editor queues its manager save.
-        final materialized = Completer<void>();
-        final subscription = Directory('${editor.support.path}/client-certs')
-            .watch()
-            .listen((_) {
-              if (_permanentCountSync(editor.support) == 2 &&
-                  !materialized.isCompleted) {
-                materialized.complete();
-              }
-            });
+        await gate.entered.future.timeout(const Duration(seconds: 10));
+        // The real editor materialises the identity before queuing its save.
+        // Observe that exact transaction; macOS can coalesce directory events
+        // for the rename out of .staging, even when both identities exist.
+        final queued = Completer<void>();
+        void onMutation() {
+          if (ConnectionMutationBarrier.isPending(editor.account.id) &&
+              !queued.isCompleted) {
+            queued.complete();
+          }
+        }
+
+        ConnectionMutationBarrier.addListener(onMutation);
+        final saving = editor.save();
         try {
-          final saving = editor.save();
-          await materialized.future;
+          await queued.future.timeout(const Duration(seconds: 10));
+          expect(await _permanentDirectories(editor.support), hasLength(2));
+          expect(await staging.list().isEmpty, isTrue);
           expect(
             editor.native.begins,
             isEmpty,
             reason: 'editor manager is still queued',
           );
-          gate.open();
-          await removal;
-          await saving;
         } finally {
+          ConnectionMutationBarrier.removeListener(onMutation);
           gate.open();
-          await subscription.cancel();
+          await Future.wait([removal, saving]);
         }
         final saved = (await editor.manager.loadConnectionsWithSecrets())
             .singleWhere((c) => c.id == editor.account.id);
@@ -957,10 +959,3 @@ void main() {
     },
   );
 }
-
-int _permanentCountSync(Directory support) =>
-    Directory('${support.path}/client-certs')
-        .listSync()
-        .whereType<Directory>()
-        .where((d) => !d.path.endsWith('.staging'))
-        .length;

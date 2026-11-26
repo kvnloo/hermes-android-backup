@@ -5,6 +5,7 @@ import 'dart:io' as io;
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'core/services/hands_free_route_observer.dart';
+import 'core/services/retired_preferences.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/models/client_certificate.dart';
@@ -105,6 +106,7 @@ class _StartupAppState extends State<StartupApp> {
       () async {
         prefs = await SharedPreferences.getInstance();
         NextGenPreferences.load(prefs);
+        unawaited(clearRetiredPreferences(prefs));
         try {
           // Browser sign-ins and Cloudflare Access tokens, shared by both
           // interfaces; a Keystore fault only costs those sign-ins.

@@ -28,15 +28,33 @@ void main() {
 
   group('adaptive size classes (window size only)', () {
     test('600 / 840 breakpoints and useful-height guard', () {
-      expect(adaptiveSizeClassOf(const Size(599, 900)), AdaptiveSizeClass.compact);
-      expect(adaptiveSizeClassOf(const Size(600, 900)), AdaptiveSizeClass.medium);
-      expect(adaptiveSizeClassOf(const Size(839, 900)), AdaptiveSizeClass.medium);
-      expect(adaptiveSizeClassOf(const Size(840, 900)), AdaptiveSizeClass.expanded);
+      expect(
+        adaptiveSizeClassOf(const Size(599, 900)),
+        AdaptiveSizeClass.compact,
+      );
+      expect(
+        adaptiveSizeClassOf(const Size(600, 900)),
+        AdaptiveSizeClass.medium,
+      );
+      expect(
+        adaptiveSizeClassOf(const Size(839, 900)),
+        AdaptiveSizeClass.medium,
+      );
+      expect(
+        adaptiveSizeClassOf(const Size(840, 900)),
+        AdaptiveSizeClass.expanded,
+      );
       // Wide but short windows fall back to the medium rail.
-      expect(adaptiveSizeClassOf(const Size(1000, 400)), AdaptiveSizeClass.medium);
+      expect(
+        adaptiveSizeClassOf(const Size(1000, 400)),
+        AdaptiveSizeClass.medium,
+      );
       expect(
         adaptiveSizeClassOf(
-          Size(AdaptiveBreakpoints.expanded, AdaptiveBreakpoints.expandedMinHeight),
+          Size(
+            AdaptiveBreakpoints.expanded,
+            AdaptiveBreakpoints.expandedMinHeight,
+          ),
         ),
         AdaptiveSizeClass.expanded,
       );
@@ -90,7 +108,6 @@ void main() {
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
         expect(isApplePlatform, isTrue);
         expect(supportsAndroidBackgroundWork, isFalse);
-        expect(supportsApkSelfUpdate, isFalse);
         expect(supportsEmbeddedMobilePush, isFalse);
         expect(supportsHandsFreeWakeService, isFalse);
       }
@@ -98,7 +115,6 @@ void main() {
       addTearDown(() => debugDefaultTargetPlatformOverride = null);
       expect(isApplePlatform, isFalse);
       expect(supportsAndroidBackgroundWork, isTrue);
-      expect(supportsApkSelfUpdate, isTrue);
     });
   });
 
@@ -136,7 +152,6 @@ void main() {
               ),
             ],
             turnSignalsLoader: (_) async => HomeTurnSignals.empty,
-            installedVersionLoader: () async => null,
           ),
         ),
       );

@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
+import '../parked_automotive.dart';
 import '../utils/attachment_types.dart';
 import 'attachment_video_file_ownership.dart';
 import 'remote_files_client.dart' show maxAttachmentDownloadBytes;
@@ -94,6 +95,9 @@ class AttachmentVideoSession {
   VideoPlayerController? get controller => _closed ? null : _controller;
 
   Future<bool> open(Uint8List bytes, String extension) {
+    if (isParkedAutomotive) {
+      return Future.error(UnsupportedError('Video playback disabled'));
+    }
     if (_closed) {
       return Future<bool>.error(StateError('Video preview is closed'));
     }

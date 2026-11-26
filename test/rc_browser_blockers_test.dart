@@ -183,7 +183,6 @@ void main() {
         app(
           WorkspaceScreen(
             connection: connection('restore-reject', dashboard: true),
-            installedVersionLoader: () async => null,
             turnSignalsLoader: (_) async => HomeTurnSignals.empty,
             testSessionsHttpClient: MockClient((request) async {
               if (request.method == 'PATCH') {
@@ -455,7 +454,6 @@ void main() {
           app(
             WorkspaceScreen(
               connection: connection('standalone-${view.name}'),
-              installedVersionLoader: () async => null,
               sessionsLoader: () async => [row(title)],
               turnSignalsLoader: (_) async => HomeTurnSignals.empty,
               testSessionsHttpClient: MockClient((request) async {
@@ -518,7 +516,6 @@ void main() {
           sessionsLoader: () async => [
             row('Conversation', id: tip, root: 'root'),
           ],
-          installedVersionLoader: () async => null,
           onOpenSession: (session) => opened.add(session.id),
         ),
       );
@@ -570,7 +567,6 @@ void main() {
           WorkspaceScreen(
             connection: connection('fallback'),
             sessionsLoader: () async => [],
-            installedVersionLoader: () async => null,
             activityFeedLoader: (_, _) async => ActivityFeed(
               groups: [
                 ActivityGroup(

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import '../parked_automotive.dart';
+
 enum VoiceRecognitionPurpose { manual, handsFreeInitial, handsFreeFollowup }
 
 enum VoicePlatformEventType {
@@ -257,16 +259,23 @@ class MethodChannelHandsFreeVoicePlatform implements HandsFreeVoicePlatform {
   final EventChannel _events;
   Stream<VoicePlatformEvent>? _stream;
   @override
-  Stream<VoicePlatformEvent> get events => _stream ??= _events
-      .receiveBroadcastStream()
-      .map(VoicePlatformEvent.parse)
-      .asBroadcastStream();
+  Stream<VoicePlatformEvent> get events => isParkedAutomotive
+      ? const Stream.empty()
+      : _stream ??= _events
+            .receiveBroadcastStream()
+            .map(VoicePlatformEvent.parse)
+            .asBroadcastStream();
   @override
-  Future<VoiceCapabilities> capabilities() async => VoiceCapabilities.parse(
-    await _methods.invokeMethod<Object?>('capabilities', <String, Object?>{}),
-  );
+  Future<VoiceCapabilities> capabilities() async {
+    if (isParkedAutomotive) throw UnsupportedError('Voice capture disabled');
+    return VoiceCapabilities.parse(
+      await _methods.invokeMethod<Object?>('capabilities', <String, Object?>{}),
+    );
+  }
+
   @override
   Future<bool> requestRecordPermission() async {
+    if (isParkedAutomotive) return false;
     final result = await _methods.invokeMethod<Object?>(
       'requestRecordPermission',
       <String, Object?>{},
@@ -278,6 +287,7 @@ class MethodChannelHandsFreeVoicePlatform implements HandsFreeVoicePlatform {
   }
 
   Future<void> _invoke(String method, Map<String, Object?> arguments) async {
+    if (isParkedAutomotive) throw UnsupportedError('Voice capture disabled');
     if (await _methods.invokeMethod<Object?>(method, arguments) != null) {
       throw const FormatException('Invalid voice acknowledgement');
     }

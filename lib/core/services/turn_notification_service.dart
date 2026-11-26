@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show MissingPluginException;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../parked_automotive.dart';
 import '../../l10n/app_localizations.dart';
 import '../l10n/l10n.dart' show resolvePreferredLocale;
 import '../utils/platform_capabilities.dart';
@@ -724,7 +725,7 @@ class TurnNotificationService {
   final Set<_ConversationFlight> _conversationFlights = {};
 
   bool _initialized = false;
-  bool _permissionGranted = true;
+  bool _permissionGranted = !isParkedAutomotive;
   bool _permissionRequested = false;
   Future<void>? _initializing;
   Future<void>? _requestingPermission;
@@ -753,6 +754,7 @@ class TurnNotificationService {
     bool requestPermission = false,
     bool refreshPermission = true,
   }) async {
+    if (isParkedAutomotive) return;
     if (!_initialized) {
       final flight = _initializing ??= _initialize();
       try {
@@ -804,6 +806,7 @@ class TurnNotificationService {
   /// denial never causes repeated dialogs, and headless initialization does
   /// neither. Join an active prompt and fence older passive results behind it.
   Future<void> refreshAuthorization() async {
+    if (isParkedAutomotive) return;
     // Register demand before initialization awaits. Joining an older platform
     // read is not evidence about an OS change observed by a later caller.
     ++_authorizationDemand;
@@ -996,6 +999,7 @@ class TurnNotificationService {
   /// Every cancellation goes through here so an in-flight conversation post
   /// for the same ID cannot later fall back to an ordinary alert.
   Future<void> _cancel(int id) {
+    if (isParkedAutomotive) return Future.value();
     for (final flight in _conversationFlights) {
       if (flight.id == id) flight.superseded = true;
     }
@@ -1226,7 +1230,7 @@ class TurnNotificationService {
   /// The tap or action that launched a terminated app, if any — consumed once
   /// so a cold start still routes to the originating chat.
   Future<NotificationResponse?> takeInitialNotificationResponse() async {
-    if (_initialLaunchConsumed) return null;
+    if (isParkedAutomotive || _initialLaunchConsumed) return null;
     _initialLaunchConsumed = true;
     try {
       return await _sink.takeInitialLaunchResponse();

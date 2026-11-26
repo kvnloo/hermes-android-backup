@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
+import '../parked_automotive.dart';
 import '../controllers/hands_free_conversation_controller.dart';
 
 /// Injectable playback boundary; production uses ChatScreen's existing instance
@@ -20,7 +21,8 @@ class FlutterVoiceReplySpeaker implements VoiceReplySpeaker {
   FlutterVoiceReplySpeaker(this.tts, {VoiceTimerFactory? timerFactory})
     : _timerFactory =
           timerFactory ?? ((duration, fire) => Timer(duration, fire)) {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
+    if (!isParkedAutomotive &&
+        (kIsWeb || defaultTargetPlatform != TargetPlatform.android)) {
       tts.setCancelHandler(() => _end(HandsFreeSpeechOutcome.canceled));
       tts.setErrorHandler((_) => _end(HandsFreeSpeechOutcome.failed));
     }
@@ -45,7 +47,7 @@ class FlutterVoiceReplySpeaker implements VoiceReplySpeaker {
 
   @override
   Future<bool> prepare() async {
-    if (_flight != null) return false;
+    if (isParkedAutomotive || _flight != null) return false;
     try {
       if (await tts.awaitSpeakCompletion(true) != 1) return false;
       if (await tts.setQueueMode(0) != 1) return false;
@@ -61,7 +63,10 @@ class FlutterVoiceReplySpeaker implements VoiceReplySpeaker {
     String text, {
     required bool Function() isCurrent,
   }) async {
-    if (_flight != null || !isCurrent() || text.trim().isEmpty) {
+    if (isParkedAutomotive ||
+        _flight != null ||
+        !isCurrent() ||
+        text.trim().isEmpty) {
       return HandsFreeSpeechOutcome.unavailable;
     }
     final generation = ++_generation;
@@ -144,6 +149,7 @@ class FlutterVoiceReplySpeaker implements VoiceReplySpeaker {
 
   @override
   Future<void> stop() async {
+    if (isParkedAutomotive) return;
     ++_generation;
     _end(HandsFreeSpeechOutcome.canceled);
     final flight = _flight;

@@ -1,6 +1,7 @@
 # Android Auto: notification/reply milestone
 
 This change implements the notification surface, not an Android Auto launcher app.
+For the separate parked, standalone AAOS test APK, see [Ares on the car display](parked-automotive.md).
 Assistant finals produced by the live NextGen shell or the classic application-owned
 stock gateway path can use `MessagingStyle`, RemoteInput reply and mark-as-read.
 Approvals, secret/input requests, failed/unknown turns and generic push hints are not

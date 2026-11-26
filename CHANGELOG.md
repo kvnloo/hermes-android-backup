@@ -21,6 +21,47 @@ Publication correction: tag v4.0.6 has no published APK assets; its release
 workflow failed the identity gate because the tag preceded the version bump.
 The paging change it names (#284) first ships in the published 4.0.7 APKs.
 
+## [4.0.18] - 2026-11-26
+
+Stable release `4.0.18+3074`, with release APK codes `30741`, `30742` and
+`30743`. Each split exceeds the published 4.0.17 stable splits (`30733`).
+Installs over the existing app.
+
+### Removed
+
+- **In-app update check and APK installer (#379).** Ares no longer checks
+  GitHub Releases on launch, prompts about a newer version, or downloads and
+  installs an APK. **Settings → About** loses **Check for updates** and
+  **Check for updates on launch**. Updates come from the store the app was
+  installed from, or from the
+  [releases page](https://github.com/rusty4444/ares/releases) for a GitHub
+  APK. The check also ran outside Android, where it offered APK instructions.
+- **`REQUEST_INSTALL_PACKAGES`.** The Android permission to install packages,
+  the update file provider and the GitHub-only network security rules are
+  gone. APKs that an earlier version left in the app cache, and the update
+  check's saved state, are deleted on first launch.
+
+### Changed
+
+- Configuration backups no longer carry the two update preferences. A backup
+  made by an earlier version still restores; those two entries are skipped.
+- [PRIVACY.md](PRIVACY.md): the app makes no update request to GitHub.
+
+## [4.0.17] - 2026-11-26
+
+Stable release `4.0.17+3073`, with release APK codes `30731`, `30732` and
+`30733`. Each split exceeds the published 4.0.16 stable splits (`30723`).
+Installs over the existing app.
+
+### Added
+
+- **Parked Android Automotive preview (#376).** Isolated packaging for the
+  Android Automotive target under the existing Ares application id, with
+  driver-display checks, a text-first preview across media and update
+  boundaries, and CI-verified Play-bundle checks (rejection controls run
+  before signing). The phone release package and the Play listing are
+  unchanged; the preview is parked and is not published to either Play track.
+
 ## [4.0.16] - 2026-11-25
 
 Stable release `4.0.16+3072`, with release APK codes `30721`, `30722` and

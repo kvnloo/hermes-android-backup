@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/parked_automotive.dart';
 import '../../core/models/attachment_draft.dart';
 import '../../core/services/connection_manager.dart';
 import '../../core/services/remote_files_client.dart';
@@ -478,6 +479,7 @@ class _NgChatViewState extends State<NgChatView> {
   }
 
   Future<void> _toggleDictation() async {
+    if (isParkedAutomotive) return;
     if (_listening) {
       await _voice?.stop();
       setState(() => _listening = false);
@@ -1057,16 +1059,17 @@ class _NgChatViewState extends State<NgChatView> {
                     ),
                   ),
                   const Spacer(),
-                  IconButton(
-                    tooltip: _listening
-                        ? ngL.ng_stop_dictation
-                        : ngL.ng_dictate,
-                    icon: Icon(
-                      _listening ? Icons.mic : Icons.mic_none,
-                      color: _listening ? c.accent : c.text2,
+                  if (!isParkedAutomotive)
+                    IconButton(
+                      tooltip: _listening
+                          ? ngL.ng_stop_dictation
+                          : ngL.ng_dictate,
+                      icon: Icon(
+                        _listening ? Icons.mic : Icons.mic_none,
+                        color: _listening ? c.accent : c.text2,
+                      ),
+                      onPressed: _toggleDictation,
                     ),
-                    onPressed: _toggleDictation,
-                  ),
                   if (chat.running && !hasText)
                     IconButton.filled(
                       tooltip: ngL.ng_stop,
@@ -1810,19 +1813,20 @@ class _AssistantBlockState extends State<_AssistantBlock> {
                       ngToast(context, ngL.ng_copied);
                     },
                   ),
-                  _ActionIcon(
-                    icon: reading
-                        ? Icons.stop_circle_outlined
-                        : Icons.volume_up_outlined,
-                    tooltip: reading ? ngL.ng_stop : ngL.ng_read_aloud,
-                    onTap: () {
-                      if (reading) {
-                        unawaited(widget.readAloud.stop());
-                      } else {
-                        unawaited(widget.readAloud.read(item.key, item.text));
-                      }
-                    },
-                  ),
+                  if (!isParkedAutomotive)
+                    _ActionIcon(
+                      icon: reading
+                          ? Icons.stop_circle_outlined
+                          : Icons.volume_up_outlined,
+                      tooltip: reading ? ngL.ng_stop : ngL.ng_read_aloud,
+                      onTap: () {
+                        if (reading) {
+                          unawaited(widget.readAloud.stop());
+                        } else {
+                          unawaited(widget.readAloud.read(item.key, item.text));
+                        }
+                      },
+                    ),
                   _ActionIcon(
                     icon: Icons.flag_outlined,
                     tooltip: ngL.report_ai_output,

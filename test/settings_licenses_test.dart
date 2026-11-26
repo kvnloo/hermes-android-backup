@@ -164,7 +164,7 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
-    final prefs = await _openOfflineSettings(tester);
+    await _openOfflineSettings(tester);
     await _openLicenses(tester);
     expect(find.text('3.0.0-rc.1+3000'), findsOneWidget);
 
@@ -225,15 +225,20 @@ void main() {
     );
     expect(find.text('test_dependency'), findsOneWidget);
     await _back(tester);
+    // The About card ends at the licence row: the app neither checks GitHub
+    // for releases nor installs APKs.
     await tester.scrollUntilVisible(
-      find.text('Check for updates on launch'),
+      find.text(
+        MaterialLocalizations.of(
+          tester.element(find.byType(SettingsScreen)),
+        ).licensesPageTitle,
+      ),
       200,
       scrollable: _settingsScroll,
     );
-    expect(find.text('Check for updates'), findsOneWidget);
-    await tester.tap(find.text('Check for updates on launch'));
     await tester.pumpAndSettle();
-    expect(prefs.getBool('app_update_check_on_launch_v1'), isFalse);
+    expect(find.text('Check for updates'), findsNothing);
+    expect(find.text('Check for updates on launch'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 

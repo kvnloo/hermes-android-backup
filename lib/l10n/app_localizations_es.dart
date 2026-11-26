@@ -3193,55 +3193,6 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudieron guardar los espacios de chat en este dispositivo';
 
   @override
-  String get update_available => 'Actualización disponible';
-
-  @override
-  String get update_now => 'Update now';
-
-  @override
-  String get update_install => 'Install update';
-
-  @override
-  String get update_downloading => 'Downloading and verifying update…';
-
-  @override
-  String get update_allow_install =>
-      'Allow Hermes to install this update, then return here and tap Install update.';
-
-  @override
-  String get update_failed =>
-      'The update could not be downloaded, verified, or opened. Try again or view the release page.';
-
-  @override
-  String get a_newer_hermes_android_build_is_available_on_github =>
-      'Hay una compilación más reciente de Ares en GitHub.';
-
-  @override
-  String get release_notes => 'Notas de la versión';
-
-  @override
-  String get view_release => 'Ver la versión';
-
-  @override
-  String get skip_this_version => 'Omitir esta versión';
-
-  @override
-  String get later => 'Más tarde';
-
-  @override
-  String get check_for_updates => 'Buscar actualizaciones';
-
-  @override
-  String get check_for_updates_on_launch => 'Buscar actualizaciones al iniciar';
-
-  @override
-  String get you_re_on_the_latest_version => 'Ya tienes la última versión.';
-
-  @override
-  String get couldn_t_check_for_updates =>
-      'No se pudieron buscar actualizaciones.';
-
-  @override
   String get chat_density => 'Densidad del chat';
 
   @override

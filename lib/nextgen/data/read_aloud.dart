@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/parked_automotive.dart';
 import '../../core/controllers/hands_free_conversation_controller.dart'
     show HandsFreeSpeechOutcome;
 import '../../core/services/hands_free_speech.dart';
@@ -25,11 +26,12 @@ class NgReadAloud extends ChangeNotifier {
     VoiceReplySpeaker? speaker,
     Future<SharedPreferences> Function()? prefs,
     bool? android,
-  }) : _tts = tts ?? FlutterTts(),
-       _prefs = prefs ?? SharedPreferences.getInstance,
+  }) : _prefs = prefs ?? SharedPreferences.getInstance,
        _android =
            android ??
            (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    if (isParkedAutomotive) return;
+    _tts = tts ?? FlutterTts();
     _speaker = speaker ?? (_android ? FlutterVoiceReplySpeaker(_tts) : null);
     if (_speaker == null) {
       _tts.setCompletionHandler(
@@ -40,7 +42,7 @@ class NgReadAloud extends ChangeNotifier {
     }
   }
 
-  final FlutterTts _tts;
+  late final FlutterTts _tts;
   final Future<SharedPreferences> Function() _prefs;
   final bool _android;
   late final VoiceReplySpeaker? _speaker;
@@ -69,7 +71,7 @@ class NgReadAloud extends ChangeNotifier {
   /// reply first. Empty text is a no-op.
   Future<void> read(String key, String text) async {
     final spoken = text.trim();
-    if (spoken.isEmpty || _disposed) return;
+    if (isParkedAutomotive || spoken.isEmpty || _disposed) return;
     final intent = await _claim(key);
     if (intent == null || _disposed) return;
     HandsFreeSpeechOutcome? outcome;
@@ -92,6 +94,7 @@ class NgReadAloud extends ChangeNotifier {
 
   /// Stops playback and clears the reading state.
   Future<void> stop() async {
+    if (isParkedAutomotive) return;
     _generation++;
     final had = _readingKey;
     _readingKey = null;
@@ -193,9 +196,11 @@ class NgReadAloud extends ChangeNotifier {
     _disposed = true;
     _generation++;
     _readingKey = null;
-    final speaker = _speaker;
-    final stopping = speaker != null ? speaker.stop() : _tts.stop();
-    unawaited(stopping.catchError((Object _) {}));
+    if (!isParkedAutomotive) {
+      final speaker = _speaker;
+      final stopping = speaker != null ? speaker.stop() : _tts.stop();
+      unawaited(stopping.catchError((Object _) {}));
+    }
     super.dispose();
   }
 }

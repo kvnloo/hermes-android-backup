@@ -47,7 +47,7 @@ jobs:
       - name: Verify release identity and upgrade versionCode
         env:
           MINIMUM_INSTALLED_VERSION_CODE: '2127'
-          REQUIRED_BASE_VERSION_CODE: '3072'
+          REQUIRED_BASE_VERSION_CODE: '3074'
         run: |
           python3 - <<'PY'
           import os
@@ -104,6 +104,9 @@ jobs:
         run: |
           flutter test --no-pub --dart-define=ARES_PLAY_BUILD=true test_play/play_distribution_test.dart 2>&1 | tee play_test_output.txt
           exit ${PIPESTATUS[0]}
+
+      - name: Test the parked Automotive capability policy
+        run: flutter test --no-pub --dart-define=ARES_PARKED_AUTOMOTIVE=true test_automotive
 
       # ── Step 3: Summary & failure report ─────────────────
       - name: Failure summary

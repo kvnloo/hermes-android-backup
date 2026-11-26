@@ -4,6 +4,8 @@ import 'package:speech_to_text/speech_recognition_error.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../parked_automotive.dart';
+
 typedef VoiceStatusCallback = void Function(String status);
 typedef VoiceErrorCallback = void Function(String message);
 typedef VoiceResultCallback =
@@ -40,13 +42,15 @@ class SpeechToTextVoiceComposerAdapter implements VoiceComposerAdapter {
     : _speechToText = speechToText ?? SpeechToText();
 
   @override
-  Future<bool> get hasPermission => _speechToText.hasPermission;
+  Future<bool> get hasPermission =>
+      isParkedAutomotive ? Future.value(false) : _speechToText.hasPermission;
 
   @override
   Future<bool> initialize({
     required VoiceStatusCallback onStatus,
     required VoiceErrorCallback onError,
   }) {
+    if (isParkedAutomotive) return Future.value(false);
     return _speechToText.initialize(
       onStatus: onStatus,
       onError: (SpeechRecognitionError error) => onError(error.errorMsg),
@@ -58,6 +62,7 @@ class SpeechToTextVoiceComposerAdapter implements VoiceComposerAdapter {
     required VoiceResultCallback onResult,
     String? localeId,
   }) async {
+    if (isParkedAutomotive) throw UnsupportedError('Voice capture disabled');
     await _speechToText.listen(
       listenOptions: SpeechListenOptions(
         listenFor: const Duration(seconds: 60),
@@ -75,13 +80,15 @@ class SpeechToTextVoiceComposerAdapter implements VoiceComposerAdapter {
   }
 
   @override
-  Future<void> stop() => _speechToText.stop();
+  Future<void> stop() =>
+      isParkedAutomotive ? Future.value() : _speechToText.stop();
 
   @override
-  Future<void> cancel() => _speechToText.cancel();
+  Future<void> cancel() =>
+      isParkedAutomotive ? Future.value() : _speechToText.cancel();
 
   @override
   void dispose() {
-    unawaited(_speechToText.cancel());
+    unawaited(cancel());
   }
 }

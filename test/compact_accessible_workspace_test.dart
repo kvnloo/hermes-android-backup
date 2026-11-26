@@ -75,7 +75,6 @@ void main() {
             ),
             sessionsLoader: () async => <Session>[],
             turnSignalsLoader: (_) async => HomeTurnSignals.empty,
-            installedVersionLoader: () async => null,
             activityFeedLoader: (_, _) async => const ActivityFeed(
               groups: [
                 ActivityGroup(
