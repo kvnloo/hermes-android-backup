@@ -16,7 +16,7 @@
 #define MyAppName "Ares"
 ; Keep in step with pubspec.yaml, or pass /DMyAppVersion=x.y.z to ISCC.
 #ifndef MyAppVersion
-  #define MyAppVersion "4.0.16"
+  #define MyAppVersion "4.0.18"
 #endif
 #define MyAppPublisher "Sam Russell"
 #define MyAppURL "https://github.com/rusty4444/ares"
