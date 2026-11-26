@@ -652,6 +652,152 @@ void main() {
     // even though its provider is not configured.
     expect(_inPicker(find.text('ghost-model')), findsOneWidget);
     expect(_inPicker(find.text('chat-llm')), findsOneWidget);
+    // The pinned row must also be pre-selected so Apply is enabled without
+    // re-tapping — the session can leave it in one action.
+    expect(
+      tester
+          .widget<FilledButton>(
+            find.widgetWithText(FilledButton, 'Apply to this chat'),
+          )
+          .onPressed,
+      isNotNull,
+    );
+  });
+
+  testWidgets('configured provider with no models does not fall back to the '
+      'full catalog', (tester) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/empty-config-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'empty-config-session', 'model': 'ghost-a'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'profile-default',
+              'provider': 'custom:empty',
+              'providers': [
+                {
+                  'slug': 'custom:empty',
+                  'models': <String>[],
+                  'is_user_defined': true,
+                  'is_current': true,
+                },
+                {
+                  'slug': 'nous',
+                  'models': ['ghost-a', 'ghost-b'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'empty-config-session',
+        title: 'Empty config',
+        model: 'ghost-a',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    // Flags are present, so the filter stays active even though the
+    // configured provider enumerates no models: only the session's pinned
+    // row is shown, not the unconfigured provider's full list.
+    expect(_inPicker(find.text('ghost-a')), findsOneWidget);
+    expect(_inPicker(find.text('ghost-b')), findsNothing);
+  });
+
+  testWidgets('session model missing from the inventory does not leak a '
+      'phantom hidden-provider row', (tester) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/deleted-model-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'deleted-model-session', 'model': 'deleted-model'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'chat-llm',
+              'provider': 'custom:halogen',
+              'providers': [
+                {
+                  'slug': 'nous',
+                  'models': ['ghost-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                },
+                {
+                  'slug': 'custom:halogen',
+                  'models': ['chat-llm'],
+                  'is_user_defined': true,
+                  'is_current': true,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'deleted-model-session',
+        title: 'Deleted model',
+        model: 'deleted-model',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    // The session's model is gone from the inventory. The arbitrary first
+    // row that _initialModelChoice falls back to must not be presented as
+    // the session's model when its provider is not configured.
+    expect(_inPicker(find.text('ghost-model')), findsNothing);
+    expect(_inPicker(find.text('chat-llm')), findsOneWidget);
   });
 
   testWidgets('picker falls back to the full list when nothing is configured', (

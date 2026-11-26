@@ -4278,25 +4278,44 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       // The picker lists only providers the gateway actually has configured
       // (custom_providers entries and the profile's current provider). A
       // session pinned to a model from a hidden provider keeps that row
-      // visible so the picker still reflects real session state. Gateways
-      // without per-provider configuration flags yield an empty set and the
-      // picker falls back to the full inventory.
+      // visible so the picker still reflects real session state. The keep-
+      // alive trusts only a choice that actually matches the session's
+      // model: _initialModelChoice falls back to an arbitrary first row
+      // when the session's model is absent from the inventory, and that
+      // phantom must not masquerade as the session's model. The full
+      // inventory is shown only when the gateway exposes no configured-
+      // provider flags at all (legacy payload) or when filtering would
+      // leave the picker with nothing usable.
       final configuredSlugs = _configuredProviderSlugs(modelOptions);
       final configuredChoices = choices
           .where((choice) => configuredSlugs.contains(choice.provider))
           .toList(growable: false);
-      final pickerChoices = configuredChoices.isEmpty
+      final pinnedChoice =
+          selectedChoice != null && selectedChoice.model == selectedModel
+          ? selectedChoice
+          : null;
+      final visibleChoices = <_ModelChoice>[
+        ...configuredChoices,
+        if (pinnedChoice != null &&
+            !configuredChoices.any(
+              (choice) =>
+                  choice.provider == pinnedChoice.provider &&
+                  choice.model == pinnedChoice.model,
+            ))
+          pinnedChoice,
+      ];
+      final pickerChoices =
+          configuredSlugs.isEmpty || visibleChoices.isEmpty
           ? choices
-          : [
-              ...configuredChoices,
-              if (selectedChoice != null &&
-                  !configuredChoices.any(
-                    (choice) =>
-                        choice.provider == selectedChoice.provider &&
-                        choice.model == selectedChoice.model,
-                  ))
-                selectedChoice,
-            ];
+          : visibleChoices;
+      final initialChoice = pickerChoices.any(
+            (choice) =>
+                selectedChoice != null &&
+                choice.provider == selectedChoice.provider &&
+                choice.model == selectedChoice.model,
+          )
+          ? selectedChoice
+          : null;
       final selectionFuture = showModalBottomSheet<_ModelSelection>(
         context: context,
         showDragHandle: true,
@@ -4304,7 +4323,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         builder: (_) => _ChatModelPickerSheet(
           choices: pickerChoices,
           modelInfo: modelInfo,
-          initialChoice: selectedChoice,
+          initialChoice: initialChoice,
           initialEffort: currentEffort,
           providerChoiceRequired: selectedChoice == null,
         ),
