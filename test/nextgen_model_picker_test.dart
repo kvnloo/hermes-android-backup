@@ -215,6 +215,318 @@ void main() {
     client.close();
   });
 
+  Future<void> openNgPicker(WidgetTester tester) async {
+    await tester.tap(find.byKey(const ValueKey('ng-model-picker')));
+    await tester.pumpAndSettle();
+  }
+
+  // The composer chip also shows the session's model; sheet assertions must
+  // be scoped to the sheet itself.
+  Finder inSheet(Finder f) =>
+      find.descendant(
+        of: find.byType(DraggableScrollableSheet),
+        matching: f,
+      );
+
+  // The sheet's main ListView builds lazily; scroll it until built.
+  Future<void> scrollToInSheet(WidgetTester tester, Finder f) async {
+    final list = find.descendant(
+      of: find.byType(DraggableScrollableSheet),
+      matching: find.byType(ListView),
+    ).first;
+    for (var i = 0; i < 4 && f.evaluate().isEmpty; i++) {
+      await tester.drag(list, const Offset(0, -250));
+      await tester.pumpAndSettle();
+    }
+  }
+
+  MockClient pickerClient(Map<String, dynamic> Function() options) =>
+      MockClient((request) async {
+        if (request.url.path.endsWith('/model/options')) {
+          return http.Response(
+            jsonEncode(options()),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }
+        return http.Response('{}', 200);
+      });
+
+  testWidgets('NextGen picker lists only configured providers', (tester) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:halogen',
+            'name': 'Halogen',
+            'models': ['chat-a', 'chat-b'],
+            'is_user_defined': true,
+            'is_current': true,
+          },
+          {
+            'slug': 'custom:gufo',
+            'name': 'Gufo',
+            'models': ['gufo-model'],
+            'is_user_defined': true,
+            'is_current': false,
+          },
+          {
+            'slug': 'huggingface',
+            'name': 'HuggingFace',
+            'models': ['hidden-model', 'hidden-other'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    await scrollToInSheet(tester, inSheet(find.text('gufo-model')));
+    expect(inSheet(find.text('chat-a')), findsOneWidget);
+    expect(inSheet(find.text('gufo-model')), findsOneWidget);
+    expect(inSheet(find.text('hidden-model')), findsNothing);
+    expect(inSheet(find.text('hidden-other')), findsNothing);
+    expect(
+      find.byKey(const ValueKey('ng-model-provider-huggingface')),
+      findsNothing,
+    );
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
+  testWidgets('NextGen pinned model from a hidden provider stays listed', (
+    tester,
+  ) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:halogen',
+            'name': 'Halogen',
+            'models': ['chat-a'],
+            'is_user_defined': true,
+            'is_current': true,
+          },
+          {
+            'slug': 'huggingface',
+            'name': 'HuggingFace',
+            'models': ['hidden-model', 'hidden-other'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    chat.model = 'hidden-model';
+    chat.provider = 'huggingface';
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    // The pinned row stays visible; the provider's other models stay hidden.
+    expect(inSheet(find.text('hidden-model')), findsOneWidget);
+    expect(inSheet(find.text('hidden-other')), findsNothing);
+    expect(inSheet(find.text('chat-a')), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
+  testWidgets('NextGen picker keeps the full list for flagless payloads', (
+    tester,
+  ) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {'slug': 'openai', 'name': 'OpenAI', 'models': ['gpt-5.2']},
+          {'slug': 'anthropic', 'name': 'Anthropic', 'models': ['claude-x']},
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    expect(inSheet(find.text('gpt-5.2')), findsOneWidget);
+    expect(inSheet(find.text('claude-x')), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
+  testWidgets('NextGen pinned model missing from inventory adds no row', (
+    tester,
+  ) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:halogen',
+            'name': 'Halogen',
+            'models': ['chat-a'],
+            'is_user_defined': true,
+            'is_current': true,
+          },
+          {
+            'slug': 'huggingface',
+            'name': 'HuggingFace',
+            'models': ['hidden-model'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    chat.model = 'gone-model';
+    chat.provider = 'huggingface';
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    expect(inSheet(find.text('gone-model')), findsNothing);
+    expect(inSheet(find.text('hidden-model')), findsNothing);
+    expect(inSheet(find.text('chat-a')), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
+  testWidgets('NextGen configured provider with no models keeps filter active',
+      (tester) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:empty',
+            'name': 'Empty',
+            'models': <String>[],
+            'is_user_defined': true,
+            'is_current': false,
+          },
+          {
+            'slug': 'nous',
+            'name': 'Nous',
+            'models': ['ghost-a', 'ghost-b'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    chat.model = 'ghost-a';
+    chat.provider = 'nous';
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    // The only configured provider has no models; the pinned row keeps the
+    // filter active, so the hidden provider's other model stays hidden.
+    expect(inSheet(find.text('ghost-a')), findsOneWidget);
+    expect(inSheet(find.text('ghost-b')), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
+  testWidgets('NextGen empty configured set with no pinned model falls back', (
+    tester,
+  ) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:empty',
+            'name': 'Empty',
+            'models': <String>[],
+            'is_user_defined': true,
+            'is_current': false,
+          },
+          {
+            'slug': 'nous',
+            'name': 'Nous',
+            'models': ['ghost-b'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    // Nothing configured has models and nothing is pinned; an empty picker
+    // is worse than the unfiltered list.
+    expect(inSheet(find.text('ghost-b')), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
   testWidgets('NextGen assistant reply exposes the AI output report action', (
     tester,
   ) async {

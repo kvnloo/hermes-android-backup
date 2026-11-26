@@ -99,6 +99,7 @@ class _ModelSheet extends StatefulWidget {
 
 class _ModelSheetState extends State<_ModelSheet> {
   List<NgProviderModels>? _providers;
+  Set<String> _configuredSlugs = const {};
   String? _error;
   String _query = '';
   String? _providerFilter;
@@ -115,7 +116,20 @@ class _ModelSheetState extends State<_ModelSheet> {
       final data = await NgScope.of(
         context,
       ).gateway.dashboard.getModelOptions();
-      if (mounted) setState(() => _providers = parseModelOptions(data));
+      final rows = data['providers'] is List ? data['providers'] as List : const [];
+      final slugs = <String>{
+        for (final row in rows)
+          if (row is Map &&
+              (row['is_user_defined'] == true || row['is_current'] == true))
+            (row['slug'] ?? row['id'] ?? '').toString(),
+      };
+      slugs.remove('');
+      if (mounted) {
+        setState(() {
+          _providers = parseModelOptions(data);
+          _configuredSlugs = slugs;
+        });
+      }
     } catch (e) {
       if (mounted) setState(() => _error = '$e');
     }
@@ -195,8 +209,39 @@ class _ModelSheetState extends State<_ModelSheet> {
     final prefs = NgScope.of(context).prefs;
     final chat = widget.chat;
     final providers = _providers;
+    // Only providers the gateway flags as configured (user-defined or the
+    // current profile) are offered. A legacy payload without any flags, or
+    // a filter that would leave nothing to pick, keeps the full list.
+    List<NgProviderModels>? shownProviders;
+    if (providers != null) {
+      shownProviders = providers;
+      if (_configuredSlugs.isNotEmpty) {
+        final filtered = [
+          for (final p in providers)
+            if (_configuredSlugs.contains(p.slug)) p,
+        ];
+        // The provider+model pair the session is pinned to stays visible
+        // even when its provider is not configured — but only that exact
+        // pair, and only when it really exists in the inventory.
+        final pinnedProvider = chat.provider;
+        final pinnedModel = chat.model;
+        if (pinnedProvider != null &&
+            pinnedModel != null &&
+            !filtered.any(
+              (p) => p.slug == pinnedProvider && p.models.contains(pinnedModel),
+            )) {
+          for (final p in providers) {
+            if (p.slug == pinnedProvider && p.models.contains(pinnedModel)) {
+              filtered.add(NgProviderModels(p.slug, p.name, [pinnedModel]));
+              break;
+            }
+          }
+        }
+        if (filtered.isNotEmpty) shownProviders = filtered;
+      }
+    }
     final visibleProviders = [
-      for (final p in providers ?? const <NgProviderModels>[])
+      for (final p in shownProviders ?? const <NgProviderModels>[])
         if (_providerFilter == null || p.slug == _providerFilter) p,
     ];
     final all = <String, NgModelChoice>{
@@ -324,7 +369,7 @@ class _ModelSheetState extends State<_ModelSheet> {
               ),
             ),
           ),
-          if (providers != null && providers.length > 1)
+          if (shownProviders != null && shownProviders.length > 1)
             SizedBox(
               height: 44,
               child: ListView(
@@ -342,7 +387,7 @@ class _ModelSheetState extends State<_ModelSheet> {
                       onSelected: (_) => setState(() => _providerFilter = null),
                     ),
                   ),
-                  for (final p in providers)
+                  for (final p in shownProviders)
                     Padding(
                       padding: const EdgeInsets.only(right: 6),
                       child: ChoiceChip(
@@ -369,12 +414,12 @@ class _ModelSheetState extends State<_ModelSheet> {
                 style: NgType.bodySmall.copyWith(color: c.danger),
               ),
             )
-          else if (providers == null)
+          else if (shownProviders == null)
             const Padding(
               padding: EdgeInsets.all(32),
               child: Center(child: CircularProgressIndicator()),
             )
-          else if (providers.isEmpty)
+          else if (shownProviders.isEmpty)
             Padding(
               padding: const EdgeInsets.all(20),
               child: Text(
