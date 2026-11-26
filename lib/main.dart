@@ -36,6 +36,7 @@ import 'core/services/turn_notification_service.dart';
 import 'core/screens/chat_screen.dart';
 import 'core/screens/workspace_screen.dart';
 import 'core/theme/hermes_theme.dart';
+import 'core/utils/adaptive_layout.dart';
 import 'core/utils/responsive.dart';
 import 'core/widgets/config_backup_card.dart';
 import 'core/widgets/desktop_shortcuts.dart';
@@ -1267,8 +1268,10 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
             data: systemMediaQuery.copyWith(
               textScaler: preference.applyTo(systemMediaQuery.textScaler),
             ),
-            child: DesktopShortcuts(
-              child: nextGen ? NgLocalizationScope(child: child!) : child!,
+            child: ExpandedWindowSideInsets(
+              child: DesktopShortcuts(
+                child: nextGen ? NgLocalizationScope(child: child!) : child!,
+              ),
             ),
           ),
         );

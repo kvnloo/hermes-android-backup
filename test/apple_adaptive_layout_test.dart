@@ -201,9 +201,15 @@ void main() {
       await tester.pump(const Duration(seconds: 30));
     }
 
-    Future<void> pumpNextGen(WidgetTester tester, Size size) async {
+    Future<void> pumpNextGen(
+      WidgetTester tester,
+      Size size, {
+      FakeViewPadding padding = FakeViewPadding.zero,
+    }) async {
       tester.view.physicalSize = size;
       tester.view.devicePixelRatio = 1;
+      tester.view.padding = padding;
+      tester.view.viewPadding = padding;
       addTearDown(tester.view.reset);
       final prefs = await SharedPreferences.getInstance();
       final conn = SavedConnection(
@@ -220,6 +226,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: nextGenTheme(Brightness.light, NextGenLook.instance),
+          // The app root takes the side insets of an expanded window.
+          builder: (context, child) => ExpandedWindowSideInsets(child: child!),
           home: NgScope(
             connManager: ConnectionManager(prefs),
             gateway: gateway,
@@ -257,5 +265,94 @@ void main() {
       expect(find.byKey(const ValueKey('ng-sidebar-button')), findsOneWidget);
       await unmount(tester);
     });
+
+    // An unfolded iPhone Duo is 951 x 669 pt and reports its status cluster
+    // as an 84 pt right inset (and the home indicator as 34 pt at the bottom).
+    const duo = Size(951, 669);
+    const duoInsets = FakeViewPadding(right: 84, bottom: 34);
+
+    testWidgets('unfolded Duo keeps the docked sidebar at full width', (
+      tester,
+    ) async {
+      await pumpNextGen(tester, duo, padding: duoInsets);
+      // The sidebar touches the left edge, so the right inset is not its to
+      // give up: its search field spans the 330 pt pane, less 14 pt margins.
+      final search = tester.getRect(find.byKey(const Key('ng-session-search')));
+      expect(search.left, 14);
+      expect(search.width, 330 - 28);
+      await unmount(tester);
+    });
+
+    testWidgets('unfolded Duo keeps the chat clear of the status cluster', (
+      tester,
+    ) async {
+      await pumpNextGen(tester, duo, padding: duoInsets);
+      final page = tester.getRect(find.byType(NgMainPage));
+      expect(page.left, 0);
+      expect(page.right, duo.width - 84);
+      // The bottom inset still reaches the panes, which pad their own footers.
+      final media = MediaQuery.of(tester.element(find.byType(NgMainPage)));
+      expect(media.padding.right, 0);
+      expect(media.padding.bottom, 34);
+      await unmount(tester);
+    });
   });
+
+  group('expanded-window side insets', () {
+    Future<void> pump(
+      WidgetTester tester,
+      Size size,
+      FakeViewPadding padding,
+    ) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1;
+      tester.view.padding = padding;
+      tester.view.viewPadding = padding;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          builder: (context, child) => ExpandedWindowSideInsets(child: child!),
+          home: const _Probe(),
+        ),
+      );
+    }
+
+    testWidgets('a phone in landscape still draws edge to edge', (
+      tester,
+    ) async {
+      // Wide but short: the medium class, with a notch inset on both sides.
+      await pump(
+        tester,
+        const Size(874, 402),
+        const FakeViewPadding(left: 62, right: 62, bottom: 21),
+      );
+      expect(tester.getSize(find.byType(_Probe)), const Size(874, 402));
+      final media = MediaQuery.of(tester.element(find.byType(_Probe)));
+      expect(media.padding.left, 62);
+      expect(media.padding.right, 62);
+    });
+
+    testWidgets('unfolding keeps the routes mounted', (tester) async {
+      await pump(tester, const Size(466, 678), FakeViewPadding.zero);
+      final before = tester.state(find.byType(_Probe));
+      tester.view.physicalSize = const Size(951, 669);
+      tester.view.padding = const FakeViewPadding(right: 84, bottom: 34);
+      tester.view.viewPadding = const FakeViewPadding(right: 84, bottom: 34);
+      await tester.pump();
+      expect(tester.state(find.byType(_Probe)), same(before));
+      expect(tester.getSize(find.byType(_Probe)), const Size(951 - 84, 669));
+    });
+  });
+}
+
+class _Probe extends StatefulWidget {
+  const _Probe();
+
+  @override
+  State<_Probe> createState() => _ProbeState();
+}
+
+class _ProbeState extends State<_Probe> {
+  @override
+  Widget build(BuildContext context) => const SizedBox.expand();
 }

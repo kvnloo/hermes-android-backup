@@ -6,7 +6,7 @@
 /// an iPad in Split View, and an arbitrarily resized Mac window.
 library;
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 /// The three adaptive size classes the Apple port (and Android foldables)
 /// share.
@@ -61,3 +61,37 @@ AdaptiveSizeClass adaptiveSizeClassOfContext(BuildContext context) =>
 /// two-pane / list+detail layout.
 bool isExpandedWindow(BuildContext context) =>
     adaptiveSizeClassOfContext(context) == AdaptiveSizeClass.expanded;
+
+/// Keeps every route inside the system's left and right insets on an
+/// expanded window.
+///
+/// An unfolded iPhone Duo reports its status cluster (clock and battery ring)
+/// as a right-hand safe-area inset. Wide layouts put panes edge to edge and a
+/// pane cannot tell which screen edge it touches: the docked sidebar's
+/// [SafeArea] gave up that width on the wrong side, while lists and
+/// transcripts ran underneath the cluster. The inset is therefore taken once,
+/// above the navigator, and removed from the [MediaQuery] below it.
+///
+/// Compact and medium windows are left alone, so a phone in landscape still
+/// draws edge to edge. The widget tree has the same shape in every size class,
+/// so folding or resizing never remounts the routes underneath.
+class ExpandedWindowSideInsets extends StatelessWidget {
+  const ExpandedWindowSideInsets({required this.child, super.key});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final apply = isExpandedWindow(context);
+    return ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
+      child: SafeArea(
+        left: apply,
+        right: apply,
+        top: false,
+        bottom: false,
+        child: child,
+      ),
+    );
+  }
+}
