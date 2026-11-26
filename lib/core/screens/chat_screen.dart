@@ -4275,12 +4275,34 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
         selectedModel: selectedModel,
         provider: providerHint,
       );
+      // The picker lists only providers the gateway actually has configured
+      // (custom_providers entries and the profile's current provider). A
+      // session pinned to a model from a hidden provider keeps that row
+      // visible so the picker still reflects real session state. Gateways
+      // without per-provider configuration flags yield an empty set and the
+      // picker falls back to the full inventory.
+      final configuredSlugs = _configuredProviderSlugs(modelOptions);
+      final configuredChoices = choices
+          .where((choice) => configuredSlugs.contains(choice.provider))
+          .toList(growable: false);
+      final pickerChoices = configuredChoices.isEmpty
+          ? choices
+          : [
+              ...configuredChoices,
+              if (selectedChoice != null &&
+                  !configuredChoices.any(
+                    (choice) =>
+                        choice.provider == selectedChoice.provider &&
+                        choice.model == selectedChoice.model,
+                  ))
+                selectedChoice,
+            ];
       final selectionFuture = showModalBottomSheet<_ModelSelection>(
         context: context,
         showDragHandle: true,
         isScrollControlled: true,
         builder: (_) => _ChatModelPickerSheet(
-          choices: choices,
+          choices: pickerChoices,
           modelInfo: modelInfo,
           initialChoice: selectedChoice,
           initialEffort: currentEffort,
@@ -4304,6 +4326,26 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     } finally {
       if (mounted) setState(() => _loadingModelOptions = false);
     }
+  }
+
+  /// Provider slugs the gateway reports as configured: user-defined
+  /// (custom_providers) entries plus the profile's current provider.
+  /// Returns an empty set when the gateway exposes no such flags.
+  Set<String> _configuredProviderSlugs(Map<String, dynamic> options) {
+    final providers = options['providers'];
+    if (providers is! List) return const {};
+    final slugs = <String>{};
+    for (final rawProvider in providers) {
+      if (rawProvider is! Map) continue;
+      final provider =
+          (rawProvider['slug'] ?? rawProvider['id'])?.toString().trim() ?? '';
+      if (provider.isEmpty) continue;
+      if (rawProvider['is_user_defined'] == true ||
+          rawProvider['is_current'] == true) {
+        slugs.add(provider);
+      }
+    }
+    return slugs;
   }
 
   List<_ModelChoice> _parseModelChoices(Map<String, dynamic> options) {

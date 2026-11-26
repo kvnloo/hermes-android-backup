@@ -518,6 +518,211 @@ void main() {
     expect(lockBody, containsPair('provider', 'beta'));
     expect(lockBody, containsPair('model', 'shared-model'));
   });
+
+  testWidgets('picker lists only configured providers\' models', (tester) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/configured-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'configured-session', 'model': 'chat-llm'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'chat-llm',
+              'provider': 'custom:halogen',
+              'providers': [
+                {
+                  'slug': 'nous',
+                  'models': ['ghost-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                  'authenticated': true,
+                },
+                {
+                  'slug': 'custom:halogen',
+                  'models': ['chat-llm', 'util-model'],
+                  'is_user_defined': true,
+                  'is_current': true,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'configured-session',
+        title: 'Configured',
+        model: 'chat-llm',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    expect(_inPicker(find.text('chat-llm')), findsOneWidget);
+    expect(_inPicker(find.text('util-model')), findsOneWidget);
+    expect(_inPicker(find.text('ghost-model')), findsNothing);
+  });
+
+  testWidgets('picker keeps a session-pinned model from a hidden provider', (
+    tester,
+  ) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/pinned-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'pinned-session', 'model': 'ghost-model'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'chat-llm',
+              'provider': 'custom:halogen',
+              'providers': [
+                {
+                  'slug': 'nous',
+                  'models': ['ghost-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                  'authenticated': true,
+                },
+                {
+                  'slug': 'custom:halogen',
+                  'models': ['chat-llm'],
+                  'is_user_defined': true,
+                  'is_current': true,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'pinned-session',
+        title: 'Pinned',
+        model: 'ghost-model',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    // The session stays on its pinned model, so the picker must still show it
+    // even though its provider is not configured.
+    expect(_inPicker(find.text('ghost-model')), findsOneWidget);
+    expect(_inPicker(find.text('chat-llm')), findsOneWidget);
+  });
+
+  testWidgets('picker falls back to the full list when nothing is configured', (
+    tester,
+  ) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/legacy-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'legacy-session', 'model': 'legacy-model'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'legacy-model',
+              'provider': 'nous',
+              'providers': [
+                {
+                  'slug': 'nous',
+                  'models': ['legacy-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                  'authenticated': true,
+                },
+                {
+                  'slug': 'openrouter',
+                  'models': ['other-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                  'authenticated': false,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'legacy-session',
+        title: 'Legacy',
+        model: 'legacy-model',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    // No provider is marked configured: an empty picker would be useless, so
+    // the full inventory stays visible as the fallback.
+    expect(_inPicker(find.text('legacy-model')), findsOneWidget);
+    expect(_inPicker(find.text('other-model')), findsOneWidget);
+  });
 }
 
 Future<void> _openModelPicker(WidgetTester tester) async {
@@ -526,6 +731,9 @@ Future<void> _openModelPicker(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 500));
 }
+
+Finder _inPicker(Finder text) =>
+    find.descendant(of: find.byType(BottomSheet), matching: text);
 
 Future<({List<Map<String, dynamic>> writes})> _pumpSearchableModelChat(
   WidgetTester tester, {
