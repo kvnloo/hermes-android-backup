@@ -4361,8 +4361,15 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       final provider =
           (rawProvider['slug'] ?? rawProvider['id'])?.toString().trim() ?? '';
       if (provider.isEmpty) continue;
+      // Mirror the gateway's explicit-only semantics (hermes_cli/inventory.py
+      // _filter_explicit_provider_rows): managed local models are configured
+      // by existence and the MoA row only exists when the user opted in, so
+      // both stay even without a configured flag.
+      final source = rawProvider['source']?.toString();
       if (rawProvider['is_user_defined'] == true ||
-          rawProvider['is_current'] == true) {
+          rawProvider['is_current'] == true ||
+          source == 'local-runtime' ||
+          source == 'virtual') {
         slugs.add(provider);
       }
     }

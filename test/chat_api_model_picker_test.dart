@@ -585,6 +585,90 @@ void main() {
     expect(_inPicker(find.text('ghost-model')), findsNothing);
   });
 
+  testWidgets('picker keeps local-runtime and MoA rows without flags', (
+    tester,
+  ) async {
+    final client = ApiClient(
+      baseUrl: 'http://api.fixture:8642',
+      apiKey: 'fixture-key',
+      httpClient: MockClient((request) async {
+        final path = request.url.path;
+        if (request.method == 'GET' && path.endsWith('/messages')) {
+          return http.Response('{"data":[]}', 200);
+        }
+        if (request.method == 'GET' && path == '/api/sessions/configured-session') {
+          return http.Response(
+            jsonEncode({
+              'session': {'id': 'configured-session', 'model': 'chat-llm'},
+            }),
+            200,
+          );
+        }
+        if (request.method == 'GET' && path == '/api/model/options') {
+          return http.Response(
+            jsonEncode({
+              'model': 'chat-llm',
+              'provider': 'custom:halogen',
+              'providers': [
+                {
+                  'slug': 'nous',
+                  'models': ['ghost-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                  'authenticated': true,
+                },
+                {
+                  'slug': 'local',
+                  'models': ['local-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                  'source': 'local-runtime',
+                },
+                {
+                  'slug': 'moa',
+                  'models': ['moa-model'],
+                  'is_user_defined': false,
+                  'is_current': false,
+                  'source': 'virtual',
+                },
+                {
+                  'slug': 'custom:halogen',
+                  'models': ['chat-llm'],
+                  'is_user_defined': true,
+                  'is_current': true,
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('not found', 404);
+      }),
+    );
+    await _pumpApiOnlyChat(
+      tester,
+      client,
+      const Session(
+        id: 'configured-session',
+        title: 'Configured',
+        model: 'chat-llm',
+        source: 'api_server',
+        messageCount: 0,
+        isActive: true,
+        preview: '',
+        startedAt: 1,
+      ),
+    );
+
+    await _openModelPicker(tester);
+
+    // The gateway's explicit-only semantics keep managed local models and
+    // the opt-in MoA row even though neither carries a configured flag.
+    expect(_inPicker(find.text('local-model')), findsOneWidget);
+    expect(_inPicker(find.text('moa-model')), findsOneWidget);
+    expect(_inPicker(find.text('ghost-model')), findsNothing);
+  });
+
   testWidgets('picker keeps a session-pinned model from a hidden provider', (
     tester,
   ) async {

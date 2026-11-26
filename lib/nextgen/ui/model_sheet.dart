@@ -119,8 +119,14 @@ class _ModelSheetState extends State<_ModelSheet> {
       final rows = data['providers'] is List ? data['providers'] as List : const [];
       final slugs = <String>{
         for (final row in rows)
+          // Mirror the gateway's explicit-only semantics: local-runtime rows
+          // are configured by existence and the MoA row only exists when the
+          // user opted in, so both stay even without a configured flag.
           if (row is Map &&
-              (row['is_user_defined'] == true || row['is_current'] == true))
+              (row['is_user_defined'] == true ||
+                  row['is_current'] == true ||
+                  row['source'] == 'local-runtime' ||
+                  row['source'] == 'virtual'))
             (row['slug'] ?? row['id'] ?? '').toString(),
       };
       slugs.remove('');

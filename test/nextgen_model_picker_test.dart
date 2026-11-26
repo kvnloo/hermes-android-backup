@@ -330,6 +330,73 @@ void main() {
     client.close();
   });
 
+  testWidgets('NextGen picker keeps local-runtime and MoA rows without flags', (
+    tester,
+  ) async {
+    final client = pickerClient(
+      () => {
+        'providers': [
+          {
+            'slug': 'custom:halogen',
+            'name': 'Halogen',
+            'models': ['chat-a'],
+            'is_user_defined': true,
+            'is_current': true,
+          },
+          {
+            'slug': 'local',
+            'name': 'Local',
+            'models': ['local-model'],
+            'is_user_defined': false,
+            'is_current': false,
+            'source': 'local-runtime',
+          },
+          {
+            'slug': 'moa',
+            'name': 'MoA',
+            'models': ['moa-model'],
+            'is_user_defined': false,
+            'is_current': false,
+            'source': 'virtual',
+          },
+          {
+            'slug': 'huggingface',
+            'name': 'HuggingFace',
+            'models': ['hidden-model'],
+            'is_user_defined': false,
+            'is_current': false,
+          },
+        ],
+      },
+    );
+    final dashboard = DashboardClient(
+      host: '10.0.0.5',
+      proxied: true,
+      httpClient: client,
+    );
+    final gateway = NextGenGateway(_connection(), dashboard: dashboard);
+    final prefs = await SharedPreferences.getInstance();
+    final chat = NgChatController(gateway, sessionId: 'stored');
+    await tester.pumpWidget(_app(chat, gateway, ConnectionManager(prefs)));
+    await tester.pump(const Duration(milliseconds: 300));
+    await openNgPicker(tester);
+
+    // The gateway's explicit-only semantics keep managed local models and
+    // the opt-in MoA row even though neither carries a configured flag.
+    expect(inSheet(find.text('chat-a')), findsOneWidget);
+    await scrollToInSheet(tester, inSheet(find.text('local-model')));
+    expect(inSheet(find.text('local-model')), findsOneWidget);
+    await scrollToInSheet(tester, inSheet(find.text('moa-model')));
+    expect(inSheet(find.text('moa-model')), findsOneWidget);
+    await scrollSheetToEnd(tester);
+    expect(inSheetAll(find.text('hidden-model')), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+    chat.dispose();
+    gateway.dispose();
+    client.close();
+  });
+
   testWidgets('NextGen pinned model from a hidden provider stays listed', (
     tester,
   ) async {
