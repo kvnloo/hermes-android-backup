@@ -228,6 +228,14 @@ void main() {
         matching: f,
       );
 
+  // Like inSheet but also counts built-but-offscreen rows; use with
+  // scrollSheetToEnd before a findsNothing check.
+  Finder inSheetAll(Finder f) => find.descendant(
+    of: find.byType(DraggableScrollableSheet),
+    matching: f,
+    skipOffstage: false,
+  );
+
   // The sheet's main ListView builds lazily; scroll it until built.
   Future<void> scrollToInSheet(WidgetTester tester, Finder f) async {
     final list = find.descendant(
@@ -235,6 +243,19 @@ void main() {
       matching: find.byType(ListView),
     ).first;
     for (var i = 0; i < 4 && f.evaluate().isEmpty; i++) {
+      await tester.drag(list, const Offset(0, -250));
+      await tester.pumpAndSettle();
+    }
+  }
+
+  // Force the sheet's list to build everything before a findsNothing check;
+  // a lazily-unbuilt row would make such an assertion vacuously true.
+  Future<void> scrollSheetToEnd(WidgetTester tester) async {
+    final list = find.descendant(
+      of: find.byType(DraggableScrollableSheet),
+      matching: find.byType(ListView),
+    ).first;
+    for (var i = 0; i < 4; i++) {
       await tester.drag(list, const Offset(0, -250));
       await tester.pumpAndSettle();
     }
@@ -292,11 +313,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await openNgPicker(tester);
 
-    await scrollToInSheet(tester, inSheet(find.text('gufo-model')));
     expect(inSheet(find.text('chat-a')), findsOneWidget);
+    await scrollToInSheet(tester, inSheet(find.text('gufo-model')));
     expect(inSheet(find.text('gufo-model')), findsOneWidget);
-    expect(inSheet(find.text('hidden-model')), findsNothing);
-    expect(inSheet(find.text('hidden-other')), findsNothing);
+    await scrollSheetToEnd(tester);
+    expect(inSheetAll(find.text('hidden-model')), findsNothing);
+    expect(inSheetAll(find.text('hidden-other')), findsNothing);
     expect(
       find.byKey(const ValueKey('ng-model-provider-huggingface')),
       findsNothing,
@@ -346,9 +368,12 @@ void main() {
     await openNgPicker(tester);
 
     // The pinned row stays visible; the provider's other models stay hidden.
-    expect(inSheet(find.text('hidden-model')), findsOneWidget);
-    expect(inSheet(find.text('hidden-other')), findsNothing);
     expect(inSheet(find.text('chat-a')), findsOneWidget);
+    await scrollToInSheet(tester, inSheet(find.text('hidden-model')));
+    expect(inSheet(find.text('hidden-model')), findsOneWidget);
+    // Scroll to the end so "hidden" means really absent, not unbuilt.
+    await scrollSheetToEnd(tester);
+    expect(inSheetAll(find.text('hidden-other')), findsNothing);
 
     await tester.pumpWidget(const SizedBox());
     chat.dispose();
@@ -425,9 +450,10 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     await openNgPicker(tester);
 
-    expect(inSheet(find.text('gone-model')), findsNothing);
-    expect(inSheet(find.text('hidden-model')), findsNothing);
     expect(inSheet(find.text('chat-a')), findsOneWidget);
+    await scrollSheetToEnd(tester);
+    expect(inSheetAll(find.text('gone-model')), findsNothing);
+    expect(inSheetAll(find.text('hidden-model')), findsNothing);
 
     await tester.pumpWidget(const SizedBox());
     chat.dispose();
@@ -474,7 +500,8 @@ void main() {
     // The only configured provider has no models; the pinned row keeps the
     // filter active, so the hidden provider's other model stays hidden.
     expect(inSheet(find.text('ghost-a')), findsOneWidget);
-    expect(inSheet(find.text('ghost-b')), findsNothing);
+    await scrollSheetToEnd(tester);
+    expect(inSheetAll(find.text('ghost-b')), findsNothing);
 
     await tester.pumpWidget(const SizedBox());
     chat.dispose();
