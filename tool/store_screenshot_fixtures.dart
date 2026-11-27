@@ -770,6 +770,7 @@ class DemoApi extends DashboardApiClient {
     int offset = 0,
     String? title,
     String? excludeSources,
+    bool Function()? maySendSearch,
     Duration timeout = ApiClient.requestTimeout,
   }) async => SessionListPage(
     sessions: offset == 0
