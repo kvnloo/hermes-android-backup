@@ -75,7 +75,7 @@ internal object VoiceWakeAssets {
         DECODER to "e40ff43297abe815e8898494c17e71bba2152d9d40fa3eb803f75d0f7533329a",
         JOINER to "eae9da0c7e1e6c6a3f4cc42d167899c388f6c6701b94cb96320e4f55df79624c",
         TOKENS to "fd2ded4050a55d2b1578870ba8697d02371980217806b7558bd0a5cc60f3ba53",
-        KEYWORDS to "4aff5f90c775d32f6592f478632e5a365128ab3fbc57ed0b37c51ac874d6cd6f",
+        KEYWORDS to "9be8a7977afd2c391de0bbfaff9b4859360710cf032cf8a043fc7a225712ca51",
     )
     private val abis = setOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
 

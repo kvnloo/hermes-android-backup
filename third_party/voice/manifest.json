@@ -50,8 +50,8 @@
     "upstream_alias": "Hey_Gibby",
     "keyword_id": "hey_gibby",
     "file_name": "voice/kws-en/keywords.txt",
-    "utf8_contents": "▁HE Y ▁G I B B Y @Hey_Gibby\n",
-    "sha256": "4aff5f90c775d32f6592f478632e5a365128ab3fbc57ed0b37c51ac874d6cd6f",
+    "utf8_contents": "▁HE Y ▁G I B B Y @Hey_Gibby\n▁HE Y ▁G I B B I E @Hey_Gibby\n▁HE Y ▁ J I B B Y @Hey_Gibby\n▁HE Y ▁ J I B B I E @Hey_Gibby\n▁HE Y ▁ J I B Y @Hey_Gibby\n▁HE Y ▁ J IM M Y @Hey_Gibby\n▁HE Y ▁ J IM M I E @Hey_Gibby\n▁HE Y ▁ J I PP Y @Hey_Gibby\n▁HE Y ▁G IM M Y @Hey_Gibby\n",
+    "sha256": "9be8a7977afd2c391de0bbfaff9b4859360710cf032cf8a043fc7a225712ca51",
     "tokens": [
       "▁HE",
       "Y",
@@ -65,7 +65,8 @@
     "tokenizer_evidence": "phrase-token-evidence.json",
     "shipped_example_comparisons_passed": 9,
     "acoustic_detection_verified": false,
-    "synthetic_check": "5/5 Edge-TTS positives, 0/6 near-miss negatives at threshold 0.25 (host sherpa-onnx 2.0.3); not a device test"
+    "synthetic_check": "Edge-TTS: 7/7 positive variants fire, 0/11 negatives (Giddy, Jenny, Timmy, Kimmy, Tommy, Siri, Google, Hermes, etc.) at threshold 0.25 (host sherpa-onnx 2.0.3); not a device test",
+    "variants": "gibby gibbie jibby jibbie jiby jimmy jimmie jippy gimmy (all emit Hey_Gibby)"
   },
   "schema_version": 1
 }
