@@ -241,7 +241,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hands_free_preparing => '正在准备语音 — 请稍候';
 
   @override
-  String get hands_free_listening => '请说 Hey Hermes';
+  String get hands_free_listening => '请说 Hey Gibby';
 
   @override
   String get hands_free_recording => '已就绪 — 请说话';
@@ -282,21 +282,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get hands_free_ready_cue =>
-      '说“Hey Hermes”，等待就绪提示后再说话。不支持一口气连续输入或预录音。如果授权对话框使应用离开前台，授权后请再次点击开始。';
+      '说“Hey Gibby”，等待就绪提示后再说话。不支持一口气连续输入或预录音。如果授权对话框使应用离开前台，授权后请再次点击开始。';
 
   @override
   String get hands_free_settings_title => '免提语音';
 
   @override
   String get hands_free_settings_subtitle =>
-      '在聊天中显示“Hey Hermes”启动控件。关闭会停止正在进行的免提会话。';
+      '在聊天中显示“Hey Gibby”启动控件。关闭会停止正在进行的免提会话。';
 
   @override
   String get hands_free_timing_limit =>
       '后续聆听时间是上限，不是下限。Android 可能提前结束。无语音时返回本地唤醒检测，不会反复重启识别。';
 
   @override
-  String get hands_free_followup_off => '后续聆听已关闭 — 每次提问请说 Hey Hermes';
+  String get hands_free_followup_off => '后续聆听已关闭 — 每次提问请说 Hey Gibby';
 
   @override
   String get hands_free_start_blocked =>
@@ -15058,7 +15058,7 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get hands_free_preparing => '正在准备语音 — 请稍候';
 
   @override
-  String get hands_free_listening => '请说 Hey Hermes';
+  String get hands_free_listening => '请说 Hey Gibby';
 
   @override
   String get hands_free_recording => '已就绪 — 请说话';
@@ -15099,21 +15099,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get hands_free_ready_cue =>
-      '说“Hey Hermes”，等待就绪提示后再说话。不支持一口气连续输入或预录音。如果授权对话框使应用离开前台，授权后请再次点击开始。';
+      '说“Hey Gibby”，等待就绪提示后再说话。不支持一口气连续输入或预录音。如果授权对话框使应用离开前台，授权后请再次点击开始。';
 
   @override
   String get hands_free_settings_title => '免提语音';
 
   @override
   String get hands_free_settings_subtitle =>
-      '在聊天中显示“Hey Hermes”启动控件。关闭会停止正在进行的免提会话。';
+      '在聊天中显示“Hey Gibby”启动控件。关闭会停止正在进行的免提会话。';
 
   @override
   String get hands_free_timing_limit =>
       '后续聆听时间是上限，不是下限。Android 可能提前结束。无语音时返回本地唤醒检测，不会反复重启识别。';
 
   @override
-  String get hands_free_followup_off => '后续聆听已关闭 — 每次提问请说 Hey Hermes';
+  String get hands_free_followup_off => '后续聆听已关闭 — 每次提问请说 Hey Gibby';
 
   @override
   String get hands_free_start_blocked =>
@@ -29875,7 +29875,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get hands_free_preparing => '正在準備語音功能，請等候就緒提示';
 
   @override
-  String get hands_free_listening => '請說「Hey Hermes」';
+  String get hands_free_listening => '請說「Hey Gibby」';
 
   @override
   String get hands_free_recording => '已就緒，請說話';
@@ -29916,21 +29916,21 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get hands_free_ready_cue =>
-      '請說「Hey Hermes」，等到「已就緒，請說話」再開口。緊接在喚醒詞後的話，以及就緒前的聲音，都不會錄下。如果設定權限時離開了應用程式，請在授權後再點選「開始」。';
+      '請說「Hey Gibby」，等到「已就緒，請說話」再開口。緊接在喚醒詞後的話，以及就緒前的聲音，都不會錄下。如果設定權限時離開了應用程式，請在授權後再點選「開始」。';
 
   @override
   String get hands_free_settings_title => '免持語音';
 
   @override
   String get hands_free_settings_subtitle =>
-      '在聊天中顯示「Hey Hermes」啟動控制項。關閉會停止正在進行的免持工作階段。';
+      '在聊天中顯示「Hey Gibby」啟動控制項。關閉會停止正在進行的免持工作階段。';
 
   @override
   String get hands_free_timing_limit =>
       '後續聆聽時間是上限，Android 可能提早停止。若未偵測到聲音，就會回到本機喚醒詞偵測，不會反覆重新啟動語音辨識。';
 
   @override
-  String get hands_free_followup_off => '後續聆聽已關閉 — 每次提問請說 Hey Hermes';
+  String get hands_free_followup_off => '後續聆聽已關閉 — 每次提問請說 Hey Gibby';
 
   @override
   String get hands_free_start_blocked =>

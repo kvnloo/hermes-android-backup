@@ -112,8 +112,8 @@ void main() {
         'operationId': 'r',
       };
       final events = <String, Map<String, Object?>>{
-        'wakeArmed': {'keywordId': 'hey_hermes'},
-        'wakeDetected': {'keywordId': 'hey_hermes', 'keyword': 'Hey_Hermes'},
+        'wakeArmed': {'keywordId': 'hey_gibby'},
+        'wakeDetected': {'keywordId': 'hey_gibby', 'keyword': 'Hey_Gibby'},
         'recognitionReady': {'purpose': 'handsFreeInitial'},
         'speechStarted': {},
         'speechResult': {'transcript': 'words', 'isFinal': true},

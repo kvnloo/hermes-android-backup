@@ -70,7 +70,7 @@ internal class HandsFreeVoiceEngine(
         val worker = VoiceWakeWorker(detectorFactory, captureFactory) {
             main.post {
                 if (eligible(owned)) {
-                    emit(owned.session, armId, "wakeArmed", mapOf("keywordId" to "hey_hermes"))
+                    emit(owned.session, armId, "wakeArmed", mapOf("keywordId" to "hey_gibby"))
                     acknowledgeStart(owned, null)
                 }
             }
@@ -175,7 +175,7 @@ internal class HandsFreeVoiceEngine(
         acknowledgeStart(owned, if (deliver) outcome.failure else staleFailure())
         if (deliver && outcome.failure != null) fail(owned, outcome.failure)
         else if (deliver && outcome.detected) {
-            emit(owned.session, owned.operationId, "wakeDetected", mapOf("keywordId" to "hey_hermes", "keyword" to "Hey_Hermes"))
+            emit(owned.session, owned.operationId, "wakeDetected", mapOf("keywordId" to "hey_gibby", "keyword" to "Hey_Gibby"))
         }
         settle(owned)
     }

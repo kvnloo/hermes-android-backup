@@ -46,23 +46,26 @@
     }
   ],
   "keyword": {
-    "spoken_phrase": "Hey Hermes",
-    "upstream_alias": "Hey_Hermes",
-    "keyword_id": "hey_hermes",
+    "spoken_phrase": "Hey Gibby",
+    "upstream_alias": "Hey_Gibby",
+    "keyword_id": "hey_gibby",
     "file_name": "voice/kws-en/keywords.txt",
-    "utf8_contents": "▁HE Y ▁HER ME S @Hey_Hermes\n",
-    "sha256": "7a66fad74a4031817f9ecfdf9f9dd03d33128af3b5792467ddedc74c71bf67d6",
+    "utf8_contents": "▁HE Y ▁G I B B Y @Hey_Gibby\n",
+    "sha256": "4aff5f90c775d32f6592f478632e5a365128ab3fbc57ed0b37c51ac874d6cd6f",
     "tokens": [
       "▁HE",
       "Y",
-      "▁HER",
-      "ME",
-      "S"
+      "▁G",
+      "I",
+      "B",
+      "B",
+      "Y"
     ],
     "tokenizer_type_in_model": "UNIGRAM",
     "tokenizer_evidence": "phrase-token-evidence.json",
     "shipped_example_comparisons_passed": 9,
-    "acoustic_detection_verified": false
+    "acoustic_detection_verified": false,
+    "synthetic_check": "5/5 Edge-TTS positives, 0/6 near-miss negatives at threshold 0.25 (host sherpa-onnx 2.0.3); not a device test"
   },
   "schema_version": 1
 }

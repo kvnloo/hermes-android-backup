@@ -53,7 +53,7 @@ internal class SherpaWakeDetector(assets: AssetManager) : WakeDetector {
         stream.acceptWaveform(samples, sampleRate = 16000)
         while (spotter.isReady(stream)) {
             spotter.decode(stream)
-            if (spotter.getResult(stream).keyword == "Hey_Hermes") return true
+            if (spotter.getResult(stream).keyword == "Hey_Gibby") return true
         }
         return false
     }
@@ -75,7 +75,7 @@ internal object VoiceWakeAssets {
         DECODER to "e40ff43297abe815e8898494c17e71bba2152d9d40fa3eb803f75d0f7533329a",
         JOINER to "eae9da0c7e1e6c6a3f4cc42d167899c388f6c6701b94cb96320e4f55df79624c",
         TOKENS to "fd2ded4050a55d2b1578870ba8697d02371980217806b7558bd0a5cc60f3ba53",
-        KEYWORDS to "7a66fad74a4031817f9ecfdf9f9dd03d33128af3b5792467ddedc74c71bf67d6",
+        KEYWORDS to "4aff5f90c775d32f6592f478632e5a365128ab3fbc57ed0b37c51ac874d6cd6f",
     )
     private val abis = setOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
 

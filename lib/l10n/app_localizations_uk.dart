@@ -257,7 +257,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get hands_free_preparing => 'Підготовка голосу — зачекайте сигналу';
 
   @override
-  String get hands_free_listening => 'Скажіть Hey Hermes';
+  String get hands_free_listening => 'Скажіть Hey Gibby';
 
   @override
   String get hands_free_recording => 'Готово — говоріть';
@@ -298,14 +298,14 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get hands_free_ready_cue =>
-      'Скажіть «Hey Hermes», дочекайтеся «Готово — говоріть» і починайте. Початок фрази до сигналу не записується. Якщо для дозволів довелося вийти із застосунку, після повернення знову натисніть «Почати».';
+      'Скажіть «Hey Gibby», дочекайтеся «Готово — говоріть» і починайте. Початок фрази до сигналу не записується. Якщо для дозволів довелося вийти із застосунку, після повернення знову натисніть «Почати».';
 
   @override
   String get hands_free_settings_title => 'Голосове керування без рук';
 
   @override
   String get hands_free_settings_subtitle =>
-      'Показувати кнопку запуску «Hey Hermes» у чатах. Вимкнення зупиняє поточне голосове керування.';
+      'Показувати кнопку запуску «Hey Gibby» у чатах. Вимкнення зупиняє поточне голосове керування.';
 
   @override
   String get hands_free_timing_limit =>
@@ -313,7 +313,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get hands_free_followup_off =>
-      'Продовження вимкнено — кажіть Hey Hermes перед кожним запитом';
+      'Продовження вимкнено — кажіть Hey Gibby перед кожним запитом';
 
   @override
   String get hands_free_start_blocked =>

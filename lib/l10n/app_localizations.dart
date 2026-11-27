@@ -554,7 +554,7 @@ abstract class AppLocalizations {
   /// No description provided for @hands_free_listening.
   ///
   /// In en, this message translates to:
-  /// **'Say Hey Hermes'**
+  /// **'Say Hey Gibby'**
   String get hands_free_listening;
 
   /// No description provided for @hands_free_recording.
@@ -620,7 +620,7 @@ abstract class AppLocalizations {
   /// No description provided for @hands_free_ready_cue.
   ///
   /// In en, this message translates to:
-  /// **'Say “Hey Hermes”, wait for “Ready — speak now”, then speak. No same-breath capture or pre-roll. If permission setup leaves the app, press Start again after granting it.'**
+  /// **'Say “Hey Gibby”, wait for “Ready — speak now”, then speak. No same-breath capture or pre-roll. If permission setup leaves the app, press Start again after granting it.'**
   String get hands_free_ready_cue;
 
   /// No description provided for @hands_free_settings_title.
@@ -632,7 +632,7 @@ abstract class AppLocalizations {
   /// No description provided for @hands_free_settings_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Show the “Hey Hermes” start control in chats. Turning it off stops any running hands-free session.'**
+  /// **'Show the “Hey Gibby” start control in chats. Turning it off stops any running hands-free session.'**
   String get hands_free_settings_subtitle;
 
   /// No description provided for @hands_free_timing_limit.
@@ -644,7 +644,7 @@ abstract class AppLocalizations {
   /// No description provided for @hands_free_followup_off.
   ///
   /// In en, this message translates to:
-  /// **'Follow-up off — say Hey Hermes for each prompt'**
+  /// **'Follow-up off — say Hey Gibby for each prompt'**
   String get hands_free_followup_off;
 
   /// No description provided for @hands_free_start_blocked.

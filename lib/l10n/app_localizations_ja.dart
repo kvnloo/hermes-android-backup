@@ -252,7 +252,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hands_free_preparing => '音声を準備中 — お待ちください';
 
   @override
-  String get hands_free_listening => 'Hey Hermes と言ってください';
+  String get hands_free_listening => 'Hey Gibby と言ってください';
 
   @override
   String get hands_free_recording => '準備完了 — 話してください';
@@ -293,21 +293,21 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get hands_free_ready_cue =>
-      '「Hey Hermes」と言い、準備完了を待ってから話してください。一息での入力や先行録音はありません。権限設定でアプリを離れた場合、許可後に再度開始してください。';
+      '「Hey Gibby」と言い、準備完了を待ってから話してください。一息での入力や先行録音はありません。権限設定でアプリを離れた場合、許可後に再度開始してください。';
 
   @override
   String get hands_free_settings_title => 'ハンズフリー音声';
 
   @override
   String get hands_free_settings_subtitle =>
-      'チャットに「Hey Hermes」の開始ボタンを表示します。オフにすると、実行中のハンズフリーセッションが停止します。';
+      'チャットに「Hey Gibby」の開始ボタンを表示します。オフにすると、実行中のハンズフリーセッションが停止します。';
 
   @override
   String get hands_free_timing_limit =>
       '継続入力の時間は最大値であり、最小値ではありません。Android が早く終了する場合があります。無音時は認識を繰り返さず、ローカル起動待ちに戻ります。';
 
   @override
-  String get hands_free_followup_off => '継続入力オフ — 毎回 Hey Hermes と言ってください';
+  String get hands_free_followup_off => '継続入力オフ — 毎回 Hey Gibby と言ってください';
 
   @override
   String get hands_free_start_blocked =>

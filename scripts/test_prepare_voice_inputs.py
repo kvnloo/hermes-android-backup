@@ -36,7 +36,7 @@ class PrepareVoiceInputsTest(unittest.TestCase):
         for pin in self.manifest["runtime_files"]:
             self.assertIn(pin["sha256"], source)
         keyword = self.manifest["keyword"]
-        self.assertEqual("▁HE Y ▁HER ME S @Hey_Hermes\n", keyword["utf8_contents"])
+        self.assertEqual("▁HE Y ▁G I B B Y @Hey_Gibby\n", keyword["utf8_contents"])
         self.assertEqual(keyword["sha256"], hashlib.sha256(keyword["utf8_contents"].encode()).hexdigest())
         self.assertIn(keyword["sha256"], source)
 

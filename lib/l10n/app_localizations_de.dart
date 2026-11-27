@@ -258,7 +258,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hands_free_preparing => 'Sprachfunktion wird vorbereitet';
 
   @override
-  String get hands_free_listening => 'Sage Hey Hermes';
+  String get hands_free_listening => 'Sage Hey Gibby';
 
   @override
   String get hands_free_recording => 'Bereit — jetzt sprechen';
@@ -299,14 +299,14 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hands_free_ready_cue =>
-      '„Hey Hermes“ sagen, auf „Bereit“ warten, dann sprechen. Keine Erfassung im selben Atemzug oder Audiopuffer. Nach einem Berechtigungsdialog gegebenenfalls erneut Starten wählen.';
+      '„Hey Gibby“ sagen, auf „Bereit“ warten, dann sprechen. Keine Erfassung im selben Atemzug oder Audiopuffer. Nach einem Berechtigungsdialog gegebenenfalls erneut Starten wählen.';
 
   @override
   String get hands_free_settings_title => 'Freisprechen-Sprachsteuerung';
 
   @override
   String get hands_free_settings_subtitle =>
-      'Zeigt die Startschaltfläche „Hey Hermes“ in Chats. Ausschalten beendet eine laufende Freisprechen-Sitzung.';
+      'Zeigt die Startschaltfläche „Hey Gibby“ in Chats. Ausschalten beendet eine laufende Freisprechen-Sitzung.';
 
   @override
   String get hands_free_timing_limit =>
@@ -314,7 +314,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get hands_free_followup_off =>
-      'Folgefenster aus — für jede Eingabe Hey Hermes sagen';
+      'Folgefenster aus — für jede Eingabe Hey Gibby sagen';
 
   @override
   String get hands_free_start_blocked =>

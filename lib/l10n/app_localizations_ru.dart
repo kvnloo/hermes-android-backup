@@ -258,7 +258,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hands_free_preparing => 'Подготовка — подождите';
 
   @override
-  String get hands_free_listening => 'Скажите Hey Hermes';
+  String get hands_free_listening => 'Скажите Hey Gibby';
 
   @override
   String get hands_free_recording => 'Готово — говорите';
@@ -299,14 +299,14 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hands_free_ready_cue =>
-      'Скажите «Hey Hermes», дождитесь «Готово», затем говорите. Нет захвата одной фразой или предзаписи. После выдачи разрешения вне приложения нажмите Начать снова.';
+      'Скажите «Hey Gibby», дождитесь «Готово», затем говорите. Нет захвата одной фразой или предзаписи. После выдачи разрешения вне приложения нажмите Начать снова.';
 
   @override
   String get hands_free_settings_title => 'Голосовой режим без рук';
 
   @override
   String get hands_free_settings_subtitle =>
-      'Показывает кнопку запуска «Hey Hermes» в чатах. Отключение останавливает текущий сеанс.';
+      'Показывает кнопку запуска «Hey Gibby» в чатах. Отключение останавливает текущий сеанс.';
 
   @override
   String get hands_free_timing_limit =>
@@ -314,7 +314,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get hands_free_followup_off =>
-      'Продолжение выключено — говорите Hey Hermes перед каждым запросом';
+      'Продолжение выключено — говорите Hey Gibby перед каждым запросом';
 
   @override
   String get hands_free_start_blocked =>

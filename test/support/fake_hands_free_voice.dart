@@ -165,10 +165,10 @@ class FakeHandsFreeVoicePlatform implements HandsFreeVoicePlatform {
     stream.add(VoicePlatformEvent.parse(event(type, payload)));
   }
 
-  void armed() => emit('wakeArmed', {'keywordId': 'hey_hermes'});
+  void armed() => emit('wakeArmed', {'keywordId': 'hey_gibby'});
   void wake() => emit('wakeDetected', {
-    'keywordId': 'hey_hermes',
-    'keyword': 'Hey_Hermes',
+    'keywordId': 'hey_gibby',
+    'keyword': 'Hey_Gibby',
   });
   void ready() => emit('recognitionReady', {'purpose': purpose!.name});
   void finalAndEnd([String text = 'voice prompt']) {

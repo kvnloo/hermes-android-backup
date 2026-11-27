@@ -256,7 +256,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hands_free_preparing => 'Preparing voice — wait for ready';
 
   @override
-  String get hands_free_listening => 'Say Hey Hermes';
+  String get hands_free_listening => 'Say Hey Gibby';
 
   @override
   String get hands_free_recording => 'Ready — speak now';
@@ -297,14 +297,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hands_free_ready_cue =>
-      'Say “Hey Hermes”, wait for “Ready — speak now”, then speak. No same-breath capture or pre-roll. If permission setup leaves the app, press Start again after granting it.';
+      'Say “Hey Gibby”, wait for “Ready — speak now”, then speak. No same-breath capture or pre-roll. If permission setup leaves the app, press Start again after granting it.';
 
   @override
   String get hands_free_settings_title => 'Hands-free voice';
 
   @override
   String get hands_free_settings_subtitle =>
-      'Show the “Hey Hermes” start control in chats. Turning it off stops any running hands-free session.';
+      'Show the “Hey Gibby” start control in chats. Turning it off stops any running hands-free session.';
 
   @override
   String get hands_free_timing_limit =>
@@ -312,7 +312,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hands_free_followup_off =>
-      'Follow-up off — say Hey Hermes for each prompt';
+      'Follow-up off — say Hey Gibby for each prompt';
 
   @override
   String get hands_free_start_blocked =>

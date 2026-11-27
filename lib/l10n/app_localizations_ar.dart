@@ -259,7 +259,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hands_free_preparing => 'جارٍ تجهيز الصوت. انتظر إشارة الجاهزية';
 
   @override
-  String get hands_free_listening => 'قل «Hey Hermes»';
+  String get hands_free_listening => 'قل «Hey Gibby»';
 
   @override
   String get hands_free_recording => 'جاهز — تحدث الآن';
@@ -300,14 +300,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hands_free_ready_cue =>
-      'قل «Hey Hermes»، وانتظر إشارة «جاهز — تحدث الآن»، ثم تحدث. لا يُسجَّل الكلام المتصل بعبارة التنبيه، ولا ما سبق الإشارة. إذا انتقلت خارج التطبيق لضبط الإذن، فاضغط على زر البدء مجددًا بعد منحه.';
+      'قل «Hey Gibby»، وانتظر إشارة «جاهز — تحدث الآن»، ثم تحدث. لا يُسجَّل الكلام المتصل بعبارة التنبيه، ولا ما سبق الإشارة. إذا انتقلت خارج التطبيق لضبط الإذن، فاضغط على زر البدء مجددًا بعد منحه.';
 
   @override
   String get hands_free_settings_title => 'التحكم الصوتي دون لمس';
 
   @override
   String get hands_free_settings_subtitle =>
-      'إظهار زر بدء الاستماع لعبارة «Hey Hermes» في الدردشات. يؤدي تعطيل هذا الخيار إلى إيقاف أي جلسة نشطة للاستخدام دون لمس.';
+      'إظهار زر بدء الاستماع لعبارة «Hey Gibby» في الدردشات. يؤدي تعطيل هذا الخيار إلى إيقاف أي جلسة نشطة للاستخدام دون لمس.';
 
   @override
   String get hands_free_timing_limit =>
@@ -315,7 +315,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get hands_free_followup_off =>
-      'المتابعة معطّلة — قل «Hey Hermes» قبل كل طلب';
+      'المتابعة معطّلة — قل «Hey Gibby» قبل كل طلب';
 
   @override
   String get hands_free_start_blocked =>

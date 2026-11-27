@@ -440,8 +440,8 @@ void main() {
       await rig.start();
       final stale = rig.native.event('wakeDetected', {
         'generation': 99,
-        'keywordId': 'hey_hermes',
-        'keyword': 'Hey_Hermes',
+        'keywordId': 'hey_gibby',
+        'keyword': 'Hey_Gibby',
       });
       rig.native.stream.add(VoicePlatformEvent.parse(stale));
       expect(rig.native.count('recognizeOnce'), 0);

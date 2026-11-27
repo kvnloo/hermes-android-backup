@@ -211,7 +211,7 @@ class HandsFreeVoiceEngineTest {
         assertEquals(-1.0f, detector.samples!![0])
         assertEquals(32767.0f / 32768.0f, detector.samples!![1])
         assertEquals(listOf("wakeArmed", "wakeDetected"), events.map { it["type"] })
-        assertEquals("Hey_Hermes", events.last()["keyword"])
+        assertEquals("Hey_Gibby", events.last()["keyword"])
         assertEquals(1, events.last()["protocolVersion"])
         assertEquals("inference", events.last()["operationId"])
         assertEquals(listOf(1L, 2L), events.map { it["seq"] })

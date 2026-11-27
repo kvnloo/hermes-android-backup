@@ -150,9 +150,9 @@ class VoicePlatformEvent {
     switch (type) {
       case VoicePlatformEventType.wakeArmed:
       case VoicePlatformEventType.wakeDetected:
-        if (_field<String>(map, 'keywordId') != 'hey_hermes' ||
+        if (_field<String>(map, 'keywordId') != 'hey_gibby' ||
             (type == VoicePlatformEventType.wakeDetected &&
-                _field<String>(map, 'keyword') != 'Hey_Hermes')) {
+                _field<String>(map, 'keyword') != 'Hey_Gibby')) {
           throw const FormatException('Unknown wake keyword');
         }
       case VoicePlatformEventType.recognitionReady:
