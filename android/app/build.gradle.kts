@@ -104,7 +104,7 @@ android {
            // verifies the packaged arm64 code against that scheme.
            applicationIdSuffix = if (parkedPreview) ".automotive.preview" else ".dev"
            versionNameSuffix = if (parkedPreview) "-parked-preview" else "-dev"
-           manifestPlaceholders["appLabel"] = if (parkedPreview) "Ares Parked" else "Ares Dev"
+           manifestPlaceholders["appLabel"] = if (parkedPreview) "Ares Parked" else "Gibby"
        }
        release {
            isMinifyEnabled = true
