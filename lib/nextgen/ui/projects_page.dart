@@ -109,8 +109,13 @@ class _ProjectsBrowserState extends State<_ProjectsBrowser> {
     await _navigator.currentState!.push<void>(
       MaterialPageRoute(
         builder: (_) => ProjectDetailScreen(
+          workspace: widget.gateway.workspace,
+          onNewLaneChat: widget.onNewProjectChat == null
+              ? null
+              : (path) => _newChat(project.inLane(path)),
           projectId: project.id,
           projectName: project.name,
+          createFilesClient: widget.gateway.createFilesClient,
           loadSessions: ({required refresh}) =>
               _repository.projectSessions(project.id, refresh: refresh),
           onOpenSession: _openSession,
@@ -143,6 +148,7 @@ class _ProjectsBrowserState extends State<_ProjectsBrowser> {
               title: Text(context.l10n.projects),
             ),
             body: ProjectsPane(
+              workspace: widget.gateway.workspace,
               repository: _repository,
               folderDiscovery: _folderDiscovery,
               onProjectSelected: _openProject,

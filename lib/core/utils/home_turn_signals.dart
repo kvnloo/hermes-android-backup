@@ -25,6 +25,8 @@ library;
 
 import '../models/connection.dart';
 import '../models/gateway_turn_contract.dart';
+import '../l10n/l10n.dart';
+import '../l10n/service_strings.dart';
 import '../services/desktop_gateway_client.dart';
 import '../services/gateway_turn_journal.dart';
 
@@ -60,7 +62,9 @@ HomeTurnSignals buildHomeTurnSignals({
   String? connectionId,
   String? endpointDigest,
   Duration runningStaleAfter = kHomeRunningStaleAfter,
+  AppLocalizations? strings,
 }) {
+  final l = strings ?? serviceStrings;
   final sessionForBinding = <String, String>{};
   for (final binding in snapshot.bindings) {
     if (connectionId != null && binding.connectionId != connectionId) continue;
@@ -85,7 +89,7 @@ HomeTurnSignals buildHomeTurnSignals({
     final sessionId = sessionForBinding[entry.bindingIdentity];
     if (sessionId == null) continue;
 
-    final reason = _attentionReason(entry);
+    final reason = _attentionReason(entry, l);
     if (reason != null) {
       final previous = attentionAt[sessionId];
       if (previous == null || entry.updatedAtEpochMs >= previous) {
@@ -133,6 +137,7 @@ Future<HomeTurnSignals> readHomeTurnSignals({
   required String? endpointDigest,
   DateTime? now,
   Duration runningStaleAfter = kHomeRunningStaleAfter,
+  AppLocalizations? strings,
 }) async {
   try {
     final snapshot = await journal.loadSnapshot();
@@ -142,6 +147,7 @@ Future<HomeTurnSignals> readHomeTurnSignals({
       connectionId: connectionId,
       endpointDigest: endpointDigest,
       runningStaleAfter: runningStaleAfter,
+      strings: strings,
     );
   } catch (_) {
     return HomeTurnSignals.empty;
@@ -149,16 +155,16 @@ Future<HomeTurnSignals> readHomeTurnSignals({
 }
 
 /// Why this turn blocks the user, or `null` when it does not.
-String? _attentionReason(GatewayTurnJournalEntry entry) {
+String? _attentionReason(GatewayTurnJournalEntry entry, AppLocalizations l10n) {
   // A recovery failure outranks the reported status: the turn may well have
   // completed server-side, but the client could not reconcile it and the
   // composer stays blocked, which is exactly what Home must surface.
-  if (entry.failure != null) return 'Turn recovery failed';
+  if (entry.failure != null) return l10n.turn_recovery_failed;
   switch (entry.status) {
     case GatewayRecoveryTurnStatus.waitingInput:
-      return 'Waiting for your input';
+      return l10n.waiting_for_your_input;
     case GatewayRecoveryTurnStatus.failed:
-      return 'The last turn failed';
+      return l10n.the_last_turn_failed;
     case GatewayRecoveryTurnStatus.accepted:
     case GatewayRecoveryTurnStatus.running:
     case GatewayRecoveryTurnStatus.completed:

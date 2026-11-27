@@ -18,6 +18,8 @@ enum HermesNotificationKind {
   plugin,
 }
 
+enum WindowsCompletionSound { system, mail, reminder, silent }
+
 /// Per-device notification preferences: one master switch and a toggle per
 /// kind. Stored in [SharedPreferences] so they survive restarts and never
 /// leave the device.
@@ -26,7 +28,19 @@ class NotificationPrefs {
   final bool enabled;
   final Map<HermesNotificationKind, bool> kinds;
 
-  const NotificationPrefs({required this.enabled, required this.kinds});
+  final WindowsCompletionSound completionSound;
+  final bool shareWindowActivity;
+
+  /// Silences the completion sound Ares plays in the app while it is in
+  /// front (Desktop's "Mute interface sounds"). Notifications keep theirs.
+  final bool muteAppSounds;
+  const NotificationPrefs({
+    required this.enabled,
+    required this.kinds,
+    this.completionSound = WindowsCompletionSound.system,
+    this.shareWindowActivity = false,
+    this.muteAppSounds = false,
+  });
 
   static const defaults = NotificationPrefs(
     enabled: true,
@@ -49,6 +63,9 @@ class NotificationPrefs {
     bool? enabled,
     HermesNotificationKind? kind,
     bool? kindValue,
+    WindowsCompletionSound? completionSound,
+    bool? shareWindowActivity,
+    bool? muteAppSounds,
   }) {
     final nextKinds = Map<HermesNotificationKind, bool>.from(kinds);
     if (kind != null && kindValue != null) {
@@ -57,6 +74,9 @@ class NotificationPrefs {
     return NotificationPrefs(
       enabled: enabled ?? this.enabled,
       kinds: nextKinds,
+      completionSound: completionSound ?? this.completionSound,
+      shareWindowActivity: shareWindowActivity ?? this.shareWindowActivity,
+      muteAppSounds: muteAppSounds ?? this.muteAppSounds,
     );
   }
 
@@ -74,11 +94,22 @@ class NotificationPrefs {
     return NotificationPrefs(
       enabled: json['enabled'] is bool ? json['enabled'] as bool : true,
       kinds: kinds,
+      shareWindowActivity: json['shareWindowActivity'] == true,
+      muteAppSounds: json['muteAppSounds'] == true,
+      completionSound:
+          WindowsCompletionSound.values
+              .where((s) => s.name == json['windowsSound'])
+              .firstOrNull ??
+          WindowsCompletionSound.system,
     );
   }
 
   Map<String, dynamic> toJson() => {
     'enabled': enabled,
+    if (shareWindowActivity) 'shareWindowActivity': true,
+    if (muteAppSounds) 'muteAppSounds': true,
+    if (completionSound != WindowsCompletionSound.system)
+      'windowsSound': completionSound.name,
     'kinds': {for (final entry in kinds.entries) entry.key.name: entry.value},
   };
 }
@@ -115,6 +146,24 @@ abstract final class NotificationPrefsStore {
 
   static Future<void> setEnabled(bool enabled) async {
     final next = notificationPrefs.value.copyWith(enabled: enabled);
+    notificationPrefs.value = next;
+    await _persist(next);
+  }
+
+  static Future<void> setShareWindowActivity(bool value) async {
+    final next = notificationPrefs.value.copyWith(shareWindowActivity: value);
+    notificationPrefs.value = next;
+    await _persist(next);
+  }
+
+  static Future<void> setMuteAppSounds(bool value) async {
+    final next = notificationPrefs.value.copyWith(muteAppSounds: value);
+    notificationPrefs.value = next;
+    await _persist(next);
+  }
+
+  static Future<void> setWindowsSound(WindowsCompletionSound sound) async {
+    final next = notificationPrefs.value.copyWith(completionSound: sound);
     notificationPrefs.value = next;
     await _persist(next);
   }

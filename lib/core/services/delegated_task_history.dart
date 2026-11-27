@@ -91,6 +91,8 @@ class DashboardTaskHistory implements TaskHistorySource {
         proxied: connection.dashboardProxied,
         username: connection.dashboardUsername,
         password: connection.dashboardPassword,
+        deploymentToken: connection.deploymentToken,
+        customHeaders: connection.customHeaders,
         httpClient: _TaskHistoryHttpClient(
           httpClient ??
               const TlsClientFactory().createRestClient(

@@ -23,7 +23,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../l10n/service_strings.dart';
 import '../models/client_certificate.dart';
+import 'gateway_headers.dart';
 import 'tls_client_factory.dart';
 
 /// Why an address isn't usable.
@@ -36,11 +38,14 @@ class InvalidGatewayUrlException implements Exception {
 
   @override
   String toString() => switch (problem) {
-    GatewayUrlProblem.required => 'Enter the address of your Hermes dashboard.',
+    GatewayUrlProblem.required =>
+      serviceStrings.ng_rel_svc_backup_gateway_address_required,
     GatewayUrlProblem.scheme =>
-      'The address must start with http:// or https:// (got $detail).',
-    GatewayUrlProblem.invalid => 'That address is not valid.',
-    GatewayUrlProblem.noHost => 'The address has no host name.',
+      serviceStrings.ng_rel_svc_backup_gateway_address_scheme(detail),
+    GatewayUrlProblem.invalid =>
+      serviceStrings.ng_rel_svc_backup_gateway_address_invalid,
+    GatewayUrlProblem.noHost =>
+      serviceStrings.ng_rel_svc_backup_gateway_address_no_host,
   };
 }
 
@@ -257,13 +262,13 @@ class GatewayStatus {
 
   /// How the user signs in, in words.
   String get signInSummary {
-    if (!authRequired) return 'Not required';
+    if (!authRequired) return serviceStrings.ng_not_required;
     if (supportsPasswordLogin && supportsNativeSignIn) {
-      return 'Password or browser';
+      return serviceStrings.ng_password_or_browser;
     }
-    if (supportsPasswordLogin) return 'Password';
-    if (supportsNativeSignIn) return 'Browser';
-    return 'Unsupported';
+    if (supportsPasswordLogin) return serviceStrings.ng_password;
+    if (supportsNativeSignIn) return serviceStrings.ng_browser;
+    return serviceStrings.ng_unsupported;
   }
 }
 
@@ -415,7 +420,18 @@ class MemorySignInSecretStore implements SignInSecretStore {
 /// the platform secure store and mirrored in memory so every HTTP client and
 /// WebSocket in the app (classic and NextGen) can authenticate synchronously.
 class HermesSignInVault extends ChangeNotifier {
-  HermesSignInVault._(this._store);
+  HermesSignInVault._(this._store, {this.windowOrigin});
+
+  /// A separate chat window must never rotate a refresh token concurrently
+  /// with the main app or replace its shared secure-store token maps.
+  final String? windowOrigin;
+  bool get readOnly => windowOrigin != null;
+  static void useReadOnlyWindowStore(String baseUrl) {
+    instance = HermesSignInVault._(
+      _PlatformSignInSecretStore(),
+      windowOrigin: canonicalGatewayKey(baseUrl),
+    );
+  }
 
   static HermesSignInVault instance = HermesSignInVault._(
     _PlatformSignInSecretStore(),
@@ -450,7 +466,9 @@ class HermesSignInVault extends ChangeNotifier {
           if (decoded is Map) {
             for (final e in decoded.entries) {
               final session = NativeSession.fromJson(e.value);
-              if (session != null) _tokens[e.key.toString()] = session;
+              if (session != null && (!readOnly || e.key == windowOrigin)) {
+                _tokens[e.key.toString()] = session;
+              }
             }
           }
         }
@@ -460,7 +478,11 @@ class HermesSignInVault extends ChangeNotifier {
           if (decoded is Map) {
             for (final e in decoded.entries) {
               final token = AccessToken.fromJson(e.value);
-              if (token != null) _access[e.key.toString()] = token;
+              if (token != null &&
+                  (!readOnly ||
+                      e.key == _hostKey(Uri.parse(windowOrigin!).host))) {
+                _access[e.key.toString()] = token;
+              }
             }
           }
         }
@@ -520,6 +542,9 @@ class HermesSignInVault extends ChangeNotifier {
   }
 
   Future<void> setSession(String baseUrl, NativeSession? session) async {
+    if (readOnly) {
+      throw StateError(serviceStrings.ng_rel_svc_backup_sign_in_main_window);
+    }
     final key = canonicalGatewayKey(baseUrl);
     if (session == null) {
       if (_tokens.remove(key) == null) return;
@@ -533,6 +558,9 @@ class HermesSignInVault extends ChangeNotifier {
   AccessToken? accessTokenFor(String host) => _access[_hostKey(host)];
 
   Future<void> setAccessToken(String host, AccessToken? token) async {
+    if (readOnly) {
+      throw StateError(serviceStrings.ng_rel_svc_backup_sign_in_main_window);
+    }
     final key = _hostKey(host);
     if (token == null) {
       if (_access.remove(key) == null) return;
@@ -576,6 +604,7 @@ class HermesSignInVault extends ChangeNotifier {
     http.Client? client,
     String? expiredAccessToken,
   }) {
+    if (readOnly) return Future.value(null);
     final key = canonicalGatewayKey(baseUrl);
     final inFlight = _refreshing[key];
     if (inFlight != null) return inFlight;
@@ -590,13 +619,11 @@ class HermesSignInVault extends ChangeNotifier {
     if (failed != null &&
         DateTime.now().difference(failed) < const Duration(seconds: 30)) {
       return Future.error(
-        const SocketException(
-          "The gateway couldn't renew the sign-in right now.",
-        ),
+        SocketException(serviceStrings.rel_svc_backup_sign_in_renewal_failed),
       );
     }
     final future = () async {
-      final owned = client ?? http.Client();
+      final owned = NoGatewayRedirects(client ?? http.Client());
       try {
         final response = await owned
             .post(
@@ -623,15 +650,17 @@ class HermesSignInVault extends ChangeNotifier {
           return null;
         }
         _refreshFailedAt[current.accessToken] = DateTime.now();
-        throw const SocketException(
-          "The gateway couldn't renew the sign-in: its sign-in provider is unreachable.",
+        throw SocketException(
+          serviceStrings.rel_svc_backup_sign_in_provider_unreachable,
         );
       } on SocketException {
         _refreshFailedAt[current.accessToken] = DateTime.now();
         rethrow;
       } on TimeoutException {
         _refreshFailedAt[current.accessToken] = DateTime.now();
-        throw const SocketException('Timed out renewing the sign-in.');
+        throw SocketException(
+          serviceStrings.rel_svc_backup_sign_in_renewal_timed_out,
+        );
       } finally {
         if (client == null) owned.close();
       }
@@ -647,6 +676,22 @@ class HermesSignInVault extends ChangeNotifier {
 http.Client signInHttpClient(ClientCertificateConfig? certificate) =>
     const TlsClientFactory().createRestClient(certificate);
 
+/// Authenticated calls are a transaction with one origin. In particular,
+/// dart:io may retain credentials on a redirect to a related hostname or a
+/// different port. Surface that response instead of following even one hop.
+final class NoGatewayRedirects extends http.BaseClient {
+  NoGatewayRedirects(this._client);
+  final http.Client _client;
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) {
+    request.followRedirects = false;
+    return _client.send(request);
+  }
+
+  @override
+  void close() => _client.close();
+}
+
 /// Public liveness probe used by "Test connection" before any sign-in.
 class GatewayProbe {
   GatewayProbe({this._client, this.timeout = const Duration(seconds: 15)});
@@ -657,14 +702,20 @@ class GatewayProbe {
   Future<ProbeResult> probe(
     GatewayUrl url, {
     ClientCertificateConfig? certificate,
+    Map<String, String> customHeaders = const <String, String>{},
   }) async {
     final client = _client ?? signInHttpClient(certificate);
     try {
       final uri = Uri.parse(url.resolve('api/status'));
       final accessHeaders = HermesSignInVault.instance.accessHeadersFor(uri);
+      final normalizedCustom = normalizeRemoteHeaders(customHeaders);
       final request = http.Request('GET', uri)
         ..followRedirects = false
-        ..headers.addAll({'Accept': 'application/json', ...accessHeaders});
+        ..headers.addAll({
+          ...normalizedCustom,
+          'Accept': 'application/json',
+          ...accessHeaders,
+        });
       final streamed = await client.send(request).timeout(timeout);
       final response = await http.Response.fromStream(streamed);
       final code = response.statusCode;
@@ -696,13 +747,16 @@ class GatewayProbe {
     } on TimeoutException {
       return ProbeUnreachable(
         url,
-        'Timed out. Check the address, VPN or Tailscale connection.',
+        serviceStrings.ng_rel_svc_backup_probe_timed_out,
       );
     } on HandshakeException catch (e) {
       if (_isClientCertDemand(e)) {
         return ProbeClientCertRequired(url, e.message);
       }
-      return ProbeUnreachable(url, 'TLS handshake failed: ${e.message}');
+      return ProbeUnreachable(
+        url,
+        serviceStrings.ng_rel_svc_backup_probe_tls_failed(e.message),
+      );
     } catch (e) {
       return ProbeUnreachable(url, _describe(e));
     } finally {
@@ -771,6 +825,13 @@ class SignInFailed extends SignInResult {
   const SignInFailed(this.message);
 }
 
+/// The gateway answers its protected routes without any credential: it has
+/// no sign-in, so a deployment token cannot be verified there. Token sign-in
+/// fails closed with this instead of accepting any token.
+class SignInGatewayHasNoAuth extends SignInResult {
+  const SignInGatewayHasNoAuth();
+}
+
 /// Who the stored sign-in belongs to (`GET /api/auth/me`).
 @immutable
 class AuthUser {
@@ -787,7 +848,8 @@ class AuthUser {
     provider: json['provider']?.toString(),
   );
 
-  String get label => displayName ?? email ?? userId ?? 'Signed in';
+  String get label =>
+      displayName ?? email ?? userId ?? serviceStrings.portal_signed_in;
 }
 
 /// Sign-in calls against a dashboard (hermes_cli/dashboard_auth/routes.py).
@@ -800,7 +862,7 @@ class HermesSignIn {
     ClientCertificateConfig? certificate,
     Future<T> Function(http.Client) body,
   ) async {
-    final client = _client ?? signInHttpClient(certificate);
+    final client = NoGatewayRedirects(_client ?? signInHttpClient(certificate));
     try {
       return await body(client);
     } finally {
@@ -808,11 +870,113 @@ class HermesSignIn {
     }
   }
 
-  Map<String, String> _headers(Uri uri, {bool json = false}) => {
+  Map<String, String> _headers(
+    Uri uri, {
+    bool json = false,
+    Map<String, String> customHeaders = const <String, String>{},
+  }) => {
+    ...normalizeRemoteHeaders(customHeaders),
     if (json) 'Content-Type': 'application/json',
     'Accept': 'application/json',
     ...HermesSignInVault.instance.accessHeadersFor(uri),
   };
+
+  /// Verifies an explicit deployment session token (`X-Hermes-Session-Token`).
+  ///
+  /// Tries `GET /api/auth/me` first. An older gateway without that route
+  /// (HTTP 404) is checked on `GET /api/model/info` instead, and only counts
+  /// as verified when that route also refuses the same request without the
+  /// token: a gateway that answers it either way has no sign-in, and the
+  /// result is [SignInGatewayHasNoAuth] (fail closed), never a sign-in.
+  Future<SignInResult> tokenSignIn(
+    GatewayUrl url, {
+    required String token,
+    ClientCertificateConfig? certificate,
+    Map<String, String> customHeaders = const <String, String>{},
+  }) => _with(certificate, (client) async {
+    final clean = sanitizeHeaderValue(token);
+    if (clean.isEmpty) {
+      return const SignInInvalidCredentials();
+    }
+    try {
+      final meUri = Uri.parse(url.resolve('api/auth/me'));
+      final meRes = await client
+          .get(
+            meUri,
+            headers: {
+              ..._headers(meUri, customHeaders: customHeaders),
+              'X-Hermes-Session-Token': clean,
+            },
+          )
+          .timeout(const Duration(seconds: 20));
+      if (meRes.statusCode == 401 || meRes.statusCode == 403) {
+        return const SignInInvalidCredentials();
+      }
+      if (meRes.statusCode == 429) return const SignInRateLimited();
+      if (meRes.statusCode == 200) {
+        await HermesSignInVault.instance.setSession(url.canonical, null);
+        final decoded = jsonDecode(meRes.body);
+        final user = decoded is Map<String, dynamic>
+            ? AuthUser.fromJson(decoded).label
+            : null;
+        return SignInOk(user);
+      }
+      if (meRes.statusCode == 404) {
+        final modelUri = Uri.parse(url.resolve('api/model/info'));
+        final modelRes = await client
+            .get(
+              modelUri,
+              headers: {
+                ..._headers(modelUri, customHeaders: customHeaders),
+                'X-Hermes-Session-Token': clean,
+              },
+            )
+            .timeout(const Duration(seconds: 20));
+        if (modelRes.statusCode == 401 || modelRes.statusCode == 403) {
+          return const SignInInvalidCredentials();
+        }
+        if (modelRes.statusCode == 429) return const SignInRateLimited();
+        if (modelRes.statusCode < 200 || modelRes.statusCode >= 300) {
+          return SignInFailed(
+            serviceStrings.ng_rel_svc_backup_gateway_answered_http(
+              modelRes.statusCode,
+            ),
+          );
+        }
+        // Same request without the token: a gateway that answers it too
+        // never looked at the token.
+        final bareRes = await client
+            .get(
+              modelUri,
+              headers: _headers(modelUri, customHeaders: customHeaders),
+            )
+            .timeout(const Duration(seconds: 20));
+        if (bareRes.statusCode >= 200 && bareRes.statusCode < 300) {
+          return const SignInGatewayHasNoAuth();
+        }
+        if (bareRes.statusCode != 401 && bareRes.statusCode != 403) {
+          return SignInFailed(
+            serviceStrings.ng_rel_svc_backup_gateway_answered_http(
+              bareRes.statusCode,
+            ),
+          );
+        }
+        await HermesSignInVault.instance.setSession(url.canonical, null);
+        return const SignInOk('deployment-token');
+      }
+      return SignInFailed(
+        serviceStrings.ng_rel_svc_backup_gateway_answered_http(
+          meRes.statusCode,
+        ),
+      );
+    } on TimeoutException {
+      return SignInFailed(
+        serviceStrings.ng_rel_svc_backup_gateway_answer_timed_out,
+      );
+    } catch (e) {
+      return SignInFailed(_describe(e));
+    }
+  });
 
   /// `POST /auth/password-login` with the `basic` provider. The password is
   /// verified here, then kept in the connection's secure credentials so the
@@ -823,13 +987,14 @@ class HermesSignIn {
     required String password,
     String provider = 'basic',
     ClientCertificateConfig? certificate,
+    Map<String, String> customHeaders = const <String, String>{},
   }) => _with(certificate, (client) async {
     final uri = Uri.parse(url.resolve('auth/password-login'));
     try {
       final res = await client
           .post(
             uri,
-            headers: _headers(uri, json: true),
+            headers: _headers(uri, json: true, customHeaders: customHeaders),
             body: jsonEncode({
               'provider': provider,
               'username': username,
@@ -842,13 +1007,19 @@ class HermesSignIn {
       }
       if (res.statusCode == 429) return const SignInRateLimited();
       if (res.statusCode < 200 || res.statusCode >= 300) {
-        return SignInFailed('The gateway answered HTTP ${res.statusCode}.');
+        return SignInFailed(
+          serviceStrings.ng_rel_svc_backup_gateway_answered_http(
+            res.statusCode,
+          ),
+        );
       }
       // Any previous browser sign-in would win over the cookie; forget it.
       await HermesSignInVault.instance.setSession(url.canonical, null);
       return SignInOk(username);
     } on TimeoutException {
-      return const SignInFailed('The gateway took too long to answer.');
+      return SignInFailed(
+        serviceStrings.ng_rel_svc_backup_gateway_answer_timed_out,
+      );
     } catch (e) {
       return SignInFailed(_describe(e));
     }
@@ -862,6 +1033,7 @@ class HermesSignIn {
     required Future<bool> Function(Uri) openBrowser,
     String? provider,
     ClientCertificateConfig? certificate,
+    Map<String, String> customHeaders = const <String, String>{},
     Duration timeout = const Duration(minutes: 10),
   }) async {
     final HttpServer server;
@@ -869,7 +1041,9 @@ class HermesSignIn {
       server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
     } catch (e) {
       return SignInFailed(
-        "Couldn't get ready for the browser to come back: ${_describe(e)}",
+        serviceStrings.ng_rel_svc_backup_browser_callback_not_ready(
+          _describe(e),
+        ),
       );
     }
     try {
@@ -898,10 +1072,13 @@ class HermesSignIn {
           ..headers.contentType = ContentType.html
           ..write(
             matches
-                ? _callbackPage('Signed in', 'You can go back to Hermes now.')
+                ? _callbackPage(
+                    serviceStrings.portal_signed_in,
+                    serviceStrings.ng_rel_svc_backup_browser_signed_in_body,
+                  )
                 : _callbackPage(
-                    'Waiting for sign-in',
-                    'This page is not part of the current sign-in.',
+                    serviceStrings.ng_rel_svc_backup_browser_waiting_title,
+                    serviceStrings.ng_rel_svc_backup_browser_not_current,
                   ),
           );
         await request.response.close();
@@ -910,32 +1087,42 @@ class HermesSignIn {
       try {
         final opened = await openBrowser(authorize);
         if (!opened) {
-          return const SignInFailed("Couldn't open the browser to sign in.");
+          return SignInFailed(
+            serviceStrings.ng_rel_svc_backup_browser_open_failed,
+          );
         }
         final String received;
         try {
           received = await code.future.timeout(timeout);
         } on TimeoutException {
-          return const SignInFailed('The sign-in took too long. Try again.');
+          return SignInFailed(
+            serviceStrings.ng_rel_svc_backup_browser_sign_in_timed_out,
+          );
         }
         return await _with(certificate, (client) async {
           final uri = Uri.parse(url.resolve('auth/native/token'));
           final res = await client
               .post(
                 uri,
-                headers: _headers(uri, json: true),
+                headers: _headers(
+                  uri,
+                  json: true,
+                  customHeaders: customHeaders,
+                ),
                 body: jsonEncode({'code': received, 'code_verifier': verifier}),
               )
               .timeout(const Duration(seconds: 20));
           if (res.statusCode < 200 || res.statusCode >= 300) {
             return SignInFailed(
-              'The gateway refused the sign-in (HTTP ${res.statusCode}).',
+              serviceStrings.ng_rel_svc_backup_gateway_refused_sign_in(
+                res.statusCode,
+              ),
             );
           }
           final session = NativeSession.fromJson(jsonDecode(res.body));
           if (session == null) {
-            return const SignInFailed(
-              'The gateway returned no sign-in tokens.',
+            return SignInFailed(
+              serviceStrings.rel_svc_backup_sign_in_no_tokens,
             );
           }
           await HermesSignInVault.instance.setSession(url.canonical, session);
@@ -971,12 +1158,19 @@ class HermesSignIn {
     GatewayUrl url, {
     Map<String, String> authHeaders = const {},
     ClientCertificateConfig? certificate,
+    Map<String, String> customHeaders = const <String, String>{},
   }) async {
     try {
       await _with(certificate, (client) async {
         final uri = Uri.parse(url.resolve('auth/logout'));
         await client
-            .post(uri, headers: {..._headers(uri), ...authHeaders})
+            .post(
+              uri,
+              headers: {
+                ..._headers(uri, customHeaders: customHeaders),
+                ...authHeaders,
+              },
+            )
             .timeout(const Duration(seconds: 10));
       });
     } catch (_) {

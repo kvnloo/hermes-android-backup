@@ -36,6 +36,8 @@ class NgSlashSuggestions extends StatefulWidget {
     this.maxRows = 6,
     this.maxWidth = 420,
     this.debounce = kNgSlashSuggestDebounce,
+    this.appendArgumentSpace = true,
+    this.argumentDebounce = kNgSlashSuggestDebounce,
   });
 
   final NgChatController chat;
@@ -62,6 +64,10 @@ class NgSlashSuggestions extends StatefulWidget {
   final int maxRows;
   final double maxWidth;
   final Duration debounce;
+
+  /// Whether accepting an argument adds a space (5.0 retains exact insertion).
+  final bool appendArgumentSpace;
+  final Duration argumentDebounce;
 
   static final Set<_NgSlashSuggestionsState> _states = {};
 
@@ -103,6 +109,8 @@ class _NgSlashSuggestionsState extends State<NgSlashSuggestions> {
 
   /// The gateway's answer for [_query]'s text, when it came.
   NgSlashCompletion? _server;
+  final _argumentCache = <String, NgSlashCompletion>{};
+  Object? _completionOwner;
 
   /// Esc, Back or a tap elsewhere: closed until the text changes.
   bool _dismissed = false;
@@ -207,10 +215,14 @@ class _NgSlashSuggestionsState extends State<NgSlashSuggestions> {
         !ngCompleteSlashUnsupported(gateway.socket ?? gateway);
   }
 
-  void _scopeCatalog() => widget.catalog.scopeTo(
-    widget.chat.gateway,
-    sessionId: widget.chat.runtimeId,
-  );
+  void _scopeCatalog() {
+    final owner = (_gateway, _gateway.socket, widget.chat.runtimeId);
+    if (_completionOwner != owner) {
+      _completionOwner = owner;
+      _argumentCache.clear();
+    }
+    widget.catalog.scopeTo(_gateway, sessionId: widget.chat.runtimeId);
+  }
 
   /// Re-reads the draft. Only an edit opens the box; moving the caret
   /// within the token while it is open re-filters, anywhere else closes it.
@@ -227,9 +239,9 @@ class _NgSlashSuggestionsState extends State<NgSlashSuggestions> {
     // also drops an argument query that had nothing to show.
     if (!edited && !_visible) return _close();
     _scopeCatalog();
-    // Arguments only the gateway completes, for a command a send would run.
-    if (query.isArgument &&
-        (!_canAsk || widget.catalog.resolve(query.name) == null)) {
+    // Argument discovery is read-only. Let the gateway resolve commands even
+    // when an older/partial catalogue omitted them (5.0 completion behaviour).
+    if (query.isArgument && !_canAsk) {
       return _close();
     }
     final previous = _query;
@@ -238,6 +250,7 @@ class _NgSlashSuggestionsState extends State<NgSlashSuggestions> {
     _epoch++;
     _markedByUser = false;
     if (_server?.text != query.text) _server = null;
+    if (query.isArgument) _server = _argumentCache[query.text];
     if (!query.isArgument) unawaited(widget.catalog.ensureLoaded());
     _recompute(
       carried: previous != null && previous.isArgument && query.isArgument
@@ -318,9 +331,16 @@ class _NgSlashSuggestionsState extends State<NgSlashSuggestions> {
     _timer = null;
     // A bare `/` browses the catalogue, as Hermes Desktop and Kyllene do;
     // typing narrows it through the gateway's ranking.
-    if (!_canAsk || (!query.isArgument && query.name.isEmpty)) return;
+    if (!_canAsk ||
+        (!query.isArgument && query.name.isEmpty) ||
+        (query.isArgument && _argumentCache.containsKey(query.text))) {
+      return;
+    }
     final epoch = _epoch;
-    _timer = Timer(widget.debounce, () => unawaited(_ask(query, epoch)));
+    _timer = Timer(
+      query.isArgument ? widget.argumentDebounce : widget.debounce,
+      () => unawaited(_ask(query, epoch)),
+    );
   }
 
   Future<void> _ask(NgSlashQuery query, int epoch) async {
@@ -342,6 +362,12 @@ class _NgSlashSuggestionsState extends State<NgSlashSuggestions> {
     _asking = null;
     if (answer != null) {
       _server = answer;
+      if (query.isArgument) {
+        _argumentCache[query.text] = answer;
+        if (_argumentCache.length > 64) {
+          _argumentCache.remove(_argumentCache.keys.first);
+        }
+      }
       _recompute();
     } else if (query.isArgument) {
       _items = const [];
@@ -374,6 +400,7 @@ class _NgSlashSuggestionsState extends State<NgSlashSuggestions> {
       widget.controller.text,
       suggestion,
       replaceFrom: _replaceFrom,
+      appendSpace: !query.isArgument || widget.appendArgumentSpace,
     );
     _close();
     // The edit may open argument choices for the command just picked.

@@ -1,0 +1,146 @@
+{
+  "base_commit": "49d29803c6f9aadd151441c10a421d2fd6875151",
+  "branch": "v5/audio-attachment-preview",
+  "analysis": {
+    "command": "flutter analyze --no-pub --fatal-infos",
+    "result": "No issues found"
+  },
+  "localization": {
+    "command": "dart run tool/check_l10n_placeholders.dart",
+    "result": "All 13 locales complete"
+  },
+  "focused": {
+    "passed": 189,
+    "failed": 0,
+    "skipped": 0,
+    "test_files": 18,
+    "terminal": {
+      "success": true,
+      "type": "done",
+      "time": 54756
+    },
+    "failed_tests": [],
+    "skipped_tests": []
+  },
+  "full": {
+    "passed": 8530,
+    "failed": 1,
+    "skipped": 2,
+    "test_files": 655,
+    "terminal": {
+      "success": false,
+      "type": "done",
+      "time": 1067880
+    },
+    "failed_tests": [
+      "B4 no fixture or unwired controls audio cards carry no unwired speed or position controls"
+    ],
+    "skipped_tests": [
+      "measures and joins real AAC fragments",
+      "refuses fragments outside the drafts directory"
+    ]
+  },
+  "reconciliation": {
+    "passed": 21,
+    "failed": 0,
+    "skipped": 0,
+    "test_files": 2,
+    "terminal": {
+      "success": true,
+      "type": "done",
+      "time": 3294
+    },
+    "failed_tests": [],
+    "skipped_tests": []
+  },
+  "full_command": "flutter test --no-pub --machine -j2 --exclude-tags perf",
+  "full_fixtures": [
+    "ARES_SSH_FIXTURE",
+    "ARES_TERMINAL_FIXTURE_HELPER",
+    "ARES_TERMINAL_FIXTURE_PYTHON"
+  ],
+  "reconciliation_command": "ARES_TEST_FFMPEG=/opt/homebrew/bin/ffmpeg ARES_TEST_FFPROBE=/opt/homebrew/bin/ffprobe flutter test --no-pub --machine -j2 test/render_review_blockers_test.dart test/windows_voice_tools_ffmpeg_test.dart",
+  "full_used_final_product_source": true,
+  "post_full_change": "Only the legacy no-audio-slider test was updated to require a disabled seek control until real metadata; the owning file and both previously skipped FFmpeg cases then passed.",
+  "full_rerun_after_reconciliation": false,
+  "baseline_red": {
+    "base": "49d29803",
+    "file": "test/audio_preview_presence_test.dart",
+    "failed": 2,
+    "reason": "Missing picked and delivered audio playback controls; no compilation failure"
+  },
+  "runtime_rebind_regressions": {
+    "file": "test/session_files_navigation_test.dart",
+    "passed": 4,
+    "cases": "Classic/NextGen, held download/already playing; same owner and route with changed runtime"
+  },
+  "native": {
+    "platform": "macos",
+    "duration_ms": 2000,
+    "position_ms": 654,
+    "muted": true,
+    "staged_entries_after_dispose": 0,
+    "result": "PASS"
+  },
+  "native_scope": "Standalone generated silent WAV, muted, ad-hoc unsandboxed macOS probe artifact. Not native GUI/codec/release proof for Android/iOS/Windows/Linux.",
+  "review": "Core targeted read-only recheck PASS. File-surface same-owner runtime finding repaired and exercised by four real-loopback regressions; no additional broad review round.",
+  "dependencies_unchanged": true,
+  "remaining_gate": "A single entirely green full-suite invocation after the expectation-only test reconciliation has not been run.",
+  "final_source_sha256": {
+    "lib/core/screens/chat_screen.dart": "70354fa62d182d629e2fc2ac5cabf61773b6e59796b841e26e70c2fd79e609ae",
+    "lib/core/screens/files_screen.dart": "7e78bde264714af5ecee5899779267cea9e1c3413f35dc2866a3948acb512702",
+    "lib/core/services/attachment_audio_service.dart": "732812137dd9be8cad79d166529bbc0a0f62fa7f095be10c0640d73e885836e0",
+    "lib/core/services/attachment_controller.dart": "660709795b8df0c618c0ea76b0df2d98d5770d7b4c76efd250fd52804703218e",
+    "lib/core/services/attachment_video_service.dart": "65a2eeb1340c907c8c3c5a7d4090c86e1726a795932e3f53724b1e0435207425",
+    "lib/core/services/remote_files_client.dart": "4d505f96a6607f331b3008a0607cd29c3ae1e5989da26a95648c20ff697c22db",
+    "lib/core/services/remote_workspace.dart": "08e042b6c3d940daeb0b5042335ff416026b1740120f2c016147319e0b0fd8ba",
+    "lib/core/services/ws_client.dart": "b340ead48788ad3c60278b486fca509a11126e9259b8c5db58b1ae146f6b9292",
+    "lib/core/utils/attachment_types.dart": "f0e81cda7eb478acb706621336ff1137307a08985f0d9eb7a39662e94b54ba8f",
+    "lib/core/utils/audio_file_references.dart": "41506fa0771eae5374f96395a12f951c997d4c0025ee569f4753955d33e74e4f",
+    "lib/core/widgets/attachment_audio_preview.dart": "aed2b0e94f54e2938f0f49db95c5255daa9cb8eb23bb7b5e5414f39bce272b23",
+    "lib/core/widgets/attachment_draft_tile.dart": "42fa12b628252055a299d1bd923346d78ab5bd3fa56df4ba31efd1e2e71e1b0c",
+    "lib/core/widgets/attachment_preview_dialog.dart": "5e36bb7585b96ee9743406387c9e5f22987ef94d3e98e5eb15976d6f8599ac16",
+    "lib/core/widgets/media_artifact_card.dart": "5e787ad692eae77acdc405949e1710ae8c137860f2447b69b35b688160432492",
+    "lib/core/widgets/session_files_view.dart": "45afcb57560e66a210b18d934247f07ec097c2f36f160e0ccc8c398ca71f43f9",
+    "lib/l10n/app_ar.arb": "cae14c7512c2de8853abb3e07f9d46e02e362e0fdf5abc19e1b9e0157bfcd900",
+    "lib/l10n/app_de.arb": "08d5daeceea206a72b5af75184ec68b6bde8a192d3f5fa2a950548407380be90",
+    "lib/l10n/app_en.arb": "2eb4ff56edb6b924ac9a9e2219994a6e7e06b7d5e61c6692877deb13136177c3",
+    "lib/l10n/app_es.arb": "35f4982aac2f3ccd2aa7f05174edc4305d4c48cd91a07c3b263d20d792dc843f",
+    "lib/l10n/app_fr.arb": "ca658f7464feadbe6389fbed5e02189f1e0da8bc1aee2b2e2dc789c678ef69d3",
+    "lib/l10n/app_ja.arb": "9128b51c48cf0a68f06e15022f43e2f48cd61080a88f1211172f8b15a78a3e41",
+    "lib/l10n/app_ko.arb": "332800fb4420c88a5ae6780ffe4d7814e510e15956c73fbaa0753878e56ac611",
+    "lib/l10n/app_localizations.dart": "783cd5cb32c898b63f16da6ebfba4ecb6cd8d59d5d16afddf88d2cbecf524388",
+    "lib/l10n/app_localizations_ar.dart": "b43a044da9a17b4c161b53d718f853a7effbe17b9e948520b9f0e47501f7c44e",
+    "lib/l10n/app_localizations_de.dart": "16a4a227e1aa4a14a9456c38d973cde096ad14096e00bc46a85ad82ab784a543",
+    "lib/l10n/app_localizations_en.dart": "7e0a27ec74fd4ac4e4c0f7386cebafef5f3c3253b88724ba20d3aaaea87116eb",
+    "lib/l10n/app_localizations_es.dart": "5953b2bf7f39082693930f7f15c9de65893627553516208c892ac1e8f2cc3488",
+    "lib/l10n/app_localizations_fr.dart": "443328f24bacf3f6a767a5e2d349fb876ea266692e557f5fa95d2bbd4dbd0b58",
+    "lib/l10n/app_localizations_ja.dart": "3385c7bfba25521808e159688916b991972fdd1a6a20d6b504759f0f089955b3",
+    "lib/l10n/app_localizations_ko.dart": "246b911c572d3770c0469f0c279b5c5d7ff76d4da4c1ab471c0e000135b130c1",
+    "lib/l10n/app_localizations_pt.dart": "f1201eca0e0407365e9845cd8c1083a8cfcbe904f18777c48e7c462a23406301",
+    "lib/l10n/app_localizations_ru.dart": "16aa74afe1215c86c42dc68e176328d98e31baa9efa3bbdd5225ea62f3b6408e",
+    "lib/l10n/app_localizations_uk.dart": "30d5d33e8a5536476a15d5ccd08a197f36ccd6f0ce599583e44c46a2d84e5adc",
+    "lib/l10n/app_localizations_zh.dart": "27655e112b1c519d9e12ac0b929883ae9c78958ba49b9b47a035023a97ae439d",
+    "lib/l10n/app_pt.arb": "9ca522f9da08d552661ec52ad1b73699ef142ff1d1b2b473aa83f059c1464014",
+    "lib/l10n/app_pt_BR.arb": "d2f1d5f87607b69f281a609ad0927875db4c8ce362cf8a16dd78278dd3161df1",
+    "lib/l10n/app_ru.arb": "ba4a056b27e215250138bf5bd02123d6d1e9a83591f8937b6d816820da40477a",
+    "lib/l10n/app_uk.arb": "c8f8d3f990c5ac0cf15877921798e496c8f035ec74b3764232eeb7249cad8f81",
+    "lib/l10n/app_zh.arb": "dfc1f1dda17683f32735bebaeb17d7281bb95385e897dcede796df353aeda637",
+    "lib/l10n/app_zh_Hans.arb": "470c848411a7c2981c3593e08c905dab9be69dadff4ac796fd5dee6899a063c3",
+    "lib/l10n/app_zh_Hant.arb": "4d3b7c9b00fbc5f1e0b29579792da8eadf0d29429e843dec315cf6cd74df4c70",
+    "lib/nextgen/data/chat_controller.dart": "bf524fb24793f48e5d3bfb52e4d51871b9b85aee559a59578bbbb701ae6922ff",
+    "lib/nextgen/ui/chat_view.dart": "70318e349897314827e0d31b764036d8c9f1ab691fb27ae8bb5530c2e47bb234",
+    "test/attachment_audio_disposal_failure_test.dart": "2fb4775fdd572ce95e73a33f7055b73f8b479d728bb7d698f18555e88de1b68e",
+    "test/attachment_audio_preview_test.dart": "a909bcb21e9aa18e9f8cd05eea82e7988c9246b43b08e3fcba04b35a08e95b86",
+    "test/attachment_audio_service_test.dart": "44321227d173e01256adfa2385e5154a44c7d82e51c7702b31bb20ee3d003064",
+    "test/audio_attachment_chat_wiring_test.dart": "55f06e105a395ce57e5f9db9b1025b17c583119817c15d022185490f01163cc4",
+    "test/audio_file_browser_test.dart": "f882945583b7899e8e09c744fc021362a58c15856a866352c7cedd71d2021813",
+    "test/audio_preview_presence_test.dart": "0bb55fe3a182b18452e9c72e70cb8c0d2ce67599ed9ceea2cf55ba4f4f654a06",
+    "test/chat_composer_interaction_test.dart": "016cbd36822d3b787914f620c99ef9d5038342c7ac663a7853ed1f32df964b69",
+    "test/render_review_blockers_test.dart": "6c99b27ef57c49d1ab95c13fb34a646abe88f9f1fbe09768de086c3b0b66f57f",
+    "test/session_files_navigation_test.dart": "437acfcd13702b2cebfd094f1b4549ff19f059d779dcd8b5ad7a0b854f00da97",
+    "test/support/audio_preview_fixture.dart": "eaeef418734a79e32e0cbb32ac8aa41417bcbd3ffdba61889551d93d04a4caf1",
+    "test/support/session_files_gateway.dart": "bab555e10a47ae6270dccbe2aa40107c1f383af6c02a3296c633443c045b018a",
+    "tool/audio_attachment_probe.dart": "c00f8187f954287af09d265c7e99c2cd4cd5619e5559903083ef578d539bf186"
+  }
+}

@@ -1,0 +1,9 @@
+# Test configuration for `flutter test`.
+tags:
+  # Wall-clock performance budgets. They measure elapsed time, so the
+  # parallel full run (-j2) can push them over their limits on a busy host.
+  # Run them separately, serially:
+  #   flutter test --no-pub -j2 --exclude-tags perf   # everything else
+  #   flutter test --no-pub -j1 $(grep -rl "@Tags(\['perf'\])" test)  # the budgets, alone
+  # (naming the files: `--tags perf` alone compiles every test file to find them)
+  perf:

@@ -16,6 +16,9 @@ import '../models/projects_tree_overview.dart';
 import '../services/chat_space_store.dart';
 import '../services/project_folder_discovery.dart';
 import '../services/projects_repository.dart';
+import '../services/remote_workspace.dart';
+import 'project_settings_view.dart';
+import 'workspace_discovery_view.dart';
 import '../theme/hermes_theme.dart';
 import 'adopt_project_folder_sheet.dart';
 import 'hermes_components.dart';
@@ -26,6 +29,7 @@ import 'package:hermes_android/core/l10n/l10n.dart';
 
 class ProjectsPane extends StatefulWidget {
   final ProjectsRepository repository;
+  final RemoteWorkspaceOwner? workspace;
   final Future<void> Function(String projectId)? onProjectSelected;
 
   /// The legacy local Spaces store, when this connection still has one.
@@ -45,6 +49,7 @@ class ProjectsPane extends StatefulWidget {
 
   const ProjectsPane({
     required this.repository,
+    this.workspace,
     this.onProjectSelected,
     this.spaceStore,
     this.folderDiscovery,
@@ -173,15 +178,44 @@ class _ProjectsPaneState extends State<ProjectsPane>
   /// Only offer the migration when there is something real to migrate.
   bool get _hasLocalSpaces => _spaces?.spaces.isNotEmpty ?? false;
 
+  Widget _discovery(RemoteWorkspaceOwner owner) {
+    final route = owner.route();
+    return ListTile(
+      leading: const Icon(Icons.travel_explore),
+      title: Text(
+        context.sharedL10n.release_core_projects_pane_discover_repositories,
+      ),
+      onTap: () => Navigator.of(context).push<void>(
+        MaterialPageRoute(
+          builder: (_) => WorkspaceDiscoveryView(owner: owner, route: route),
+        ),
+      ),
+    );
+  }
+
   Future<void> _createProject() async {
-    final name = await showDialog<String>(
+    final l10n = context.sharedL10n;
+    final repository = widget.repository;
+    final spec = await showDialog<({String name, String idea})>(
       context: context,
       builder: (dialogContext) => const _CreateProjectDialog(),
     );
-    if (name == null || !mounted) return;
+    if (spec == null || !mounted || widget.repository != repository) return;
 
     try {
-      await widget.repository.create(name);
+      final created = await repository.create(spec.name, idea: spec.idea);
+      if (mounted &&
+          widget.repository == repository &&
+          spec.idea.isNotEmpty &&
+          created.description != spec.idea) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.release_core_projects_pane_project_created_but_the_gateway_did_not_confirm,
+            ),
+          ),
+        );
+      }
     } catch (error) {
       if (!mounted) return;
       _showMutationError('create', error);
@@ -353,6 +387,7 @@ class _ProjectsPaneState extends State<ProjectsPane>
           child: ListView(
             children: [
               SizedBox(height: MediaQuery.sizeOf(context).height * 0.12),
+              if (widget.workspace case final owner?) _discovery(owner),
               EmptyState(
                 icon: Icons.folder_outlined,
                 title: context.l10n.no_projects_yet,
@@ -377,6 +412,7 @@ class _ProjectsPaneState extends State<ProjectsPane>
           padding: const EdgeInsets.only(bottom: 96),
           children: [
             if (view.isStale) _OfflineBanner(error: view.error),
+            if (widget.workspace case final owner?) _discovery(owner),
             SectionHeader(
               title: context.l10n.projects,
               count: view.projects.length,
@@ -442,11 +478,6 @@ class _CompatibilityMode extends StatelessWidget {
 
   const _CompatibilityMode({required this.spaces, required this.onRetry});
 
-  static const _explanation =
-      'This Hermes gateway is older than server-side projects, so chats stay '
-      'grouped on this device only. Update Hermes to share the same projects '
-      'across your devices.';
-
   @override
   Widget build(BuildContext context) {
     final tokens = HermesTokens.of(context);
@@ -481,7 +512,7 @@ class _CompatibilityMode extends StatelessWidget {
                   const SizedBox(width: HermesSpacing.sm),
                   Expanded(
                     child: Text(
-                      _explanation,
+                      context.sharedL10n.release_core_projects_local_only,
                       style: tokens.typography.body.copyWith(
                         color: tokens.muted,
                       ),
@@ -652,9 +683,9 @@ class _ProjectCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(HermesRadius.sm),
             ),
             child: Icon(
-              Icons.folder_rounded,
+              projectGlyph(project.icon),
               size: 20,
-              color: tokens.onAccentContainer,
+              color: projectSwatch(project.color) ?? tokens.onAccentContainer,
             ),
           ),
           const SizedBox(width: HermesSpacing.md),
@@ -803,6 +834,7 @@ class _CreateProjectDialog extends StatefulWidget {
 
 class _CreateProjectDialogState extends State<_CreateProjectDialog> {
   String _draft = '';
+  String _idea = '';
   String? _error;
 
   void _submit() {
@@ -811,24 +843,45 @@ class _CreateProjectDialogState extends State<_CreateProjectDialog> {
       setState(() => _error = context.l10n.enter_a_name);
       return;
     }
-    Navigator.pop(context, name);
+    Navigator.pop(context, (name: name, idea: _idea.trim()));
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(context.l10n.new_project),
-      content: TextField(
-        key: const Key('project-name'),
-        autofocus: true,
-        maxLength: 80,
-        textCapitalization: TextCapitalization.sentences,
-        decoration: InputDecoration(
-          labelText: context.l10n.name,
-          errorText: _error,
-        ),
-        onChanged: (value) => _draft = value,
-        onSubmitted: (_) => _submit(),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            key: const Key('project-name'),
+            autofocus: true,
+            maxLength: 80,
+            textCapitalization: TextCapitalization.sentences,
+            decoration: InputDecoration(
+              labelText: context.l10n.name,
+              errorText: _error,
+            ),
+            onChanged: (value) => _draft = value,
+            onSubmitted: (_) => _submit(),
+          ),
+          TextField(
+            key: const Key('project-idea'),
+            maxLength: 2000,
+            minLines: 2,
+            maxLines: 4,
+            decoration: InputDecoration(
+              labelText: context
+                  .sharedL10n
+                  .release_core_projects_pane_project_idea_optional,
+              helperText: context
+                  .sharedL10n
+                  .release_core_projects_pane_saved_in_the_project_description_not_a_file,
+            ),
+            onChanged: (value) => _idea = value,
+          ),
+        ],
       ),
       actions: [
         TextButton(

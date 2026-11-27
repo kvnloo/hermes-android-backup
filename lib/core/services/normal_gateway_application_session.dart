@@ -10,6 +10,7 @@ import '../models/gateway_activity.dart';
 import '../models/gateway_insight.dart';
 import '../models/normal_gateway_persisted_turn.dart';
 import '../models/slash_command.dart';
+import '../l10n/service_strings.dart';
 import '../utils/chat_conversation_projection.dart';
 import '../utils/android_prompt_context.dart';
 import '../utils/generated_media.dart';
@@ -17,15 +18,19 @@ import '../utils/message_content.dart';
 import 'connection_manager.dart';
 import 'composer_draft_store.dart';
 import 'chat_history_window.dart';
+import 'chat_kanban_dock.dart';
 import 'chat_presentation_state.dart';
 import 'desktop_gateway_client.dart';
 import 'normal_gateway_pending_store.dart';
+import 'prepared_image_store.dart';
 import 'operational_activity_store.dart';
 import 'notification_prefs.dart';
 import 'turn_notification_service.dart';
+import 'completion_cue_player.dart';
 import 'notification_approval_authority.dart';
 import 'connection_mutation_barrier.dart';
 import 'ws_client.dart';
+import 'system_sleep_gate.dart';
 
 typedef NormalGatewayPromptSubmit =
     Future<void> Function({
@@ -85,6 +90,13 @@ class NormalGatewayTurnTerminal {
   final String? publicFinalText;
 }
 
+/// A gateway failure frame kept for the chat's failure card.
+typedef NormalGatewayFailureFrame = ({
+  int serial,
+  bool detached,
+  Map<String, dynamic> data,
+});
+
 /// Durable history and transient presentation are deliberately separate. Never
 /// write displayRows into the history window: they have no durable row identity.
 class NormalGatewayChatSnapshot {
@@ -116,6 +128,13 @@ class NormalGatewayChatSnapshot {
   final DesktopConnectionState connectionState;
   final ChatTimeline timeline;
   final List<ReceivedScopeOutcome> receivedOutcomes;
+
+  /// The gateway's last `error`/`turn.error` frame for this chat (message and
+  /// failure surface), for the failure card. [serial] tells frames apart;
+  /// [detached] is a frame that arrived with no turn active here (a turn
+  /// that settled on the server after this client let go of it). Cleared
+  /// when the next turn starts.
+  final NormalGatewayFailureFrame? failureFrame;
   const NormalGatewayChatSnapshot({
     required this.turnId,
     this.terminal,
@@ -139,6 +158,7 @@ class NormalGatewayChatSnapshot {
     required this.connectionState,
     this.timeline = const ChatTimeline(),
     this.receivedOutcomes = const [],
+    this.failureFrame,
   });
   bool get hasActiveTurn => const {
     NormalGatewayTurnPhase.preparing,
@@ -243,6 +263,7 @@ class NormalGatewayApplicationSession {
       }
     }, acceptsSession: _aliases.containsKey);
     client?.setConnectionListener(connectionChanged);
+    SystemSleepGate.instance.addListener(_onSystemSleep);
     ready = _restore();
     ready.ignore();
     unawaited(this.notifications.ensureInitialized());
@@ -435,9 +456,25 @@ class NormalGatewayApplicationSession {
     if (!identical(winner, source) || canonical.turnId != null) {
       winner._createdEmptySessionId = null;
     }
+    // One chat under two ids: its Kanban cards stay with the surviving owner.
+    if (loser._kanban.isNotEmpty || loser._kanbanSessionIds.isNotEmpty) {
+      winner._kanban.addAll(loser._kanban);
+      for (final id in loser._kanbanSessionIds) {
+        if (!winner._kanbanSessionIds.contains(id)) {
+          winner._kanbanSessionIds.add(id);
+        }
+      }
+      winner._kanbanRevision++;
+      loser._kanban.clear();
+      loser._kanbanSessionIds.clear();
+    }
     winner._listeners.addAll(loser._listeners);
     loser._listeners.clear();
     loser._redirect = winner;
+    if (SystemSleepGate.instance.reconcilePendingFor(loser)) {
+      SystemSleepGate.instance.releaseReconcile(loser);
+      winner._holdReconcileForPause();
+    }
     for (final alias in _aliases.keys.toList()) {
       if (identical(_aliases[alias], loser)) _aliases[alias] = winner;
     }
@@ -485,7 +522,7 @@ class NormalGatewayApplicationSession {
         final chat = chatFor(
           marker.localSessionId,
           storedSessionId: marker.storedSessionId,
-          title: 'Chat',
+          title: serviceStrings.rel_svc_misc_chat,
         );
         chat._restore(marker);
       }
@@ -533,11 +570,32 @@ class NormalGatewayApplicationSession {
     if (backgroundWorkEnabled != null) {
       _backgroundWorkEnabled = backgroundWorkEnabled;
     }
-    if (returning) {
+    if (returning && !SystemSleepGate.instance.value) {
       // A legacy gateway never says a request was answered on another
       // device; ask which are still open (no answer is sent).
       unawaited(client?.revalidateServerRequests());
     }
+    _applyRecoveryPolicy();
+  }
+
+  /// The computer slept or the session locked (the client closes its
+  /// socket), or it is back: recovery resumes from history and the stored
+  /// session ids, never by sending a prompt again.
+  void _onSystemSleep() {
+    if (_closed) return;
+    if (SystemSleepGate.instance.value) {
+      // The paused socket cannot see these turns end: keep-awake waits
+      // until each has recovered its state after the pause.
+      for (final chat in chats) {
+        chat._holdReconcileForPause();
+      }
+    } else {
+      unawaited(client?.revalidateServerRequests());
+    }
+    _applyRecoveryPolicy();
+  }
+
+  void _applyRecoveryPolicy() {
     client?.setReconnectAllowed(_canRecover);
     if (_canRecover) {
       _retryRetirements();
@@ -555,7 +613,10 @@ class NormalGatewayApplicationSession {
     }
   }
 
-  bool get _canRecover => !_closed && (!_background || _backgroundWorkEnabled);
+  bool get _canRecover =>
+      !_closed &&
+      !SystemSleepGate.instance.value &&
+      (!_background || _backgroundWorkEnabled);
 
   void _retirePreWireMarker(NormalGatewayPendingMarker marker) {
     _retiringMarkers[marker.key] = marker;
@@ -701,6 +762,54 @@ class NormalGatewayApplicationSession {
     return true;
   }
 
+  /// Answers [sessionId]'s connection operation card; false when this owner
+  /// does not hold that chat or its runtime session.
+  Future<bool> tryRespondToConnection({
+    required String sessionId,
+    required String opId,
+    required Map<String, dynamic> result,
+  }) async {
+    final chat = _aliases[sessionId];
+    final gateway = client;
+    if (_closed || chat == null || gateway == null) return false;
+    return gateway.respondToConnection(
+      sessionId: chat.localSessionId,
+      opId: opId,
+      result: result,
+    );
+  }
+
+  /// Answers the `setup_beat` card [requestId] for [sessionId]; false when
+  /// this owner does not hold it open.
+  bool tryRespondToSetupBeat({
+    required String sessionId,
+    required String requestId,
+    required Map<String, dynamic> result,
+  }) {
+    final chat = _aliases[sessionId];
+    final gateway = client;
+    if (_closed || chat == null || gateway == null) return false;
+    final sent = gateway.respondToSetupBeat(
+      sessionId: chat.localSessionId,
+      requestId: requestId,
+      result: result,
+    );
+    if (sent) forgetAnsweredInput(requestId);
+    return sent;
+  }
+
+  /// Whether this owner still holds [sessionId]'s setup card [requestId]
+  /// open, so an answer that did not go out can be sent again.
+  bool holdsSetupBeat({required String sessionId, required String requestId}) {
+    final chat = _aliases[sessionId];
+    final gateway = client;
+    if (_closed || chat == null || gateway == null) return false;
+    return gateway.holdsSetupBeat(
+      sessionId: chat.localSessionId,
+      requestId: requestId,
+    );
+  }
+
   void forgetAnsweredInput(String requestId) {
     for (final chat in chats) {
       if (chat._pendingInput.remove(requestId) != null) {
@@ -713,6 +822,7 @@ class NormalGatewayApplicationSession {
   Future<void> close() async {
     if (_closed) return;
     _closed = true; // synchronous fence before any resource cleanup
+    SystemSleepGate.instance.removeListener(_onSystemSleep);
     prunePendingNotificationApprovals();
     _retirementTimer?.cancel();
     _retirementTimer = null;
@@ -804,6 +914,16 @@ class NormalGatewayChatOwner {
   int _historyObservation = 0;
   String? _createdEmptySessionId;
   final List<GatewayToolActivity> _tools = [];
+
+  /// Kanban cards this chat's own tool calls made or linked, kept for its
+  /// dock: tool activities carry no arguments or results.
+  final List<ChatKanbanSeed> _kanban = [];
+
+  /// Session ids the gateway moved this chat to (`session.info`'s
+  /// `stored_session_id` after context compression), oldest first: cards
+  /// made after a compression carry the newer id.
+  final List<String> _kanbanSessionIds = [];
+  int _kanbanRevision = 0;
   final List<GatewaySubagentActivity> _subagents = [];
   final List<GatewaySubagentActivity> _activityChildren = [];
   bool _hasTurnSubagentPresentation = false;
@@ -865,6 +985,37 @@ class NormalGatewayChatOwner {
             (row['content']?.toString().isNotEmpty ?? false),
       );
 
+  /// The Kanban cards this chat sent to the board in turns this owner saw,
+  /// oldest first.
+  List<ChatKanbanSeed> get kanbanSeeds =>
+      _redirect != null ? _root.kanbanSeeds : List.unmodifiable(_kanban);
+
+  /// The session ids `session.info` moved this chat to, oldest first.
+  List<String> get kanbanSessionIds => _redirect != null
+      ? _root.kanbanSessionIds
+      : List.unmodifiable(_kanbanSessionIds);
+
+  /// Changes whenever [kanbanSeeds] or [kanbanSessionIds] does, so a route
+  /// reads them only then.
+  int get kanbanRevision =>
+      _redirect != null ? _root.kanbanRevision : _kanbanRevision;
+
+  /// Takes the stored session id a `session.info` names. True when it is
+  /// new for this chat.
+  bool _observeStoredSessionId(Map<String, dynamic> data) {
+    final info = data['info'] is Map ? data['info'] as Map : data;
+    final stored = info['stored_session_id'];
+    if (stored is! String) return false;
+    final id = stored.trim();
+    if (id.isEmpty || id == storedSessionId || _kanbanSessionIds.contains(id)) {
+      return false;
+    }
+    _kanbanSessionIds.add(id);
+    if (_kanbanSessionIds.length > 16) _kanbanSessionIds.removeAt(0);
+    _kanbanRevision++;
+    return true;
+  }
+
   NormalGatewayChatSnapshot get snapshot => _redirect != null
       ? _root.snapshot
       : NormalGatewayChatSnapshot(
@@ -900,7 +1051,8 @@ class NormalGatewayChatOwner {
           status: _status,
           error: _error,
           responseFailure: _terminalReceipt?.completed == false
-              ? _terminalReceipt!.error ?? 'Gateway turn failed'
+              ? _terminalReceipt!.error ??
+                    serviceStrings.rel_svc_misc_gateway_turn_failed
               : null,
           rejectedDraft:
               phase == NormalGatewayTurnPhase.failed &&
@@ -916,7 +1068,21 @@ class NormalGatewayChatOwner {
             for (final settled in _settledPresentation) ...settled.outcomes,
             ..._receivedOutcomes,
           ]),
+          failureFrame: _failureFrame,
         );
+
+  /// Every failure frame gets its own serial, across chats, so a screen never
+  /// takes one for another it already showed.
+  static int _failureSerials = 0;
+  NormalGatewayFailureFrame? _failureFrame;
+
+  void _keepFailureFrame(StreamEvent event, {required bool detached}) {
+    _failureFrame = (
+      serial: ++_failureSerials,
+      detached: detached,
+      data: Map<String, dynamic>.unmodifiable(event.data),
+    );
+  }
 
   void bindStoredSession(String storedSessionId) {
     if (this.storedSessionId != storedSessionId) {
@@ -1186,6 +1352,51 @@ class NormalGatewayChatOwner {
         );
       }
     }
+  }
+
+  /// The gateway accepted a rewind at saved row [from]: that turn and every
+  /// later one are archived, as Desktop's `applyRewindOptimistic` drops
+  /// everything after the source turn. The saved rows from [from] through
+  /// [through] (the newest row the transcript had then) leave this owner's
+  /// history, so a stale observation cannot hand them back to the chat, and
+  /// the local presentation of this visit's earlier turns (rows, timeline,
+  /// outcomes) goes with them. The running turn is kept. The next read
+  /// reconciles: rows the server still lists return with it.
+  void applyAcceptedRewind(int from, {int? through}) {
+    if (_redirect != null) {
+      return _root.applyAcceptedRewind(from, through: through);
+    }
+    bool archived(Map<String, dynamic> row) {
+      final id = row['id'];
+      return id is int && id >= from && (through == null || id <= through);
+    }
+
+    _history.removeWhere(archived);
+    _historyConfirmationRows = [
+      for (final row in _historyConfirmationRows)
+        if (!archived(row)) row,
+    ];
+    _historyPresentation.removeWhere((entry) => archived(entry.row));
+    final scopes = {
+      for (final row in _priorDisplay) row['_normal_projection_id'],
+      for (final settled in _settledPresentation)
+        for (final row in settled.rows) row['_normal_projection_id'],
+    }.whereType<String>().toSet();
+    _priorDisplay.clear();
+    _settledPresentation.clear();
+    if (_timeline.scopes.any(scopes.contains)) {
+      final retained = _timeline.scopes.where(
+        (scope) => !scopes.contains(scope),
+      );
+      _timeline = retained.isEmpty
+          ? _timeline.clear()
+          : _timeline.retainScopes(retained);
+    }
+    final outcomes = _uncoveredOutcomes(_receivedOutcomes, scopes);
+    _receivedOutcomes
+      ..clear()
+      ..addAll(outcomes);
+    _notify();
   }
 
   List<ReceivedScopeOutcome> _uncoveredOutcomes(
@@ -1526,6 +1737,8 @@ class NormalGatewayChatOwner {
     _activityChildren.clear();
     _error = null;
     _status = null;
+    // A new turn supersedes the last one's failure.
+    _failureFrame = null;
     _notify();
     return _reservation;
   }
@@ -1634,6 +1847,7 @@ class NormalGatewayChatOwner {
   /// cannot drop callbacks, clear activity or close the client.
   Future<void> submitPrepared({
     required Object reservation,
+    PreparedImageAttempt? imageAttempt,
     required String text,
     required String localContent,
     NormalGatewayPromptSubmit? submit,
@@ -1644,10 +1858,12 @@ class NormalGatewayChatOwner {
     bool Function()? maySubmit,
     Future<bool> Function()? beforeSend,
     void Function()? onAccepted,
+    Map<String, Object?> promptParams = const {},
   }) async {
     if (_redirect != null) {
       return _root.submitPrepared(
         reservation: reservation,
+        imageAttempt: imageAttempt,
         text: text,
         localContent: localContent,
         submit: submit,
@@ -1658,6 +1874,7 @@ class NormalGatewayChatOwner {
         maySubmit: maySubmit,
         beforeSend: beforeSend,
         onAccepted: onAccepted,
+        promptParams: promptParams,
       );
     }
     if (!identical(_reservation, reservation) ||
@@ -1788,6 +2005,10 @@ class NormalGatewayChatOwner {
                   required void Function() onSent,
                 }) => _session.client!.submitPrompt(
                   sessionId: sessionId,
+                  submissionId: imageAttempt?.id,
+                  beforeLegacy: imageAttempt?.beforeLegacy,
+                  onReceipt: imageAttempt?.receipt,
+                  extraParams: promptParams,
                   text: text,
                   onEvent: onEvent,
                   onSent: onSent,
@@ -1797,6 +2018,15 @@ class NormalGatewayChatOwner {
                   beforeSend: beforeSend,
                   maySend: () =>
                       _current(generation) &&
+                      (imageAttempt == null ||
+                          (_session.hasCurrentAccount &&
+                              storedSessionId != null &&
+                              PreparedImageTarget(
+                                    _session.connection,
+                                    storedSessionId!,
+                                    PreparedImageTransport.classicRefs,
+                                  ).key ==
+                                  imageAttempt.entry.target.key)) &&
                       snapshot.hasActiveTurn &&
                       maySubmit?.call() != false,
                 ));
@@ -1904,11 +2134,21 @@ class NormalGatewayChatOwner {
 
   void _event(StreamEvent event) {
     if (_session._closed) return;
+    // Context compression moved the chat to a continuation session: its
+    // Kanban dock must count cards stamped with the new id as well. Told at
+    // once, because an idle chat's session.info goes no further below.
+    if (event.type == 'session.info' && _observeStoredSessionId(event.data)) {
+      _notify();
+    }
     if (const {
       'notification.show',
       'notification.clear',
       'background.complete',
+      'btw.complete',
       'review.summary',
+      // manage_catalog install cards: the chat screen draws and answers them.
+      'connection.request',
+      'connection.update',
     }.contains(event.type)) {
       _auxiliaryEvents.add(event);
       if (_auxiliaryEvents.length > 20) _auxiliaryEvents.removeAt(0);
@@ -2016,6 +2256,15 @@ class NormalGatewayChatOwner {
       _notify(meaningfulActivity: update != null);
       return;
     }
+    final failureFrame = const {'error', 'turn.error'}.contains(event.type);
+    if (failureFrame && !snapshot.hasActiveTurn) {
+      // No turn is live here: a turn that settled on the server after this
+      // client let go of it (detached) failed. The chat's failure card
+      // still has to say so (and offer Retry / Switch to).
+      _keepFailureFrame(event, detached: true);
+      _notify();
+      return;
+    }
     if (!snapshot.hasActiveTurn ||
         phase == NormalGatewayTurnPhase.preparing ||
         !wireEmitted ||
@@ -2039,6 +2288,9 @@ class NormalGatewayChatOwner {
       // arriving after B's onSent, before B has emitted any activity.
       if (!terminal) _wireTurnId ??= wireTurn;
     }
+    // The live turn's failure, for the card once the turn has settled as
+    // failed (a later success never shows it).
+    if (failureFrame) _keepFailureFrame(event, detached: false);
     final ownsResponse = wireTurn != null
         ? wireTurn == _wireTurnId
         : _sawResponseActivity;
@@ -2251,6 +2503,18 @@ class NormalGatewayChatOwner {
             : null;
       }
     } else if (event.type.startsWith('tool.')) {
+      if (event.type == 'tool.complete') {
+        final cards = chatKanbanSeedsFromToolCall(
+          name: event.data['name']?.toString() ?? '',
+          args: event.data['args'],
+          result: event.data['result'],
+        );
+        if (cards.isNotEmpty) {
+          _kanban.addAll(cards);
+          _kanbanRevision++;
+          if (_kanban.length > 64) _kanban.removeRange(0, _kanban.length - 64);
+        }
+      }
       final update = GatewayToolActivity.fromGatewayEvent(
         event.type,
         event.data,
@@ -2322,7 +2586,9 @@ class NormalGatewayChatOwner {
       unawaited(
         _settle(
           false,
-          failure ?? event.data['message']?.toString() ?? 'Gateway turn failed',
+          failure ??
+              event.data['message']?.toString() ??
+              serviceStrings.rel_svc_misc_gateway_turn_failed,
         ),
       );
     } else if (ownedLifecycleTerminal) {
@@ -2409,14 +2675,27 @@ class NormalGatewayChatOwner {
     return pending;
   }
 
-  void requestRecovery() {
-    if (_redirect != null) return _root.requestRecovery();
-    if (!snapshot.hasActiveTurn ||
+  /// The pause started with this turn running: hold keep-awake's reconcile
+  /// until recovery has read the turn's state again (or it settles).
+  void _holdReconcileForPause() {
+    if (_redirect != null ||
+        !snapshot.hasActiveTurn ||
         (!wireEmitted && _terminalReceipt == null) ||
-        _settling ||
-        !_session._canRecover) {
+        _settling) {
       return;
     }
+    SystemSleepGate.instance.holdReconcile(this);
+  }
+
+  void requestRecovery() {
+    if (_redirect != null) return _root.requestRecovery();
+    if (!snapshot.hasActiveTurn || (!wireEmitted && _terminalReceipt == null)) {
+      // Nothing left to recover: the turn is over (or never reached the
+      // wire), so it holds no reconcile either.
+      SystemSleepGate.instance.releaseReconcile(this);
+      return;
+    }
+    if (_settling || !_session._canRecover) return;
     _retryTimer?.cancel();
     _retryTimer = null;
     _recoveryQueued = true;
@@ -2428,6 +2707,9 @@ class NormalGatewayChatOwner {
     _recovering = true;
     _recoveryQueued = false;
     final generation = _generation;
+    // Set once this attempt has read the turn's state from the gateway (or
+    // settled it): after a pause, that is the reconcile keep-awake waits for.
+    var observed = false;
 
     try {
       final terminal = _terminalReceipt;
@@ -2437,10 +2719,14 @@ class NormalGatewayChatOwner {
           terminal.error,
           generation: generation,
         );
+        observed = true;
         return;
       }
       final stored = storedSessionId;
-      if (stored == null) return; // no safe recovery without a durable identity
+      if (stored == null) {
+        observed = true; // nothing more will be learned about this turn
+        return; // no safe recovery without a durable identity
+      }
       // Recovery may attach while the submit wait is pending, but that read
       // cannot become settlement authority merely by arriving after the ACK.
       // Generation plus this immutable observation boundary identify its epoch.
@@ -2462,6 +2748,7 @@ class NormalGatewayChatOwner {
                   !_submissionPending,
             ));
       _reconcileParkedAttention(parkedAttention, resumed.openRequests);
+      observed = true;
       if (!_current(generation) || !snapshot.hasActiveTurn || _settling) return;
       if (_terminalReceipt != null) {
         // An owned terminal received during this read outranks the older
@@ -2544,6 +2831,9 @@ class NormalGatewayChatOwner {
       // A failed resume/history read is unknown, never an empty completion.
     } finally {
       _recovering = false;
+      if (observed && !SystemSleepGate.instance.value) {
+        SystemSleepGate.instance.releaseReconcile(this);
+      }
 
       // Old flight A must hand off to a queued generation B, even when A was
       // invalidated by terminal settlement while its read was held.
@@ -2683,10 +2973,9 @@ class NormalGatewayChatOwner {
       _boundSettledPresentation();
       _error = error;
       _status = completed == null
-          ? const GatewayTurnStatus(
+          ? GatewayTurnStatus(
               kind: 'reconciled_unknown',
-              text:
-                  'The gateway is idle. The previous turn’s outcome could not be confirmed.',
+              text: serviceStrings.rel_svc_misc_gateway_idle_unconfirmed,
             )
           : null;
       _pendingInput.clear();
@@ -2719,6 +3008,12 @@ class NormalGatewayChatOwner {
               _history.any((row) => _responseRow(row, _floor!)))) {
         unawaited(_refreshSettledHistory(owned));
       }
+      if (settledWireEmitted && completed == true && !_session._background) {
+        // The in-app cue; a completion notification covers the background.
+        CompletionCuePlayer.instance.turnFinished(
+          '${_session.connection.id}|$settledSessionId',
+        );
+      }
       if (settledWireEmitted &&
           completed != null &&
           _session._background &&
@@ -2748,8 +3043,11 @@ class NormalGatewayChatOwner {
                 conversation: conversation,
               )) {
             await _session.notifications.showKind(
+              origin: _session.connection,
               kind: kind,
-              title: completed ? 'Hermes response ready' : 'Hermes turn failed',
+              title: completed
+                  ? serviceStrings.hermes_response_ready
+                  : serviceStrings.rel_svc_misc_hermes_turn_failed,
               body: settledTitle,
               eventId: settledTurnId,
               sessionId: settledSessionId,
@@ -2775,6 +3073,11 @@ class NormalGatewayChatOwner {
         // it would spin on a permanently rejected tombstone write.
         if (snapshot.hasActiveTurn && !_recovering) requestRecovery();
       }
+      // Settled, and its end already published: nothing about this turn is
+      // left for keep-awake to wait on.
+      if (!snapshot.hasActiveTurn) {
+        SystemSleepGate.instance.releaseReconcile(this);
+      }
     }
   }
 
@@ -2795,6 +3098,7 @@ class NormalGatewayChatOwner {
     unawaited(
       _session.notifications
           .showKind(
+            origin: _session.connection,
             kind: kind,
             title: 'Hermes — $title',
             body: notification?.text ?? notice!.text,
@@ -2844,23 +3148,30 @@ class NormalGatewayChatOwner {
     final sessionId = storedSessionId ?? localSessionId;
     final shown = _session.notifications
         .showKind(
+          origin: _session.connection,
           kind: kind,
           title: approval
-              ? 'Approval needed — $title'
-              : 'Input needed — $title',
+              ? serviceStrings.rel_svc_misc_approval_needed_title(title)
+              : serviceStrings.rel_svc_misc_input_needed_title(title),
           // Sensitive request text and secrets never enter a notification.
           body: approval
-              ? 'Open the chat to review the requested action.'
-              : 'Open the chat to respond.',
+              ? serviceStrings.release_chat_notification_review_action
+              : serviceStrings.release_chat_notification_respond,
           // Kept across a reconnect's new local key: one notification per
           // request. Same identity the chat route uses for its own post.
           eventId: eventId,
           sessionId: sessionId,
           connectionId: _session.connection.id,
           actions: approval
-              ? const [
-                  TurnNotificationAction(id: 'approve', label: 'Approve'),
-                  TurnNotificationAction(id: 'reject', label: 'Deny'),
+              ? [
+                  TurnNotificationAction(
+                    id: 'approve',
+                    label: serviceStrings.approve,
+                  ),
+                  TurnNotificationAction(
+                    id: 'reject',
+                    label: serviceStrings.deny,
+                  ),
                 ]
               : const [],
           payload: jsonEncode({
@@ -2998,9 +3309,7 @@ class NormalGatewayChatOwner {
     if (!snapshot.hasActiveTurn) return null;
     assert(!wireEmitted);
     _handoffRejection = StateError(
-      'This chat was opened through its stored identity while another turn '
-      'was admitted. The unsent prompt was not sent; retry explicitly after '
-      'that turn finishes.',
+      serviceStrings.rel_svc_misc_stored_identity_turn_conflict,
     );
     _generation++; // fences held ensure/history/write-ahead and submit starts
     _reservation = null;
@@ -3032,6 +3341,7 @@ class NormalGatewayChatOwner {
   }
 
   void _close() {
+    SystemSleepGate.instance.releaseReconcile(this);
     _generation++;
     _retryTimer?.cancel();
     _baselineTimer?.cancel();
@@ -3181,6 +3491,7 @@ class _ReceivedTurnPersistence {
 
 bool _interactive(String type) => const {
   'approval.request',
+  'setup_beat.request',
   'clarify.request',
   'clarify.remaining',
   'sudo.request',
@@ -3231,7 +3542,8 @@ String? _failure(Map<String, dynamic> state) {
     'cancelled',
     'canceled',
   }.contains(status)) {
-    return state['message']?.toString() ?? 'Gateway turn $status';
+    return state['message']?.toString() ??
+        serviceStrings.rel_svc_misc_gateway_turn_status(status ?? '');
   }
   return null;
 }

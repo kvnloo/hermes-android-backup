@@ -39,6 +39,7 @@ class SlashCommandController extends ChangeNotifier {
     String cacheScope = '',
     this.limit = 8,
     SlashCommandRefusals? refusals,
+    this.localCommands,
   }) : _scope = cacheScope {
     _refusals = refusals ?? SlashCommandRefusals();
     _memoryEpoch = _refusals.epoch;
@@ -47,6 +48,18 @@ class SlashCommandController extends ChangeNotifier {
 
   final Future<SlashCommandCatalog> Function() loadCatalog;
   final int limit;
+
+  /// Commands the app runs itself (Classic's `/kanban` and `/bots` open a
+  /// screen). Offered whatever the gateway's catalogue lists, after its own
+  /// commands; a gateway entry of the same name wins.
+  final List<SlashCommand> Function()? localCommands;
+
+  List<SlashCommand> get _local => localCommands?.call() ?? const [];
+
+  bool _isLocal(String name) {
+    final bare = name.trim().replaceFirst(RegExp(r'^/+'), '').toLowerCase();
+    return _local.any((command) => command.name.toLowerCase() == bare);
+  }
 
   late SlashCommandRefusals _refusals;
   int _memoryEpoch = 0;
@@ -78,10 +91,12 @@ class SlashCommandController extends ChangeNotifier {
   String _query = '';
   bool _disposed = false;
 
-  /// Whether the dropdown should be visible for the current draft.
-  bool get isOpen => _open && _catalogError == null;
+  /// Whether the dropdown should be visible for the current draft. Local
+  /// commands keep it usable when the catalogue cannot load.
+  bool get isOpen => _open && (_catalogError == null || _local.isNotEmpty);
 
-  bool get catalogLoaded => _catalog != null;
+  bool get catalogLoaded =>
+      _catalog != null || (_catalogError != null && _local.isNotEmpty);
 
   /// The loaded catalogue (read-only), or null before it loads.
   SlashCommandCatalog? get catalog => _catalog;
@@ -94,15 +109,18 @@ class SlashCommandController extends ChangeNotifier {
 
   List<SlashCommand> get matches {
     final catalog = _catalog;
-    if (catalog == null) return const [];
+    if (catalog == null && !catalogLoaded) return const [];
     final query = _query.toLowerCase();
-    final visible = catalog.commands
-        .where(
+    final visible = [
+      if (catalog != null)
+        ...catalog.commands.where(
           (command) =>
               catalog.canExecute(command.name) &&
               !_refusals.contains(catalog.canonicalName(command.name)),
-        )
-        .toList();
+        ),
+      for (final command in _local)
+        if (catalog == null || !catalog.containsName(command.name)) command,
+    ];
     if (query.isEmpty) {
       return List<SlashCommand>.unmodifiable(visible.take(limit));
     }
@@ -166,7 +184,7 @@ class SlashCommandController extends ChangeNotifier {
     } catch (error) {
       if (_disposed || generation != _generation) return false;
       _catalogError = error;
-      _open = false;
+      if (_local.isEmpty) _open = false;
       _notify();
       return false;
     } finally {
@@ -181,6 +199,7 @@ class SlashCommandController extends ChangeNotifier {
   /// path still attempts a `/`-line and the server's `unsupported_command`
   /// reply is never permission to resend the command as prose.
   bool isExecutable(String name) {
+    if (_isLocal(name)) return true;
     final catalog = _catalog;
     if (catalog != null) return catalog.canExecute(name);
     final bare = name.trim().replaceFirst(RegExp(r'^/+'), '').toLowerCase();
@@ -198,7 +217,8 @@ class SlashCommandController extends ChangeNotifier {
     );
   }
 
-  bool knowsCommand(String name) => _catalog?.containsName(name) ?? false;
+  bool knowsCommand(String name) =>
+      _isLocal(name) || (_catalog?.containsName(name) ?? false);
 
   /// Drops the cache. Called on connection changes and scope switches.
   void invalidate() {

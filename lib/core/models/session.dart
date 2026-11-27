@@ -17,6 +17,10 @@ class Session {
   final String source;
   final int messageCount;
 
+  /// Optional aggregate usage from the list. Missing is not zero.
+  final int? totalTokens;
+  final double? costUsd;
+
   /// Whether the payload supplied a valid count, rather than a display fallback.
   final bool hasKnownMessageCount;
 
@@ -72,6 +76,8 @@ class Session {
     required this.model,
     required this.source,
     required this.messageCount,
+    this.totalTokens,
+    this.costUsd,
     this.hasKnownMessageCount = true,
     this.hasContentPreview = false,
     required this.isActive,
@@ -104,6 +110,8 @@ class Session {
     model: model,
     source: source,
     messageCount: messageCount,
+    totalTokens: totalTokens,
+    costUsd: costUsd,
     hasKnownMessageCount: hasKnownMessageCount,
     hasContentPreview: hasContentPreview,
     isActive: isActive,
@@ -127,6 +135,8 @@ class Session {
     model: model,
     source: source,
     messageCount: messageCount,
+    totalTokens: totalTokens,
+    costUsd: costUsd,
     hasKnownMessageCount: hasKnownMessageCount,
     hasContentPreview: hasContentPreview,
     isActive: isActive,
@@ -151,6 +161,8 @@ class Session {
     model: model,
     source: source,
     messageCount: messageCount,
+    totalTokens: totalTokens,
+    costUsd: costUsd,
     hasKnownMessageCount: hasKnownMessageCount,
     hasContentPreview: hasContentPreview,
     isActive: isActive,
@@ -173,6 +185,8 @@ class Session {
     model: model,
     source: source,
     messageCount: messageCount,
+    totalTokens: totalTokens,
+    costUsd: costUsd,
     hasKnownMessageCount: hasKnownMessageCount,
     hasContentPreview: hasContentPreview,
     isActive: isActive,
@@ -197,6 +211,8 @@ class Session {
     model: model,
     source: source,
     messageCount: messageCount,
+    totalTokens: totalTokens,
+    costUsd: costUsd,
     hasKnownMessageCount: hasKnownMessageCount,
     hasContentPreview: hasContentPreview,
     isActive: isActive,
@@ -238,6 +254,18 @@ class Session {
       return fallback;
     }
 
+    double? amount(Object? value) {
+      final number = value is num
+          ? value.toDouble()
+          : double.tryParse('$value');
+      return number != null && number.isFinite && number >= 0 ? number : null;
+    }
+
+    final input = amount(json['input_tokens']),
+        output = amount(json['output_tokens']);
+    final total =
+        amount(json['total_tokens']) ??
+        (input != null && output != null ? input + output : null);
     final endedAt = json['ended_at'];
     final startedAt = asDouble(json['started_at']);
     final lastActive = asDouble(json['last_active'], startedAt);
@@ -257,6 +285,12 @@ class Session {
       model: json['model'] ?? 'Default',
       source: json['source'] ?? '',
       messageCount: asInt(json['message_count']),
+      totalTokens: total?.toInt(),
+      costUsd: amount(
+        json['actual_cost_usd'] ??
+            json['estimated_cost_usd'] ??
+            json['cost_usd'],
+      ),
       hasKnownMessageCount:
           json['message_count'] is int && (json['message_count'] as int) >= 0,
       isActive: !ignoreIsActive && isActiveJson is bool

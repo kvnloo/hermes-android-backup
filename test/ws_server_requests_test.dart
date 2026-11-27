@@ -12,6 +12,37 @@ import 'package:hermes_android/core/services/ws_client.dart';
 
 void main() {
   test(
+    'window activity depends on the current socket capability acknowledgement',
+    () async {
+      for (final accepts in [false, true]) {
+        final gateway = await _ServerRequestGateway.start();
+        gateway.advertiseActivity = accepts;
+        final client = WsClient(
+          'http://127.0.0.1:${gateway.port}',
+          ticket: 'fixture',
+          profile: 'qa',
+        )..onServerRequest = (_) => false;
+        try {
+          expect(client.acceptsWindowActivity, isFalse);
+          await client.connect();
+          await _waitFor(() => gateway.capabilityFrames.isNotEmpty);
+          // A subsequent reply fences processing of the capabilities response.
+          await client.send('client.activity', {
+            'sessions': <String>[],
+            'idle_seconds': 60,
+            'basis': 'page',
+            'away': true,
+          }, includeProfile: false);
+          expect(client.acceptsWindowActivity, accepts);
+        } finally {
+          client.close();
+          await gateway.stop();
+        }
+        expect(client.acceptsWindowActivity, isFalse);
+      }
+    },
+  );
+  test(
     'closed recovery owner detach cannot reject a same-ID replacement request',
     () async {
       final gateway = await _ServerRequestGateway.start(
@@ -185,6 +216,100 @@ void main() {
       expect((await rejected.future)['error'], containsPair('code', -32601));
       await controller.close();
       current.removeAsyncEventListener('mobile-1', exact);
+    },
+  );
+
+  // A setup_beat card waits for its chat (Desktop parks it per session and
+  // re-delivers open_requests on resume): leaving the chat must not answer
+  // it with an error, and opening the chat again shows it again.
+  test(
+    'a setup card survives leaving its chat and returns on reopen',
+    () async {
+      final gateway = await _ServerRequestGateway.start(
+        withDashboardAuth: true,
+        withTurnRecovery: true,
+      );
+      final controller = GatewayTurnApplicationController(
+        journalFactory: () => GatewayTurnJournal(store: _MemoryJournalStore()),
+      );
+      addTearDown(() async {
+        await controller.close();
+        await gateway.stop();
+      });
+      final connection = SavedConnection(
+        id: 'setup-card-reopen',
+        label: 'Fixture',
+        host: '127.0.0.1',
+        port: gateway.port,
+        apiKey: 'fixture-key',
+        dashboardPortOverride: gateway.port,
+        dashboardUsername: 'user',
+        dashboardPassword: 'pass',
+      );
+      final session = controller.sessionFor(connection);
+      final first = Completer<StreamEvent>();
+      final token = session.setAsyncEventListener('mobile-1', (_, event) {
+        if (event.type == 'setup_beat.request' && !first.isCompleted) {
+          first.complete(event);
+        }
+      });
+      await session.submit(localSessionId: 'mobile-1', text: 'Set me up');
+      gateway.sendServerRequest(
+        id: 'beat-1',
+        method: 'setup_beat',
+        params: {
+          'session_id': 'runtime-1',
+          'beat': 'build',
+          'question': 'Pick a first build',
+          'card': {
+            'options': [
+              {'id': 'site', 'label': 'A website'},
+            ],
+          },
+        },
+      );
+      final requestId = (await first.future.timeout(
+        const Duration(seconds: 5),
+      )).data['server_request_id'].toString();
+
+      // The chat's screen goes away.
+      session.removeAsyncEventListener('mobile-1', token);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(
+        gateway.serverResponses.containsKey('beat-1'),
+        isFalse,
+        reason: 'leaving the chat must not answer its setup card',
+      );
+
+      // Opened again: the card is delivered to the new screen.
+      final replayed = Completer<StreamEvent>();
+      session.setAsyncEventListener('mobile-1', (_, event) {
+        if (event.type == 'setup_beat.request' && !replayed.isCompleted) {
+          replayed.complete(event);
+        }
+      });
+      final again = await replayed.future.timeout(const Duration(seconds: 5));
+      expect(again.data['server_request_id'], requestId);
+      final answered = Completer<Map<String, dynamic>>();
+      gateway.onServerResponse = (_, frame) {
+        if (frame['id'] == 'beat-1' && !answered.isCompleted) {
+          answered.complete(frame);
+        }
+      };
+      expect(
+        (session as GatewaySetupBeatResponder).tryRespondToSetupBeat(
+          sessionId: 'mobile-1',
+          requestId: requestId,
+          result: {
+            'answer': {'build': 'site', 'label': 'A website'},
+          },
+        ),
+        isTrue,
+      );
+      final frame = await answered.future.timeout(const Duration(seconds: 5));
+      expect(frame['result'], {
+        'answer': {'build': 'site', 'label': 'A website'},
+      });
     },
   );
 
@@ -1055,6 +1180,7 @@ class _ServerRequestGateway {
   final bool withTurnRecovery;
   final List<Map<String, dynamic>>? openRequestsOnResume;
   final List<WebSocket> _sockets = [];
+  bool advertiseActivity = false;
   final List<Map<String, dynamic>> capabilityFrames = [];
   final Map<String, Map<String, dynamic>> serverResponses = {};
   final Map<String, int> serverResponseSocketIndexes = {};
@@ -1144,9 +1270,14 @@ class _ServerRequestGateway {
       onServerResponse?.call(socketIndex, frame);
       return;
     }
+    if (method == 'client.activity') {
+      _respond(socket, id, {});
+      return;
+    }
     if (method == 'client.capabilities') {
       capabilityFrames.add(frame);
       _respond(socket, id, {
+        if (advertiseActivity) 'client_activity': true,
         'server_requests': ['clarify', 'approval', 'sudo', 'secret'],
       });
       return;

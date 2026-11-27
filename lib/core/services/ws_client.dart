@@ -5,16 +5,25 @@
 // After submitting a prompt, the server pushes stream events and finally
 // a JSON-RPC response with the same id.
 import 'dart:async';
+
+import 'preview_peer.dart';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../models/client_certificate.dart';
 import '../models/slash_command.dart';
+import 'canonical_wire.dart';
+import 'gateway_headers.dart';
 import 'hermes_sign_in.dart';
 import 'tls_client_factory.dart';
+import '../history/canonical_rewind.dart';
+import '../history/rewind_submit.dart'
+    show isRejectedDeepTruncatePayload, stripRejectedDeepTruncate;
 
 Object? _deepFreezeJson(Object? value) {
   if (value is Map) {
@@ -282,13 +291,95 @@ class GatewayServerRequest {
   }
 }
 
+/// dart:io WebSocket.connect opens a GET through customClient.openUrl. Never
+/// forward its credential-bearing protocol/header set on an HTTP redirect.
+final class _UpgradeClient implements HttpClient {
+  _UpgradeClient(this.inner);
+  final HttpClient inner;
+  @override
+  Future<HttpClientRequest> openUrl(String method, Uri url) async =>
+      (await inner.openUrl(method, url))..followRedirects = false;
+  @override
+  void close({bool force = false}) => inner.close(force: force);
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnsupportedError('Not an upgrade operation');
+}
+
+/// A live binding observed on this exact socket, never a persisted locator.
+final class WorkspaceRuntime {
+  WorkspaceRuntime._(this.runtimeId, this.profile, this.cwd, this.backend);
+
+  /// A binding for a fake socket in tests; a real one is only ever made by
+  /// the socket that received the resume receipt.
+  @visibleForTesting
+  WorkspaceRuntime.forTest(
+    this.runtimeId, {
+    this.profile,
+    this.cwd,
+    this.backend,
+  });
+  final String runtimeId;
+  final String? profile;
+  final String? cwd;
+  final String? backend;
+}
+
 /// WebSocket client for the Hermes JSON-RPC gateway.
 class WsClient {
+  final previewPeers = PreviewPeers();
+  int get socketEpoch => _connectionGeneration;
+  final _workspaceBindings = <String, WorkspaceRuntime>{};
+  final _workspaceObservers = <void Function()>{};
+
+  /// Invalidation only; observers never receive another profile's payload.
+  void Function() observeWorkspaceBindings(void Function() changed) {
+    _workspaceObservers.add(changed);
+    return () => _workspaceObservers.remove(changed);
+  }
+
+  void _notifyWorkspaceBindings() {
+    for (final changed in List.of(_workspaceObservers)) {
+      try {
+        changed();
+      } catch (_) {
+        /* Optional observers do not own RPC progress. */
+      }
+    }
+  }
+
+  // Retain per-socket fences even after close/rebinding: a delayed older
+  // acknowledgement cannot resurrect authority cleared by the newer one.
+  final _workspaceReceipt = <String, int>{};
+  WorkspaceRuntime? workspaceBinding(String storedId) =>
+      _workspaceBindings[storedId];
+
+  /// Replace only the cwd of a binding this socket already holds, after a
+  /// confirmed workspace mutate for that same stored session. A missing
+  /// binding is left missing: this never invents authority.
+  void adoptConfirmedWorkspaceCwd(String storedId, String cwd) {
+    final old = _workspaceBindings[storedId];
+    if (old == null || old.cwd == cwd) return;
+    _workspaceBindings[storedId] = WorkspaceRuntime._(
+      old.runtimeId,
+      old.profile,
+      cwd,
+      old.backend,
+    );
+    _notifyWorkspaceBindings();
+  }
+
   final String baseUrl;
   final String? _token;
   final String? _ticket;
   final String? _profile;
-  IOWebSocketChannel? _channel;
+  WebSocketChannel? _channel;
+
+  /// Test seam: dials the gateway socket in place of the platform
+  /// WebSocket, so a test can put an in-memory gateway under the real
+  /// transport. Null (always, outside tests) dials the platform socket.
+  @visibleForTesting
+  static WebSocketChannel Function(Uri uri)? debugDial;
   bool _connected = false;
   int _nextId = 1;
   int _connectionGeneration = 0;
@@ -305,21 +396,88 @@ class WsClient {
   /// streamed response.
   final Map<String, List<StreamCallback>> _sessionStreams = {};
 
+  /// An invalidation only: never pass an event's contents across profile
+  /// boundaries on a multiplexed socket. Consumers read the scoped snapshot.
+  void Function() observeQueueChanges(String session, void Function() changed) {
+    final listeners = _sessionStreams.putIfAbsent(session, () => []);
+    void notify(StreamEvent event) {
+      if (event.type == 'session.info' && event.data['pending'] is List) {
+        changed();
+      }
+    }
+
+    listeners.add(notify);
+    final close = _addConnectionClosedListener(changed);
+    return () {
+      _removeConnectionClosedListener(close);
+      listeners.remove(notify);
+      if (listeners.isEmpty && identical(listeners, _sessionStreams[session])) {
+        _sessionStreams.remove(session);
+      }
+    };
+  }
+
   /// Canonical session authority: the newest execution generation this
   /// socket admitted per runtime session (resume/create snapshot, submit
   /// receipt, or an event's stamp). Stop and Steer name it; it is never
   /// guessed or advanced to a claim the socket has not seen.
   final Map<String, int> _executionGenerations = {};
+
+  /// The guard every request on a session-authority socket goes through
+  /// ([send]): revisions, open prompts and unanswered edits of this socket.
+  /// A new connection starts with none.
+  late CanonicalWire _canonical = _newCanonicalWire();
+  CanonicalWire _newCanonicalWire() =>
+      CanonicalWire(generationFor: (id) => _executionGenerations[id]);
+
+  /// The CAS revision this socket was last told for each session on the
+  /// canonical session authority: a fenced mutation (rewind) presents it.
+  final CanonicalSessionRevisions _sessionRevisions =
+      CanonicalSessionRevisions();
   final Map<int, _ConnectionClosedListener> _connectionClosedListeners = {};
   Completer<Map<String, dynamic>>? _gatewayReadyCompleter;
   Map<String, dynamic>? _gatewayReadyFrame;
   String? _gatewayReadyCanonical;
   JsonRpcError? _gatewayReadyFailure;
   bool _serverRequestsAdvertised = false;
+  bool _activityAccepted = false;
+  bool get acceptsWindowActivity => _connected && _activityAccepted;
 
   /// Global stream listener (receives all untargeted events).
   StreamCallback? onStreamEvent;
   ServerRequestCallback? onServerRequest;
+
+  /// Extra observers of every pushed event, beside the one [onStreamEvent]
+  /// slot its owner (the chat) holds. App-level events such as
+  /// `display.install.log` carry no session, so no session listener sees them.
+  final List<StreamCallback> _eventTaps = [];
+
+  /// Observes every pushed event until the returned function is called.
+  void Function() watchEvents(StreamCallback listener) {
+    _eventTaps.add(listener);
+    return () => _eventTaps.remove(listener);
+  }
+
+  /// Handlers for one server→client request method, asked before
+  /// [onServerRequest]: a screen that started an operation answers the
+  /// prompt that operation raises (e.g. `display.install.sudo`).
+  final Map<String, List<ServerRequestCallback>> _requestHandlers = {};
+
+  /// Answers [method] requests until the returned function is called. The
+  /// handler returns true once it has taken the request.
+  void Function() handleServerRequests(
+    String method,
+    ServerRequestCallback handler,
+  ) {
+    _requestHandlers.putIfAbsent(method, () => []).add(handler);
+    if (_connected) _advertiseServerRequestSupport();
+    return () {
+      final handlers = _requestHandlers[method];
+      handlers?.remove(handler);
+      if (handlers != null && handlers.isEmpty) _requestHandlers.remove(method);
+    };
+  }
+
   ConnectionCallback? onConnectionChanged;
   void Function()? onConnectionClosed;
   GatewayReadyCallback? onGatewayReady;
@@ -330,6 +488,7 @@ class WsClient {
     String? ticket,
     String? profile,
     ClientCertificateConfig? clientCertificate,
+    Map<String, String> customHeaders = const <String, String>{},
     TlsClientFactory tlsClientFactory = const TlsClientFactory(),
     Duration heartbeatInterval = defaultHeartbeatInterval,
     Duration heartbeatDeadline = defaultHeartbeatDeadline,
@@ -341,6 +500,7 @@ class WsClient {
       ticket,
       profile,
       clientCertificate,
+      normalizeRemoteHeaders(customHeaders),
       tlsClientFactory,
       heartbeatInterval,
       heartbeatDeadline,
@@ -354,6 +514,7 @@ class WsClient {
     this._ticket,
     this._profile,
     this._clientCertificate,
+    this._customHeaders,
     this._tlsClientFactory,
     this.heartbeatInterval,
     this.heartbeatDeadline,
@@ -369,6 +530,7 @@ class WsClient {
   static const ticketProtocolPrefix = 'hermes-gateway-ticket.';
 
   final ClientCertificateConfig? _clientCertificate;
+  final Map<String, String> _customHeaders;
   final TlsClientFactory _tlsClientFactory;
 
   /// Keepalive cadence mirroring the desktop client
@@ -394,6 +556,7 @@ class WsClient {
     _gatewayReadyCanonical = null;
     _gatewayReadyFailure = null;
     _serverRequestsAdvertised = false;
+    _activityAccepted = false;
     final readyCompleter = Completer<Map<String, dynamic>>();
     _gatewayReadyCompleter = readyCompleter;
     // A transport can close before a caller starts waiting for gateway.ready.
@@ -407,22 +570,27 @@ class WsClient {
     final accessHeaders = HermesSignInVault.instance.accessHeadersFor(
       Uri.parse(wsUrl),
     );
-    // Without a client certificate the platform WebSocket default is kept:
-    // flutter_test's binding replaces every freshly constructed HttpClient
-    // with a mock, and only the SDK's shared default (built before tests
-    // install that override) still reaches a real loopback server. A
-    // certificate always needs its own context, so that path constructs one.
-    final customClient = _clientCertificate == null
-        ? null
-        : _tlsClientFactory.createHttpClient(_clientCertificate);
-    final channel = IOWebSocketChannel.connect(
-      Uri.parse(wsUrl),
-      customClient: customClient,
-      headers: accessHeaders.isEmpty ? null : accessHeaders,
-      protocols: useProtocol
-          ? [gatewayProtocol, '$ticketProtocolPrefix$ticket']
-          : null,
-    );
+    final upgradeHeaders = <String, String>{
+      ..._customHeaders,
+      ...accessHeaders,
+    };
+    // Ticket-bearing upgrades require a no-redirect client even without mTLS.
+    // Preserve platform trust and the exact configured client identity.
+    final customClient =
+        useProtocol || _clientCertificate != null || upgradeHeaders.isNotEmpty
+        ? _UpgradeClient(_tlsClientFactory.createHttpClient(_clientCertificate))
+        : null;
+    final dial = debugDial;
+    final WebSocketChannel channel = dial != null
+        ? dial(Uri.parse(wsUrl))
+        : IOWebSocketChannel.connect(
+            Uri.parse(wsUrl),
+            customClient: customClient,
+            headers: upgradeHeaders.isEmpty ? null : upgradeHeaders,
+            protocols: useProtocol
+                ? [gatewayProtocol, '$ticketProtocolPrefix$ticket']
+                : null,
+          );
     _channel = channel;
     channel.stream.listen(
       (message) => _handleMessage(message, generation),
@@ -455,6 +623,9 @@ class WsClient {
         // Preserve the original setup failure after closing this exact socket.
       }
       rethrow;
+    } finally {
+      // The upgraded socket has detached from this HTTP client.
+      customClient?.close();
     }
   }
 
@@ -467,6 +638,10 @@ class WsClient {
     final wasConnected = _connected || _channel != null;
     _connected = false;
     _channel = null;
+    _workspaceBindings.clear();
+    _notifyWorkspaceBindings();
+    previewPeers.clear();
+    _workspaceReceipt.clear();
     // Reject all pending request-response calls.
     for (var entry in _pending.values) {
       entry.timer?.cancel();
@@ -506,6 +681,8 @@ class WsClient {
     _streams.clear();
     _sessionStreams.clear();
     _executionGenerations.clear();
+    _canonical = _newCanonicalWire();
+    _sessionRevisions.clear();
     for (final listener in listenersToNotify) {
       try {
         listener();
@@ -681,6 +858,7 @@ class WsClient {
           if (method == null || params == null) {
             _streams.remove(id);
           }
+          _noteSessionFences(pending, data);
           pending.completer.complete(data);
           // Internal request state is terminal before observers see the final
           // stream event. Observer failures cannot retain a pending request.
@@ -703,44 +881,124 @@ class WsClient {
     // Never claim support unless this socket can actually route the requests.
     // A recovery socket without a handler would otherwise make the gateway
     // send prompts that this client immediately rejects with -32601.
-    if (_serverRequestsAdvertised || onServerRequest == null) return;
+    if (_serverRequestsAdvertised ||
+        (onServerRequest == null && _requestHandlers.isEmpty)) {
+      return;
+    }
     _serverRequestsAdvertised = true;
     // This method is connection-scoped, not profile-scoped. Older gateways
     // answer -32601; deliberately ignore that response so they keep working.
+    final generation = _connectionGeneration;
     unawaited(
       send('client.capabilities', const {
         'server_requests': true,
-      }, includeProfile: false).then<void>((_) {}, onError: (_, _) {}),
+      }, includeProfile: false).then<void>((reply) {
+        if (_connectionGeneration == generation) {
+          _activityAccepted = switch (reply['result']) {
+            {'client_activity': true} => true,
+            _ => false,
+          };
+        }
+      }, onError: (_, _) {}),
     );
   }
 
-  void _deliverServerRequest(
+  /// Whether a view took the request.
+  bool _deliverServerRequest(
     String id,
     String method,
     Map<String, dynamic> params, {
     bool replayed = false,
   }) {
+    // A canonical approval or question is not a request frame: the owner
+    // published it as an event and takes its answer as `approval.respond` /
+    // `clarify.respond`. It cannot be failed either: other viewers may still
+    // answer it.
+    final prompt = sessionAuthority && _canonical.holdsPrompt(id);
     final request = GatewayServerRequest._(
       id: id,
       method: method,
       params: Map<String, dynamic>.from(params),
       replayed: replayed,
-      respond: (result) => _sendServerResponse(id, result: result),
-      fail: (code, message) =>
-          _sendServerResponse(id, error: {'code': code, 'message': message}),
+      respond: prompt
+          ? (result) => _answerCanonicalPrompt(id, method, result)
+          : (result) => _sendServerResponse(id, result: result),
+      fail: prompt
+          ? (_, _) => true
+          : (code, message) => _sendServerResponse(
+              id,
+              error: {'code': code, 'message': message},
+            ),
     );
+    if (method == 'preview.read' || method == 'preview.act') {
+      try {
+        final answer = previewPeers.answer(method, params, replayed: replayed);
+        if (answer != null) {
+          request.respond(answer);
+        } else {
+          request.fail(-32601, 'No shared preview for this operation');
+        }
+      } catch (_) {
+        request.fail(-32603, 'Preview unavailable');
+      }
+      return true;
+    }
+    for (final handler in List.of(_requestHandlers[method] ?? const [])) {
+      try {
+        if (handler(request)) return true;
+      } catch (_) {
+        // A scoped handler that throws leaves the request to the next one.
+      }
+    }
     final listener = onServerRequest;
     if (listener == null) {
       request.fail(-32601, 'no handler for server request: $method');
-      return;
+      return false;
     }
     try {
       if (!listener(request)) {
         request.fail(-32601, 'no handler for server request: $method');
+        return false;
       }
+      return true;
     } catch (_) {
       request.fail(-32603, 'server request handler crashed: $method');
+      return false;
     }
+  }
+
+  /// Answers a canonical prompt a view was handed as a server request. The
+  /// view's result is the legacy response body (`{choice}`, `{answer}` or a
+  /// one-question `{answers}`); [send] turns it into the owner's contract.
+  bool _answerCanonicalPrompt(
+    String id,
+    String kind,
+    Map<String, dynamic> result,
+  ) {
+    if (!_connected || _channel == null) return false;
+    final Map<String, dynamic> params;
+    if (kind == 'approval') {
+      final choice = result['choice'];
+      params = {
+        'prompt_id': id,
+        'choice': choice is String && choice.isNotEmpty ? choice : 'deny',
+      };
+    } else {
+      final answers = result['answers'];
+      final answer =
+          result['answer'] ??
+          (answers is Map
+              ? answers[id] ?? (answers.isEmpty ? null : answers.values.first)
+              : null);
+      params = {'prompt_id': id, 'answer': answer?.toString() ?? ''};
+    }
+    unawaited(
+      send(
+        kind == 'approval' ? 'approval.respond' : 'clarify.respond',
+        params,
+      ).then<void>((_) {}, onError: (_, _) {}),
+    );
+    return true;
   }
 
   /// Re-deliver unanswered requests returned by `session.resume` or event
@@ -905,15 +1163,86 @@ class WsClient {
     return ready.future.timeout(timeout);
   }
 
+  /// An independent observer, never a replacement for the active turn reader.
+  void Function() watchSessionEvents(
+    String runtimeId,
+    StreamCallback listener,
+  ) {
+    final list = _sessionStreams.putIfAbsent(runtimeId, () => []);
+    list.add(listener);
+    return () {
+      list.remove(listener);
+      if (list.isEmpty && identical(_sessionStreams[runtimeId], list)) {
+        _sessionStreams.remove(runtimeId);
+      }
+    };
+  }
+
   void _dispatchEvent(StreamEvent event) {
     _noteExecutionGeneration(
       event.sessionId,
       event.envelope['execution_generation'],
     );
+    _sessionRevisions.noteEvent(event.type, event.sessionId, event.data);
+    if (sessionAuthority) {
+      final canonical = _canonical;
+      canonical.noteEvent(event.type, event.sessionId, event.data);
+      // The owner publishes an approval or a question as an event carrying
+      // its prompt id. Both layouts already show the legacy server request
+      // of the same kind, so hand them that (as Hermes Desktop projects it)
+      // and answer by prompt id.
+      final prompt = onServerRequest == null
+          ? null
+          : canonical.adoptPromptEvent(
+              event.type,
+              event.sessionId,
+              event.data,
+              event.envelope['execution_generation'],
+            );
+      if (prompt != null) {
+        _noteExecutionGeneration(
+          event.sessionId,
+          event.data['execution_generation'],
+        );
+        if (_deliverServerRequest(prompt.id, prompt.method, prompt.params)) {
+          return;
+        }
+      }
+      final settled = canonical.settlePromptEvent(event.type, event.data);
+      if (settled != null) {
+        _dispatchToListeners(event);
+        // Answered here or by another viewer: the card comes down.
+        _dispatchToListeners(
+          StreamEvent(
+            type: 'request.cancel',
+            data: {
+              'id': settled,
+              'request_id': settled,
+              'reason': 'resolved',
+              'session_id': ?event.sessionId,
+            },
+            sessionId: event.sessionId,
+            envelope: event.envelope,
+          ),
+        );
+        return;
+      }
+    }
+    _dispatchToListeners(event);
+  }
+
+  void _dispatchToListeners(StreamEvent event) {
     try {
       onStreamEvent?.call(event);
     } catch (_) {
       // Global observers cannot block the session-scoped listener chain.
+    }
+    for (final tap in List.of(_eventTaps)) {
+      try {
+        tap(event);
+      } catch (_) {
+        // Nor can one tap block another.
+      }
     }
     final sessionId = event.sessionId;
     if (sessionId == null || sessionId.isEmpty) return;
@@ -939,6 +1268,34 @@ class WsClient {
     if (known == null || value > known) {
       _executionGenerations[sessionId] = value;
     }
+  }
+
+  /// The revision this socket was last told for [sessionId] on the canonical
+  /// session authority, or null when none was seen.
+  int? sessionRevisionFor(String sessionId) => _sessionRevisions.of(sessionId);
+
+  /// A reply's fences: a snapshot or receipt names the session's revision,
+  /// and a fence refusal names the owner's current revision and generation
+  /// (Desktop's `CanonicalDesktopProtocol.result` / `failure`).
+  void _noteSessionFences(_Pending pending, Map<String, dynamic> reply) {
+    final result = reply['result'];
+    _sessionRevisions.noteResult(pending.method, result);
+    if (result is Map) {
+      // A snapshot or receipt names its session and the execution it
+      // belongs to; an admission receipt names the session in `ref`. A
+      // caller that sends these verbs raw (NextGen) learns them here.
+      final ref = result['ref'];
+      final sessionId =
+          result['session_id'] ?? (ref is Map ? ref['session_id'] : null);
+      if (sessionId is String) {
+        _noteExecutionGeneration(sessionId, result['execution_generation']);
+      }
+    }
+    final error = reply['error'];
+    final data = error is Map ? error['data'] : null;
+    if (data is! Map || !isFenceRefusal(data)) return;
+    _sessionRevisions.noteRefusal(pending.sessionId, data);
+    _noteExecutionGeneration(pending.sessionId, data['execution_generation']);
   }
 
   /// The generation a canonical Stop/Steer for [sessionId] must carry,
@@ -977,7 +1334,146 @@ class WsClient {
   }
 
   /// Send a JSON-RPC method call and wait for response.
+  ///
+  /// On a session-authority socket a truncating `prompt.submit` (edit,
+  /// regenerate, restore) is first split as Hermes Desktop's
+  /// `canonicalRedirect` does: the owner's rewind, then the plain submit.
+  /// Every other request goes through the canonical guard
+  /// ([CanonicalWire]): a legacy shape the owner has a canonical form for
+  /// is translated, and one it has none for is answered here with a
+  /// [canonicalRefusalCode] error, never sent. A legacy socket sends
+  /// [params] as given.
   Future<Map<String, dynamic>> send(
+    String method,
+    Map<String, dynamic> params, {
+    Duration timeout = const Duration(seconds: 30),
+    void Function()? onSent,
+    bool includeProfile = true,
+  }) {
+    if (!sessionAuthority) {
+      return _sendRequest(
+        method,
+        params,
+        timeout: timeout,
+        onSent: onSent,
+        includeProfile: includeProfile,
+      );
+    }
+    if (method == 'prompt.submit') {
+      final RewindSubmitSplit? split;
+      try {
+        split = splitRewindSubmit(params);
+      } on RewindTargetUnsaved {
+        return Future.error(
+          JsonRpcError(
+            method,
+            rewindTargetUnsavedMessage,
+            reason: rewindTargetUnsavedReason,
+          ),
+        );
+      }
+      if (split != null) {
+        return _sendRewindSubmit(
+          split,
+          timeout: timeout,
+          onSent: onSent,
+          includeProfile: includeProfile,
+        );
+      }
+    }
+    return _sendCanonical(
+      method,
+      params,
+      timeout: timeout,
+      onSent: onSent,
+      includeProfile: includeProfile,
+    );
+  }
+
+  Future<Map<String, dynamic>> _sendCanonical(
+    String method,
+    Map<String, dynamic> params, {
+    required Duration timeout,
+    required void Function()? onSent,
+    required bool includeProfile,
+  }) {
+    if (!_connected || _channel == null) {
+      return Future.error(Exception('Not connected'));
+    }
+    final canonical = _canonical;
+    return canonical.run(
+      method,
+      params,
+      // The caller's own request reports when it was written; a read the
+      // guard adds first (the session's fences) does not.
+      wire: (wireMethod, wireParams, {required bool own}) => _sendRequest(
+        wireMethod,
+        wireParams,
+        timeout: timeout,
+        onSent: own ? onSent : null,
+        includeProfile: includeProfile,
+      ),
+      noteGeneration: _noteExecutionGeneration,
+      // A replaced socket starts with no canonical state: an answer from
+      // the old one is passed through untouched.
+      current: () => identical(canonical, _canonical),
+    );
+  }
+
+  /// Desktop's `canonicalRedirect` for a truncating submit: its
+  /// `session.rewind` (on the wire a `session.mutate` with operation
+  /// `rewind`, fenced by the session's revision and generation), then the
+  /// submit without any truncation key. A refused rewind wrote nothing and
+  /// is returned as the answer: the prompt is not submitted after it.
+  Future<Map<String, dynamic>> _sendRewindSubmit(
+    RewindSubmitSplit split, {
+    required Duration timeout,
+    required void Function()? onSent,
+    required bool includeProfile,
+  }) async {
+    final rewind = split.rewind;
+    if (rewind != null) {
+      final sessionId = rewind['session_id'];
+      final revision = sessionId is String
+          ? _sessionRevisions.of(sessionId)
+          : null;
+      final generation = sessionId is String
+          ? _executionGenerations[sessionId]
+          : null;
+      if (revision == null || generation == null) {
+        // Never a guessed fence: the owner would refuse it, or worse, a
+        // stale one could cut a transcript another viewer has moved on.
+        throw JsonRpcError(
+          'session.rewind',
+          rewindFencesUnknownMessage,
+          reason: rewindFencesUnknownReason,
+        );
+      }
+      final cut = await _sendRequest(
+        'session.mutate',
+        rewindMutation(
+          rewind,
+          requestId: const Uuid().v4(),
+          revision: revision,
+          generation: generation,
+        ),
+        timeout: timeout,
+        includeProfile: includeProfile,
+      );
+      if (cut['error'] != null) return cut;
+    }
+    // The plain submit still goes through the guard (it is identified
+    // input on the owner: a submission id is added when missing).
+    return _sendCanonical(
+      'prompt.submit',
+      split.submit,
+      timeout: timeout,
+      onSent: onSent,
+      includeProfile: includeProfile,
+    );
+  }
+
+  Future<Map<String, dynamic>> _sendRequest(
     String method,
     Map<String, dynamic> params, {
     Duration timeout = const Duration(seconds: 30),
@@ -990,6 +1486,11 @@ class WsClient {
 
     final id = _nextId++;
     final completer = Completer<Map<String, dynamic>>();
+    final generation = _connectionGeneration;
+    final isBinding = method == 'session.create' || method == 'session.resume';
+    final requestedId = params['session_id'];
+    final requestedProfile =
+        params['profile'] ?? (includeProfile ? _profile?.trim() : null);
     final timer = Timer(timeout, () {
       _pending.remove(id);
       if (!completer.isCompleted) {
@@ -997,7 +1498,12 @@ class WsClient {
       }
     });
 
-    _pending[id] = _Pending(method, completer, timer);
+    _pending[id] = _Pending(
+      method,
+      completer,
+      timer,
+      sessionId: requestedId is String ? requestedId : null,
+    );
     try {
       _channel!.sink.add(
         jsonEncode({
@@ -1018,7 +1524,100 @@ class WsClient {
       // A local observer must not turn a successfully emitted RPC into an
       // apparent transport failure.
     }
-    return completer.future;
+    if (!isBinding && method != 'session.close') return completer.future;
+    final reply = await completer.future;
+    if (generation != _connectionGeneration || reply['error'] != null) {
+      return reply;
+    }
+    if (!isBinding) {
+      if (requestedId is String) _noteWorkspaceReceipt(id, [requestedId]);
+      _workspaceBindings.removeWhere(
+        (id, b) => id == requestedId || b.runtimeId == requestedId,
+      );
+    } else {
+      _noteWorkspaceBinding(
+        id,
+        reply['result'],
+        method == 'session.resume' ? requestedId : null,
+        requestedProfile,
+      );
+    }
+    _notifyWorkspaceBindings();
+    return reply;
+  }
+
+  // Evidence on THIS socket only. A session coordinator can use its own
+  // independent socket; its IDs must not leak into workspace dispatch.
+  void _noteWorkspaceBinding(
+    int requestId,
+    Object? result,
+    Object? expectedId,
+    Object? requestedProfile,
+  ) {
+    if (result is! Map) return;
+    final runtime = result['session_id'];
+    final info = result['info'];
+    final infoId = info is Map ? info['stored_session_id'] : null;
+    final stored = result['stored_session_id'] ?? infoId;
+    if (runtime is! String || runtime.isEmpty) return;
+    final ids = {
+      runtime,
+      if (stored is String) stored,
+      if (expectedId is String) expectedId,
+    };
+    if (!_noteWorkspaceReceipt(requestId, ids)) {
+      // Completion order disagrees with request order. Neither ordering is
+      // server-side proof: require a new receipt, don't pick a winner.
+      _workspaceBindings.removeWhere(
+        (id, b) => ids.contains(id) || ids.contains(b.runtimeId),
+      );
+      return;
+    }
+    _workspaceBindings.removeWhere(
+      (id, b) => b.runtimeId == runtime && id != stored,
+    );
+    if (stored is! String || stored.isEmpty) return;
+    final reportedProfile = info is Map ? info['profile_name'] : null;
+    final profile = reportedProfile ?? requestedProfile;
+    final cwd = info is Map ? info['cwd'] : null;
+    final backend = info is Map ? info['terminal_backend'] : null;
+    if ((infoId != null && stored != infoId) ||
+        (requestedProfile != null &&
+            reportedProfile != null &&
+            reportedProfile != requestedProfile) ||
+        (expectedId != null && stored != expectedId) ||
+        (profile != null && profile is! String) ||
+        (cwd != null && cwd is! String) ||
+        (backend != null && backend is! String)) {
+      _workspaceBindings.remove(stored);
+      _workspaceBindings.remove(expectedId);
+      return;
+    }
+    final old = _workspaceBindings[stored];
+    if (old == null ||
+        old.runtimeId != runtime ||
+        old.profile != profile ||
+        old.cwd != cwd ||
+        old.backend != backend) {
+      _workspaceBindings[stored] = WorkspaceRuntime._(
+        runtime,
+        profile as String?,
+        cwd as String?,
+        backend as String?,
+      );
+    }
+  }
+
+  bool _noteWorkspaceReceipt(int requestId, Iterable<String> ids) {
+    var ordered = true;
+    for (final id in ids) {
+      if ((_workspaceReceipt[id] ?? -1) > requestId) {
+        ordered = false;
+      } else {
+        _workspaceReceipt[id] = requestId;
+      }
+    }
+    return ordered;
   }
 
   /// Send a JSON-RPC method call and receive streaming events.
@@ -1070,7 +1669,10 @@ class WsClient {
     bool Function()? maySend,
     Future<bool> Function()? beforeSend,
     String? submissionId,
+    Future<void> Function()? beforeLegacy,
+    Future<void> Function(Object?, String)? onReceipt,
     Duration timeout = const Duration(minutes: 10),
+    Map<String, Object?> extraParams = const {},
   }) async {
     final source = _channel;
     final promptText = await _androidPromptText(message);
@@ -1144,6 +1746,9 @@ class WsClient {
     try {
       final effectiveSubmissionId = submissionId ?? const Uuid().v4();
       final baseParams = <String, dynamic>{
+        // A regenerate's truncation target (Desktop's truncateSubmitParams),
+        // or a voice-live delegation's surface and context.
+        ...extraParams,
         'session_id': sessionId,
         'text': promptText,
         // Stock gateways use this only for title generation. The app's note
@@ -1161,7 +1766,34 @@ class WsClient {
           error,
           fallbackMessage: 'Unknown error',
         );
-        if (isRejectedSubmissionIdError(rpcError)) {
+        // Backends predating confirm_deep_truncate reject it at contract
+        // admission (4000, handler never runs). The user already confirmed
+        // the deep cut, so retry once without only that field — mirror of
+        // Desktop's runRewindSubmit (rewind.ts).
+        final sent = <String, dynamic>{
+          ...baseParams,
+          'submission_id': effectiveSubmissionId,
+        };
+        if (isRejectedDeepTruncatePayload(
+          code: rpcError.code,
+          message: rpcError.message,
+          sentParams: sent,
+        )) {
+          response = await send(
+            'prompt.submit',
+            stripRejectedDeepTruncate(sent),
+            onSent: onSent,
+          );
+          error = response['error'];
+          if (error != null) {
+            throw _gatewayResponseError(
+              'prompt.submit',
+              error,
+              fallbackMessage: 'Unknown error',
+            );
+          }
+        } else if (isRejectedSubmissionIdError(rpcError)) {
+          if (beforeLegacy != null) await beforeLegacy();
           // The refusal crossed an async boundary: re-validate admission and
           // socket ownership before the compatibility retry writes again, so
           // a stale owner or a replacement socket never receives the prompt.
@@ -1194,6 +1826,7 @@ class WsClient {
       // Stock typed voice controls acknowledge without starting an agent turn
       // or emitting a terminal frame. Do not wait ten minutes for one.
       final result = response['result'];
+      if (onReceipt != null) await onReceipt(result, sessionId);
       if (result is Map) {
         // A canonical receipt names the execution its admission started.
         _noteExecutionGeneration(sessionId, result['execution_generation']);
@@ -1205,6 +1838,9 @@ class WsClient {
                 'queued',
                 'steered',
                 'interrupted',
+                // The canonical admission receipt: the turn was admitted
+                // and its execution started (`AdmissionStatus.status`).
+                'started',
               }.contains(result['status']))) {
         try {
           onAccepted?.call();
@@ -1494,6 +2130,10 @@ class WsClient {
     if (rawPayload is! Map) {
       throw StateError('session.resume succeeded without a result payload.');
     }
+    // A different stored_session_id is not a different chat: the gateway
+    // follows a compressed chat to its lineage tip (tui_gateway
+    // methods_session._resume_follow_tip), so resuming the original id
+    // legitimately returns the continuation's id.
     final payload = Map<String, dynamic>.from(rawPayload);
     final runtimeSessionId = payload['session_id'] as String?;
     if (runtimeSessionId == null || runtimeSessionId.isEmpty) {
@@ -1833,7 +2473,10 @@ class _Pending {
   final String method;
   final Completer<Map<String, dynamic>> completer;
   final Timer? timer;
-  _Pending(this.method, this.completer, this.timer);
+
+  /// The session the request named, for a refusal that carries its fences.
+  final String? sessionId;
+  _Pending(this.method, this.completer, this.timer, {this.sessionId});
 }
 
 class _ConnectionClosedListener {

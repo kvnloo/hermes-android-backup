@@ -76,6 +76,8 @@ class ChatAssetsClient implements ChatAssetsDataSource {
         password: connection.dashboardPassword,
         gatewayProfile: connection.gatewayProfile,
         clientCertificate: connection.clientCertificate,
+        deploymentToken: connection.deploymentToken,
+        customHeaders: connection.customHeaders,
         httpClient: httpClient,
       ),
       profile: connection.gatewayProfile,

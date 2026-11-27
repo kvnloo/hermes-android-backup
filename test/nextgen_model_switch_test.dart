@@ -16,6 +16,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/strict_nextgen_gateway.dart';
+
 SavedConnection _connection() => SavedConnection(
   id: 'c1',
   label: 'Home',
@@ -58,15 +60,25 @@ class _FakeGateway extends NextGenGateway {
     Duration timeout = const Duration(seconds: 20),
   }) async => _dummySocket;
 
+  Future<Map<String, dynamic>> _answer(
+    String method,
+    Map<String, dynamic> params,
+  ) {
+    calls.add(_RecordedCall(method, Map<String, dynamic>.from(params)));
+    return onCall(method, params);
+  }
+
+  /// On an authority gateway the call goes through the client's guard and
+  /// the strict contract check, as the real socket does; [calls] then holds
+  /// the frames as they would go on the wire.
   @override
   Future<Map<String, dynamic>> call(
     String method,
     Map<String, dynamic> params, {
     Duration timeout = const Duration(seconds: 30),
-  }) {
-    calls.add(_RecordedCall(method, Map<String, dynamic>.from(params)));
-    return onCall(method, params);
-  }
+  }) => sessionAuthority
+      ? strictCall(this, method, params, _answer)
+      : _answer(method, params);
 }
 
 MockClient _mockHttp() => MockClient((request) async {

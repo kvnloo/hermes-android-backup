@@ -1,12 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/screens/files_screen.dart';
 import 'package:hermes_android/core/services/remote_files_client.dart';
 import 'package:hermes_android/core/theme/hermes_theme.dart';
 import 'package:hermes_android/l10n/app_localizations.dart';
 
+import 'support/markdown_file_fixture.dart';
+
 class _FakeFilesDataSource implements RemoteFilesDataSource {
   Object? listError;
+  String content = markdownFixture;
+  bool truncated = false;
+  Completer<RemoteTextPreview>? pending;
   final openedDirectories = <String>[];
 
   @override
@@ -37,15 +45,17 @@ class _FakeFilesDataSource implements RemoteFilesDataSource {
   }
 
   @override
-  Future<RemoteTextPreview> readText(String path) async => RemoteTextPreview(
-    path: path,
-    text: '# Hermes\nRemote preview',
-    language: 'markdown',
-    mimeType: 'text/markdown',
-    byteSize: 23,
-    binary: false,
-    truncated: false,
-  );
+  Future<RemoteTextPreview> readText(String path) async =>
+      pending?.future ??
+      RemoteTextPreview(
+        path: path,
+        text: content,
+        language: 'markdown',
+        mimeType: 'text/markdown',
+        byteSize: 23,
+        binary: false,
+        truncated: truncated,
+      );
 
   @override
   Future<RemoteFileDownload> download(String path) async =>
@@ -59,8 +69,8 @@ Future<void> _pump(
   Future<void> Function(RemoteFileDownload download)? onSaveDownload,
 }) => tester.pumpWidget(
   MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
     theme: hermesTheme(Brightness.dark),
     home: FilesScreen(
       files: source,
@@ -91,23 +101,120 @@ void main() {
     expect(find.text('main.dart'), findsOneWidget);
   });
 
-  testWidgets('previews text and adds its server reference to chat', (
+  testWidgets(
+    'previews text and adds its server reference to chat',
+    (tester) async {
+      final source = _FakeFilesDataSource();
+      final references = <String>[];
+      await _pump(tester, source, onAddToChat: references.add);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('README.md'));
+      await tester.pumpAndSettle();
+
+      await verifyMarkdownPreview(tester);
+      expect(find.text('markdown'), findsOneWidget);
+      await tester.tap(find.text('Add to chat'));
+      await tester.pumpAndSettle();
+
+      expect(references, ['/srv/project/README.md']);
+    },
+    variant: markdownPlatforms,
+  );
+
+  testWidgets('plain text stays literal despite server markdown metadata', (
     tester,
   ) async {
-    final source = _FakeFilesDataSource();
-    final references = <String>[];
-    await _pump(tester, source, onAddToChat: references.add);
+    final source = _FakeFilesDataSource()..truncated = true;
+    await _pump(tester, source);
     await tester.pumpAndSettle();
+    await tester.tap(find.text('lib'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('main.dart'));
+    await tester.pumpAndSettle();
+    expect(find.text(markdownFixture), findsOneWidget);
+    expect(find.text('Source'), findsNothing);
+    expect(find.text('Preview truncated'), findsOneWidget);
+  });
 
+  testWidgets('links require an explicit safe web tap, images never load', (
+    tester,
+  ) async {
+    const channel = MethodChannel('plugins.flutter.io/url_launcher');
+    final launches = <MethodCall>[];
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      launches.add(call);
+      return true;
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    await _pump(tester, _FakeFilesDataSource());
+    await tester.pumpAndSettle();
     await tester.tap(find.text('README.md'));
     await tester.pumpAndSettle();
+    expect(find.byType(Image), findsNothing);
+    expect(launches, isEmpty);
+    for (final label in ['Script', 'Local', 'Credentialed', 'Handbook']) {
+      final link = find.text(label, findRichText: true);
+      await tester.ensureVisible(link);
+      await tester.pumpAndSettle();
+      await tester.tapAt(tester.getTopLeft(link) + const Offset(6, 7));
+      await tester.pump();
+    }
+    expect(launches.map((call) => call.arguments['url']), [
+      'https://docs.example.invalid/guide',
+    ]);
+    expect(launches.single.arguments['headers'], isEmpty);
+    expect(launches.single.arguments['useWebView'], false);
+  });
 
-    expect(find.text('# Hermes\nRemote preview'), findsOneWidget);
-    expect(find.text('markdown'), findsOneWidget);
-    await tester.tap(find.text('Add to chat'));
+  testWidgets(
+    'rich budget stops dense markup; source preserves the bounded prefix',
+    (tester) async {
+      final source = _FakeFilesDataSource()
+        ..content = '# Safe\n\n${'>' * 200} deep\n${'x' * 70000}';
+      await _pump(tester, source);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('README.md'));
+      await tester.pumpAndSettle();
+      expect(find.text('Safe', findRichText: true), findsOneWidget);
+      expect(find.text('Preview truncated'), findsOneWidget);
+      await tester.tap(find.text('Source'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<SelectableText>(find.byType(SelectableText)).data,
+        source.content.substring(0, 65536),
+      );
+      expect(find.text('Download'), findsOneWidget);
+    },
+  );
+
+  testWidgets('changing file authority drops a pending read', (tester) async {
+    final first = _FakeFilesDataSource()
+      ..pending = Completer<RemoteTextPreview>();
+    await _pump(tester, first);
     await tester.pumpAndSettle();
-
-    expect(references, ['/srv/project/README.md']);
+    await tester.tap(find.text('README.md'));
+    await tester.pump();
+    await _pump(tester, _FakeFilesDataSource());
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('README.md'));
+    await tester.pumpAndSettle();
+    first.pending!.complete(
+      const RemoteTextPreview(
+        path: '/srv/project/README.md',
+        text: '# Old host',
+        language: 'markdown',
+        mimeType: 'text/markdown',
+        byteSize: 10,
+        binary: false,
+        truncated: false,
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Old host', findRichText: true), findsNothing);
+    await verifyMarkdownPreview(tester);
   });
 
   testWidgets('downloads the selected file through the platform seam', (
@@ -128,6 +235,28 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(downloads.single.filename, 'README.md');
+    expect(downloads.single.bytes, [1, 2, 3]);
+  });
+
+  testWidgets('unreadable Markdown still offers original download', (
+    tester,
+  ) async {
+    final source = _FakeFilesDataSource()..pending = Completer();
+    final downloads = <RemoteFileDownload>[];
+    await _pump(
+      tester,
+      source,
+      onSaveDownload: (file) async => downloads.add(file),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('README.md'));
+    await tester.pump();
+    source.pending!.completeError(StateError('preview unavailable'));
+    await tester.pumpAndSettle();
+    expect(find.text('Retry'), findsOneWidget);
+    expect(find.text('Source'), findsNothing);
+    await tester.tap(find.text('Download'));
+    await tester.pumpAndSettle();
     expect(downloads.single.bytes, [1, 2, 3]);
   });
 

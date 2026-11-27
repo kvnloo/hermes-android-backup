@@ -55,31 +55,50 @@ class _GatewayApprovalDialogState extends State<GatewayApprovalDialog> {
       if (!mounted) return;
       setState(() {
         _submitting = null;
-        _error = context.l10n.could_not_send_the_approval(error);
+        _error = context.sharedL10n.could_not_send_the_approval(error);
       });
     }
   }
 
   String _labelFor(GatewayApprovalChoice choice) {
     return switch (choice) {
-      GatewayApprovalChoice.once => context.l10n.allow_once,
-      GatewayApprovalChoice.session => context.l10n.allow_for_this_session,
+      GatewayApprovalChoice.once => context.sharedL10n.allow_once,
+      GatewayApprovalChoice.session =>
+        context.sharedL10n.allow_for_this_session,
       GatewayApprovalChoice.always =>
         _confirmAlways
-            ? context.l10n.confirm_always_allow
-            : context.l10n.always_allow,
-      GatewayApprovalChoice.deny => context.l10n.deny,
+            ? context.sharedL10n.confirm_always_allow
+            : context.sharedL10n.always_allow,
+      GatewayApprovalChoice.deny => context.sharedL10n.deny,
     };
   }
 
   String _scopeFor(GatewayApprovalChoice choice) {
+    final request = widget.request;
+    final l = context.sharedL10n;
+    if (request.kind == GatewayApprovalKind.access) {
+      return switch (choice) {
+        GatewayApprovalChoice.once => l.allow_folder_until_sandbox_off,
+        GatewayApprovalChoice.session => l.rel_svc_misc_allow_folder_session,
+        GatewayApprovalChoice.always => l.rel_svc_misc_save_folder_grant,
+        GatewayApprovalChoice.deny => l.rel_svc_misc_deny_folder_grant,
+      };
+    }
+    if (request.kind == GatewayApprovalKind.network) {
+      return switch (choice) {
+        GatewayApprovalChoice.once => l.allow_website_until_sandbox_off,
+        GatewayApprovalChoice.session => l.rel_svc_misc_allow_website_session,
+        GatewayApprovalChoice.always => l.rel_svc_misc_save_website_grant,
+        GatewayApprovalChoice.deny => l.rel_svc_misc_deny_website_grant,
+      };
+    }
     return switch (choice) {
-      GatewayApprovalChoice.once => context.l10n.run_only_this_command,
+      GatewayApprovalChoice.once => l.run_only_this_command,
       GatewayApprovalChoice.session =>
-        context.l10n.allow_matching_commands_until_this_hermes_session_ends,
+        l.allow_matching_commands_until_this_hermes_session_ends,
       GatewayApprovalChoice.always =>
-        context.l10n.save_a_permanent_rule_in_the_hermes_configuration,
-      GatewayApprovalChoice.deny => context.l10n.do_not_run_this_command,
+        l.save_a_permanent_rule_in_the_hermes_configuration,
+      GatewayApprovalChoice.deny => l.do_not_run_this_command,
     };
   }
 
@@ -95,16 +114,32 @@ class _GatewayApprovalDialogState extends State<GatewayApprovalDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = context.sharedL10n;
     final request = widget.request;
     final busy = _submitting != null;
+
+    final title = switch (request.kind) {
+      GatewayApprovalKind.access => l.ng_folder_access,
+      GatewayApprovalKind.network => l.ng_website_access,
+      GatewayApprovalKind.command => l.approval_needed,
+    };
+    final accessLabel = switch (request.folderAccess) {
+      'read' => l.ng_folder_read_only,
+      'read_write' => l.ng_folder_read_write,
+      _ => l.ng_folder_access_unspecified,
+    };
 
     // Back is a denial only before submission. Once a response is in flight,
     // dismissing would race that response against the route owner's denial.
     return PopScope(
       canPop: !busy,
       child: AlertDialog(
-        icon: const Icon(Icons.gpp_maybe_outlined),
-        title: Text(context.l10n.approval_needed),
+        icon: Icon(
+          request.kind == GatewayApprovalKind.command
+              ? Icons.gpp_maybe_outlined
+              : Icons.folder_shared_outlined,
+        ),
+        title: Text(title),
         content: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 520),
           child: SingleChildScrollView(
@@ -113,9 +148,39 @@ class _GatewayApprovalDialogState extends State<GatewayApprovalDialog> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(request.description),
-                if (request.command.isNotEmpty) ...[
+                if (request.kind == GatewayApprovalKind.access) ...[
                   const SizedBox(height: 16),
-                  Text(context.l10n.command, style: theme.textTheme.labelLarge),
+                  Text(
+                    l.release_core_project_settings_view_folder,
+                    style: theme.textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 6),
+                  SelectableText(
+                    request.folderPath?.isNotEmpty == true
+                        ? request.folderPath!
+                        : l.rel_svc_misc_gateway_folder_unnamed,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(accessLabel, key: const Key('approval-access')),
+                ],
+                if (request.kind == GatewayApprovalKind.network) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    l.rel_svc_misc_website,
+                    style: theme.textTheme.labelLarge,
+                  ),
+                  const SizedBox(height: 6),
+                  SelectableText(
+                    request.host?.isNotEmpty == true
+                        ? request.host!
+                        : l.rel_svc_misc_gateway_website_unnamed,
+                    key: const Key('approval-host'),
+                  ),
+                ],
+                if (request.kind == GatewayApprovalKind.command &&
+                    request.command.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Text(l.command, style: theme.textTheme.labelLarge),
                   const SizedBox(height: 6),
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -134,9 +199,7 @@ class _GatewayApprovalDialogState extends State<GatewayApprovalDialog> {
                 if (_confirmAlways) ...[
                   const SizedBox(height: 14),
                   Text(
-                    context
-                        .l10n
-                        .this_creates_a_permanent_rule_in_hermes_review_the_full,
+                    l.this_creates_a_permanent_rule_in_hermes_review_the_full,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.error,
                     ),

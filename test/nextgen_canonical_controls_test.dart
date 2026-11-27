@@ -83,6 +83,27 @@ void main() {
     return (gateway: gateway, chat: chat);
   }
 
+  test(
+    'a resume that follows a compressed chat to its lineage tip still attaches',
+    () async {
+      // tui_gateway methods_session._resume_follow_tip: resuming the original
+      // stored id returns the continuation's stored id. That is the same chat.
+      final snapshot = fixtureMap(['turn', 'snapshot_running'])
+        ..['stored_session_id'] = 'compression-tip-of-$sid';
+      final o = await canonicalChat(
+        serverGeneration: () => 3,
+        snapshot: snapshot,
+      );
+      expect(o.chat.running, isTrue);
+      expect(o.chat.error, isNull);
+      await o.chat.stop();
+      expect(o.gateway.callsTo('session.interrupt').single.params, {
+        'session_id': sid,
+        'execution_generation': 3,
+      });
+    },
+  );
+
   group('canonical Stop', () {
     test('sends the generation of the latest admitted event', () async {
       final o = await canonicalChat(serverGeneration: () => 4);

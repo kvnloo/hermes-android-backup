@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pkcs12_parser/pkcs12_parser.dart';
 import 'package:uuid/uuid.dart';
 
+import '../l10n/service_strings.dart';
 import '../models/client_certificate.dart';
 import 'tls_client_factory.dart';
 
@@ -177,31 +178,31 @@ class ClientCertificateService implements ClientCertificateFileStore {
       // The MAC covers the whole container, so a mismatch means either a
       // missing password or a wrong one. Only the first is worth prompting for.
       if (password == null || password.isEmpty) {
-        throw const ClientCertificateImportException(
-          'This certificate needs its password. Enter it below and it will open automatically.',
+        throw ClientCertificateImportException(
+          serviceStrings.rel_svc_backup_certificate_password_needed,
           passwordRelated: true,
         );
       }
-      throw const ClientCertificateImportException(
-        'The certificate password is incorrect, or the file is corrupted.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_certificate_password_or_corrupt,
         passwordRelated: true,
       );
     } on Pkcs12BadPasswordException {
-      throw const ClientCertificateImportException(
-        'The certificate password is incorrect.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_certificate_password_incorrect,
         passwordRelated: true,
       );
     } on Pkcs12UnsupportedException {
-      throw const ClientCertificateImportException(
-        'This certificate uses an encryption method the app cannot read.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_certificate_unsupported_encryption,
       );
     } on Pkcs12ParseException {
-      throw const ClientCertificateImportException(
-        'The selected file is not a readable PKCS#12 (.p12/.pfx) certificate.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_certificate_unreadable_pkcs12,
       );
     } on Pkcs12Exception {
-      throw const ClientCertificateImportException(
-        'The selected certificate could not be read.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_certificate_unreadable,
       );
     }
 
@@ -305,8 +306,8 @@ class ClientCertificateService implements ClientCertificateFileStore {
       // A lone half: the caller stages it and waits for its counterpart.
       return null;
     }
-    throw const ClientCertificateImportException(
-      'That file is not a certificate: pick a .p12/.pfx container or PEM certificate and key files.',
+    throw ClientCertificateImportException(
+      serviceStrings.rel_svc_backup_not_certificate_file,
     );
   }
 
@@ -401,14 +402,14 @@ class ClientCertificateService implements ClientCertificateFileStore {
     final certificatePem = _asPemText(certificateBytes);
     final privateKeyPem = _asPemText(privateKeyBytes);
     if (!certificatePem.contains('-----BEGIN CERTIFICATE-----')) {
-      throw const ClientCertificateImportException(
-        'The selected certificate is not a PEM certificate.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_not_pem_certificate,
       );
     }
     if (!privateKeyPem.contains('-----BEGIN') ||
         !privateKeyPem.contains('PRIVATE KEY-----')) {
-      throw const ClientCertificateImportException(
-        'The selected private key is not a PEM private key.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_not_pem_private_key,
       );
     }
     return _importPemPair(
@@ -430,8 +431,8 @@ class ClientCertificateService implements ClientCertificateFileStore {
   }) async {
     final encrypted = _isEncryptedPrivateKey(privateKeyPem);
     if (encrypted && (password == null || password.isEmpty)) {
-      throw const ClientCertificateImportException(
-        'This certificate needs its password. Enter it below and it will open automatically.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_certificate_password_needed,
         passwordRelated: true,
       );
     }
@@ -455,8 +456,8 @@ class ClientCertificateService implements ClientCertificateFileStore {
       ClientCertificateFileLease._current?.releaseIdentity(config);
       throw ClientCertificateImportException(
         encrypted
-            ? 'The certificate password is incorrect, or the file is corrupted.'
-            : 'The selected certificate and private key could not be loaded.',
+            ? serviceStrings.rel_svc_backup_certificate_password_or_corrupt
+            : serviceStrings.rel_svc_backup_certificate_pair_unloadable,
         passwordRelated: encrypted,
       );
     }
@@ -496,8 +497,8 @@ class ClientCertificateService implements ClientCertificateFileStore {
       final privateKeyPem = await File(config.privateKeyPemPath).readAsString();
       return (certificatePem: certificatePem, privateKeyPem: privateKeyPem);
     } catch (_) {
-      throw const ClientCertificateImportException(
-        'The saved client certificate files could not be read.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_saved_certificate_files_unreadable,
       );
     }
   }
@@ -523,8 +524,8 @@ class ClientCertificateService implements ClientCertificateFileStore {
       await directory.rename(destination.path);
       ClientCertificateFileLease._current?._releaseDirectory(directory.path);
     } catch (_) {
-      throw const ClientCertificateImportException(
-        'The client certificate could not be stored securely on this device.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_client_certificate_storage_failed,
       );
     }
     return ClientCertificateConfig(
@@ -623,8 +624,8 @@ class ClientCertificateService implements ClientCertificateFileStore {
       // A partial import is unusable; remove it rather than leaving a config
       // that points at half-written PEM files.
       await _deleteDirectory(directory.path);
-      throw const ClientCertificateImportException(
-        'The certificate could not be stored securely on this device.',
+      throw ClientCertificateImportException(
+        serviceStrings.rel_svc_backup_certificate_storage_failed,
       );
     }
 
@@ -719,7 +720,7 @@ class ClientCertificateService implements ClientCertificateFileStore {
     } catch (_) {
       // A readable label is cosmetic; the import itself has already succeeded.
     }
-    return 'Client certificate';
+    return serviceStrings.rel_svc_backup_client_certificate_label;
   }
 
   static String _asPemText(List<int> bytes) {

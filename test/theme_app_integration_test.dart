@@ -1,3 +1,4 @@
+import 'support/settings_navigation.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
@@ -156,6 +157,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await openSettingsCategory(tester, 'general');
       final picker = find.byKey(const ValueKey('app-language-system'));
       expect(picker, findsOneWidget);
       await tester.tap(picker);
@@ -164,7 +166,7 @@ void main() {
       await tester.ensureVisible(ukrainian);
       await tester.tap(ukrainian);
       await tester.pumpAndSettle();
-      expect(find.text('Налаштування'), findsOneWidget);
+      expect(find.text('Налаштування Classic'), findsOneWidget);
       expect(prefs.getString(LocalePreference.key), 'uk');
       expect(
         tester.state<NavigatorState>(find.byType(Navigator).first),
@@ -379,6 +381,7 @@ void main() {
       );
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 400));
+      await openSettingsCategory(tester, 'appearance');
       expect(find.text('Appearance'), findsOneWidget);
       expect(find.byKey(const Key('theme_palette_picker')), findsOneWidget);
       await tester.tap(find.byKey(const Key('theme_palette_blue')));
@@ -393,6 +396,12 @@ void main() {
       await tester.scrollUntilVisible(
         find.byKey(const Key('theme_palette_green')),
         -250,
+        scrollable: find
+            .descendant(
+              of: find.byType(SettingsScreen),
+              matching: find.byType(Scrollable),
+            )
+            .first,
       );
       await Scrollable.ensureVisible(
         tester.element(find.byKey(const Key('theme_palette_green'))),

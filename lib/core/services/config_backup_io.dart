@@ -6,6 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../l10n/service_strings.dart';
 import 'config_backup.dart';
 import 'config_backup_service.dart';
 import 'connection_manager.dart';
@@ -71,7 +72,7 @@ class ConfigBackupIo {
 
     final result = await SharePlus.instance.share(
       ShareParams(
-        subject: 'Hermes configuration backup',
+        subject: serviceStrings.rel_svc_backup_share_subject,
         files: <XFile>[XFile(file.path, mimeType: 'application/json')],
       ),
     );
@@ -92,7 +93,9 @@ class ConfigBackupIo {
     if (bytes != null) return utf8.decode(bytes, allowMalformed: true);
     final path = picked.path;
     if (path == null) {
-      throw const ConfigBackupException('That file could not be read.');
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_selected_file_unreadable,
+      );
     }
     return File(path).readAsString();
   }

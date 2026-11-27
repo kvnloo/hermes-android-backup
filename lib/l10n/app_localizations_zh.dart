@@ -9,6 +9,19 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get attachment_audio_failed =>
+      '无法播放此音频。格式或编解码器可能不受支持，或超出了预览大小限制。请重试，或保存、分享原始文件。';
+
+  @override
+  String get attachment_audio_seek => '音频位置';
+
+  @override
+  String get workspace_workers => '运行中的子代理';
+
+  @override
+  String get workers_unattached => '仅显示数量。要向子代理发送指令，请在已连接的上级对话中选择“运行中的子代理”。';
+
+  @override
   String get slash_local_arguments => '此处的快捷命令不支持参数。请使用应用中的控件；草稿已保留。';
 
   @override
@@ -159,6 +172,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get background_report_collapse => '收起报告';
 
   @override
+  String get ng_brand_open_chat => '打开聊天';
+
+  @override
+  String get ng_brand_recent => '最近聊天';
+
+  @override
+  String get ng_brand_sidebar_hint => '或从侧边栏选择聊天';
+
+  @override
+  String get copy_session_id => '复制会话 ID';
+
+  @override
+  String get copy_session_id_failed => '无法复制会话 ID。';
+
+  @override
   String get setup_interface_title => '选择界面';
 
   @override
@@ -279,17 +307,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String message_time_recorded(String time) {
-    return 'Recorded by server: $time (local time)';
+    return '服务器记录时间：$time（本地时间）';
   }
 
   @override
   String message_time_sent(String time) {
-    return 'Send observed on this device: $time (local time)';
+    return '本设备观察到发送的时间：$time（本地时间）';
   }
 
   @override
   String message_time_received(String time) {
-    return 'First received on this device: $time (local time)';
+    return '本设备首次接收时间：$time（本地时间）';
   }
 
   @override
@@ -397,28 +425,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get attachment_retry => '重试';
 
   @override
-  String get saved_history_heading => 'Saved history';
+  String get saved_history_heading => '已保存的历史记录';
 
   @override
-  String get received_output_heading =>
-      'Received output — match to saved history unconfirmed';
+  String get received_output_heading => '已接收的输出 — 尚未确认与已保存的历史记录匹配';
 
   @override
-  String get received_output_details => 'About received output';
+  String get received_output_details => '关于已接收的输出';
 
   @override
-  String get received_output_explanation =>
-      'This may also appear in saved history. The app cannot confirm a match.';
+  String get received_output_explanation => '此内容也可能出现在已保存的历史记录中。应用无法确认是否匹配。';
 
   @override
-  String get local_prompt_context => 'Local prompt context';
+  String get local_prompt_context => '本地提示词上下文';
 
   @override
-  String get received_output_badge => 'Received · match unconfirmed';
+  String get received_output_badge => '已接收 · 匹配未确认';
 
   @override
   String get received_output_lifetime =>
-      'Received output is kept temporarily in this app session and may be shortened or removed as limits are reached. It may not be available after the app or connection is closed.';
+      '已接收的输出会在本次应用会话中临时保留，达到限制时可能会被缩短或移除。关闭应用或连接后，这些内容可能无法再查看。';
 
   @override
   String get theme_palette => '颜色主题';
@@ -614,7 +640,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '在此 Hermes 会话结束前允许匹配的命令。';
 
   @override
+  String get allow_folder_until_sandbox_off => '允许此文件夹，直到关闭沙盒为止。';
+
+  @override
   String get allow_once => '允许一次';
+
+  @override
+  String get allow_website_until_sandbox_off => '允许此网站，直到关闭沙盒为止。';
 
   @override
   String get always_allow => '总是允许';
@@ -678,6 +710,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get attachment_drafts => '附件草稿';
+
+  @override
+  String get recover_text_draft => '恢复文字草稿';
+
+  @override
+  String get undo_draft_recovery => '撤销';
+
+  @override
+  String get draft_session_exists => '此对话仍然存在。请打开它以继续编辑草稿。';
+
+  @override
+  String get draft_recovery_unavailable => '无法验证此草稿。未作任何更改。';
 
   @override
   String attachment_of(Object index, Object total) {
@@ -828,7 +872,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get code_copied => '代码已复制';
 
   @override
-  String get code_format => 'Code';
+  String get code_format => '代码';
 
   @override
   String get coming_next => '敬请期待';
@@ -837,25 +881,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get command => '命令';
 
   @override
-  String get command_palette => 'Command palette';
+  String get command_palette => '命令面板';
 
   @override
-  String get command_palette_hint => 'Type a command';
+  String get command_palette_hint => '输入命令';
 
   @override
-  String get command_palette_no_results => 'No commands found';
+  String get command_palette_no_results => '未找到命令';
 
   @override
-  String get command_palette_new_chat => 'New chat';
+  String get command_palette_new_chat => '新聊天';
 
   @override
-  String get command_palette_search_chats => 'Search chats';
+  String get command_palette_search_chats => '搜索聊天';
 
   @override
-  String get command_palette_toggle_theme => 'Toggle theme';
+  String get command_palette_toggle_theme => '切换主题';
 
   @override
-  String get command_palette_copy_last_code => 'Copy last code block';
+  String get command_palette_copy_last_code => '复制最后一个代码块';
 
   @override
   String get command_line_chats => '命令行聊天';
@@ -1043,14 +1087,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cron => 'Cron';
 
   @override
-  String get crons => 'Crons';
+  String get crons => '定时任务';
 
   @override
-  String get cron_conversations_empty =>
-      'Conversations from scheduled jobs appear here, including older runs.';
+  String get cron_conversations_empty => '定时任务的对话会显示在此处，包括较早的运行记录。';
 
   @override
-  String get search_cron_conversations => 'Search cron conversations';
+  String get search_cron_conversations => '搜索定时任务对话';
 
   @override
   String get cron_jobs => 'Cron 任务';
@@ -1816,6 +1859,51 @@ class AppLocalizationsZh extends AppLocalizations {
   String get notifications => '通知';
 
   @override
+  String get windows_notifications_blocked =>
+      '通知不可用。请使用已安装的 Ares 应用，并检查 Windows 中的“设置 → 系统 → 通知”。';
+
+  @override
+  String get windows_notification_diagnostics => 'Ares 提交给 Windows 的内容';
+
+  @override
+  String get chat_activity_share => '共享聊天活动';
+
+  @override
+  String get chat_activity_share_hint =>
+      '在你使用此聊天时告知兼容的已连接网关，让其手机通知插件避免重复提醒。不会发送任何密钥或消息内容。';
+
+  @override
+  String get completion_sound => '完成提示音';
+
+  @override
+  String get completion_sound_system => '系统默认';
+
+  @override
+  String get completion_sound_mail => '邮件';
+
+  @override
+  String get completion_sound_reminder => '提醒';
+
+  @override
+  String get completion_sound_silent => '静音';
+
+  @override
+  String get completion_sound_scope => '用于回复完成、测试通知和应用内提示。审批和其他提醒仍使用原有声音。';
+
+  @override
+  String get completion_sound_scope_android =>
+      '用于回复完成、测试通知和应用内提示。审批、其他提醒、服务器后台通知和 Android Auto 消息仍使用原有声音。';
+
+  @override
+  String get notification_open_action => '打开';
+
+  @override
+  String get app_sounds_mute => '静音应用音效';
+
+  @override
+  String get app_sounds_mute_hint => '停止 Ares 在打开期间播放的完成提示音。通知仍使用各自的声音。';
+
+  @override
   String get notifications_permission_denied =>
       '系统已阻止通知。请在 Android 设置中允许此应用发送通知。';
 
@@ -2282,10 +2370,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get starting_hermes => '正在启动 Hermes…';
 
   @override
-  String get media_card_download => 'Download file';
+  String get media_card_download => '下载文件';
 
   @override
-  String get media_card_tap_to_download => 'Tap to download';
+  String get media_card_tap_to_download => '点击下载';
 
   @override
   String get still_loading_your_projects => '正在加载你的项目。';
@@ -2576,7 +2664,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get verbose_mode => '详细模式';
 
   @override
-  String get message_metadata => 'Message details';
+  String get message_metadata => '消息详情';
 
   @override
   String get voice => '语音';
@@ -2832,6 +2920,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get destination_label => '目标';
+
+  @override
+  String get markdown_source => '源文本';
 
   @override
   String get preview_label => '预览';
@@ -3100,45 +3191,40 @@ class AppLocalizationsZh extends AppLocalizations {
       '紧凑模式会去掉 You 和 Hermes 标签，并缩小气泡内边距、间距和两侧边距。';
 
   @override
-  String get client_certificate_mtls => 'Client certificate (mTLS)';
+  String get client_certificate_mtls => '客户端证书（mTLS）';
 
   @override
-  String get client_certificate_mtls_description =>
-      'Present a certificate when an HTTPS proxy requires mutual TLS.';
+  String get client_certificate_mtls_description => '在 HTTPS 代理要求双向 TLS 时提供证书。';
 
   @override
-  String get client_certificate_https_only =>
-      'Client certificates are only used for HTTPS connections.';
+  String get client_certificate_https_only => '客户端证书仅用于 HTTPS 连接。';
 
   @override
-  String get choose_certificate => 'Choose certificate';
+  String get choose_certificate => '选择证书';
 
   @override
-  String get certificate_password => 'Certificate password';
+  String get certificate_password => '证书密码';
 
   @override
-  String get this_certificate_is_password_protected =>
-      'This certificate is password-protected. It opens as you type.';
+  String get this_certificate_is_password_protected => '此证书受密码保护，输入密码时会自动解锁。';
 
   @override
   String get enter_the_certificate_password_to_finish_loading_it =>
-      'Enter the certificate password to finish loading the certificate you chose.';
+      '输入证书密码，完成加载所选证书。';
 
   @override
-  String get client_certificate_required =>
-      'Load a client certificate or turn off the client certificate option.';
+  String get client_certificate_required => '请加载客户端证书，或关闭客户端证书选项。';
 
   @override
   String client_certificate_loaded(String label) {
-    return 'Loaded: $label';
+    return '已加载：$label';
   }
 
   @override
-  String get remove_certificate => 'Remove certificate';
+  String get remove_certificate => '移除证书';
 
   @override
-  String get certificate_import_failed =>
-      'That certificate could not be loaded.';
+  String get certificate_import_failed => '无法加载该证书。';
 
   @override
   String get background_work => '后台运行';
@@ -3586,73 +3672,69 @@ class AppLocalizationsZh extends AppLocalizations {
   String get provider_oauth_account_status_unknown => '无法获取主机账户状态。';
 
   @override
-  String get app_language => 'App language';
+  String get app_language => '应用语言';
 
   @override
-  String get app_language_system => 'Same as phone';
+  String get app_language_system => '与手机相同';
 
   @override
-  String get auto_archives_after_72_hours => 'Auto-archives after 72 hours';
+  String get auto_archives_after_72_hours => '72 小时后自动归档';
 
   @override
-  String get automation => 'Automation';
+  String get automation => '自动化';
 
   @override
-  String get voice_recording_start => 'Record voice message';
+  String get voice_recording_start => '录制语音消息';
 
   @override
-  String get voice_recording_pause => 'Pause recording';
+  String get voice_recording_pause => '暂停录音';
 
   @override
-  String get voice_recording_preview => 'Play recording';
+  String get voice_recording_preview => '播放录音';
 
   @override
-  String get voice_recording_resume => 'Continue recording';
+  String get voice_recording_resume => '继续录音';
 
   @override
-  String get voice_recording_send => 'Send voice message';
+  String get voice_recording_send => '发送语音消息';
 
   @override
-  String get voice_recording_discard => 'Discard recording';
+  String get voice_recording_discard => '舍弃录音';
 
   @override
-  String get voice_recording_processing => 'Preparing voice message…';
+  String get voice_recording_processing => '正在准备语音消息…';
 
   @override
   String voice_recording_elapsed(String time) {
-    return 'Recording $time';
+    return '录音中 $time';
   }
 
   @override
   String voice_recording_draft(String time) {
-    return 'Voice message $time';
+    return '语音消息 $time';
   }
 
   @override
-  String get voice_recording_permission =>
-      'Allow microphone access to record a voice message.';
+  String get voice_recording_permission => '请允许访问麦克风，以录制语音消息。';
 
   @override
-  String get voice_recording_limit =>
-      'This recording has reached the ten-minute limit.';
+  String get voice_recording_limit => '此录音已达到十分钟上限。';
 
   @override
-  String get voice_recording_empty => 'No audio was recorded. Try again.';
+  String get voice_recording_empty => '未录到音频。请重试。';
 
   @override
-  String get voice_recording_failed =>
-      'Could not process the recording. Any saved fragments have been kept.';
+  String get voice_recording_failed => '无法处理录音。所有已保存的片段均已保留。';
 
   @override
-  String get voice_recording_unconfirmed =>
-      'Delivery was not confirmed. Your recording is saved. Check the chat before trying again.';
+  String get voice_recording_unconfirmed => '尚未确认送达。录音已保存。请先查看聊天，再决定是否重试。';
 
   @override
   String get voice_recording_submit_failed =>
-      'Could not send the voice message. Your recording is saved. Check the connection, Dashboard access and server transcription settings.';
+      '无法发送语音消息。录音已保存。请检查连接、仪表盘访问权限和服务器转写设置。';
 
   @override
-  String get voice_recording_pause_playback => 'Pause playback';
+  String get voice_recording_pause_playback => '暂停播放';
 
   @override
   String get projects_root_title => '服务器上的项目文件夹';
@@ -3793,6 +3875,215 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get slash_sessions_inline => '请打开会话列表选择聊天。草稿已保留。';
+
+  @override
+  String get composer_snippets => '提示词片段';
+
+  @override
+  String get composer_snippets_description => '选择一条起始提示词，填入消息输入框。';
+
+  @override
+  String get composer_snippet_review => '代码审查';
+
+  @override
+  String get composer_snippet_review_body => '审查当前改动中的回归问题、遗漏的边界情况和缺失的测试。';
+
+  @override
+  String get composer_snippet_review_text => '请审查其中的错误、回归问题和缺失的测试。';
+
+  @override
+  String get composer_snippet_plan => '实施计划';
+
+  @override
+  String get composer_snippet_plan_body => '修改代码前先概述方案，使改动保持聚焦。';
+
+  @override
+  String get composer_snippet_plan_text => '请在修改代码前制定简明的实施计划。';
+
+  @override
+  String get composer_snippet_explain => '解释这段代码';
+
+  @override
+  String get composer_snippet_explain_body => '逐步讲解所选代码的工作原理，并指出关键文件。';
+
+  @override
+  String get composer_snippet_explain_text => '请解释其工作原理，并指出关键文件。';
+
+  @override
+  String get composer_status => '状态';
+
+  @override
+  String get composer_status_context => '上下文';
+
+  @override
+  String get composer_status_cache => '缓存命中';
+
+  @override
+  String get composer_status_throughput => '输出 token/秒';
+
+  @override
+  String get composer_status_running => '运行中';
+
+  @override
+  String get composer_status_session => '会话';
+
+  @override
+  String get composer_status_not_reported => '未报告';
+
+  @override
+  String get composer_status_empty => '未报告上下文明细。';
+
+  @override
+  String get composer_status_loading => '正在加载上下文明细';
+
+  @override
+  String get composer_status_reset => '重置状态栏';
+
+  @override
+  String get composer_resume_title => '继续聊天';
+
+  @override
+  String get composer_resume_search => '搜索标题和 ID';
+
+  @override
+  String get composer_resume_empty => '没有匹配的聊天。';
+
+  @override
+  String get composer_resume_unavailable => '此面板没有可供搜索的聊天列表。';
+
+  @override
+  String get composer_failure_retry => '重试';
+
+  @override
+  String composer_failure_retry_at(String time) {
+    return '在 $time 重试';
+  }
+
+  @override
+  String get composer_failure_compress => '压缩';
+
+  @override
+  String get composer_failure_switch_model => '切换模型';
+
+  @override
+  String composer_failure_switch_to(String model) {
+    return '切换到 $model';
+  }
+
+  @override
+  String get composer_failure_new_chat => '新聊天';
+
+  @override
+  String get composer_failure_edit => '编辑消息';
+
+  @override
+  String get composer_failure_details => '详情';
+
+  @override
+  String get composer_failure_hide_details => '隐藏详情';
+
+  @override
+  String get composer_failure_copy => '复制诊断信息';
+
+  @override
+  String get composer_failure_account => '另一项修复需在网关账户端完成，无法在此聊天中进行。';
+
+  @override
+  String get composer_failure_account_only => '此问题必须在网关账户端修复，无法在此聊天中处理。';
+
+  @override
+  String get composer_failure_confirm_compress => '压缩此聊天？网关会缩短对话记录。';
+
+  @override
+  String composer_failure_confirm_model(String model) {
+    return '将此聊天切换到 $model？';
+  }
+
+  @override
+  String get composer_drop_attach => '拖放以添加附件';
+
+  @override
+  String get composer_drop_folder_unsupported => '无法附加文件夹。请改为拖放其中的文件。';
+
+  @override
+  String get composer_drop_reference => '拖放以添加引用';
+
+  @override
+  String get composer_reference_copy => '复制引用';
+
+  @override
+  String get composer_reference_remove => '移除引用';
+
+  @override
+  String get composer_btw_usage => '用法：/btw <question> — 根据此对话的快照回答，不中断当前对话。';
+
+  @override
+  String get composer_background_usage =>
+      '用法：/background <prompt> — 任务独立运行，结果会返回此处。';
+
+  @override
+  String get composer_handoff_usage =>
+      '用法：/handoff <platform> — 将此聊天转移到指定的消息平台。';
+
+  @override
+  String get composer_command_needs_session => '此命令需要已打开的聊天。';
+
+  @override
+  String get composer_retry_not_found =>
+      '已保存的历史记录中没有此轮对话，因此“重试”无法替换它。未重新发送任何内容。请编辑消息并发送以再次尝试。';
+
+  @override
+  String get composer_retry_unavailable =>
+      '此连接不支持通过“重试”替换某轮对话，因此未重新发送任何内容。请编辑消息并发送以再次尝试。';
+
+  @override
+  String get composer_failure_switch_no_retry =>
+      '切换只会更改模型：此连接无法重新运行失败的轮次。切换后请重新发送。';
+
+  @override
+  String get composer_command_needs_gateway_session =>
+      '此聊天尚无网关会话。请先发送消息，再重新运行命令。';
+
+  @override
+  String get composer_side_question => 'btw — 正在根据对话快照回答';
+
+  @override
+  String composer_side_question_id(String id) {
+    return 'btw $id — 正在根据对话快照回答';
+  }
+
+  @override
+  String get composer_background_started => '后台任务已启动。你可以继续聊天，结果会显示在此处。';
+
+  @override
+  String composer_background_started_id(String id) {
+    return '后台任务 $id 已启动。你可以继续聊天，结果会显示在此处。';
+  }
+
+  @override
+  String composer_handoff_requested(String platform) {
+    return '已请求移交至 $platform。';
+  }
+
+  @override
+  String composer_handoff_done(String platform) {
+    return '已将此聊天移交至 $platform。';
+  }
+
+  @override
+  String get composer_handoff_failed => '移交失败。';
+
+  @override
+  String get composer_handoff_timeout => '移交未完成，可能仍在网关上进行。';
+
+  @override
+  String get composer_compress_done => '已压缩此聊天。';
+
+  @override
+  String get composer_file_missing => '此设备上没有该文件。';
+
+  @override
+  String get composer_attach_busy => '此回复完成后即可添加附件。';
 
   @override
   String get nextgen_toggle => 'NextGen 界面';
@@ -4420,6 +4711,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ng_allow_once => '允许一次';
+
+  @override
+  String get ng_allow_until_sandbox_off => '直到关闭沙盒';
+
+  @override
+  String get ng_folder_access => '文件夹访问';
+
+  @override
+  String get ng_folder_access_unspecified => '网关未说明是只读还是可读写。';
+
+  @override
+  String get ng_folder_read_only => '只读';
+
+  @override
+  String get ng_folder_read_write => '可读写';
+
+  @override
+  String get ng_website_access => '网站访问';
 
   @override
   String get ng_allow_for_this_chat => '在此聊天中允许';
@@ -5827,21 +6136,8707 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ng_aux_curator_hint => '审查技能的使用情况';
 
   @override
-  String get ng_slash_suggestions_label => '命令建议';
+  String get appearance_save_failed => '无法保存此更改。';
 
   @override
-  String get ng_slash_suggestions_empty => '没有匹配的命令';
+  String get appearance_keep_which_theme => '保留哪个主题？';
+
+  @override
+  String get appearance_tour_back => '上一步';
+
+  @override
+  String get appearance_tour_finish => '完成';
+
+  @override
+  String get appearance_tour_next => '下一步';
+
+  @override
+  String get appearance_tour_close => '关闭导览';
+
+  @override
+  String get appearance_dismiss_tip => '关闭提示';
+
+  @override
+  String get appearance_search_settings => '搜索设置';
+
+  @override
+  String get appearance_search_show => '显示';
+
+  @override
+  String get appearance_no_matching_setting => '没有匹配的设置。';
+
+  @override
+  String get appearance_replay_tour => '重新查看导览';
+
+  @override
+  String get appearance_show_tips_again => '再次显示提示';
+
+  @override
+  String get appearance_window_translucency_unavailable =>
+      '此主机不支持窗口半透明。Linux 无法提供此效果，Apple 和 Windows 运行器则会绘制不透明的 Flutter 视图。';
+
+  @override
+  String get appearance_imported_themes => '已导入的主题';
+
+  @override
+  String get appearance_import_theme_file => '导入主题文件';
+
+  @override
+  String get appearance_remove_theme => '移除主题';
+
+  @override
+  String get appearance_chat_font => '聊天字体';
+
+  @override
+  String get appearance_terminal_font => '终端字体';
+
+  @override
+  String get appearance_font_platform => '平台';
+
+  @override
+  String get appearance_automatic => '自动';
+
+  @override
+  String get appearance_force_left_to_right => '强制从左到右';
+
+  @override
+  String get appearance_force_right_to_left => '强制从右到左';
+
+  @override
+  String get appearance_user_bubble_opacity => '用户气泡不透明度';
+
+  @override
+  String get appearance_inline_embeds => '内嵌内容';
+
+  @override
+  String get appearance_inline_embeds_hint =>
+      '丰富预览会从第三方网站加载（YouTube、X 等）。“询问”会先显示占位符，直到你逐一允许；“始终”会自动加载；“关闭”只保留普通链接。';
+
+  @override
+  String get appearance_embeds_ask => '询问';
+
+  @override
+  String get appearance_embeds_always => '始终';
+
+  @override
+  String get appearance_embeds_off => '关闭';
+
+  @override
+  String appearance_embeds_reset(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '重置 $count 个已允许的服务',
+      one: '重置 1 个已允许的服务',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appearance_embed_load => '加载';
+
+  @override
+  String appearance_embed_always_allow(String service) {
+    return '始终允许 $service';
+  }
+
+  @override
+  String get appearance_embed_loading => '正在加载预览…';
+
+  @override
+  String appearance_embed_image_failed(String host) {
+    return '无法从 $host 加载图片。轻触即可打开。';
+  }
+
+  @override
+  String get appearance_embed_preview_unavailable => '无法预览';
+
+  @override
+  String get appearance_emoji_reactions => '表情回应';
+
+  @override
+  String get appearance_celebration_hearts => '庆祝爱心';
+
+  @override
+  String get appearance_celebration_hearts_hint => '你离开期间收到回复时，会播放爱心动画。';
+
+  @override
+  String get appearance_pop_out_companion => '弹出伙伴窗口';
+
+  @override
+  String get appearance_mosskip => 'Mosskip';
+
+  @override
+  String get appearance_emberbun => 'Emberbun';
+
+  @override
+  String get appearance_tideling => 'Tideling';
+
+  @override
+  String get appearance_my_hatchling => '我的幼宠';
+
+  @override
+  String get appearance_at_rest => '休息中';
+
+  @override
+  String get appearance_working => '工作中';
+
+  @override
+  String get appearance_thinking => '思考中';
+
+  @override
+  String get appearance_waiting_for_you => '等待你回应';
+
+  @override
+  String get appearance_reply_ready => '回复已就绪';
+
+  @override
+  String get appearance_turn_failed => '本轮失败';
+
+  @override
+  String get appearance_small => '小';
+
+  @override
+  String get appearance_medium => '中';
+
+  @override
+  String get appearance_large => '大';
+
+  @override
+  String get appearance_hello => '你好！';
+
+  @override
+  String get appearance_unread_reply => '未读回复';
+
+  @override
+  String get appearance_compose => '撰写消息';
+
+  @override
+  String get appearance_say_hello => '打个招呼';
+
+  @override
+  String get appearance_pet_image_failed => '无法打开该图片。请选择较小的 PNG 或 JPEG。';
+
+  @override
+  String get appearance_pet_companion => '宠物伙伴';
+
+  @override
+  String get appearance_pet_companion_hint => '聊天时显示伙伴。';
+
+  @override
+  String get appearance_adopt_a_companion => '领养伙伴';
+
+  @override
+  String get appearance_roam_when_idle => '空闲时漫游';
+
+  @override
+  String get appearance_pet_size => '宠物大小';
+
+  @override
+  String get appearance_hatch_from_a_local_picture => '从本地图片孵化';
+
+  @override
+  String get appearance_pet_image_limits =>
+      '请选择 PNG 或 JPEG（最大 4 MiB、单边最多 4096 px、总计最多 8 MP）。请先预览。孵化会保存一张 24 × 24 像素头像，并替换之前的幼宠。';
+
+  @override
+  String get appearance_choose_picture => '选择图片';
+
+  @override
+  String get appearance_hatchling_preview => '幼宠预览';
+
+  @override
+  String get appearance_hatch_and_adopt => '孵化并领养';
+
+  @override
+  String get appearance_discard_draft => '舍弃草稿';
+
+  @override
+  String get appearance_forget_saved_hatchling => '清除已保存的幼宠';
+
+  @override
+  String get appearance_radio => '电台';
+
+  @override
+  String appearance_radio_hint(String stations) {
+    return '音频流直接来自 $stations，仅在你按下播放时开始。电台搜索仅在此设备上进行。';
+  }
+
+  @override
+  String get appearance_radio_save_failed => '无法保存电台设置。';
+
+  @override
+  String get appearance_choose_a_station => '选择电台';
+
+  @override
+  String get appearance_pause_radio => '暂停电台';
+
+  @override
+  String get appearance_play_radio => '播放电台';
+
+  @override
+  String get appearance_next_station => '下一个电台';
+
+  @override
+  String get appearance_radio_trace_semantics => '音频流活动。无法获取音量电平，因此此线保持平直。';
+
+  @override
+  String get appearance_radio_is_off => '电台已关闭';
+
+  @override
+  String get appearance_paused => '已暂停';
+
+  @override
+  String get appearance_connecting => '连接中…';
+
+  @override
+  String get appearance_live => '直播中';
+
+  @override
+  String get appearance_stream_unavailable => '音频流不可用';
+
+  @override
+  String appearance_now_playing(String credit) {
+    return '正在播放：$credit';
+  }
+
+  @override
+  String get appearance_audio_only_waveform_unavailable => '仅音频 · 波形不可用';
+
+  @override
+  String get appearance_volume => '音量';
+
+  @override
+  String get appearance_search_presets => '搜索预设';
+
+  @override
+  String get appearance_no_stations_found => '未找到电台';
+
+  @override
+  String appearance_unpin_station(String station) {
+    return '取消置顶电台：$station';
+  }
+
+  @override
+  String appearance_pin_station(String station) {
+    return '置顶电台：$station';
+  }
+
+  @override
+  String get appearance_radio_picker_metadata_notice =>
+      '此选择器打开期间，正在播放的电台可能会直接从广播方提供曲目详情。';
+
+  @override
+  String get appearance_message_from_your_companion => '来自伙伴的消息';
+
+  @override
+  String get appearance_send_to_the_open_chat => '发送到当前打开的聊天';
+
+  @override
+  String get appearance_tour_theme_body => '从此设备上的文件导入 VS Code 颜色主题，再选择要保留的变体。';
+
+  @override
+  String get appearance_tour_fonts_title => '阅读字体';
+
+  @override
+  String get appearance_tour_fonts_body => '聊天正文和终端代码分别使用 Ares 内置的不同字体。';
+
+  @override
+  String get appearance_tour_direction_title => '对话文字方向';
+
+  @override
+  String get appearance_tour_direction_body => '保持自动，或强制对话文字从左到右或从右到左。';
+
+  @override
+  String get appearance_tour_pet_title => '伙伴';
+
+  @override
+  String get appearance_tour_pet_body => '领养前，伙伴功能保持关闭。弹出窗口会附带一个小型消息输入框。';
+
+  @override
+  String get appearance_tour_radio_body => '启用前，电台保持关闭。按下播放才会打开音频流。';
+
+  @override
+  String get appearance_tip_theme => '导入的主题会替换内置配色，直到你清除所选主题。仅保留颜色。';
+
+  @override
+  String get appearance_tip_pet => '伙伴仅在此设备上保存一张小头像，不会上传用于孵化的图片。';
+
+  @override
+  String get appearance_theme_import_failed =>
+      '无法导入该主题。请选择以 .vsix、.json 或 .jsonc 文件保存的 VS Code 颜色主题。';
+
+  @override
+  String get render_widget_file_truncated => '只读取了此文件的开头部分，因此小组件可能不完整。';
+
+  @override
+  String get setup_beat_title => '设置';
+
+  @override
+  String setup_beat_use_name(String name) {
+    return '使用 $name';
+  }
+
+  @override
+  String get setup_beat_name_hint => 'Hermes 应该怎么称呼你？';
+
+  @override
+  String get setup_beat_on_computer => '此步骤在运行 Hermes 的电脑上完成。选择“继续”将保留那里已有的设置。';
+
+  @override
+  String get setup_beat_not_waiting => '此设置卡片已不再等待回答。';
+
+  @override
+  String get catalog_kind_plugin => '插件';
+
+  @override
+  String get catalog_kind_skill => '技能';
+
+  @override
+  String get catalog_tier_official => '官方';
+
+  @override
+  String get catalog_tier_verified => '已验证';
+
+  @override
+  String get catalog_tier_community => '社区';
+
+  @override
+  String get catalog_install => '安装';
+
+  @override
+  String get catalog_waiting => '等待你的选择';
+
+  @override
+  String get catalog_installed => '已安装';
+
+  @override
+  String get catalog_installed_off => '已安装，未启用';
+
+  @override
+  String get catalog_skipped => '已跳过';
+
+  @override
+  String get catalog_not_installed => '未安装';
+
+  @override
+  String catalog_target_profile(String profile) {
+    return '安装到 $profile 配置文件';
+  }
+
+  @override
+  String catalog_source(String repo, String sha) {
+    return '$repo（$sha）';
+  }
+
+  @override
+  String catalog_scan(String status, String summary) {
+    return '安全扫描：$status。$summary';
+  }
+
+  @override
+  String catalog_requires_hermes(String range) {
+    return '需要 Hermes $range';
+  }
+
+  @override
+  String catalog_skill_ready(String name) {
+    return '技能 $name 已可使用';
+  }
+
+  @override
+  String catalog_missing_env(String names) {
+    return '仍需要：$names';
+  }
+
+  @override
+  String catalog_server_error(String name, String error) {
+    return '$name 未能连接：$error';
+  }
+
+  @override
+  String get catalog_send_failed => '你的选择未发送，请重试。';
+
+  @override
+  String get attachment_video_speed => '播放速度';
+
+  @override
+  String get catalog_installing => '正在安装…';
+
+  @override
+  String get catalog_phase_downloading => '正在下载…';
+
+  @override
+  String get catalog_phase_python_packages => '正在安装 Python 包…';
+
+  @override
+  String get catalog_phase_loading_tools => '正在加载工具…';
+
+  @override
+  String get setup_beat_send_failed => '你的回答未发送，请重试。';
+
+  @override
+  String catalog_tool_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个工具',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get render_svg_not_drawn => '此 SVG 未绘制。';
+
+  @override
+  String get render_notes_directive => '笔记指令';
+
+  @override
+  String get render_maths_source => '数学公式源码';
+
+  @override
+  String get render_inline_maths_source => '行内数学公式源码';
+
+  @override
+  String get render_sequence_outline => '时序图大纲';
+
+  @override
+  String get render_diagram_outline => '图表大纲';
+
+  @override
+  String render_revision_of(int index, int count) {
+    return '修订版 $index/$count';
+  }
+
+  @override
+  String get render_previous_revision => '上一修订版';
+
+  @override
+  String get render_next_revision => '下一修订版';
+
+  @override
+  String get render_show_rendered => '渲染视图';
+
+  @override
+  String get render_show_source => '源码';
+
+  @override
+  String render_copied_file(String name) {
+    return '已复制 $name';
+  }
+
+  @override
+  String render_copy_file(String name) {
+    return '复制 $name';
+  }
+
+  @override
+  String get render_artifact_too_long => '此产物太长，无法在此处以页面显示。';
+
+  @override
+  String get render_active_content_removed => '已移除脚本、框架和外部地址。';
+
+  @override
+  String render_widget_file(String file) {
+    return '小组件 $file';
+  }
+
+  @override
+  String get render_widget_runs_as_text => '在此聊天中以文本形式运行。脚本和外部框架会被移除。';
+
+  @override
+  String get render_load_widget => '加载小组件';
+
+  @override
+  String get render_not_html_widget => '此文件不是 HTML 小组件。';
+
+  @override
+  String get render_widget_sent => '已发送到此聊天';
+
+  @override
+  String get render_widget_not_sent => '未发送到此聊天';
+
+  @override
+  String get render_widget_throttled => '请稍候再发送';
+
+  @override
+  String get render_widget_too_long => '此请求太长，无法发送';
+
+  @override
+  String get render_widget_no_gesture => '点按小组件中的控件以发送';
+
+  @override
+  String get render_widget_invalid => '无法发送此请求';
+
+  @override
+  String get render_inspected_image => '已检查的图片';
+
+  @override
+  String get render_contributions => '扩展项';
+
+  @override
+  String get render_contributions_intro =>
+      '只有内置在 Ares 中的扩展项才能为回复添加内容。聊天文本无法注册扩展项，授权仅适用于此连接。';
+
+  @override
+  String render_grant_plugin(String name) {
+    return '授权 $name';
+  }
+
+  @override
+  String render_revoke_plugin(String name) {
+    return '撤销 $name';
+  }
+
+  @override
+  String render_plugin_slots(String directive) {
+    return '::$directive 的回复卡片';
+  }
+
+  @override
+  String get render_plugin_notes => '笔记';
+
+  @override
+  String get catalog_scan_passed => '已通过';
+
+  @override
+  String get catalog_scan_warnings => '发现警告';
+
+  @override
+  String get catalog_scan_failed => '未通过';
+
+  @override
+  String get deployment_token_label => '部署令牌（可选）';
+
+  @override
+  String get deployment_token_helper =>
+      '用于以 X-Hermes-Session-Token 发送的 Hermes Dashboard 会话令牌。不会以明文保存在偏好设置中。';
+
+  @override
+  String get deployment_token_hint => '仪表板会话令牌';
+
+  @override
+  String get custom_headers_label => '自定义标头（可选）';
+
+  @override
+  String get custom_headers_helper => '每行一个，例如 X-Custom: 值。禁止的标头会被拒绝。';
+
+  @override
+  String get custom_headers_hint => '例如 X-Custom-Header: 值';
+
+  @override
+  String get desktop_tray_open => '打开 Ares';
+
+  @override
+  String get desktop_tray_new_chat => '新聊天';
+
+  @override
+  String get desktop_tray_quick_entry => '快速输入…';
+
+  @override
+  String get desktop_tray_pause_notifications => '暂停通知';
+
+  @override
+  String get desktop_tray_quit => '退出 Ares';
+
+  @override
+  String get desktop_integration_title => '桌面集成';
+
+  @override
+  String get desktop_tray_setting => '在系统托盘或菜单栏中显示 Ares';
+
+  @override
+  String get desktop_tray_setting_help => '可通过图标打开 Ares、开始聊天、打开快速输入、暂停通知或退出。';
+
+  @override
+  String get desktop_close_to_tray_setting => '关闭窗口后继续在托盘中运行';
+
+  @override
+  String get desktop_tray_unsupported => '此桌面没有可供 Ares 使用的系统托盘。';
+
+  @override
+  String get quick_entry_title => '快速输入';
+
+  @override
+  String get quick_entry_hint => '输入给 Ares 的提示…';
+
+  @override
+  String get quick_entry_submit => '放入输入框';
+
+  @override
+  String get quick_entry_never_sends => '按 Enter 会将文本放入聊天输入框。在你按下发送之前不会发送任何内容。';
+
+  @override
+  String get quick_entry_unavailable => '无法打开快速输入。请重试。';
+
+  @override
+  String get desktop_hotkey_setting => '快速输入快捷键';
+
+  @override
+  String desktop_hotkey_help(String shortcut) {
+    return '在任意位置按 $shortcut 即可打开快速输入。';
+  }
+
+  @override
+  String desktop_hotkey_conflict(String shortcut) {
+    return '其他应用已在使用 $shortcut。请选择其他快捷键。';
+  }
+
+  @override
+  String get desktop_hotkey_unsupported => '此桌面不允许应用注册全局快捷键（例如 Wayland）。';
+
+  @override
+  String get desktop_hotkey_no_modifier => '请包含 Cmd、Ctrl 或 Alt。';
+
+  @override
+  String get desktop_hotkey_super_key => 'Windows 键或 Super 键为系统保留。';
+
+  @override
+  String get desktop_hotkey_reserved => '系统已在使用此快捷键。';
+
+  @override
+  String desktop_hotkey_in_app(String action) {
+    return 'Ares 已将此快捷键用于$action。';
+  }
+
+  @override
+  String get desktop_hotkey_change => '更改';
+
+  @override
+  String get desktop_hotkey_reset => '使用默认值';
+
+  @override
+  String get capture_screen_action => '截取屏幕';
+
+  @override
+  String get capture_screen_help => '将截图作为草稿添加到消息中。在你按下发送之前不会发送任何内容。';
+
+  @override
+  String get capture_screen_unavailable => '此桌面无法使用屏幕截取。';
+
+  @override
+  String get capture_screen_failed => '无法截取屏幕。请重试。';
+
+  @override
+  String get capture_permission_title => '允许录屏';
+
+  @override
+  String get capture_permission_body =>
+      '要截取窗口，Ares 需要录屏权限。请在“系统设置” > “隐私与安全性” > “录屏”中打开 Ares，然后重试。';
+
+  @override
+  String get capture_open_settings => '打开系统设置';
+
+  @override
+  String get keep_awake_title => '保持电脑唤醒';
+
+  @override
+  String get keep_awake_title_mobile => '保持屏幕常亮';
+
+  @override
+  String get keep_awake_mode_off => '关闭';
+
+  @override
+  String get keep_awake_mode_while_working => '工作时';
+
+  @override
+  String get keep_awake_mode_always => '始终';
+
+  @override
+  String get keep_awake_off_help => '从不阻止系统睡眠（默认）。';
+
+  @override
+  String get keep_awake_while_working_help => '仅在代理回合运行时阻止空闲睡眠。';
+
+  @override
+  String get keep_awake_always_help => '在此设备上打开 Ares 期间阻止空闲睡眠。';
+
+  @override
+  String get keep_awake_off_help_mobile => '让屏幕照常关闭（默认）。';
+
+  @override
+  String get keep_awake_while_working_help_mobile =>
+      '在代理回合运行且 Ares 打开期间保持屏幕常亮。';
+
+  @override
+  String get keep_awake_always_help_mobile => '在 Ares 打开期间保持屏幕常亮。';
+
+  @override
+  String get ng_token_gateway_has_no_sign_in =>
+      '此网关没有登录功能，因此无法验证部署令牌。请在主机上启用仪表板身份验证（或更新 Hermes），然后重试。';
+
+  @override
+  String get palette_open => '应用命令面板';
+
+  @override
+  String get palette_no_matches => '没有匹配的操作';
+
+  @override
+  String get palette_filter_hint => '输入以筛选操作…';
+
+  @override
+  String get palette_keys_move => '↑↓ 移动';
+
+  @override
+  String get palette_keys_run => 'Enter 运行';
+
+  @override
+  String get palette_keys_close => 'Esc 关闭';
+
+  @override
+  String get palette_search_sessions => '搜索会话';
+
+  @override
+  String get palette_scheduled_crons => '计划任务 / Cron';
+
+  @override
+  String get palette_capabilities_skills => '能力与技能';
+
+  @override
+  String get palette_insights_usage => '洞察与用量';
+
+  @override
+  String get palette_more_projects => '更多与项目';
+
+  @override
+  String get deeplink_chat_not_found => '列表中找不到该聊天，可能尚未加载。';
+
+  @override
+  String get keyboard_shortcuts_title => '键盘快捷键';
+
+  @override
+  String get shortcuts_reset_all => '全部重置';
+
+  @override
+  String get shortcuts_reset_to_default => '恢复默认';
+
+  @override
+  String get shortcut_action_command_palette => '命令面板';
+
+  @override
+  String get shortcut_action_new_chat => '新建聊天';
+
+  @override
+  String get shortcut_action_search => '搜索';
+
+  @override
+  String get shortcut_action_settings => '设置';
+
+  @override
+  String shortcut_action_go_to_tab(int number) {
+    return '转到标签页 $number';
+  }
+
+  @override
+  String shortcuts_conflict(String first, String second, String chord) {
+    return '冲突：“$first”和“$second”都使用 $chord。在你更改其中一个之前，自定义快捷键保持默认值。';
+  }
+
+  @override
+  String shortcuts_editor_title(String action) {
+    return '快捷键：$action';
+  }
+
+  @override
+  String get shortcuts_editor_help => '按下组合键，或在下方选择修饰键和按键：';
+
+  @override
+  String get shortcuts_editor_needs_modifier =>
+      '请至少选择 Cmd/Meta、Ctrl 或 Alt，以免影响在输入框中打字。';
+
+  @override
+  String shortcuts_text_editing_warning(String chord) {
+    return '$chord 是文本编辑快捷键（复制、粘贴、剪切、撤销、重做或全选）。在此绑定后，文本框将无法使用它。';
+  }
+
+  @override
+  String shortcuts_text_editing_in_use(String action, String chord) {
+    return '“$action”使用了文本编辑快捷键 $chord。在此绑定期间，文本框无法使用它。';
+  }
+
+  @override
+  String custom_headers_problem_format(int line) {
+    return '第 $line 行：应为“名称: 值”';
+  }
+
+  @override
+  String custom_headers_problem_missing_name(int line) {
+    return '第 $line 行：缺少标头名称';
+  }
+
+  @override
+  String custom_headers_problem_invalid_name(int line, String name) {
+    return '第 $line 行：标头名称“$name”无效';
+  }
+
+  @override
+  String custom_headers_problem_reserved(int line, String name) {
+    return '第 $line 行：“$name”为保留标头，不能传递';
+  }
+
+  @override
+  String custom_headers_problem_empty_value(int line) {
+    return '第 $line 行：标头值为空';
+  }
+
+  @override
+  String get ng_enter_a_deployment_token => '请输入部署会话令牌。';
+
+  @override
+  String get ng_custom_headers => '自定义标头';
+
+  @override
+  String get ng_custom_headers_help =>
+      '此网关的额外 HTTP 标头（名称: 值，每行一个），随其 REST 和 WebSocket 调用发送，保存在安全凭据存储中。身份验证标头和逐跳标头会被拒绝。';
+
+  @override
+  String get ng_use_a_deployment_token => '使用部署会话令牌';
+
+  @override
+  String get ng_sign_in_with_deployment_token => '使用部署令牌登录';
+
+  @override
+  String get ng_signed_in_with_deployment_token => '已使用部署令牌登录。';
+
+  @override
+  String get auto_speak_replies_title => '自动朗读回复';
+
+  @override
+  String get auto_speak_replies_subtitle => '每回合结束后自动朗读新回复。默认关闭；聊天内的已朗读开关仍然生效。';
+
+  @override
+  String get ng_auto_read_replies_title => '自动朗读回复';
+
+  @override
+  String get ng_auto_read_replies_subtitle => '每回合结束后自动朗读新回复。默认关闭。';
+
+  @override
+  String get barge_in_title => '插话';
+
+  @override
+  String get barge_in_subtitle => '朗读回复时开口说话即可提前停止。朗读回复期间麦克风保持开启。';
+
+  @override
+  String get barge_in_mic_live => '麦克风已开启：说话即可打断回复';
+
+  @override
+  String get ng_barge_in_title => '插话';
+
+  @override
+  String get ng_barge_in_subtitle => '朗读回复时开口说话即可提前停止。朗读回复期间麦克风保持开启。';
+
+  @override
+  String get ng_barge_in_mic_live => '麦克风已开启：说话即可打断回复';
+
+  @override
+  String get wake_word_title => '唤醒词';
+
+  @override
+  String get wake_word_subtitle => '由网关提供免提唤醒检测。默认关闭；仅在启用设备麦克风采集时发送音频。';
+
+  @override
+  String wake_word_listening(String phrase) {
+    return '正在监听唤醒词“$phrase”';
+  }
+
+  @override
+  String wake_word_paused(String phrase) {
+    return '唤醒词“$phrase” — 已暂停';
+  }
+
+  @override
+  String wake_word_off(String phrase) {
+    return '唤醒词“$phrase” — 已关闭';
+  }
+
+  @override
+  String get wake_word_arming => '正在启用唤醒词…';
+
+  @override
+  String get wake_word_stop => '停止唤醒词';
+
+  @override
+  String get wake_word_rearm => '重新启用';
+
+  @override
+  String get wake_word_capture_mode => '采集模式';
+
+  @override
+  String get wake_word_capture_auto => '自动';
+
+  @override
+  String get wake_word_capture_client => '此设备麦克风';
+
+  @override
+  String get wake_word_capture_local => '网关主机麦克风';
+
+  @override
+  String get wake_word_capture_unavailable =>
+      '此网关不允许应用更改采集模式。请在网关主机的 Hermes 配置中设置 wake_word.capture。';
+
+  @override
+  String get wake_word_input_device => '输入麦克风';
+
+  @override
+  String get wake_word_default_device => '系统默认';
+
+  @override
+  String get ng_wake_word_title => '唤醒词';
+
+  @override
+  String get ng_wake_word_subtitle => '由网关提供免提唤醒检测。默认关闭。';
+
+  @override
+  String get voice_engine_title => '语音对话引擎';
+
+  @override
+  String get voice_engine_subtitle => '选择此网关配置文件中免提语音对话的运行方式。';
+
+  @override
+  String get voice_engine_chained => '串联（语音转文字 → Hermes → 语音）';
+
+  @override
+  String get voice_engine_chained_short => '串联';
+
+  @override
+  String get voice_engine_live => 'GPT-Live（实时语音）';
+
+  @override
+  String get voice_engine_live_short => 'GPT-Live';
+
+  @override
+  String get voice_engine_live_needs_key =>
+      '请在网关主机上配置 OpenAI API 密钥以启用 GPT-Live。';
+
+  @override
+  String voice_engine_fallback_chained(String reason) {
+    return 'GPT-Live 不可用（$reason）— 改用串联语音。';
+  }
+
+  @override
+  String get voice_live_start => '开始语音对话';
+
+  @override
+  String get voice_live_stop => '结束语音对话';
+
+  @override
+  String get voice_live_mute => '麦克风静音';
+
+  @override
+  String get voice_live_unmute => '取消麦克风静音';
+
+  @override
+  String get voice_live_interrupt => '打断或立即回应';
+
+  @override
+  String get voice_live_listening => '正在聆听';
+
+  @override
+  String get voice_live_speaking => '正在说话';
+
+  @override
+  String get voice_live_thinking => '正在思考';
+
+  @override
+  String get voice_live_muted => '已静音';
+
+  @override
+  String get voice_live_ended_connection_lost => '实时语音会话的连接已断开。';
+
+  @override
+  String get voice_live_ended_closed => '实时语音会话已被服务关闭。';
+
+  @override
+  String wake_word_other_profile(String profile) {
+    return '该唤醒词属于配置文件“$profile”。请打开到该配置文件的连接以应答。';
+  }
+
+  @override
+  String get wake_word_reason_disabled => '已关闭 — 点按以启用';
+
+  @override
+  String get wake_word_reason_surface => '仅限其他界面使用（配置 wake_word.surface）';
+
+  @override
+  String get wake_word_reason_owned => '唤醒词监听由其他界面占用';
+
+  @override
+  String wake_word_reason_owned_by(String surface) {
+    return '唤醒词监听由其他界面（$surface）占用';
+  }
+
+  @override
+  String get wake_word_reason_unavailable => '此网关不支持唤醒词';
+
+  @override
+  String get wake_word_reason_permission_denied => '麦克风权限被拒绝';
+
+  @override
+  String get wake_word_reason_permission_required => '需要麦克风权限 — 点按以启用';
+
+  @override
+  String get voice_live_not_enabled => '此配置文件未启用 GPT-Live。';
+
+  @override
+  String get voice_live_not_available => 'GPT-Live 不可用';
+
+  @override
+  String voice_live_start_failed(String error) {
+    return '无法启动 GPT-Live：$error';
+  }
+
+  @override
+  String voice_direct_stt_timeout(String seconds, String provider) {
+    return '转写在 $seconds 秒后超时（$provider 未响应）';
+  }
+
+  @override
+  String voice_direct_stt_error(String provider, String status) {
+    return '$provider 语音转文字错误（HTTP $status）';
+  }
+
+  @override
+  String voice_direct_tts_failed(String provider) {
+    return '$provider 文字转语音请求失败';
+  }
+
+  @override
+  String voice_direct_tts_error(String provider, String status) {
+    return '$provider 文字转语音错误（HTTP $status）';
+  }
+
+  @override
+  String ng_wake_status_listening(String phrase) {
+    return '正在监听（“$phrase”）';
+  }
+
+  @override
+  String ng_wake_status_off(String phrase) {
+    return '已关闭（“$phrase”）';
+  }
+
+  @override
+  String ng_wire_setting_unavailable(Object setting) {
+    return '共享网关暂不支持更改 $setting';
+  }
+
+  @override
+  String ng_wire_method_unavailable(Object method) {
+    return '共享网关暂不支持 $method';
+  }
+
+  @override
+  String ng_wire_session_options_unsupported(Object options) {
+    return '规范网关不支持以下显式会话选项：$options';
+  }
+
+  @override
+  String get ng_wire_prompt_stale => '该请求已过期或不可用；请重新连接后再回复';
+
+  @override
+  String get ng_wire_revision_unavailable => '会话修订版本不可用；请重新打开会话后再编辑元数据';
+
+  @override
+  String get ng_wire_generation_unavailable => '会话执行标识不可用；请重新连接后再使用此命令';
+
+  @override
+  String get ng_wire_message_not_saved => '此消息尚未保存；请等待其完成后再从它创建分支';
+
+  @override
+  String get ng_wire_not_available => '共享网关暂不支持';
+
+  @override
+  String get edit_turn_title => '编辑此提示？';
+
+  @override
+  String get edit_turn_body => '将从此处重新运行该提示，后续轮次会被归档。';
+
+  @override
+  String get edit_turn_send => '发送';
+
+  @override
+  String get restore_turn_title => '恢复到此检查点？';
+
+  @override
+  String get restore_turn_body => '此提示之后的所有内容将从对话中移除，并从此处重新运行该提示。';
+
+  @override
+  String get restore_turn_confirm => '恢复并重跑';
+
+  @override
+  String get edit_turn_later_turns_body => '这会将对话中的后续轮次归档。要继续吗？';
+
+  @override
+  String get session_history => '会话历史';
+
+  @override
+  String get import_claude_or_codex => '导入 Claude 或 Codex';
+
+  @override
+  String get ng_session_history => '会话历史';
+
+  @override
+  String get ng_import_claude_or_codex => '导入 Claude 或 Codex';
+
+  @override
+  String get ng_edit_and_resend => '编辑并重发';
+
+  @override
+  String get ng_restore_turn_confirm => '恢复并重跑';
+
+  @override
+  String get rewind_target_unsaved => '此消息尚未保存。请等待其完成后再编辑。';
+
+  @override
+  String get rewind_turn_busy => '当前回复尚未停止，因此未发送任何内容。请稍后再试。';
+
+  @override
+  String get rewind_session_changed => '此聊天自在此处打开后已发生变化，因此未移除或发送任何内容。请重新打开后再试。';
+
+  @override
+  String get history_lineage => '相关聊天';
+
+  @override
+  String get history_lineage_none => '此聊天没有分支或同级分支。';
+
+  @override
+  String get history_lineage_unavailable => '无法从此网关读取相关聊天。';
+
+  @override
+  String get history_lineage_parent => '父级';
+
+  @override
+  String get history_lineage_sibling => '同级';
+
+  @override
+  String get history_lineage_fork => '分支';
+
+  @override
+  String get history_messages => '消息';
+
+  @override
+  String get history_messages_hint => '选择一条已保存的消息，从那里分支或回退。';
+
+  @override
+  String get history_messages_none => '尚无已保存的消息。';
+
+  @override
+  String get history_messages_unavailable => '无法读取已保存的消息。请打开此聊天后刷新。';
+
+  @override
+  String get history_role_user => '你';
+
+  @override
+  String get history_role_assistant => 'Hermes';
+
+  @override
+  String get history_branch_here => '从这里分支';
+
+  @override
+  String get history_rewind_here => '回退到这里';
+
+  @override
+  String get history_branch_title => '从此消息分支';
+
+  @override
+  String get history_branch_body => '这会创建一个包含到所选消息为止历史的新聊天。当前聊天保持不变。';
+
+  @override
+  String get history_rewind_title => '回退到此消息';
+
+  @override
+  String get history_rewind_body =>
+      '从所选消息起的消息将从此聊天中移除。电脑上的文件不会更改。恢复文件是单独的检查点操作。';
+
+  @override
+  String history_branched(String id) {
+    return '已分支为 $id';
+  }
+
+  @override
+  String get history_open_chat => '打开聊天';
+
+  @override
+  String get history_mutate_unsupported => '分支和回退需要此网关运行 Hermes 0.23 或更高版本。';
+
+  @override
+  String get history_checkpoints => '检查点';
+
+  @override
+  String get history_checkpoints_none => '此会话没有文件检查点。';
+
+  @override
+  String get history_checkpoints_unavailable => '此网关不提供检查点。';
+
+  @override
+  String get history_diff_none => '没有差异。';
+
+  @override
+  String get history_diff_loading => '正在加载更改…';
+
+  @override
+  String get history_diff_failed => '无法加载更改，因此暂时不能恢复此检查点。';
+
+  @override
+  String get history_restore_checkpoint => '恢复检查点';
+
+  @override
+  String get history_restore_title => '恢复此检查点';
+
+  @override
+  String get history_restore_body =>
+      '代理自此检查点以来更改的文件将恢复到当时的状态。你自己的更改会保留。之后的聊天消息也可能被移除。对话不会分支。';
+
+  @override
+  String get history_restore_body_all =>
+      '会话文件夹中的所有文件都将恢复到此检查点，包括你自己的更改。之后的聊天消息也可能被移除。对话不会分支。';
+
+  @override
+  String get history_restore_own_edits => '同时还原我自己的更改';
+
+  @override
+  String get history_restored => '检查点已恢复。';
+
+  @override
+  String history_restored_removed(int count) {
+    return '检查点已恢复。已移除 $count 条聊天消息。';
+  }
+
+  @override
+  String get history_export => '导出';
+
+  @override
+  String get history_export_redact => '隐去令牌';
+
+  @override
+  String get history_export_action => '导出对话记录';
+
+  @override
+  String get history_export_saved => '对话记录已保存。';
+
+  @override
+  String get history_export_unsupported => '导出需要此网关运行 Hermes 0.23 或更高版本。';
+
+  @override
+  String get history_import_unsupported => '此网关不支持导入 Claude 和 Codex。';
+
+  @override
+  String history_import_destination(String profile) {
+    return '目标配置文件：$profile。';
+  }
+
+  @override
+  String history_import_reading(String host, String profile, int count) {
+    return '正在从 $host 读取 · 目标配置文件：$profile。有 $count 个日志无法读取。';
+  }
+
+  @override
+  String get history_import_all => '全部';
+
+  @override
+  String history_import_scan_failed(String reason) {
+    return '无法扫描主机会话：$reason';
+  }
+
+  @override
+  String get history_import_none => '在此主机上未找到 Claude Code 或 Codex 会话。';
+
+  @override
+  String get history_import_no_match => '没有匹配的主机会话。';
+
+  @override
+  String history_import_preview_failed(String reason) {
+    return '无法预览会话：$reason';
+  }
+
+  @override
+  String get history_import_open => '打开已导入的会话';
+
+  @override
+  String get history_import_action => '导入所选会话';
+
+  @override
+  String get history_import_title => '导入此会话';
+
+  @override
+  String history_import_body(String profile) {
+    return '将此 Claude 或 Codex 会话复制到此网关上的配置文件“$profile”。';
+  }
+
+  @override
+  String history_import_body_existing(String profile) {
+    return '此会话已导入到“$profile”。将继续使用现有副本。';
+  }
+
+  @override
+  String history_imported(String id) {
+    return '已导入为 $id';
+  }
+
+  @override
+  String history_imported_already(String id) {
+    return '已导入过，名称为 $id';
+  }
+
+  @override
+  String history_import_directory(String path) {
+    return '目录：$path';
+  }
+
+  @override
+  String history_import_preview_partial(int shown, int total) {
+    return '预览显示 $total 条中的 $shown 条。';
+  }
+
+  @override
+  String history_failed(String reason) {
+    return '无法完成：$reason';
+  }
+
+  @override
+  String get history_error_unavailable => '网关暂时无法执行此操作。请重试。';
+
+  @override
+  String get history_error_unsupported => '此网关不支持此操作。';
+
+  @override
+  String get history_error_denied => '此网关拒绝了该请求。';
+
+  @override
+  String get history_error_changed => '此页面打开期间聊天已发生变化。请刷新后重试。';
+
+  @override
+  String get history_error_unbound => '此聊天未在网关上打开。请打开后重试。';
+
+  @override
+  String get history_error_invalid => '网关返回了此应用无法读取的响应。';
+
+  @override
+  String ng_dock_kanban(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张看板卡片',
+      one: '1 张看板卡片',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_dock_kanban_done(int count) {
+    return '$count 张已完成';
+  }
+
+  @override
+  String get ng_show_kanban => '显示看板卡片';
+
+  @override
+  String get ng_hide_kanban => '隐藏看板卡片';
+
+  @override
+  String get ng_kanban_status_triage => '待分类';
+
+  @override
+  String get ng_kanban_status_todo => '待办';
+
+  @override
+  String get ng_kanban_status_scheduled => '已排期';
+
+  @override
+  String get ng_kanban_status_ready => '就绪';
+
+  @override
+  String get ng_kanban_status_running => '运行中';
+
+  @override
+  String get ng_kanban_status_blocked => '已阻塞';
+
+  @override
+  String get ng_kanban_status_review => '审核中';
+
+  @override
+  String get ng_kanban_status_done => '已完成';
+
+  @override
+  String get ng_kanban_status_archived => '已归档';
+
+  @override
+  String ng_kanban_open_card(String title) {
+    return '在看板中打开“$title”';
+  }
+
+  @override
+  String ng_kanban_show_all(int count) {
+    return '显示全部 $count 张';
+  }
+
+  @override
+  String ng_kanban_this_chat(int count) {
+    return '此聊天（$count）';
+  }
+
+  @override
+  String get ng_kanban_close => '关闭看板';
+
+  @override
+  String get ng_kanban_block_no_dashboard =>
+      '此连接无法访问控制面板，因此卡片状态不会实时更新，也无法打开看板。';
+
+  @override
+  String get ng_kanban_block_unsupported =>
+      '此网关未启用看板。请启用其 kanban 插件，以查看实时状态并打开看板。';
+
+  @override
+  String get ng_kanban_block_denied => '请登录控制面板，以查看卡片的实时状态并打开看板。';
+
+  @override
+  String get ng_kanban_block_insecure =>
+      '看板需要 HTTPS 或本地连接，因此卡片状态不会实时更新，也无法打开看板。';
+
+  @override
+  String get ng_kanban_block_unreachable => '无法连接此网关上的看板。卡片状态可能已过期。';
+
+  @override
+  String get ng_kanban_block_stale => '连接已更改。请重新打开此聊天，以查看卡片的实时状态。';
+
+  @override
+  String get ng_bots_tab_roster => '名单';
+
+  @override
+  String get ng_bots_tab_rooms => '群聊';
+
+  @override
+  String get ng_bots_tab_screen => '屏幕';
+
+  @override
+  String get ng_bots_tab_routines => '例行任务';
+
+  @override
+  String ng_bots_rooms_load_failed(String error) {
+    return '无法加载群聊：$error';
+  }
+
+  @override
+  String ng_bots_routines_load_failed(String error) {
+    return '无法加载例行任务：$error';
+  }
+
+  @override
+  String ng_bots_desktop_failed(String error) {
+    return 'Bot Desktop：$error';
+  }
+
+  @override
+  String get ng_bots_install_not_started => '网关未启动安装。';
+
+  @override
+  String ng_bots_install_failed_error(String error) {
+    return '安装失败：$error';
+  }
+
+  @override
+  String get ng_bots_install_cancelled => '安装已取消。';
+
+  @override
+  String get ng_bots_install_no_sudo => '网关主机上无法使用 sudo。请在该主机上运行上方的命令，然后刷新。';
+
+  @override
+  String ng_bots_install_exit_code(String code) {
+    return '安装失败（退出代码 $code）。';
+  }
+
+  @override
+  String ng_bots_install_done(String bot) {
+    return '已为 $bot 安装 Bot Desktop';
+  }
+
+  @override
+  String get ng_bots_start_failed => '启动失败';
+
+  @override
+  String ng_bots_stop_title(String bot) {
+    return '要停止 $bot 的 Bot Desktop 吗？';
+  }
+
+  @override
+  String get ng_bots_stop_human_held => '有人正在控制此屏幕。停止后将结束其会话，并关闭屏幕上打开的所有内容。';
+
+  @override
+  String get ng_bots_stop_body => '机器人屏幕上打开的所有内容都将被关闭。';
+
+  @override
+  String get ng_bots_stop_refused => '停止请求被拒绝';
+
+  @override
+  String get ng_bots_take_over_reason => '从 Ares 接管';
+
+  @override
+  String ng_bots_take_over_failed(String error) {
+    return '接管失败：$error';
+  }
+
+  @override
+  String ng_bots_force_hand_back_title(String bot) {
+    return '要将 $bot 的屏幕交还给机器人吗？';
+  }
+
+  @override
+  String get ng_bots_force_hand_back_body => '有人正在占用此屏幕。如果对方仍在使用，将失去控制权。';
+
+  @override
+  String get ng_bots_hand_back => '交还';
+
+  @override
+  String get ng_bots_hand_back_failed => '交还失败';
+
+  @override
+  String get ng_bots_adopt_title => '要采用新的沙盒镜像吗？';
+
+  @override
+  String ng_bots_adopt_body(String bot, String current, String target) {
+    return '$bot 将从 $current 切换到 $target。其容器会在下一次终端调用时重建；仅保存在当前容器中的内容将会丢失。';
+  }
+
+  @override
+  String get ng_bots_adopt_image => '采用镜像';
+
+  @override
+  String get ng_bots_image_switch_failed => '镜像切换失败';
+
+  @override
+  String get ng_bots_keep_refused => '保留请求被拒绝';
+
+  @override
+  String ng_bots_chat_open_failed(String error) {
+    return '无法打开 Bot Chat：$error';
+  }
+
+  @override
+  String ng_bots_title(String connection) {
+    return '机器人 · $connection';
+  }
+
+  @override
+  String get ng_bots_protocol_tooltip => '网关会自行注入队友消息协议 — 不会额外发送 SOUL.md 协议。';
+
+  @override
+  String ng_bots_unavailable(String reason) {
+    return '机器人不可用（$reason）';
+  }
+
+  @override
+  String get ng_bots_account_changed => '账户已更改。请重新连接或刷新。';
+
+  @override
+  String get ng_bots_try_refresh => '请尝试刷新。如果问题仍然存在，该网关可能不支持机器人。';
+
+  @override
+  String get ng_bots_search => '搜索机器人';
+
+  @override
+  String get ng_bots_none_found => '未找到机器人。';
+
+  @override
+  String get ng_bots_no_model => '无模型';
+
+  @override
+  String ng_bots_skill_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 项技能',
+      one: '1 项技能',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_bot_chat => 'Bot Chat';
+
+  @override
+  String ng_bots_install_id(String id, String protocol) {
+    return '网关报告的安装 ID 为 $id · bot_mode_protocol：$protocol';
+  }
+
+  @override
+  String get ng_bots_protocol_note =>
+      '设置 bot_mode_protocol 后，网关会注入队友消息协议。标识名：default→hermes，否则为配置档案名称。';
+
+  @override
+  String get ng_bots_no_rooms => '还没有群聊。请从名单中创建一个。';
+
+  @override
+  String ng_bots_member_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 名成员',
+      one: '1 名成员',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_room_disbanded => '已解散';
+
+  @override
+  String get ng_bots_room_adopted => '已采用';
+
+  @override
+  String get ng_bots_rooms_gateway => '网关群聊';
+
+  @override
+  String get ng_bots_rooms_desktop => '桌面端驱动的群聊';
+
+  @override
+  String ng_bots_rooms_gateway_body(String methods) {
+    return '群聊归网关所有。方法：$methods。';
+  }
+
+  @override
+  String get ng_bots_rooms_no_seat => '此网关可能无法承载群聊（需要常驻进程）。';
+
+  @override
+  String get ng_bots_rooms_fallback => '经典回退模式：由桌面端驱动群聊轮次（不会在此新建）。';
+
+  @override
+  String get ng_bots_create_room => '创建群聊';
+
+  @override
+  String get ng_bots_refresh_rooms => '刷新群聊';
+
+  @override
+  String get ng_bots_room_created => '群聊已创建';
+
+  @override
+  String ng_bots_room_refused(String reason) {
+    return '群聊创建被拒绝（$reason）';
+  }
+
+  @override
+  String ng_bots_room_failed(String error) {
+    return '群聊创建失败：$error';
+  }
+
+  @override
+  String get ng_bots_bot => '机器人';
+
+  @override
+  String get ng_bots_screen_unavailable => '无法获取屏幕状态';
+
+  @override
+  String get ng_bots_screen_unavailable_body => '启动机器人的屏幕即可查看其缩略图，或接管后亲自使用。';
+
+  @override
+  String get ng_bots_take_over_note =>
+      '接管会打开实时屏幕并将控制权交给你。当你关闭实时屏幕、离开此页面或将应用切换到后台时，控制权会交还给机器人。';
+
+  @override
+  String get ng_bots_not_installed => '未安装';
+
+  @override
+  String get ng_bots_unsupported_host => '不支持的主机';
+
+  @override
+  String ng_bots_pid(String pid) {
+    return 'pid $pid';
+  }
+
+  @override
+  String ng_bots_missing(String items) {
+    return '缺少：$items';
+  }
+
+  @override
+  String ng_bots_blocked(String reason) {
+    return '受阻：$reason';
+  }
+
+  @override
+  String get ng_bots_no_switch => '没有待处理的沙盒镜像切换。';
+
+  @override
+  String ng_bots_switch_image(String current, String target) {
+    return '切换镜像：$current → $target';
+  }
+
+  @override
+  String get ng_bots_bot_in_control => '由机器人控制';
+
+  @override
+  String get ng_bots_person_in_control => '由真人控制';
+
+  @override
+  String get ng_bots_installing => '正在网关主机上安装 Bot Desktop…';
+
+  @override
+  String get ng_bots_install_unfinished => '安装未完成';
+
+  @override
+  String get ng_bots_install => '安装';
+
+  @override
+  String get ng_bots_start => '启动';
+
+  @override
+  String get ng_bots_take_over => '接管';
+
+  @override
+  String get ng_bots_keep_image => '保留当前镜像';
+
+  @override
+  String ng_bots_missing_pieces(String items) {
+    return '网关报告缺少组件：$items';
+  }
+
+  @override
+  String get ng_bots_install_missing => '安装缺少的组件';
+
+  @override
+  String get ng_bots_thumbnail_unavailable => '缩略图不可用';
+
+  @override
+  String get ng_bots_thumbnail_title => '屏幕缩略图（实时）';
+
+  @override
+  String get ng_bots_thumbnail_suppressed => '屏幕由真人控制期间不显示缩略图。';
+
+  @override
+  String get ng_bots_thumbnail_pending => '缩略图暂不可用。';
+
+  @override
+  String ng_bots_routines_of(String bot) {
+    return '$bot · 例行任务';
+  }
+
+  @override
+  String get ng_bots_add_routine => '添加例行任务';
+
+  @override
+  String get ng_bots_no_routines => '此机器人没有例行任务。';
+
+  @override
+  String get ng_bots_routines_note =>
+      '例行任务是带有 [bot:<name>] 标签的任务，归机器人的配置档案存储所有。旧版委派例行任务在加载时会被强制暂停。';
+
+  @override
+  String ng_bots_routine_last(String status) {
+    return '上次：$status';
+  }
+
+  @override
+  String ng_bots_routine_next(String time) {
+    return '下次：$time';
+  }
+
+  @override
+  String ng_bots_routine_error(String error) {
+    return '错误：$error';
+  }
+
+  @override
+  String ng_bots_remove_routine_title(String routine) {
+    return '要移除例行任务 $routine 吗？';
+  }
+
+  @override
+  String ng_bots_remove_routine_body(String bot) {
+    return '该例行任务将从 $bot 的计划中删除。此操作无法撤销。';
+  }
+
+  @override
+  String ng_bots_routine_action_failed(String action, String error) {
+    return '$action 失败：$error';
+  }
+
+  @override
+  String get ng_bots_not_connected => '未连接。';
+
+  @override
+  String ng_bots_add_failed(String error) {
+    return '添加失败：$error';
+  }
+
+  @override
+  String get ng_bots_routine_added => '已添加例行任务';
+
+  @override
+  String get ng_bots_routine_enabled => '已启用';
+
+  @override
+  String get ng_bots_routine_paused => '已暂停';
+
+  @override
+  String ng_bots_path(String path) {
+    return '路径：$path';
+  }
+
+  @override
+  String get ng_bots_chat_present => 'Bot Chat 已存在';
+
+  @override
+  String get ng_bots_chat_missing => '缺少 Bot Chat';
+
+  @override
+  String ng_bots_last_session(String preview) {
+    return '上次会话：$preview';
+  }
+
+  @override
+  String get ng_bots_open_chat => '打开 Bot Chat';
+
+  @override
+  String get ng_bots_desktop => 'Bot Desktop';
+
+  @override
+  String get ng_bots_room_name => '群聊名称';
+
+  @override
+  String get ng_bots_select_member => '请至少选择一名成员。';
+
+  @override
+  String get ng_bots_sudo_title => '管理员密码';
+
+  @override
+  String ng_bots_sudo_body(String bot) {
+    return '为 $bot 安装 Bot Desktop 需要在网关主机上使用 sudo。密码仅会发送到该网关，仅用于本次安装，且不会被保存。';
+  }
+
+  @override
+  String get ng_bots_sudo_password => 'sudo 密码';
+
+  @override
+  String get ng_bots_new_routine => '新建例行任务';
+
+  @override
+  String get ng_bots_routine_title => '标题';
+
+  @override
+  String get ng_bots_routine_instruction => '指令';
+
+  @override
+  String get ng_bots_cron => 'Cron 表达式';
+
+  @override
+  String get ng_bots_interval => '间隔';
+
+  @override
+  String get ng_bots_cron_help => '0 9 * * * 表示每天 09:00 运行';
+
+  @override
+  String get ng_bots_every => '每隔';
+
+  @override
+  String get ng_bots_unit_minutes => '分钟';
+
+  @override
+  String get ng_bots_unit_hours => '小时';
+
+  @override
+  String get ng_bots_unit_days => '天';
+
+  @override
+  String get ng_bots_stop_after => '运行几次后停止';
+
+  @override
+  String get ng_bots_stop_after_help => '留空则持续运行';
+
+  @override
+  String get ng_bots_send_results => '结果发送至';
+
+  @override
+  String get ng_bots_run_history => '仅记录运行历史';
+
+  @override
+  String get ng_bots_continuity => '接续上一次运行';
+
+  @override
+  String get ng_bots_account_changed_refresh => '账户已更改。请刷新后再继续。';
+
+  @override
+  String ng_bots_room_load_failed(String error) {
+    return '无法加载群聊：$error';
+  }
+
+  @override
+  String ng_bots_send_failed(String error) {
+    return '发送失败：$error';
+  }
+
+  @override
+  String ng_bots_stop_failed(String error) {
+    return '停止失败：$error';
+  }
+
+  @override
+  String get ng_bots_stop_room => '停止群聊';
+
+  @override
+  String get ng_bots_send_message => '发送消息';
+
+  @override
+  String get ng_bots_room_hint => '向群聊发送消息（使用 @handle 提及成员）';
+
+  @override
+  String get ng_bots_history => '历史记录';
+
+  @override
+  String ng_bots_revision(String revision) {
+    return '修订版本 $revision';
+  }
+
+  @override
+  String ng_bots_last_error(String error) {
+    return '上次错误：$error';
+  }
+
+  @override
+  String get ng_bots_members => '成员';
+
+  @override
+  String get ng_bots_room_context => '群聊上下文';
+
+  @override
+  String ng_bots_purpose(String purpose) {
+    return '目的：$purpose';
+  }
+
+  @override
+  String ng_bots_notes(String notes) {
+    return '备注：$notes';
+  }
+
+  @override
+  String ng_bots_routing(String routing) {
+    return '路由：$routing';
+  }
+
+  @override
+  String ng_bots_lead(String member) {
+    return '主导 $member';
+  }
+
+  @override
+  String get ng_bots_viewer_you_control => '你正在控制此屏幕。机器人会等待你交还控制权。';
+
+  @override
+  String get ng_bots_viewer_handed_back => '控制权已交还给机器人。';
+
+  @override
+  String get ng_bots_viewer_background => '应用已离开前台，控制权已交还给机器人。';
+
+  @override
+  String get ng_bots_viewer_taken => '其他人接管了此屏幕。';
+
+  @override
+  String get ng_bots_viewer_lost => '实时画面已中断，控制权已交还给机器人。';
+
+  @override
+  String ng_bots_viewer_title(String bot) {
+    return 'Bot Desktop · $bot';
+  }
+
+  @override
+  String get ng_bots_viewer_type_hint => '在机器人的屏幕上输入';
+
+  @override
+  String get ng_bots_viewer_type => '键入';
+
+  @override
+  String get ng_bots_viewer_enter => '回车';
+
+  @override
+  String get ng_bots_viewer_backspace => '退格';
+
+  @override
+  String get ng_more_kanban => '看板';
+
+  @override
+  String get ng_more_kanban_subtitle => '看板、任务依赖、工作者分配和日志';
+
+  @override
+  String get ng_more_bots => '机器人';
+
+  @override
+  String get ng_more_bots_subtitle => '名单、群聊、例行任务和 Bot Desktop';
+
+  @override
+  String get ng_slash_kanban => '打开看板';
+
+  @override
+  String get ng_slash_bots => '打开你的机器人';
+
+  @override
+  String ng_board_card_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张卡片',
+      one: '1 张卡片',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_board_event_toast(String task, String event) {
+    return '看板 $task：$event';
+  }
+
+  @override
+  String get ng_board_task => '任务';
+
+  @override
+  String ng_board_refused_http(String status) {
+    return '操作被拒绝（HTTP $status）。';
+  }
+
+  @override
+  String get ng_board_err_unsupported => '此网关未启用看板插件。';
+
+  @override
+  String get ng_board_err_denied => '此网关需要登录或相应权限。';
+
+  @override
+  String get ng_board_err_stale => '网关所有者已更改。请刷新后再继续。';
+
+  @override
+  String get ng_board_err_insecure => '看板工作区操作需要 HTTPS（或回环地址）。';
+
+  @override
+  String get ng_board_err_unreachable => '无法连接此网关上的看板服务。';
+
+  @override
+  String get ng_board_err_failed => '操作失败。请刷新后重试。';
+
+  @override
+  String ng_board_block_title(String task) {
+    return '将 $task 标记为阻塞';
+  }
+
+  @override
+  String get ng_board_block_reason => '阻塞原因';
+
+  @override
+  String get ng_board_block_hint => '是什么阻塞了这张卡片？';
+
+  @override
+  String ng_board_review_title(String task) {
+    return '为 $task 请求审核';
+  }
+
+  @override
+  String get ng_board_review_summary => '审核摘要';
+
+  @override
+  String get ng_board_review_hint => '实现并验证了哪些内容？';
+
+  @override
+  String ng_board_move_title(String cards, String column) {
+    return '要将 $cards 移至 $column 吗？';
+  }
+
+  @override
+  String ng_board_move_body(String board) {
+    return '$board 上所有选中的卡片都会更换列。正在运行的卡片将停止运行。';
+  }
+
+  @override
+  String get ng_board_move => '移动';
+
+  @override
+  String ng_board_moved(String column) {
+    return '已将卡片移至 $column';
+  }
+
+  @override
+  String ng_board_unassign_title(String cards) {
+    return '要取消分配 $cards 吗？';
+  }
+
+  @override
+  String ng_board_assign_title(String cards, String profile) {
+    return '要将 $cards 分配给 @$profile 吗？';
+  }
+
+  @override
+  String get ng_board_assign_body => '正在运行的卡片会先被收回：其工作者将被停止。';
+
+  @override
+  String get ng_board_unassign => '取消分配';
+
+  @override
+  String get ng_board_assign => '分配';
+
+  @override
+  String get ng_board_unassigned_done => '已取消分配所选卡片';
+
+  @override
+  String ng_board_assigned_done(String profile) {
+    return '已分配给 @$profile';
+  }
+
+  @override
+  String ng_board_archive_title(String cards) {
+    return '要归档 $cards 吗？';
+  }
+
+  @override
+  String ng_board_archive_body(String board) {
+    return '已归档的卡片将从 $board 中移除。开启“已归档”即可再次查看。';
+  }
+
+  @override
+  String get ng_board_archived_done => '已归档所选卡片';
+
+  @override
+  String ng_board_delete_title(String cards) {
+    return '要删除 $cards 吗？';
+  }
+
+  @override
+  String ng_board_delete_body(String board) {
+    return '这将从 $board 中永久删除所选卡片。';
+  }
+
+  @override
+  String ng_board_deleted(String cards) {
+    return '已删除 $cards。';
+  }
+
+  @override
+  String ng_board_partial_failure(String failed, String total, String reason) {
+    return '$total 项中有 $failed 项失败：$reason';
+  }
+
+  @override
+  String get ng_board_refused => '已拒绝';
+
+  @override
+  String ng_board_dispatched(
+    String spawned,
+    String promoted,
+    String reclaimed,
+  ) {
+    return '已派发：启动 $spawned 个，推进 $promoted 个，收回 $reclaimed 个。';
+  }
+
+  @override
+  String ng_board_board_archived(String board) {
+    return '已归档看板 $board';
+  }
+
+  @override
+  String ng_board_board_archived_to(String path) {
+    return '已归档至 $path';
+  }
+
+  @override
+  String ng_board_exported(String board, String archive) {
+    return '已将 $board 导出至 $archive';
+  }
+
+  @override
+  String ng_board_imported(String board, String warnings) {
+    return '已导入看板 $board$warnings';
+  }
+
+  @override
+  String ng_board_created(String task) {
+    return '已创建 $task';
+  }
+
+  @override
+  String get ng_board_orchestration_saved => '已保存看板编排';
+
+  @override
+  String get ng_board_auto_describe_unavailable => '自动描述不可用';
+
+  @override
+  String ng_board_description_updated(String profile) {
+    return '已更新 @$profile 的描述';
+  }
+
+  @override
+  String ng_board_title(String board) {
+    return '看板 · $board';
+  }
+
+  @override
+  String ng_board_active(String count) {
+    return '$count 个进行中';
+  }
+
+  @override
+  String get ng_board_dispatch => '立即派发就绪任务';
+
+  @override
+  String get ng_board_orchestration => '编排与工作者';
+
+  @override
+  String get ng_board_new_task => '新建任务';
+
+  @override
+  String get ng_board_enable_plugin =>
+      '请在此网关的“功能 → 插件”中启用内置的“kanban”插件，以激活其看板路由。';
+
+  @override
+  String get ng_board_filter => '筛选任务…';
+
+  @override
+  String get ng_board_all_assignees => '所有负责人';
+
+  @override
+  String get ng_board_unassigned => '未分配';
+
+  @override
+  String get ng_board_running_by_profile => '各配置档案运行中';
+
+  @override
+  String get ng_board_select => '选择';
+
+  @override
+  String ng_board_selected_chip(String count) {
+    return '已选择（$count）';
+  }
+
+  @override
+  String get ng_board_locked_column => '受管理的列 — 已禁用拖放';
+
+  @override
+  String ng_board_add_to(String column) {
+    return '添加到 $column';
+  }
+
+  @override
+  String ng_board_collapse(String column) {
+    return '折叠 $column';
+  }
+
+  @override
+  String ng_board_column_empty(String column) {
+    return '$column 中没有任务';
+  }
+
+  @override
+  String get ng_board_drop_here => '拖放至此或 + 任务';
+
+  @override
+  String get ng_board_card_actions => '卡片操作';
+
+  @override
+  String get ng_board_open_details => '打开详情';
+
+  @override
+  String get ng_board_select_card => '选择卡片';
+
+  @override
+  String ng_board_move_to(String column) {
+    return '移至 $column';
+  }
+
+  @override
+  String get ng_board_parked => '搁置';
+
+  @override
+  String ng_board_blocked_by(String count) {
+    return '被 $count 项阻塞';
+  }
+
+  @override
+  String get ng_board_goal_loop => '目标循环';
+
+  @override
+  String ng_board_selected(String count) {
+    return '已选择 $count 项';
+  }
+
+  @override
+  String get ng_board_move_menu => '移动…';
+
+  @override
+  String get ng_board_assign_menu => '分配…';
+
+  @override
+  String get ng_board_new_board_title => '新建看板';
+
+  @override
+  String get ng_board_slug => '短标识（小写，例如 release-v5）';
+
+  @override
+  String get ng_board_display_name => '显示名称';
+
+  @override
+  String get ng_board_linked_project => '关联项目（可选）';
+
+  @override
+  String get ng_board_none => '无';
+
+  @override
+  String get ng_board_default_workdir => '主机上的默认工作目录（可选）';
+
+  @override
+  String get ng_board_import_title => '导入看板归档';
+
+  @override
+  String get ng_board_import_path => '主机上的 .tar.gz 归档路径';
+
+  @override
+  String get ng_board_import => '导入';
+
+  @override
+  String ng_board_edit_board(String board) {
+    return '编辑 $board';
+  }
+
+  @override
+  String get ng_board_name => '名称';
+
+  @override
+  String get ng_board_description => '描述';
+
+  @override
+  String get ng_board_workdir_clear => '默认工作目录（留空则清除）';
+
+  @override
+  String get ng_board_boards => '看板列表';
+
+  @override
+  String get ng_board_new_board => '新建看板';
+
+  @override
+  String get ng_board_search_boards => '搜索看板…';
+
+  @override
+  String get ng_board_unpin => '取消固定标签页';
+
+  @override
+  String get ng_board_pin => '固定标签页';
+
+  @override
+  String ng_board_archive_board_title(String board) {
+    return '要归档看板 $board 吗？';
+  }
+
+  @override
+  String ng_board_archive_board_body(String cards) {
+    return '该看板及其 $cards 将从看板列表中移除。网关会在其主机上保留归档。';
+  }
+
+  @override
+  String get ng_board_edit_metadata => '编辑元数据';
+
+  @override
+  String get ng_board_export => '在主机上导出 .tar.gz';
+
+  @override
+  String get ng_board_move_pin_left => '将固定标签页左移';
+
+  @override
+  String get ng_board_archive_board => '归档看板';
+
+  @override
+  String get ng_board_new_task_title => '新建看板任务';
+
+  @override
+  String get ng_board_title_required => '标题 *';
+
+  @override
+  String get ng_board_spec => '规格与验收标准';
+
+  @override
+  String get ng_board_estimate => '估算';
+
+  @override
+  String ng_board_estimate_draft(String complexity, String tokens) {
+    return '复杂度 $complexity（~$tokens 令牌 — 仅为令牌估算，并非美元成本）';
+  }
+
+  @override
+  String get ng_board_estimate_unavailable => '无法估算';
+
+  @override
+  String get ng_board_initial_column => '初始列';
+
+  @override
+  String get ng_board_worker_assignee => '负责的工作者';
+
+  @override
+  String get ng_board_parked_unassigned => '搁置（未分配）';
+
+  @override
+  String get ng_board_priority => '优先级';
+
+  @override
+  String get ng_board_workspace => '工作区';
+
+  @override
+  String get ng_board_scratch => '临时目录';
+
+  @override
+  String get ng_board_worktree => 'Git 工作树';
+
+  @override
+  String get ng_board_shared_dir => '共享目录';
+
+  @override
+  String get ng_board_workspace_path => '主机工作区路径';
+
+  @override
+  String get ng_board_parent => '父任务依赖（可选）';
+
+  @override
+  String get ng_board_skills => '固定技能（以逗号分隔，可选）';
+
+  @override
+  String get ng_board_provider_override => '提供商覆盖';
+
+  @override
+  String get ng_board_model_override => '模型覆盖';
+
+  @override
+  String get ng_board_reasoning => '推理强度';
+
+  @override
+  String get ng_board_profile_default => '配置档案默认值';
+
+  @override
+  String get ng_board_xhigh => '极高';
+
+  @override
+  String get ng_board_goal_mode => '目标循环模式';
+
+  @override
+  String get ng_board_goal_turns => '目标最大轮数（留空 = 默认）';
+
+  @override
+  String get ng_board_create_task => '创建任务';
+
+  @override
+  String get ng_board_orchestration_title => '编排与工作者配置档案';
+
+  @override
+  String ng_board_orchestrator(String profile) {
+    return '编排器配置档案（解析结果：$profile）';
+  }
+
+  @override
+  String get ng_board_inherit_default => '继承当前默认值';
+
+  @override
+  String ng_board_default_assignee(String profile) {
+    return '默认负责人（解析结果：$profile）';
+  }
+
+  @override
+  String get ng_board_auto_decompose => '自动拆解待分类卡片';
+
+  @override
+  String get ng_board_auto_decompose_help =>
+      '对待分类任务使用已配置的 kanban_decomposer 模型';
+
+  @override
+  String get ng_board_save_orchestration => '保存编排';
+
+  @override
+  String get ng_board_worker_descriptions => '工作者专长描述';
+
+  @override
+  String ng_board_worker_label(String profile, String model, String skills) {
+    return '@$profile（$model · $skills）';
+  }
+
+  @override
+  String get ng_board_default_model => '默认模型';
+
+  @override
+  String get ng_board_save_description => '保存描述';
+
+  @override
+  String get ng_board_auto_describe => '根据技能和角色自动描述';
+
+  @override
+  String get ng_board_manual_block => '操作员手动阻塞';
+
+  @override
+  String get ng_board_requested_review => '已请求审核';
+
+  @override
+  String ng_board_requeue_title(String task) {
+    return '要将 $task 重新排队吗？';
+  }
+
+  @override
+  String get ng_board_requeue_body => '正在运行此卡片的工作者将被停止，卡片将返回队列。';
+
+  @override
+  String get ng_board_requeue => '重新排队';
+
+  @override
+  String ng_board_reassign_title(String task, String profile) {
+    return '要将 $task 重新分配给 @$profile 吗？';
+  }
+
+  @override
+  String get ng_board_reassign_body => '此卡片正在运行：将先停止其工作者。';
+
+  @override
+  String get ng_board_reassign => '重新分配';
+
+  @override
+  String ng_board_saved_task(String task) {
+    return '已保存任务 $task';
+  }
+
+  @override
+  String get ng_board_commented_requeued => '已发表评论并将任务重新排队';
+
+  @override
+  String get ng_board_commented => '已发表评论';
+
+  @override
+  String ng_board_requeued(String task) {
+    return '已将 $task 重新排队';
+  }
+
+  @override
+  String get ng_board_decompose_failed => '拆解失败。';
+
+  @override
+  String ng_board_decompose_failed_reason(String reason) {
+    return '拆解失败：$reason';
+  }
+
+  @override
+  String ng_board_decomposed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已拆解为 $count 个子任务',
+      one: '已拆解为 1 个子任务',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_board_no_children => '未创建任何子任务。';
+
+  @override
+  String ng_board_no_children_reason(String reason) {
+    return '未创建任何子任务：$reason';
+  }
+
+  @override
+  String ng_board_uploaded(String file) {
+    return '已上传 $file';
+  }
+
+  @override
+  String ng_board_linked_parent(String task) {
+    return '已关联父任务 $task';
+  }
+
+  @override
+  String ng_board_unlinked_parent(String task) {
+    return '已移除父任务关联 $task';
+  }
+
+  @override
+  String get ng_board_task_load_failed => '无法加载任务';
+
+  @override
+  String get ng_board_refresh_task => '刷新任务';
+
+  @override
+  String get ng_board_tab_overview => '概览';
+
+  @override
+  String get ng_board_tab_comments => '评论与链接';
+
+  @override
+  String get ng_board_tab_runs => '运行与日志';
+
+  @override
+  String get ng_board_tab_events => '事件';
+
+  @override
+  String get ng_board_decompose => '拆解';
+
+  @override
+  String get ng_board_attach => '附加文件';
+
+  @override
+  String ng_board_estimate_task(
+    String complexity,
+    String tokens,
+    String rationale,
+  ) {
+    return '估算：$complexity · ~$tokens 令牌（$rationale）— 并非美元成本。';
+  }
+
+  @override
+  String get ng_board_no_rationale => '无理由说明';
+
+  @override
+  String get ng_board_status => '状态';
+
+  @override
+  String get ng_board_assignee => '负责人';
+
+  @override
+  String get ng_board_title_label => '标题';
+
+  @override
+  String get ng_board_body => '正文 / 规格说明';
+
+  @override
+  String get ng_board_save_changes => '保存更改';
+
+  @override
+  String get ng_board_clear_model => '清除模型覆盖';
+
+  @override
+  String ng_board_blocked_reason(String reason) {
+    return '阻塞原因：$reason';
+  }
+
+  @override
+  String ng_board_result(String result) {
+    return '结果：$result';
+  }
+
+  @override
+  String ng_board_parents(String count) {
+    return '受阻于（父任务 · $count）';
+  }
+
+  @override
+  String get ng_board_add_parent => '+ 添加父任务';
+
+  @override
+  String ng_board_children(String count) {
+    return '阻塞对象（子任务 · $count）';
+  }
+
+  @override
+  String ng_board_attachments(String count) {
+    return '附件（$count）';
+  }
+
+  @override
+  String get ng_board_worker => '工作者';
+
+  @override
+  String ng_board_comments(String count) {
+    return '评论（$count）';
+  }
+
+  @override
+  String get ng_board_comment_hint => '添加评论 / 工作者指引';
+
+  @override
+  String get ng_board_post_comment => '发表评论';
+
+  @override
+  String get ng_board_comment_requeue => '评论并重新排队';
+
+  @override
+  String ng_board_runs(String count) {
+    return '运行记录（$count）';
+  }
+
+  @override
+  String get ng_board_no_runs => '尚无工作者运行记录。';
+
+  @override
+  String ng_board_run_error(String error) {
+    return '错误：$error';
+  }
+
+  @override
+  String ng_board_log_tail_truncated(String bytes) {
+    return '工作者日志末尾（$bytes B，已截断）';
+  }
+
+  @override
+  String ng_board_log_tail(String bytes) {
+    return '工作者日志末尾（$bytes B）';
+  }
+
+  @override
+  String get ng_board_refresh_log => '刷新日志';
+
+  @override
+  String get ng_board_no_log => '无工作者日志输出。';
+
+  @override
+  String get ng_board_no_events => '未记录任何事件。';
+
+  @override
+  String get ng_bots_room_unknown => '未知';
+
+  @override
+  String get ng_bots_room_blocked => '已阻塞';
+
+  @override
+  String get ng_bots_room_working => '工作中';
+
+  @override
+  String get ng_bots_room_running => '运行中';
+
+  @override
+  String get ng_bots_room_idle => '空闲';
+
+  @override
+  String ng_board_run_title(String id, String profile, String outcome) {
+    return '运行 #$id · @$profile · $outcome';
+  }
+
+  @override
+  String get ng_bots_new_bot => '新建机器人';
+
+  @override
+  String get ng_bots_new_bot_hint => '一个有名字的队友，拥有自己的记忆、技能和聊天，可以给你的其他智能体发消息。';
+
+  @override
+  String get ng_bots_field_name => '名称';
+
+  @override
+  String get ng_bots_field_title => '标题';
+
+  @override
+  String get ng_bots_field_description => '描述';
+
+  @override
+  String get ng_bots_description_hint => '这个机器人应该帮忙做什么？';
+
+  @override
+  String get ng_bots_name_invalid => '使用小写字母、数字、连字符或下划线，并以字母或数字开头（最多 64 个字符）。';
+
+  @override
+  String ng_bots_name_taken(String name) {
+    return '名为“$name”的智能体已存在。';
+  }
+
+  @override
+  String ng_bots_profile_id(String id) {
+    return '配置文件 ID：$id';
+  }
+
+  @override
+  String get ng_bots_advanced => '高级 — 模型、技能、工具集、SOUL.md';
+
+  @override
+  String get ng_bots_clone_from => '从配置文件克隆';
+
+  @override
+  String get ng_bots_clone_main => '主配置文件（default）';
+
+  @override
+  String get ng_bots_fresh_profile => '全新配置文件（内置技能）';
+
+  @override
+  String get ng_bots_create_empty => '创建空配置（跳过内置技能）';
+
+  @override
+  String get ng_bots_share_keys => '与主配置文件共享密钥和账户';
+
+  @override
+  String get ng_bots_provider => '提供商';
+
+  @override
+  String get ng_bots_model => '模型';
+
+  @override
+  String get ng_bots_model_pair => '请同时输入提供商和模型。';
+
+  @override
+  String get ng_bots_soul => 'SOUL.md（可选 — 替换生成的人设）';
+
+  @override
+  String get ng_bots_soul_edit => 'SOUL.md';
+
+  @override
+  String get ng_bots_creating => '正在创建…';
+
+  @override
+  String get ng_bots_create_bot => '创建机器人';
+
+  @override
+  String ng_bots_created(String name) {
+    return '已创建机器人“$name”';
+  }
+
+  @override
+  String get ng_bots_look_failed => '外观未保存到网关；请在“编辑配置文件”中设置。';
+
+  @override
+  String ng_bots_request_failed(String reason) {
+    return '网关未接受（$reason）。';
+  }
+
+  @override
+  String get ng_bots_avatar_shape => '形状';
+
+  @override
+  String ng_bots_avatar_shape_n(int n) {
+    return '形状 $n';
+  }
+
+  @override
+  String get ng_bots_avatar_colour => '颜色';
+
+  @override
+  String ng_bots_avatar_colour_n(int n) {
+    return '颜色 $n';
+  }
+
+  @override
+  String get ng_bots_avatar_match_name => '跟随名称';
+
+  @override
+  String get ng_bots_avatar_upload => '选择图片…';
+
+  @override
+  String get ng_bots_avatar_remove => '移除图片 — 使用形状';
+
+  @override
+  String get ng_bots_avatar_too_large => '图片过大（最大 15 MB）。';
+
+  @override
+  String get ng_bots_avatar_unreadable => '无法读取该图片。';
+
+  @override
+  String get ng_bots_edit_profile => '编辑配置文件';
+
+  @override
+  String ng_bots_edit_description(String name, String profile) {
+    return '$name（$profile）的外观和角色。';
+  }
+
+  @override
+  String ng_bots_advanced_failed(String reason) {
+    return '无法加载配置文件设置（$reason）。';
+  }
+
+  @override
+  String get ng_bots_skills => '技能';
+
+  @override
+  String get ng_bots_toolsets => '工具集';
+
+  @override
+  String get ng_bots_toolsets_hint => '全部（或都不）勾选时保持默认工具集行为。';
+
+  @override
+  String get ng_bots_mcp_servers => 'MCP 服务器';
+
+  @override
+  String get ng_bots_saving => '正在保存…';
+
+  @override
+  String get ng_bots_confirm_changes_title => '保存这些更改？';
+
+  @override
+  String get ng_bots_change_remove_image => '移除机器人的图片';
+
+  @override
+  String get ng_bots_change_soul => '替换其 SOUL.md';
+
+  @override
+  String ng_bots_change_turn_off(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '关闭 $count 个技能、工具集或 MCP 服务器',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_bots_updated(String name) {
+    return '已更新 $name';
+  }
+
+  @override
+  String ng_bots_sections_failed(String sections) {
+    return '部分内容失败：$sections';
+  }
+
+  @override
+  String get ng_bots_model_confirm_title => '切换模型？';
+
+  @override
+  String get ng_bots_model_confirm_ok => '切换';
+
+  @override
+  String get ng_bots_model_not_switched => '未切换模型。';
+
+  @override
+  String get ng_bots_section_new => '新建分组';
+
+  @override
+  String get ng_bots_section_new_ellipsis => '新建分组…';
+
+  @override
+  String get ng_bots_section_name => '分组名称';
+
+  @override
+  String get ng_bots_section_name_hint => '例如：客户';
+
+  @override
+  String get ng_bots_section_create => '创建';
+
+  @override
+  String get ng_bots_section_rename => '重命名分组';
+
+  @override
+  String get ng_bots_section_delete => '删除分组';
+
+  @override
+  String get ng_bots_section_move_up => '上移';
+
+  @override
+  String get ng_bots_section_move_down => '下移';
+
+  @override
+  String get ng_bots_section_unassigned => '未分组';
+
+  @override
+  String ng_bots_section_options(String name) {
+    return '分组“$name”的选项';
+  }
+
+  @override
+  String get ng_bots_section_empty => '这里还没有机器人。请对机器人使用“移到分组”。';
+
+  @override
+  String get ng_bots_section_move_to => '移到分组';
+
+  @override
+  String get ng_bots_section_remove => '移出分组';
+
+  @override
+  String ng_bots_section_deleted(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已删除“$name” — $count 个机器人移到未分组',
+      zero: '已删除“$name”',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_undo => '撤销';
+
+  @override
+  String ng_bots_section_move_failed(String reason) {
+    return '无法移动机器人（$reason）。';
+  }
+
+  @override
+  String ng_bots_bot_actions(String name) {
+    return '$name 的操作';
+  }
+
+  @override
+  String ng_bots_section_toggle(String name) {
+    return '显示或隐藏“$name”';
+  }
+
+  @override
+  String
+  get release_core_transcript_reader_this_passage_is_no_longer_in_the_loaded =>
+      '这段内容已不在当前加载的范围内。';
+
+  @override
+  String get release_core_transcript_reader_loaded_prompts => '已加载的提示词';
+
+  @override
+  String get release_core_transcript_reader_jump_to_latest => '跳至最新内容';
+
+  @override
+  String get release_core_transcript_reader_no_prompts_loaded => '未加载提示词';
+
+  @override
+  String get release_core_transcript_reader_find_in_loaded_messages =>
+      '在已加载的消息中查找';
+
+  @override
+  String get release_core_transcript_reader_previous_match => '上一个匹配项';
+
+  @override
+  String get release_core_transcript_reader_next_match => '下一个匹配项';
+
+  @override
+  String get release_core_transcript_reader_prompt_timeline => '提示词时间线';
+
+  @override
+  String get release_core_transcript_reader_close_find => '关闭查找';
+
+  @override
+  String get release_core_session_organisation_organise_chats => '整理聊天';
+
+  @override
+  String get release_core_session_organisation_show_model_and_usage =>
+      '显示模型和用量';
+
+  @override
+  String
+  get release_core_session_files_view_connection_changed_reopen_files_on_the_new_connection =>
+      '连接已更改。请通过新连接重新打开文件。';
+
+  @override
+  String
+  get release_core_session_files_view_the_connection_or_session_changed_reopen_this_pane =>
+      '连接或会话已更改。请重新打开此面板。';
+
+  @override
+  String
+  get release_core_session_files_view_no_verified_host_working_directory_for_this_session =>
+      '此会话没有经验证的主机工作目录。';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_denied_this_operation =>
+      '网关拒绝了此操作。';
+
+  @override
+  String
+  get release_core_session_files_view_this_gateway_does_not_support_this_operation =>
+      '此网关不支持此操作。';
+
+  @override
+  String
+  get release_core_session_files_view_the_file_owner_or_working_directory_changed_reload =>
+      '文件、所有者或工作目录已更改。请重新加载并检查。';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_returned_an_unsafe_path_or_invalid =>
+      '网关返回了不安全的路径或无效的文件响应。';
+
+  @override
+  String
+  get release_core_session_files_view_workspace_access_requires_a_secure_gateway_connection =>
+      '访问工作区需要安全的网关连接。';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_unavailable_refresh_to_check_the_current_state =>
+      '网关不可用。请刷新以查看当前状态。';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_operation_could_not_be_confirmed =>
+      '无法确认网关操作。';
+
+  @override
+  String get release_core_session_files_view_git_status_unavailable =>
+      '无法获取 Git 状态。';
+
+  @override
+  String
+  get release_core_session_files_view_change_this_chat_s_working_directory =>
+      '更改此聊天的工作目录？';
+
+  @override
+  String get release_core_session_files_view_absolute_gateway_directory =>
+      '网关目录的绝对路径';
+
+  @override
+  String get release_core_session_files_view_change_directory => '更改目录';
+
+  @override
+  String get release_core_session_files_view_replace_gateway_file =>
+      '替换网关上的文件？';
+
+  @override
+  String
+  release_core_session_files_view_only_if_the_file_still_matches_the_version(
+    String path,
+  ) {
+    return '$path\n\n仅当文件仍与已检查的版本一致时才会替换。兼容的主机会保留被替换的文件，以便恢复。';
+  }
+
+  @override
+  String get release_core_session_files_view_save_changes => '保存更改';
+
+  @override
+  String
+  get release_core_session_files_view_saved_and_verified_on_the_gateway =>
+      '已在网关上保存并验证。';
+
+  @override
+  String
+  get release_core_session_files_view_guarded_saving_is_unavailable_on_this_gateway_your =>
+      '此网关不提供受保护的保存功能。你的草稿仍在。';
+
+  @override
+  String
+  release_core_session_files_view_save_was_not_confirmed_your_draft_is_still(
+    String reason,
+  ) {
+    return '$reason 保存未获确认。你的草稿仍在。';
+  }
+
+  @override
+  String get release_core_session_files_view_review_current_gateway_version =>
+      '检查网关上的当前版本';
+
+  @override
+  String get release_core_session_files_view_discard_draft_and_reload =>
+      '丢弃草稿并重新加载';
+
+  @override
+  String get release_core_session_files_view_keep_draft_against_this_version =>
+      '基于此版本保留草稿';
+
+  @override
+  String get release_core_session_files_view_discard_unsaved_edits =>
+      '丢弃未保存的编辑？';
+
+  @override
+  String get release_core_session_files_view_keep_editing => '继续编辑';
+
+  @override
+  String get release_core_session_files_view_discard_edits => '丢弃编辑';
+
+  @override
+  String get release_core_session_files_view_remote_working_directory =>
+      '远程工作目录';
+
+  @override
+  String get release_core_session_files_view_change_working_directory =>
+      '更改工作目录';
+
+  @override
+  String get release_core_session_files_view_show_ignored_files => '显示已忽略的文件';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_does_not_report_ignored_status =>
+      '网关未报告忽略状态。';
+
+  @override
+  String get release_core_session_files_view_no_visible_entries => '无可见条目';
+
+  @override
+  String get release_core_session_files_view_changed => '已更改';
+
+  @override
+  String get release_core_session_files_view_ignored => '已忽略';
+
+  @override
+  String release_core_session_files_view_actions_for(String name) {
+    return '$name 的操作';
+  }
+
+  @override
+  String get release_core_session_files_view_copy_relative_path => '复制相对路径';
+
+  @override
+  String get release_core_session_files_view_copy_gateway_path => '复制网关路径';
+
+  @override
+  String get release_core_session_files_view_attach_folder_reference =>
+      '附加文件夹引用';
+
+  @override
+  String get release_core_session_files_view_attach_file_reference => '附加文件引用';
+
+  @override
+  String
+  get release_core_session_files_view_preview_truncated_editing_disabled =>
+      '预览已截断，编辑已禁用。';
+
+  @override
+  String get release_core_session_files_view_select_lines => '选择行';
+
+  @override
+  String get release_core_session_files_view_review_gateway_version =>
+      '检查网关上的版本';
+
+  @override
+  String get release_core_session_files_view_attach_selected_lines => '附加所选行';
+
+  @override
+  String get release_core_session_files_view_binary_file_no_text_preview =>
+      '二进制文件，无文本预览。';
+
+  @override
+  String get release_core_session_files_view_file_source => '文件来源';
+
+  @override
+  String get release_core_session_files_view_close_session_files => '关闭会话文件';
+
+  @override
+  String get release_core_session_files_view_back_to_tree => '返回文件树';
+
+  @override
+  String get release_core_session_files_view_session_files => '会话文件';
+
+  @override
+  String get release_core_session_files_view_git_review => 'Git 审查';
+
+  @override
+  String get release_core_session_files_view_refresh_tree => '刷新文件树';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_this_connection_changed_reopen_its_chat =>
+      '此连接已更改。请重新打开对应的聊天。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_disconnected_reconnect_the_chat_then_refresh =>
+      '连接已断开。请重新连接聊天，然后刷新。';
+
+  @override
+  String release_core_gateway_queue_screen_gateway_queue_unavailable(
+    String reason,
+  ) {
+    return '网关队列不可用：$reason。';
+  }
+
+  @override
+  String release_core_gateway_queue_screen_not_confirmed_nothing_was_resent(
+    String reason,
+  ) {
+    return '未获确认（$reason）。未重新发送任何内容。';
+  }
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_confirmed_admission =>
+      '网关已确认接收。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_edited_entry_admitted_at_the_end_of_the =>
+      '编辑后的条目已被接收并加入队尾。';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_unknown_outcome =>
+      '丢弃结果未知的条目？';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_this_entry => '移除此条目？';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_the_lost_turn_will_not_be_retried_waiting =>
+      '不会重试丢失的轮次。等待中的轮次现在可以运行。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_if_the_gateway_has_just_started_this_entry =>
+      '如果网关刚开始处理此条目，移除它可能会停止该轮次。';
+
+  @override
+  String get release_core_gateway_queue_screen_keep => '保留';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_and_resume => '丢弃并恢复';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_entry => '移除条目';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_lost_admission_resolved_it_was_not_resent =>
+      '接收确认丢失的问题已解决；未重新发送。';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_acknowledged_removal =>
+      '网关已确认移除。';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_queue => '网关队列';
+
+  @override
+  String get release_core_gateway_queue_screen_refresh_queue => '刷新队列';
+
+  @override
+  String get release_core_gateway_queue_screen_queue_paused_unknown_outcome =>
+      '队列已暂停：结果未知';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_review_the_lost_admission_before_resuming_nothing_is =>
+      '请先检查缺失的接收确认，再恢复队列。不会重新发送任何内容。';
+
+  @override
+  String get release_core_gateway_queue_screen_no_pending_admissions =>
+      '无待接收条目';
+
+  @override
+  String get release_core_gateway_queue_screen_discard => '丢弃…';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_gateway_acknowledged_the_steering_request =>
+      '网关已确认引导请求。';
+
+  @override
+  String get release_core_gateway_queue_screen_steer_running_turn =>
+      '引导正在运行的轮次';
+
+  @override
+  String get release_core_gateway_queue_screen_remove => '移除…';
+
+  @override
+  String get release_core_gateway_queue_screen_next_prompt => '下一条提示词';
+
+  @override
+  String get release_core_gateway_queue_screen_edit_queued_prompt =>
+      '编辑排队中的提示词';
+
+  @override
+  String get release_core_gateway_queue_screen_submit_to_gateway_queue =>
+      '提交到网关队列';
+
+  @override
+  String get release_core_gateway_queue_screen_save_at_queue_end => '保存到队尾';
+
+  @override
+  String get release_core_gateway_queue_screen_cancel_edit => '取消编辑';
+
+  @override
+  String get release_core_git_review_pane_the_git_operation_did_not_complete =>
+      'Git 操作未完成。';
+
+  @override
+  String get release_core_git_review_pane_close_git_review => '关闭 Git 审查';
+
+  @override
+  String get release_core_git_review_pane_pin_lane => '固定泳道';
+
+  @override
+  String get release_core_git_review_pane_refresh_git_review => '刷新 Git 审查';
+
+  @override
+  String get release_core_git_review_pane_uncommitted => '未提交';
+
+  @override
+  String get release_core_git_review_pane_last_turn => '上一轮';
+
+  @override
+  String
+  get release_core_git_review_pane_branch_and_last_turn_views_are_read_only =>
+      '分支和上一轮视图均为只读。';
+
+  @override
+  String get release_core_git_review_pane_mark_head_as_the_turn_baseline =>
+      '将 HEAD 标记为轮次基准';
+
+  @override
+  String get release_core_git_review_pane_stage_all => '暂存全部';
+
+  @override
+  String get release_core_git_review_pane_discard_every_uncommitted_change =>
+      '丢弃所有未提交的更改？';
+
+  @override
+  String
+  get release_core_git_review_pane_tracked_files_return_to_head_and_untracked_files =>
+      '已跟踪文件将恢复到 HEAD，此会话目录中未跟踪的文件将被移除。';
+
+  @override
+  String get release_core_git_review_pane_discard => '丢弃';
+
+  @override
+  String get release_core_git_review_pane_discard_all => '全部丢弃';
+
+  @override
+  String get release_core_git_review_pane_unstage => '取消暂存';
+
+  @override
+  String get release_core_git_review_pane_stage => '暂存';
+
+  @override
+  String get release_core_git_review_pane_discard_file => '丢弃文件';
+
+  @override
+  String release_core_git_review_pane_discard_2(String path) {
+    return '丢弃 $path？';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_this_restores_the_committed_copy_or_removes_the =>
+      '这会恢复已提交的副本，或移除未跟踪的文件。';
+
+  @override
+  String get release_core_git_review_pane_commit_message => '提交说明';
+
+  @override
+  String get release_core_git_review_pane_nothing_in_the_diff_to_summarise =>
+      '差异中没有可供总结的内容。';
+
+  @override
+  String get release_core_git_review_pane_generate_message => '生成提交说明';
+
+  @override
+  String get release_core_git_review_pane_commit => '提交';
+
+  @override
+  String get release_core_git_review_pane_commit_and_push => '提交并推送';
+
+  @override
+  String get release_core_git_review_pane_push => '推送';
+
+  @override
+  String get release_core_git_review_pane_create_pull_request => '创建拉取请求';
+
+  @override
+  String get release_core_git_review_pane_pull_request_ready => '拉取请求已就绪';
+
+  @override
+  String get release_core_git_review_pane_ask_hermes_to_ship => '请 Hermes 完成发布';
+
+  @override
+  String get release_core_git_review_pane_gh_is_authenticated_on_this_gateway =>
+      'gh 已在此网关上通过身份验证。';
+
+  @override
+  String
+  get release_core_git_review_pane_install_the_github_cli_gh_and_sign_in =>
+      '安装 GitHub CLI（gh）并登录，即可创建拉取请求';
+
+  @override
+  String get release_core_git_review_pane_worktrees => '工作树';
+
+  @override
+  String get release_core_git_review_pane_main => '主工作树';
+
+  @override
+  String release_core_git_review_pane_follow(String branch) {
+    return '跟随 $branch？';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_working_directory_becomes_this_worktree_unless =>
+      '除非泳道已固定，否则会话工作目录将切换为此工作树。';
+
+  @override
+  String get release_core_git_review_pane_follow_2 => '跟随';
+
+  @override
+  String release_core_git_review_pane_remove(String branch) {
+    return '移除 $branch？';
+  }
+
+  @override
+  String get release_core_git_review_pane_the_worktree_directory_is_removed =>
+      '工作树目录将被移除。';
+
+  @override
+  String get release_core_git_review_pane_remove_2 => '移除';
+
+  @override
+  String get release_core_git_review_pane_new_worktree_name => '新工作树名称';
+
+  @override
+  String get release_core_git_review_pane_new_branch => '新分支';
+
+  @override
+  String get release_core_git_review_pane_base_branch => '基础分支';
+
+  @override
+  String get release_core_git_review_pane_create_worktree => '创建工作树';
+
+  @override
+  String get release_core_git_review_pane_existing_branch => '现有分支';
+
+  @override
+  String get release_core_git_review_pane_convert_branch_to_worktree =>
+      '将分支转换为工作树';
+
+  @override
+  String get release_core_git_review_pane_switch_branch => '切换分支';
+
+  @override
+  String
+  get release_core_git_review_pane_this_gateway_does_not_support_that_git_operation =>
+      '此网关不支持该 Git 操作。';
+
+  @override
+  String
+  get release_core_git_review_pane_git_needs_the_session_directory_on_the_local =>
+      'Git 需要会话目录位于本地终端后端。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_refused_the_git_operation =>
+      '网关拒绝了 Git 操作。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_changed_refresh_and_try_again =>
+      '会话已更改。请刷新后重试。';
+
+  @override
+  String
+  get release_core_git_review_pane_this_review_is_no_longer_the_selected_session =>
+      '此审查已不再对应当前选中的会话。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_returned_an_unexpected_git_result =>
+      '网关返回了意外的 Git 结果。';
+
+  @override
+  String
+  get release_core_git_review_pane_git_review_requires_the_gateway_transport =>
+      'Git 审查需要通过网关传输。';
+
+  @override
+  String get release_core_client_held_queue_bar_resume => '恢复';
+
+  @override
+  String get release_core_client_held_queue_bar_send_queued_prompt =>
+      '发送排队中的提示词';
+
+  @override
+  String get release_core_client_held_queue_bar_edit_unsent_prompt =>
+      '编辑未发送的提示词';
+
+  @override
+  String get release_core_client_held_queue_bar_remove_unsent_prompt =>
+      '移除未发送的提示词';
+
+  @override
+  String get release_core_workspace_discovery_view_repository_discovery =>
+      '仓库发现';
+
+  @override
+  String get release_core_workspace_discovery_view_refresh_results => '刷新结果';
+
+  @override
+  String release_core_workspace_discovery_view_hide(String path) {
+    return '隐藏 $path';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_invalid_path_or_discovery_data_use_absolute_server =>
+      '路径或发现数据无效。请使用不含 . 或 .. 路径段的服务器绝对路径。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_does_not_support_repository_discovery =>
+      '此网关不支持仓库发现。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_denied_access_to_repository_discovery =>
+      '网关拒绝访问仓库发现功能。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_connection_changed_reopen_discovery_on_the_current =>
+      '连接已更改。请在当前网关上重新打开仓库发现。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_displayed_settings_have_changed_refresh_before_trying =>
+      '显示的设置已更改。请刷新后重试。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_could_not_load_or_verify_discovery_settings_refresh =>
+      '无法加载或验证发现设置。请刷新以重试。';
+
+  @override
+  String release_core_workspace_discovery_view_repositories_shown_of(
+    int visible,
+    int total,
+  ) {
+    return '已显示仓库：$visible / $total';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_returned_no_repositories =>
+      '网关未返回任何仓库。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_no_repositories_match_your_device_filters =>
+      '没有仓库符合此设备上的筛选条件。';
+
+  @override
+  String get release_core_workspace_discovery_view_gateway_scan_policy =>
+      '网关扫描策略';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_did_not_report_a_scan_policy =>
+      '此网关未报告扫描策略。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_to_scan_folders_configure_repository_scanning_in_the =>
+      '要扫描文件夹，请在网关配置档案的桌面设置中配置仓库扫描。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_results_can_include_cached_repositories_and_repositories_with =>
+      '结果可能包含已缓存的仓库及有关联会话的仓库。扫描并不保证遍历了每个文件夹。';
+
+  @override
+  String get release_core_workspace_discovery_view_scan_gateway_roots =>
+      '扫描网关根目录';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_filter_results_on_this_device =>
+      '在此设备上筛选结果';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_only_this_discovery_list_changes_not_the_gateway =>
+      '仅更改此发现列表，不影响网关扫描。';
+
+  @override
+  String get release_core_workspace_discovery_view_include_subtrees_empty_all =>
+      '包含的子目录树（留空表示全部）';
+
+  @override
+  String get release_core_workspace_discovery_view_exclude_subtrees =>
+      '排除的子目录树';
+
+  @override
+  String get release_core_workspace_discovery_view_apply_filters => '应用筛选条件';
+
+  @override
+  String release_core_workspace_discovery_view_hidden_repositories(int count) {
+    return '隐藏的仓库（$count）';
+  }
+
+  @override
+  String get release_core_workspace_discovery_view_undo_hide => '撤销隐藏';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_one_absolute_server_path_per_line =>
+      '每行一个服务器绝对路径';
+
+  @override
+  String get release_core_project_settings_view_project_settings => '项目设置';
+
+  @override
+  String
+  get release_core_project_settings_view_the_gateway_did_not_confirm_the_selected_project =>
+      '网关未确认所选项目或更改。请检查设置后重试。';
+
+  @override
+  String
+  get release_core_project_settings_view_could_not_verify_these_settings_use_one_absolute =>
+      '无法验证这些设置。请每行填写一个服务器文件夹的绝对路径，且不含 . 或 .. 路径段。';
+
+  @override
+  String get release_core_project_settings_view_set_active => '设为活动项目';
+
+  @override
+  String get release_core_project_settings_view_icon => '图标';
+
+  @override
+  String get release_core_project_settings_view_folder => '文件夹';
+
+  @override
+  String get release_core_project_settings_view_repository => '仓库';
+
+  @override
+  String get release_core_project_settings_view_rocket => '火箭';
+
+  @override
+  String get release_core_project_settings_view_star => '星星';
+
+  @override
+  String get release_core_project_settings_view_book => '书籍';
+
+  @override
+  String get release_core_project_settings_view_terminal => '终端';
+
+  @override
+  String get release_core_project_settings_view_colour => '颜色';
+
+  @override
+  String get release_core_project_settings_view_primary_folder => '主文件夹';
+
+  @override
+  String get release_core_project_settings_view_server_folder_paths =>
+      '服务器文件夹路径';
+
+  @override
+  String
+  get release_core_project_settings_view_one_absolute_path_per_line_existing_folders_are =>
+      '每行一个绝对路径。现有文件夹将保留。';
+
+  @override
+  String get release_core_project_settings_view_add_folders => '添加文件夹';
+
+  @override
+  String release_core_project_settings_view_choose(String label) {
+    return '选择$label';
+  }
+
+  @override
+  String
+  get release_core_prepared_image_recovery_wait_for_an_empty_draft_before_restoring =>
+      '请等草稿为空后再恢复。';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_no_unacknowledged_image_drafts_in_this_chat =>
+      '此聊天中没有未获接收确认的图片草稿。';
+
+  @override
+  String get release_core_prepared_image_recovery_unacknowledged_image_drafts =>
+      '未获接收确认的图片草稿';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_the_gateway_may_already_have_received_these_restore =>
+      '网关可能已收到这些内容。恢复后可查看，不会发送任何内容。';
+
+  @override
+  String get release_core_prepared_image_recovery_image_draft => '图片草稿';
+
+  @override
+  String get release_core_prepared_image_recovery_discard_local_copy =>
+      '丢弃本地副本';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_discard_this_local_image_draft =>
+      '丢弃此本地图片草稿？';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_image_draft_recovery_is_unavailable =>
+      '图片草稿恢复功能不可用。';
+
+  @override
+  String get release_core_prepared_image_recovery_recover_image_draft =>
+      '恢复图片草稿…';
+
+  @override
+  String get release_core_session_search_mode_menu_could_not_save_search_mode =>
+      '无法保存搜索模式。';
+
+  @override
+  String get release_core_projects_pane_discover_repositories => '发现仓库';
+
+  @override
+  String
+  get release_core_projects_pane_project_created_but_the_gateway_did_not_confirm =>
+      '项目已创建，但网关未确认项目构想。';
+
+  @override
+  String get release_core_projects_pane_project_idea_optional => '项目构想（可选）';
+
+  @override
+  String
+  get release_core_projects_pane_saved_in_the_project_description_not_a_file =>
+      '保存在项目描述中，而非文件中。';
+
+  @override
+  String get release_core_project_detail_screen_new_chat_in_this_lane =>
+      '在此泳道中新建聊天';
+
+  @override
+  String get release_core_project_detail_screen_review_git => '审查 Git 更改';
+
+  @override
+  String get release_core_more_pane_gateway_fleet => '网关集群';
+
+  @override
+  String
+  get release_core_more_pane_connected_sessions_hermes_cloud_and_desktop_webapp =>
+      '已连接的会话、Hermes Cloud 和桌面网页应用';
+
+  @override
+  String get release_core_more_pane_use_dashboard_sign_in_for_a_named_profile =>
+      '请通过仪表盘登录指定的配置档案。此旧版 API 无法确认聊天记录属于哪个配置档案。';
+
+  @override
+  String get release_core_more_pane_capabilities => '功能';
+
+  @override
+  String
+  get release_core_more_pane_install_and_govern_skills_plugins_connectors_and_tool =>
+      '安装和管理技能、插件、连接器及工具后端';
+
+  @override
+  String get release_core_more_pane_browser_vault => '浏览器保险库';
+
+  @override
+  String
+  get release_core_more_pane_site_logins_addresses_cards_and_credential_sources =>
+      '网站登录信息、地址、银行卡和凭据来源';
+
+  @override
+  String get release_core_more_pane_agent_policy => '智能体策略';
+
+  @override
+  String
+  get release_core_more_pane_approvals_checkpoints_browser_access_and_shared_metrics =>
+      '审批、检查点、浏览器访问和共享指标';
+
+  @override
+  String get release_core_more_pane_remote_logs_health_maintenance_and_update =>
+      '远程日志、健康状态、维护和更新';
+
+  @override
+  String get release_core_more_pane_schedules => '计划任务';
+
+  @override
+  String get release_core_more_pane_all_profiles_blueprints_catch_up_and_stop =>
+      '所有配置档案、蓝图、补跑和停止';
+
+  @override
+  String get release_core_more_pane_memory_graph => '记忆图谱';
+
+  @override
+  String get release_core_more_pane_timeline_edits_and_memory_providers =>
+      '时间线、编辑和记忆提供商';
+
+  @override
+  String get release_core_more_pane_providers_and_routes => '提供商和路由';
+
+  @override
+  String get release_core_more_pane_keys_endpoints_delegation_and_mixtures =>
+      '密钥、端点、委派和混合配置';
+
+  @override
+  String get release_core_more_pane_credits_and_plans => '额度和套餐';
+
+  @override
+  String
+  get release_core_more_pane_consented_nous_billing_when_the_account_allows_it =>
+      '账户允许且经你同意后使用 Nous 计费';
+
+  @override
+  String
+  get release_core_fleet_screen_this_gateway_does_not_offer_this_service =>
+      '此网关不提供此服务。';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_or_permission_required_on_this_gateway =>
+      '需要在此网关上登录或取得权限。';
+
+  @override
+  String get release_core_fleet_screen_a_secure_gateway_address_is_required =>
+      '需要安全的网关地址。';
+
+  @override
+  String
+  get release_core_fleet_screen_the_owner_changed_refresh_before_continuing =>
+      '所有者已更改。请刷新后再继续。';
+
+  @override
+  String
+  get release_core_fleet_screen_could_not_verify_the_operation_check_the_gateway =>
+      '无法验证操作。请检查网关并刷新。';
+
+  @override
+  String get release_core_fleet_screen_verified_ssh => '已验证的 SSH';
+
+  @override
+  String
+  get release_core_fleet_screen_confirm_a_host_key_inspect_a_remote_service =>
+      '确认主机密钥、检查远程服务或打开其命令行';
+
+  @override
+  String get release_core_fleet_screen_cloud_and_desktop_webapp => '云端和桌面网页应用';
+
+  @override
+  String get release_core_fleet_screen_register_an_existing_gateway_or_webapp =>
+      '注册现有网关或网页应用';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_to_its_address_nothing_is_hosted =>
+      '通过其地址登录。此设备不会托管任何服务。';
+
+  @override
+  String get release_core_fleet_screen_fleet_updates => '网关集群更新';
+
+  @override
+  String get release_core_fleet_screen_refresh_roster => '刷新网关列表';
+
+  @override
+  String release_core_fleet_screen_disconnect(String gateway) {
+    return '断开 $gateway 的连接';
+  }
+
+  @override
+  String get release_core_fleet_screen_open_this_gateway_on_launch =>
+      '启动时打开此网关';
+
+  @override
+  String
+  get release_core_fleet_screen_primary_for_ares_does_not_change_the_last =>
+      '设为 Ares 的主网关；不会更改上次使用的网关。';
+
+  @override
+  String get release_core_fleet_screen_reconnect_in_fleet_on_launch =>
+      '启动时在集群中重新连接';
+
+  @override
+  String get release_core_fleet_screen_no_sessions_for_this_profile =>
+      '此配置档案没有会话。';
+
+  @override
+  String get release_core_fleet_screen_more_sessions => '更多会话';
+
+  @override
+  String get release_core_fleet_screen_this_gateway_was_disconnected =>
+      '此网关已断开连接。';
+
+  @override
+  String
+  get release_core_fleet_screen_some_conversation_data_could_not_be_loaded =>
+      '部分对话数据无法加载。';
+
+  @override
+  String get release_core_fleet_screen_message_this_session => '向此会话发送消息';
+
+  @override
+  String get release_core_fleet_screen_send_to_this_session => '发送到此会话';
+
+  @override
+  String get release_core_fleet_updates_screen_update_these_remote_gateways =>
+      '更新这些远程网关？';
+
+  @override
+  String
+  release_core_fleet_updates_screen_this_can_restart_the_backend_and_interrupt_other(
+    String gateways,
+  ) {
+    return '这可能会重启后端并中断其他用户的使用。不会更新 Ares。\n\n$gateways';
+  }
+
+  @override
+  String get release_core_fleet_updates_screen_update_listed_gateways =>
+      '更新列出的网关';
+
+  @override
+  String
+  get release_core_fleet_updates_screen_checks_connected_gateways_cloud_is_platform_managed_entries =>
+      '检查已连接的网关。云端由平台管理；没有注册来源记录的条目不包含在内。';
+
+  @override
+  String get release_core_fleet_updates_screen_check_connected_gateways =>
+      '检查已连接的网关';
+
+  @override
+  String get release_core_fleet_updates_screen_read_update_receipt => '读取更新回执';
+
+  @override
+  String get release_core_fleet_updates_screen_review_eligible_updates =>
+      '检查符合条件的更新';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_account_changed_reopen_this_page =>
+      '账户已更改。请重新打开此页面。';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_set_the_webapp_s_primary_gateway =>
+      '设置网页应用的主网关？';
+
+  @override
+  String
+  release_core_fleet_webapp_screen_this_changes_the_shared_registry_not_the_last(
+    String webapp,
+    String gateway,
+    String id,
+  ) {
+    return '$webapp → $gateway ($id)\n这会更改共享注册表，而非上次使用的网关。';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_set_primary => '设为主网关';
+
+  @override
+  String get release_core_fleet_webapp_screen_serving_profile => '提供服务的配置档案';
+
+  @override
+  String get release_core_fleet_webapp_screen_hermes_cloud => 'Hermes Cloud';
+
+  @override
+  String get release_core_fleet_webapp_screen_discover_signed_in_agents =>
+      '发现已登录的智能体';
+
+  @override
+  String release_core_fleet_webapp_screen_organisation(String organisation) {
+    return '组织：$organisation';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_no_agents_available =>
+      '没有可用的智能体。';
+
+  @override
+  String get release_core_fleet_webapp_screen_existing_desktop_webapp =>
+      '现有桌面网页应用';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_check_gateway_and_web_access_status =>
+      '检查网关和网页访问状态';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_these_settings_belong_to_the_machine_serving_this =>
+      '这些设置属于为此网页应用提供服务的机器。发布和重启不是远程操作。';
+
+  @override
+  String get release_core_fleet_webapp_screen_read_webapp_gateway_registry =>
+      '读取网页应用的网关注册表';
+
+  @override
+  String get release_core_fleet_webapp_screen_last_used => '上次使用';
+
+  @override
+  String get release_core_fleet_webapp_screen_primary => '主网关';
+
+  @override
+  String release_core_fleet_webapp_screen_set_primary_2(String gateway) {
+    return '设为主网关：$gateway';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_read_shared_display_preferences =>
+      '读取共享显示偏好设置';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_chat_text_direction_on_this_webapp_and_desktop =>
+      '此网页应用及桌面端的聊天文本方向';
+
+  @override
+  String release_core_schedule_desk_screen_created_on(
+    String job,
+    String profile,
+  ) {
+    return '已在 $profile 上创建 $job。';
+  }
+
+  @override
+  String
+  get release_core_schedule_desk_screen_the_list_covers_every_profile_on_this_gateway =>
+      '此列表涵盖此网关上的所有配置档案。停止、暂停、补跑、投递和蓝图操作都会发送到任务所属的配置档案。';
+
+  @override
+  String get release_core_schedule_desk_screen_a_run_is_in_progress => '任务正在运行';
+
+  @override
+  String get release_core_schedule_desk_screen_no_current_run => '当前没有运行中的任务';
+
+  @override
+  String release_core_schedule_desk_screen_stop_requested_for(String job) {
+    return '已请求停止 $job。';
+  }
+
+  @override
+  String release_core_schedule_desk_screen_no_run_was_in_flight_for(
+    String job,
+  ) {
+    return '$job 没有正在运行的任务。';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_stop_current_run => '停止当前运行';
+
+  @override
+  String get release_core_schedule_desk_screen_pause_future_runs => '暂停后续运行';
+
+  @override
+  String get release_core_schedule_desk_screen_resume_future_runs => '恢复后续运行';
+
+  @override
+  String get release_core_schedule_desk_screen_catch_up_default => '默认补跑方式';
+
+  @override
+  String get release_core_schedule_desk_screen_run_one_missed => '补跑一次错过的任务';
+
+  @override
+  String get release_core_schedule_desk_screen_skip_missed => '跳过错过的任务';
+
+  @override
+  String get release_core_schedule_desk_screen_blueprint_recipes => '蓝图模板';
+
+  @override
+  String get release_core_schedule_desk_screen_profile_for_the_new_job =>
+      '新任务使用的配置档案';
+
+  @override
+  String release_core_schedule_desk_screen_create(String blueprint) {
+    return '创建 $blueprint';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_loading_delivery_targets =>
+      '正在加载投递目标';
+
+  @override
+  String release_core_schedule_desk_screen_no_home_channel(String target) {
+    return '$target（无默认频道）';
+  }
+
+  @override
+  String release_core_memory_graph_screen_edit(String label) {
+    return '编辑$label';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_content => '内容';
+
+  @override
+  String get release_core_memory_graph_screen_archive_skill => '归档技能';
+
+  @override
+  String get release_core_memory_graph_screen_delete_memory => '删除记忆';
+
+  @override
+  String release_core_memory_graph_screen_archive_on_it_can_be_restored_on_the(
+    String label,
+    String profile,
+  ) {
+    return '将 $profile 上的 $label 归档？可以在主机上使用 Curator 恢复。';
+  }
+
+  @override
+  String release_core_memory_graph_screen_delete_from_this_removes_that_memory(
+    String label,
+    String profile,
+  ) {
+    return '从 $profile 中删除 $label？这会移除该条记忆。';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_filter => '筛选';
+
+  @override
+  String get release_core_memory_graph_screen_timeline => '时间线';
+
+  @override
+  String get release_core_memory_graph_screen_play_timeline => '播放时间线';
+
+  @override
+  String get release_core_memory_graph_screen_layout_code => '布局代码';
+
+  @override
+  String get release_core_memory_graph_screen_external_memory_providers =>
+      '外部记忆提供商';
+
+  @override
+  String
+  get release_core_memory_graph_screen_a_value_is_stored_leave_blank_to_keep =>
+      '已存储一个值。留空即可保留。';
+
+  @override
+  String get release_core_memory_graph_screen_save_provider => '保存提供商';
+
+  @override
+  String release_core_workspace_profiles_screen_applies_to(String profile) {
+    return '适用于：$profile';
+  }
+
+  @override
+  String get release_core_workspace_profiles_screen_choose_another_profile =>
+      '选择其他配置档案';
+
+  @override
+  String
+  get release_core_workspace_profiles_screen_could_not_verify_the_selected_profile_on_this =>
+      '无法在此网关上验证所选配置档案。';
+
+  @override
+  String get release_core_workspace_profiles_screen_create_profile => '创建配置档案';
+
+  @override
+  String get release_core_workspace_profiles_screen_new_profile_id =>
+      '新配置档案 ID';
+
+  @override
+  String get release_core_assets_screen_links => '链接';
+
+  @override
+  String get release_core_workspace_picker_no_matching_items => '没有匹配的项目。';
+
+  @override
+  String get release_core_workspace_picker_save_layout => '保存布局';
+
+  @override
+  String get release_core_workspace_picker_layout_name => '布局名称';
+
+  @override
+  String
+  get release_core_workspace_popout_this_chat_already_has_a_pop_out_window =>
+      '此聊天已有一个独立窗口。';
+
+  @override
+  String
+  get release_core_workspace_popout_could_not_open_this_saved_chat_check_the =>
+      '无法打开此已保存的聊天。请检查连接后重试。';
+
+  @override
+  String
+  get release_core_popout_bootstrap_use_the_main_window_to_change_your_connection =>
+      '请在主窗口中更改连接。';
+
+  @override
+  String get release_core_guarded_save_refused => '网关无法保存此文件';
+
+  @override
+  String get release_core_guarded_save_unavailable => '此网关不提供受保护的保存功能';
+
+  @override
+  String release_core_git_files_changed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '本轮更改了 $count 个文件',
+      one: '本轮更改了 1 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_git_entries_omitted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '因无法安全显示，已省略 $count 个 Git 条目。',
+      one: '因无法安全显示，已省略 1 个 Git 条目。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get release_core_git_staged => '已暂存';
+
+  @override
+  String get release_core_session_sort_recent => '最近活动';
+
+  @override
+  String get release_core_session_sort_created => '最新创建';
+
+  @override
+  String get release_core_session_sort_status => '运行中的优先';
+
+  @override
+  String get release_core_session_sort_tokens => '令牌最多';
+
+  @override
+  String get release_core_session_sort_cost => '费用最高';
+
+  @override
+  String get release_core_session_group_standard => '默认分组';
+
+  @override
+  String get release_core_session_group_status => '按状态分组';
+
+  @override
+  String get release_core_session_group_project => '按项目分组';
+
+  @override
+  String release_core_session_tokens(int count) {
+    return '$count 个令牌';
+  }
+
+  @override
+  String release_core_search_gateway_mode(String mode) {
+    return '$mode（网关）';
+  }
+
+  @override
+  String release_core_search_mode_tooltip(String label, String mode) {
+    return '$label：$mode';
+  }
+
+  @override
+  String get release_core_image_recovery_new_turn => '发送会创建新的轮次';
+
+  @override
+  String release_core_image_recovery_metadata(int count, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张图片 · $date',
+      one: '1 张图片 · $date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_discovery_scanning(String state) {
+    return '扫描：$state';
+  }
+
+  @override
+  String get release_core_discovery_enabled => '已启用';
+
+  @override
+  String get release_core_discovery_disabled => '已禁用';
+
+  @override
+  String get release_core_discovery_none => '无';
+
+  @override
+  String release_core_discovery_roots(String paths) {
+    return '扫描根目录：$paths';
+  }
+
+  @override
+  String release_core_discovery_excluded(String paths) {
+    return '排除的子目录树：$paths';
+  }
+
+  @override
+  String release_core_discovery_repository_sessions(String path, int count) {
+    return '$path\n会话数：$count';
+  }
+
+  @override
+  String get release_core_projects_local_only =>
+      '此 Hermes 网关版本较旧，不支持服务器端项目，因此聊天分组仅保留在此设备上。请更新 Hermes，以便在各设备间共享相同的项目。';
+
+  @override
+  String get release_core_fleet_no_address => '尚无网关地址';
+
+  @override
+  String release_core_fleet_diagnostics(String version, String access) {
+    return '网关 $version · $access';
+  }
+
+  @override
+  String get release_core_schedule_builtin => '内置';
+
+  @override
+  String get release_core_memory_gateway_profile => '网关';
+
+  @override
+  String release_core_memory_profile_summary(String profile, String gateway) {
+    return '$gateway 上的配置档案 $profile。分享代码仅存储缩放、时间和筛选条件。';
+  }
+
+  @override
+  String release_core_memory_layers_summary(
+    int memoryBytes,
+    int userBytes,
+    String provider,
+  ) {
+    return '内置记忆 $memoryBytes 字节，用户信息 $userBytes 字节。当前提供商为 $provider。';
+  }
+
+  @override
+  String get release_core_memory_kind_all => '全部';
+
+  @override
+  String get release_core_memory_kind_skill => '技能';
+
+  @override
+  String get release_core_memory_kind_memory => '记忆';
+
+  @override
+  String get release_core_workspace_failure_stale => '连接已更改';
+
+  @override
+  String get release_core_workspace_failure_unbound => '无经验证的工作目录';
+
+  @override
+  String get release_core_workspace_failure_denied => '权限被拒绝';
+
+  @override
+  String get release_core_workspace_failure_ineligible => '不允许对此文件执行该操作';
+
+  @override
+  String get release_core_workspace_failure_unsupported => '此网关不支持';
+
+  @override
+  String get release_core_workspace_failure_mismatch => '远程状态已更改';
+
+  @override
+  String get release_core_workspace_failure_invalid => '网关响应无效';
+
+  @override
+  String get release_core_workspace_failure_insecure => '需要安全连接';
+
+  @override
+  String get release_core_workspace_failure_unavailable => '网关不可用';
+
+  @override
+  String get release_core_queue_state_queued => '已排队';
+
+  @override
+  String get release_core_queue_state_started => '已开始';
+
+  @override
+  String get release_core_queue_state_unknown => '结果未知';
+
+  @override
+  String get release_core_unknown_state => '未知';
+
+  @override
+  String get release_core_fleet_state_idle => '离线';
+
+  @override
+  String get release_core_fleet_state_connected => '已连接';
+
+  @override
+  String get release_core_fleet_state_reconnecting => '正在重新连接…';
+
+  @override
+  String get release_core_fleet_state_sessionExpired => '已退出登录';
+
+  @override
+  String get release_core_fleet_state_failed => '连接失败';
+
+  @override
+  String release_core_workspace_operation_failed(String reason) {
+    return '无法确认网关操作：$reason。';
+  }
+
+  @override
+  String get release_core_workspace_invalid_data => '无法验证数据或输入。请检查后重试。';
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_changed_in_this_window_but_could_not =>
+      '此窗口中的布局已更改，但无法保存。';
+
+  @override
+  String get release_core_parallel_workspace_first_pane => '第一个面板';
+
+  @override
+  String get release_core_parallel_workspace_second_pane => '第二个面板';
+
+  @override
+  String get release_core_parallel_workspace_unavailable_page => '页面不可用';
+
+  @override
+  String release_core_parallel_workspace_close_a_tab_first_maximum(
+    String maximum,
+  ) {
+    return '请先关闭一个标签页（最多 $maximum 个）。';
+  }
+
+  @override
+  String get release_core_parallel_workspace_dock_beside_current_pane =>
+      '停靠在当前面板旁';
+
+  @override
+  String get release_core_parallel_workspace_add_chat => '添加聊天';
+
+  @override
+  String
+  get release_core_parallel_workspace_action_failed_check_the_connection_and_try_again =>
+      '操作失败。请检查连接后重试。';
+
+  @override
+  String
+  get release_core_parallel_workspace_close_a_tab_before_reopening_another =>
+      '请先关闭一个标签页，再重新打开另一个。';
+
+  @override
+  String release_core_parallel_workspace_replace_layout(String name) {
+    return '替换布局“$name”？';
+  }
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_limit_reached_replace_an_existing_layout =>
+      '已达布局数量上限。请替换现有布局。';
+
+  @override
+  String get release_core_parallel_workspace_restore_layout => '恢复布局';
+
+  @override
+  String get release_core_parallel_workspace_workspace_options => '工作区选项';
+
+  @override
+  String get release_core_parallel_workspace_dock_another_pane => '停靠另一个面板';
+
+  @override
+  String get release_core_parallel_workspace_swap_panes => '交换面板';
+
+  @override
+  String get release_core_parallel_workspace_undock_second_pane => '取消停靠第二个面板';
+
+  @override
+  String get release_core_parallel_workspace_arrange_side_by_side => '左右排列';
+
+  @override
+  String get release_core_parallel_workspace_arrange_top_to_bottom => '上下排列';
+
+  @override
+  String release_core_parallel_workspace_change_split_size(String percent) {
+    return '调整分割比例（$percent%）';
+  }
+
+  @override
+  String get release_core_parallel_workspace_focus_pane_full_screen => '全屏聚焦面板';
+
+  @override
+  String get release_core_parallel_workspace_open_chat_in_new_window =>
+      '在新窗口中打开聊天';
+
+  @override
+  String get release_core_parallel_workspace_hide_pane_keep_running =>
+      '隐藏面板（保持运行）';
+
+  @override
+  String get release_core_parallel_workspace_previous_tab => '上一个标签页';
+
+  @override
+  String get release_core_parallel_workspace_next_tab => '下一个标签页';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_left => '向左移动标签页';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_right => '向右移动标签页';
+
+  @override
+  String get release_core_parallel_workspace_reload_current_tab => '重新加载当前标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_tab => '关闭标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_other_tabs => '关闭其他标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_tabs_to_the_right =>
+      '关闭右侧标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_all_tabs => '关闭所有标签页';
+
+  @override
+  String get release_core_parallel_workspace_reopen_closed_tab => '重新打开已关闭的标签页';
+
+  @override
+  String get release_core_parallel_workspace_save_named_layout => '保存命名布局';
+
+  @override
+  String get release_core_parallel_workspace_restore_named_layout => '恢复命名布局';
+
+  @override
+  String get release_core_parallel_workspace_refresh_chat_list => '刷新聊天列表';
+
+  @override
+  String get release_core_parallel_workspace_workspace_tools => '工作区工具';
+
+  @override
+  String get release_core_parallel_workspace_choose_a_chat_for_this_pane =>
+      '为此面板选择聊天';
+
+  @override
+  String release_core_parallel_workspace_choose_chat_for(String pane) {
+    return '为$pane选择聊天';
+  }
+
+  @override
+  String get release_core_parallel_workspace_add_a_chat_to_start_a_workspace =>
+      '添加聊天以开始使用工作区。';
+
+  @override
+  String get release_core_parallel_workspace_select_a_tab_to_show_its_pane =>
+      '选择一个标签页以显示对应的面板。';
+
+  @override
+  String get release_core_parallel_workspace_parallel_workspace => '并行工作区';
+
+  @override
+  String get release_core_parallel_workspace_show_workspace => '显示工作区';
+
+  @override
+  String get release_core_parallel_workspace_could_not_load_chats_retry =>
+      '无法加载聊天。重试';
+
+  @override
+  String release_core_parallel_workspace_close(String pane) {
+    return '关闭$pane';
+  }
+
+  @override
+  String release_core_parallel_workspace_switch_pane(String pane) {
+    return '切换面板：$pane';
+  }
+
+  @override
+  String get release_core_workspace_registry_session_id_copied => '已复制会话 ID。';
+
+  @override
+  String get release_core_workspace_registry_chat_details => '聊天详情';
+
+  @override
+  String get release_core_workspace_registry_server_default => '服务器默认值';
+
+  @override
+  String get release_core_workspace_registry_session_id => '会话 ID';
+
+  @override
+  String get release_core_workspace_registry_title => '标题';
+
+  @override
+  String get release_core_workspace_label_terminals => '终端';
+
+  @override
+  String get release_core_workspace_label_copy_id => '复制会话 ID';
+
+  @override
+  String get release_core_workspace_label_contributions => '扩展项';
+
+  @override
+  String get release_core_workspace_owner_inactive => '此工作区的所有者已不再处于活动状态。';
+
+  @override
+  String get release_core_workspace_select_chat => '请先选择聊天。';
+
+  @override
+  String get release_core_workspace_chat_unavailable => '此连接无法使用该聊天。';
+
+  @override
+  String get release_core_workspace_page_unavailable => '此连接无法使用该页面。';
+
+  @override
+  String release_core_client_queue_count(int count) {
+    return '$count 条已排队';
+  }
+
+  @override
+  String release_core_client_queue_paused_count(int count) {
+    return '$count 条已排队，已暂停';
+  }
+
+  @override
+  String release_core_git_diff_truncated(String diff) {
+    return '$diff\n…已截断';
+  }
+
+  @override
+  String get release_core_search_no_models => 'Hermes 未返回任何已配置的可选模型。';
+
+  @override
+  String get release_core_chat_archive_unavailable => '聊天归档操作不可用。';
+
+  @override
+  String get release_core_chat_pin_unconfirmed => '置顶状态未获确认。';
+
+  @override
+  String get release_core_chat_archive_unconfirmed => '归档状态未获确认。';
+
+  @override
+  String get release_core_chat_archive_history_unavailable => '已归档的历史记录不可用';
+
+  @override
+  String get release_core_quick_chat_history_unavailable => '快速聊天的历史记录不可用';
+
+  @override
+  String get release_core_chat_project_ownership_unavailable => '无法确认项目归属';
+
+  @override
+  String get release_core_chat_unknown_project => '未知项目';
+
+  @override
+  String get release_core_chat_local_search_fallback => '消息搜索不可用。正在显示本地匹配结果。';
+
+  @override
+  String release_core_fleet_update_eligible(String version) {
+    return '符合条件 · $version';
+  }
+
+  @override
+  String get release_core_fleet_update_state_1 => '已跳过：同一安装实例';
+
+  @override
+  String get release_core_fleet_update_state_2 => '尚未检查';
+
+  @override
+  String get release_core_fleet_update_state_3 => '已跳过：由云端管理';
+
+  @override
+  String get release_core_fleet_update_state_4 => '已跳过：未注册为直连网关';
+
+  @override
+  String get release_core_fleet_update_state_5 => '已跳过：已断开连接或正忙';
+
+  @override
+  String get release_core_fleet_update_state_6 => '没有适用的更新';
+
+  @override
+  String get release_core_fleet_update_state_7 => '无法验证更新资格';
+
+  @override
+  String get release_core_fleet_update_state_8 => '已跳过：状态已过期、正忙或已请求';
+
+  @override
+  String get release_core_fleet_update_state_9 => '正在请求';
+
+  @override
+  String get release_core_fleet_update_state_10 => '已接受；回执不可用';
+
+  @override
+  String get release_core_fleet_update_state_11 => '已接受；正在等待回执';
+
+  @override
+  String get release_core_fleet_update_state_12 => '已跳过：此安装实例上有聊天正在运行';
+
+  @override
+  String get release_core_fleet_update_state_13 => '未获确认；不要自动重新发送';
+
+  @override
+  String get release_core_fleet_update_state_14 => '重新连接以检查回执';
+
+  @override
+  String get release_core_fleet_update_state_15 => '回执不可用';
+
+  @override
+  String get release_core_fleet_update_state_16 => '正在等待匹配的回执';
+
+  @override
+  String get release_core_fleet_update_state_17 => '已更新；需要后续处理';
+
+  @override
+  String get release_core_fleet_update_state_19 => '已部分更新';
+
+  @override
+  String get release_core_fleet_update_state_20 => '更新失败';
+
+  @override
+  String get release_core_fleet_update_state_21 => '未获确认';
+
+  @override
+  String get release_core_cloud_status_ready => '就绪';
+
+  @override
+  String get release_core_cloud_status_online => '在线';
+
+  @override
+  String get release_core_cloud_status_stopped => '已停止';
+
+  @override
+  String get release_core_cloud_status_error => '错误';
+
+  @override
+  String get ng_release_more_contributions_subtitle => '此连接中已审核的回复卡片';
+
+  @override
+  String get ng_release_more_gateway_fleet => '网关集群';
+
+  @override
+  String get ng_release_more_memory_graph => '记忆图谱';
+
+  @override
+  String get ng_release_more_memory_graph_subtitle => '时间线、编辑和记忆提供商';
+
+  @override
+  String get ng_release_more_capabilities_subtitle => '安装和管理技能、插件、连接器及工具后端';
+
+  @override
+  String get ng_release_more_browser_vault => '浏览器保险库';
+
+  @override
+  String get ng_release_more_browser_vault_subtitle => '网站登录信息、地址、银行卡和凭据来源';
+
+  @override
+  String get ng_release_more_agent_policy => '智能体策略';
+
+  @override
+  String get ng_release_more_agent_policy_subtitle => '审批、检查点、浏览器访问和共享指标';
+
+  @override
+  String get ng_release_more_schedules => '计划任务';
+
+  @override
+  String get ng_release_more_schedules_subtitle => '所有配置档案、蓝图、补跑和停止';
+
+  @override
+  String get ng_release_more_host_subtitle => '远程日志、健康状态、维护和更新';
+
+  @override
+  String get ng_release_more_providers_routes => '提供商和路由';
+
+  @override
+  String get ng_release_more_providers_routes_subtitle => '密钥、端点、委派和混合配置';
+
+  @override
+  String get ng_release_more_credits_plans => '额度和套餐';
+
+  @override
+  String get ng_release_more_credits_plans_subtitle => '账户允许且经你同意后使用 Nous 计费';
+
+  @override
+  String get ng_release_sign_in_or => '或';
+
+  @override
+  String ng_release_deployment_sign_in_hint(String message) {
+    return '$message 你仍可在下一步使用部署会话令牌登录。';
+  }
+
+  @override
+  String get ng_release_message_search_unavailable => '消息搜索不可用。正在显示本地匹配结果。';
+
+  @override
+  String ng_release_insights_days(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days 天',
+      one: '$days 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_release_signed_in_you => '你';
+
+  @override
+  String get release_chat_unsent_prompt_gone => '该未发送的提示词已不在队列中。';
+
+  @override
+  String ng_release_attachment_not_attached(String name) {
+    return '网关未附加 $name。';
+  }
+
+  @override
+  String get ng_release_gateway_not_connected => '尚未连接到网关。';
+
+  @override
+  String get ng_release_gateway_unreachable => '无法连接到网关。';
+
+  @override
+  String get ng_release_projects_scope_changed => '项目所属的连接或配置档案已不再选中';
+
+  @override
+  String get ng_release_missing_providers => '缺少提供商';
+
+  @override
+  String get ng_release_missing_tasks => '缺少任务';
+
+  @override
+  String ng_release_age_minutes(int count) {
+    return '$count分';
+  }
+
+  @override
+  String ng_release_age_hours(int count) {
+    return '$count小时';
+  }
+
+  @override
+  String ng_release_age_days(int count) {
+    return '$count天';
+  }
+
+  @override
+  String ng_release_age_weeks(int count) {
+    return '$count周';
+  }
+
+  @override
+  String ng_release_age_years(int count) {
+    return '$count年';
+  }
+
+  @override
+  String ng_release_compact_billions(String count) {
+    return '$count十亿';
+  }
+
+  @override
+  String ng_release_compact_millions(String count) {
+    return '$count百万';
+  }
+
+  @override
+  String ng_release_compact_thousands(String count) {
+    return '$count千';
+  }
+
+  @override
+  String ng_release_token_thousands(String count) {
+    return '$count千';
+  }
+
+  @override
+  String ng_release_elapsed_minutes_seconds(int minutes, int seconds) {
+    return '$minutes分 $seconds秒';
+  }
+
+  @override
+  String ng_release_elapsed_seconds(int seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get ng_release_notification_foreground => 'Ares 当时显示在屏幕上';
+
+  @override
+  String get ng_release_notification_stopped => '该轮次已停止';
+
+  @override
+  String get ng_release_more_parallel_workspace => '并行工作区';
+
+  @override
+  String get ng_release_more_parallel_workspace_subtitle => '在标签页中或并排打开多个聊天。';
+
+  @override
+  String get release_chat_unknown_model => '未知';
+
+  @override
+  String release_chat_profile_default(String model) {
+    return '配置档案默认值：$model';
+  }
+
+  @override
+  String release_chat_profile_default_provider(String model, String provider) {
+    return '配置档案默认值：$model • $provider';
+  }
+
+  @override
+  String get release_chat_choose_provider => '此模型可通过多个提供商使用。请选择一个提供商以继续。';
+
+  @override
+  String get release_chat_slash_needs_gateway => '斜杠命令需要桌面网关';
+
+  @override
+  String get release_chat_recovering_without_resending => '正在恢复，不会重新发送';
+
+  @override
+  String get release_chat_live_request_unreachable => '抱歉，无法连接到 Hermes 来处理该请求。';
+
+  @override
+  String release_chat_live_working(String tool) {
+    return 'Hermes 正在处理：$tool。尚未完成。';
+  }
+
+  @override
+  String get release_chat_live_finished_without_spoken_result =>
+      'Hermes 已完成该请求，但没有语音回复。';
+
+  @override
+  String get release_chat_reply_language_unavailable => '所选回复语言不可用';
+
+  @override
+  String get release_chat_reply_voice_unavailable => '所选回复音色不可用';
+
+  @override
+  String get release_chat_reply_voice_configuration_unavailable => '回复语音配置不可用';
+
+  @override
+  String get release_chat_notification_review_action => '打开聊天以检查请求的操作。';
+
+  @override
+  String get release_chat_notification_respond => '打开聊天以回复。';
+
+  @override
+  String get release_chat_start_new_main_window => '请在主窗口中开始新的聊天。';
+
+  @override
+  String get release_chat_no_desktop_gateway => '无桌面网关';
+
+  @override
+  String get release_chat_attachment_preparation_cancelled => '附件准备已取消。';
+
+  @override
+  String get release_chat_approval_authority_revoked => '审批权限已被撤销。';
+
+  @override
+  String get release_chat_gateway_session_disconnected => '桌面网关会话已断开连接';
+
+  @override
+  String get release_chat_stop_requested => '已请求停止。正在等待 Hermes 结束。';
+
+  @override
+  String release_chat_stop_request_failed(String error) {
+    return '无法请求停止：$error';
+  }
+
+  @override
+  String get release_chat_queued_prompt_not_sent => '排队中的提示词未发送。';
+
+  @override
+  String get release_chat_running_turn_unreachable =>
+      '无法联系到正在运行的轮次。正在重新连接，不会重新发送。';
+
+  @override
+  String get release_chat_wait_for_composer => '请等待消息输入框可用。';
+
+  @override
+  String get release_chat_find_in_transcript => '在对话记录中查找';
+
+  @override
+  String get release_chat_open_browser_preview => '打开浏览器预览';
+
+  @override
+  String get release_chat_more_tools => '更多聊天工具';
+
+  @override
+  String get release_chat_queue_until_finished => '排队等待本轮结束';
+
+  @override
+  String get release_chat_format_bold => '粗体';
+
+  @override
+  String get release_chat_format_italic => '斜体';
+
+  @override
+  String get ng_release_chat_gateway_queue_requirements =>
+      '网关队列需要已关联的聊天和纯文本提示词。';
+
+  @override
+  String get ng_release_chat_start_new_main_screen => '请从聊天主界面开始新的聊天。';
+
+  @override
+  String get ng_release_chat_image => '图片';
+
+  @override
+  String ng_release_chat_tool_seconds(String seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get release_preview_chat_changed => '聊天已更改。请重新连接预览以继续。';
+
+  @override
+  String get release_preview_authenticating_chat => '正在验证聊天身份…';
+
+  @override
+  String release_preview_unavailable_reason(String reason) {
+    return '预览不可用：$reason';
+  }
+
+  @override
+  String get release_preview_operation_failed => '预览操作失败。';
+
+  @override
+  String get release_preview_added_to_draft => '已添加到草稿。未发送任何内容。';
+
+  @override
+  String get release_preview_open_site_title => '打开此网站？';
+
+  @override
+  String release_preview_open_site_body(String origin) {
+    return '$origin\n\n阅读模式仅加载此文档，不会与 Hermes 共享 Cookie、登录信息或页面。';
+  }
+
+  @override
+  String get release_preview_open_site => '打开网站';
+
+  @override
+  String get release_preview_discard_pins_title => '丢弃尚未添加到草稿的标注？';
+
+  @override
+  String get release_preview_keep_pins => '保留标注';
+
+  @override
+  String get release_preview_share_page_title => '与此聊天共享此页面？';
+
+  @override
+  String release_preview_share_page_body(String origin) {
+    return 'Hermes 可以读取 $origin 中显示的文本和元素列表，并滚动此面板。导航到其他页面后将结束共享。不会共享表单和凭据。';
+  }
+
+  @override
+  String get release_preview_share_page => '共享页面';
+
+  @override
+  String release_preview_comment_number(int number) {
+    return '评论 #$number';
+  }
+
+  @override
+  String get release_preview_note => '备注';
+
+  @override
+  String get release_preview_keep_pin => '保留标注';
+
+  @override
+  String get release_preview_title => '浏览器预览';
+
+  @override
+  String get release_preview_hide => '隐藏预览';
+
+  @override
+  String get release_preview_close_and_forget => '关闭并清除此页面';
+
+  @override
+  String get release_preview_site_address => '网站地址';
+
+  @override
+  String get release_preview_go_to_address => '前往地址';
+
+  @override
+  String get release_preview_forward => '前进';
+
+  @override
+  String get release_preview_reload => '重新加载';
+
+  @override
+  String get release_preview_share_with_hermes => '与 Hermes 共享页面';
+
+  @override
+  String get release_preview_stop_sharing => '停止共享页面';
+
+  @override
+  String get release_preview_annotate => '标注元素或区域';
+
+  @override
+  String get release_preview_reader_console => '阅读器控制台';
+
+  @override
+  String get release_preview_reconnect => '重新连接预览';
+
+  @override
+  String get release_preview_reader_mode_help =>
+      '阅读模式：仅 HTML 和文本。不运行脚本、不加载嵌入资源，也不使用已登录的浏览器配置档案。';
+
+  @override
+  String release_preview_sharing_origin(String origin) {
+    return '正在与此聊天共享阅读器：$origin';
+  }
+
+  @override
+  String get release_preview_annotation_help => '点按元素或拖选区域以添加评论。';
+
+  @override
+  String get release_preview_reader_requests => '阅读器请求（JavaScript 已关闭）';
+
+  @override
+  String release_preview_selected_requests(int count) {
+    return '已选择 $count 项 · JavaScript 已关闭';
+  }
+
+  @override
+  String get release_preview_copy_all => '全部复制';
+
+  @override
+  String get release_preview_copy_selected => '复制所选内容';
+
+  @override
+  String get release_preview_add_log_to_draft => '将日志添加到草稿';
+
+  @override
+  String release_preview_requests_draft(String log) {
+    return '阅读器请求：\n$log';
+  }
+
+  @override
+  String release_preview_add_pins_to_draft(int count) {
+    return '将 $count 个标注添加到草稿';
+  }
+
+  @override
+  String release_preview_request_loaded(String origin, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个阅读器元素',
+      one: '$count 个阅读器元素',
+    );
+    return 'HTTP 200 · $origin · $_temp0';
+  }
+
+  @override
+  String release_preview_annotation_intro(String origin) {
+    return '请检查对 $origin 预览的这些评论。附带的裁剪图按相同顺序编号。';
+  }
+
+  @override
+  String get release_preview_reader_region => '阅读器区域';
+
+  @override
+  String get release_preview_capture_failed => '无法截取这些像素。';
+
+  @override
+  String get release_preview_address_not_approved => '此地址不属于已批准的预览来源。';
+
+  @override
+  String get release_preview_page_limit => '页面超出阅读器限制。';
+
+  @override
+  String get release_preview_page_unreadable => '无法读取此页面。';
+
+  @override
+  String get release_preview_page_complex => '此页面过于复杂，无法使用阅读模式。';
+
+  @override
+  String release_preview_http_failed(int statusCode) {
+    return 'HTTP $statusCode。未跟随任何重定向，也未进行登录。';
+  }
+
+  @override
+  String get release_preview_unsupported_type => '阅读模式只能打开 HTML 和纯文本。';
+
+  @override
+  String get release_preview_load_insecure => '无法安全加载此网站。';
+
+  @override
+  String get release_preview_crop_limit => '预览裁剪图超出限制。';
+
+  @override
+  String get release_preview_image_unreadable => '所选图片为空或无法读取。';
+
+  @override
+  String get release_preview_image_budget => '所选图片超出草稿的 64 MiB 大小限制。';
+
+  @override
+  String get release_preview_image_format => '不支持此图片格式。请选择 JPEG、PNG 或 WebP 图片。';
+
+  @override
+  String get release_preview_image_decode => '无法安全解码所选的 JPEG、PNG 或 WebP 图片。';
+
+  @override
+  String get release_preview_image_sanitize =>
+      '无法安全清除此图片的元数据。请选择有效的 JPEG、PNG 或 WebP 图片。';
+
+  @override
+  String get release_preview_draft_budget => '每份草稿的附件总大小不得超过 64 MiB。';
+
+  @override
+  String get release_preview_generic_file_limit => '通用文件每个不得超过 16 MiB。';
+
+  @override
+  String get release_preview_image_not_sanitized => '远程图片必须先经过安全清理才能上传。';
+
+  @override
+  String get release_preview_stage_failed => '无法将预览证据添加到草稿。请重试。';
+
+  @override
+  String get release_misc_find_hermes_on_lan => '在局域网中查找 Hermes';
+
+  @override
+  String release_misc_discovery_failed(String error) {
+    return '发现失败：$error';
+  }
+
+  @override
+  String get release_misc_no_lan_servers => '在本地网络中未找到 Hermes 服务器。';
+
+  @override
+  String release_misc_api_key_rejected(String endpoint, int statusCode) {
+    return '$endpoint 拒绝了 API 密钥（HTTP $statusCode）。';
+  }
+
+  @override
+  String get release_misc_api_key_required =>
+      '服务器需要 API 密钥。请输入你的 API_SERVER_KEY。';
+
+  @override
+  String release_misc_gateway_not_found(String endpoint) {
+    return '网关端点 $endpoint 返回 HTTP 404。请检查网关路径前缀和反向代理路由。';
+  }
+
+  @override
+  String release_misc_gateway_http_error(String endpoint, int statusCode) {
+    return '网关端点 $endpoint 返回 HTTP $statusCode。';
+  }
+
+  @override
+  String release_misc_gateway_unreachable(String endpoint) {
+    return '无法连接到网关端点 $endpoint。';
+  }
+
+  @override
+  String get release_core_schedule_invalid_delivery_target => '无效的投递目标';
+
+  @override
+  String get release_core_file_save_direct_only => '只能保存工作目录直属的文件。';
+
+  @override
+  String get release_core_file_save_hidden => '网关无法保存隐藏文件。';
+
+  @override
+  String get rel_admin_choose_provider => '请选择提供商和模型。';
+
+  @override
+  String get rel_admin_known_effort => '请选择已知的推理强度。';
+
+  @override
+  String get rel_admin_endpoint_name_required => '请输入此端点的名称。';
+
+  @override
+  String get rel_admin_endpoint_model_required => '请输入此端点提供的模型。';
+
+  @override
+  String get rel_admin_known_api_mode => '请选择自动或已知的 API 模式。';
+
+  @override
+  String get rel_admin_endpoint_id_invalid => '此端点标识符不可用。';
+
+  @override
+  String get rel_admin_endpoint_https => '远程端点请使用 HTTPS，localhost 请使用 HTTP。';
+
+  @override
+  String get rel_admin_key_invalid => '无法保存该 API 密钥。';
+
+  @override
+  String get rel_admin_response_shape => '网关响应与预期结构不符。';
+
+  @override
+  String get rel_admin_limits_required => '保存前请输入迭代次数、并发数和超时限制。';
+
+  @override
+  String get rel_admin_route_required => '每条路由都需要名称和模型才能保存。';
+
+  @override
+  String get rel_admin_route_unique => '路由名称必须唯一。';
+
+  @override
+  String get rel_admin_route_default_invalid => '默认路由必须是已保存的路由之一。';
+
+  @override
+  String get rel_admin_policy_required => '请选择有声或静默的参考模型降级策略。';
+
+  @override
+  String get rel_admin_mixture_missing => '网关未返回活动的混合配置。';
+
+  @override
+  String get rel_admin_mixture_slots_required => '请为聚合器和每个参考模型指定提供商及模型。';
+
+  @override
+  String get rel_admin_chat_id_required => '请输入要应用此更改的聊天 ID。';
+
+  @override
+  String rel_admin_http_error(String status) {
+    return '网关返回了 HTTP $status。';
+  }
+
+  @override
+  String get rel_admin_response_unreadable => '无法读取网关响应。';
+
+  @override
+  String get rel_admin_connect_before_change => '更改账单或聊天前，请连接网关实时会话。';
+
+  @override
+  String get rel_admin_operation_unavailable => '此网关不支持该操作。';
+
+  @override
+  String get rel_admin_key_required => '请输入要保存的密钥。';
+
+  @override
+  String get rel_admin_key_save_failed => '网关未保存该密钥。';
+
+  @override
+  String get rel_admin_key_clear_required => '请选择要清除的提供商密钥。';
+
+  @override
+  String get rel_admin_key_clear_failed => '网关未清除该密钥。';
+
+  @override
+  String get rel_admin_endpoint_save_failed => '网关未保存该端点。';
+
+  @override
+  String get rel_admin_endpoint_activate_failed => '网关未激活该端点。';
+
+  @override
+  String get rel_admin_accounts_secure_required =>
+      '提供商账户需要经过身份验证的 HTTPS 网关或 localhost。';
+
+  @override
+  String get rel_admin_accounts_read_failed => '无法读取提供商账户。';
+
+  @override
+  String get rel_admin_account_disconnect_failed => '网关未断开该账户。';
+
+  @override
+  String get rel_admin_account_not_disconnectable => '无法断开该提供商账户。';
+
+  @override
+  String get rel_admin_backend_required => '请选择一个可用的委派后端。';
+
+  @override
+  String get rel_admin_backend_save_failed => '网关未选择该后端。';
+
+  @override
+  String get rel_admin_routes_save_failed => '网关未保存这些路由。';
+
+  @override
+  String get rel_admin_profile_route_required => '每条配置文件路由都需要配置文件名称。';
+
+  @override
+  String get rel_admin_profile_route_unique => '配置文件路由必须唯一。';
+
+  @override
+  String get rel_admin_profile_route_default_invalid => '默认配置文件路由必须是允许的配置文件之一。';
+
+  @override
+  String get rel_admin_profile_routes_save_failed => '网关未保存这些配置文件路由。';
+
+  @override
+  String get rel_admin_limits_save_failed => '网关未保存这些限制。';
+
+  @override
+  String get rel_admin_mixture_save_failed => '网关未保存该混合配置。';
+
+  @override
+  String get rel_admin_credit_amount_required => '请选择一个提供的额度金额。';
+
+  @override
+  String get rel_admin_charge_check_failed => '无法检查该笔扣款。';
+
+  @override
+  String get rel_admin_reload_amounts_missing => '未提供自动充值金额，因此未作更改。';
+
+  @override
+  String get rel_admin_plan_required => '请先选择套餐。';
+
+  @override
+  String get rel_admin_plan_scheduled_only => '这里只能确认已安排的套餐变更。';
+
+  @override
+  String get rel_admin_billing_refused => '网关拒绝了此账单请求。';
+
+  @override
+  String get rel_admin_request_refused => '网关拒绝了此请求。';
+
+  @override
+  String get rel_admin_endpoint_answered => '端点已响应。';
+
+  @override
+  String get rel_admin_endpoint_no_answer => '端点未响应。';
+
+  @override
+  String get rel_admin_charge_unknown => '扣款结果未知，仍可能结算。重试前请检查门户。';
+
+  @override
+  String get rel_admin_connect_before_billing => '查看账单前请连接网关实时会话。此页面不会扣款。';
+
+  @override
+  String get rel_admin_preset_required => '请先保存预设再应用。';
+
+  @override
+  String get rel_admin_cancel => '取消';
+
+  @override
+  String get rel_admin_refresh => '刷新';
+
+  @override
+  String get rel_admin_credits_and_plans => '额度和套餐';
+
+  @override
+  String get rel_admin_saved => '已保存';
+
+  @override
+  String get rel_admin_name => '名称';
+
+  @override
+  String get rel_admin_base_url => '基础 URL';
+
+  @override
+  String get rel_admin_model => '模型';
+
+  @override
+  String get rel_admin_signed_in => '已登录';
+
+  @override
+  String get rel_admin_not_signed_in => '未登录';
+
+  @override
+  String get rel_admin_provider => '提供商';
+
+  @override
+  String get rel_admin_apply_to_this_chat => '应用到此聊天';
+
+  @override
+  String get rel_admin_auto => '自动';
+
+  @override
+  String get rel_admin_chat_completions => '聊天补全';
+
+  @override
+  String get rel_admin_codex_responses => 'Codex 响应';
+
+  @override
+  String get rel_admin_anthropic_messages => 'Anthropic 消息';
+
+  @override
+  String get rel_admin_could_not_complete_that_request => '无法完成该请求。';
+
+  @override
+  String get rel_admin_confirm => '确认';
+
+  @override
+  String get rel_admin_providers_and_billing => '提供商和账单';
+
+  @override
+  String get rel_admin_api_keys => 'API 密钥';
+
+  @override
+  String get rel_admin_custom_endpoints => '自定义端点';
+
+  @override
+  String get rel_admin_provider_accounts => '提供商账户';
+
+  @override
+  String get rel_admin_effort_and_speed_presets => '推理强度与速度预设';
+
+  @override
+  String get rel_admin_delegation => '委派';
+
+  @override
+  String get rel_admin_mixture_of_agents => '智能体混合';
+
+  @override
+  String get rel_admin_no_provider_keys_were_reported_for_this_profile =>
+      '未报告此配置文件的提供商密钥。';
+
+  @override
+  String get rel_admin_not_saved => '未保存';
+
+  @override
+  String get rel_admin_new_key_value => '新密钥值';
+
+  @override
+  String get rel_admin_provider_key_saved => '提供商密钥已保存。';
+
+  @override
+  String get rel_admin_save_key => '保存密钥';
+
+  @override
+  String get rel_admin_clear_provider_key => '清除提供商密钥';
+
+  @override
+  String get rel_admin_provider_key_cleared => '提供商密钥已清除。';
+
+  @override
+  String get rel_admin_clear_key => '清除密钥';
+
+  @override
+  String get rel_admin_new_endpoint => '新端点';
+
+  @override
+  String get rel_admin_api_key => 'API 密钥';
+
+  @override
+  String get rel_admin_leave_blank_to_keep_a_key_this_endpoint_already_has =>
+      '留空以保留此端点现有的密钥。';
+
+  @override
+  String get rel_admin_reachable => '可访问';
+
+  @override
+  String get rel_admin_unreachable => '不可访问';
+
+  @override
+  String get rel_admin_test_endpoint => '测试端点';
+
+  @override
+  String get rel_admin_endpoint_saved => '端点已保存。';
+
+  @override
+  String get rel_admin_save_endpoint => '保存端点';
+
+  @override
+  String get rel_admin_use_this_endpoint => '使用此端点';
+
+  @override
+  String
+  get rel_admin_make_this_named_endpoint_the_current_model_for_this_profile =>
+      '将此命名端点设为此配置文件的当前模型？';
+
+  @override
+  String get rel_admin_endpoint_is_now_current => '端点现已设为当前端点。';
+
+  @override
+  String get rel_admin_use_endpoint => '使用端点';
+
+  @override
+  String get rel_admin_delete_endpoint => '删除端点';
+
+  @override
+  String get rel_admin_delete_this_named_endpoint_from_the_profile =>
+      '从配置文件中删除此命名端点？';
+
+  @override
+  String get rel_admin_endpoint_deleted => '端点已删除。';
+
+  @override
+  String get rel_admin_signing_in_stays_on_the_provider_sign_in_screen =>
+      '登录仍在提供商登录界面进行。仅当此网关表示可以移除账户时才执行断开操作。';
+
+  @override
+  String get rel_admin_disconnect_this_provider_account_on_the_gateway =>
+      '在网关上断开此提供商账户？';
+
+  @override
+  String get rel_admin_provider_account_disconnected => '提供商账户已断开。';
+
+  @override
+  String get rel_admin_disconnect => '断开连接';
+
+  @override
+  String get rel_admin_not_disconnectable => '无法断开';
+
+  @override
+  String get rel_admin_fast => '快速';
+
+  @override
+  String get rel_admin_preset_saved_for_this_model => '已保存此模型的预设。';
+
+  @override
+  String get rel_admin_save_preset => '保存预设';
+
+  @override
+  String get rel_admin_chat_id => '聊天 ID';
+
+  @override
+  String get rel_admin_apply_preset => '应用预设';
+
+  @override
+  String get rel_admin_set_this_chat_s_effort_and_speed_from_the_saved_preset =>
+      '使用保存的预设设置此聊天的推理强度和速度？';
+
+  @override
+  String get rel_admin_preset_applied_to_this_chat => '预设已应用于此聊天。';
+
+  @override
+  String get rel_admin_this_route_sends_the_picked_effort_unchanged =>
+      '此路由原样发送所选推理强度。';
+
+  @override
+  String get rel_admin_show_route_clamp => '显示路由限制';
+
+  @override
+  String get rel_admin_delegation_backend => '委派后端';
+
+  @override
+  String get rel_admin_delegation_backend_saved => '委派后端已保存。';
+
+  @override
+  String get rel_admin_save_backend => '保存后端';
+
+  @override
+  String get rel_admin_max_iterations => '最大迭代次数';
+
+  @override
+  String get rel_admin_max_concurrent_children => '最大并发子智能体数';
+
+  @override
+  String get rel_admin_child_timeout_seconds => '子智能体超时秒数';
+
+  @override
+  String get rel_admin_delegation_effort_leave_unchanged => '委派推理强度，保持不变';
+
+  @override
+  String get rel_admin_delegation_limits_saved => '委派限制已保存。';
+
+  @override
+  String get rel_admin_save_limits => '保存限制';
+
+  @override
+  String get rel_admin_remove_route => '移除路由';
+
+  @override
+  String get rel_admin_route_name => '路由名称';
+
+  @override
+  String get rel_admin_route_provider => '路由提供商';
+
+  @override
+  String get rel_admin_route_model => '路由模型';
+
+  @override
+  String get rel_admin_route_effort_unchanged => '路由推理强度不变';
+
+  @override
+  String get rel_admin_add_route => '添加路由';
+
+  @override
+  String get rel_admin_default_route => '默认路由';
+
+  @override
+  String get rel_admin_delegation_routes_saved => '委派路由已保存。';
+
+  @override
+  String get rel_admin_save_routes => '保存路由';
+
+  @override
+  String get rel_admin_profile_routes_saved => '配置文件路由已保存。';
+
+  @override
+  String get rel_admin_save_profile_routes => '保存配置文件路由';
+
+  @override
+  String get rel_admin_no_mixture_is_loaded => '未加载混合配置。';
+
+  @override
+  String get rel_admin_mixture_enabled => '启用混合';
+
+  @override
+  String get rel_admin_loud_degraded_references => '参考模型降级时提示';
+
+  @override
+  String get rel_admin_silent_degraded_references => '参考模型降级时静默';
+
+  @override
+  String get rel_admin_aggregator => '聚合器';
+
+  @override
+  String get rel_admin_aggregator_provider => '聚合器提供商';
+
+  @override
+  String get rel_admin_aggregator_model => '聚合器模型';
+
+  @override
+  String get rel_admin_reference_provider => '参考模型提供商';
+
+  @override
+  String get rel_admin_reference_model => '参考模型';
+
+  @override
+  String get rel_admin_add_reference_model => '添加参考模型';
+
+  @override
+  String get rel_admin_mixture_saved => '混合配置已保存。';
+
+  @override
+  String get rel_admin_save_mixture => '保存混合配置';
+
+  @override
+  String get rel_admin_credit_purchase_submitted => '额度购买请求已提交。';
+
+  @override
+  String get rel_admin_credit_purchase_settled => '额度购买已结算。';
+
+  @override
+  String get rel_admin_credit_and_plan_changes_wait_for_confirmation_a_plan =>
+      '额度和套餐变更需等待确认。会立即扣款的套餐会显示，但不会在此确认。';
+
+  @override
+  String get rel_admin_buy_credits => '购买额度';
+
+  @override
+  String get rel_admin_retry_same_charge => '重试同一笔扣款';
+
+  @override
+  String get rel_admin_retry_the_same_credit_charge_this_does_not_start =>
+      '重试同一笔额度扣款。这不会发起第二次购买。';
+
+  @override
+  String get rel_admin_credit_purchases_are_not_available_for_this_account =>
+      '此账户无法购买额度。';
+
+  @override
+  String get rel_admin_auto_reload => '自动充值';
+
+  @override
+  String get rel_admin_read_only_until_this_account_can_charge => '此账户可扣款前为只读。';
+
+  @override
+  String get rel_admin_auto_reload_updated => '自动充值已更新。';
+
+  @override
+  String get rel_admin_keep_going_on_credits => '使用额度继续';
+
+  @override
+  String get rel_admin_continue_on_credits_when_the_plan_window_is_used_up =>
+      '套餐周期额度用完后使用额度继续？';
+
+  @override
+  String
+  get rel_admin_stop_continuing_on_credits_when_the_plan_window_is_used_up =>
+      '停止在套餐周期额度用完后使用额度继续？';
+
+  @override
+  String get rel_admin_credit_continuation_updated => '额度续用设置已更新。';
+
+  @override
+  String get rel_admin_this_plan_change_is_not_confirmed_from_ares =>
+      '此套餐变更不会通过 Ares 确认。';
+
+  @override
+  String get rel_admin_this_change_is_scheduled_confirm_to_apply_it =>
+      '此变更已安排。请确认以应用。';
+
+  @override
+  String get rel_admin_preview_plan => '预览套餐';
+
+  @override
+  String get rel_admin_schedule_plan_change => '安排套餐变更';
+
+  @override
+  String get rel_admin_plan_change_scheduled => '套餐变更已安排。';
+
+  @override
+  String get rel_admin_confirm_scheduled_plan_change => '确认已安排的套餐变更';
+
+  @override
+  String rel_admin_remove_key_confirm(String key) {
+    return '从此配置文件移除已保存的 $key 值？';
+  }
+
+  @override
+  String rel_admin_current_endpoint(String name) {
+    return '$name · 当前';
+  }
+
+  @override
+  String rel_admin_endpoint_result(
+    String status,
+    String transport,
+    String count,
+    String message,
+  ) {
+    return '$status · $transport · $count 个模型。$message';
+  }
+
+  @override
+  String rel_admin_disconnect_account(String name) {
+    return '断开 $name';
+  }
+
+  @override
+  String rel_admin_delegation_blocked(String reason) {
+    return '委派已被阻止：$reason';
+  }
+
+  @override
+  String rel_admin_backend_unavailable(String name) {
+    return '$name · 不可用';
+  }
+
+  @override
+  String rel_admin_reference_number(String number) {
+    return '参考模型 $number';
+  }
+
+  @override
+  String rel_admin_reload_enable_confirm(String amount, String threshold) {
+    return '开启自动充值，在余额低于 $threshold 时扣款 $amount？';
+  }
+
+  @override
+  String rel_admin_reload_disable_confirm(String amount, String threshold) {
+    return '关闭自动充值？目前余额低于 $threshold 时会扣款 $amount。';
+  }
+
+  @override
+  String get rel_admin_this_plan => '此套餐';
+
+  @override
+  String rel_admin_plan_confirm(String name) {
+    return '安排 $name。将在当前周期结束时生效。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price(String name, String price) {
+    return '以 $price 安排 $name。将在当前周期结束时生效。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_when(String name, String when) {
+    return '安排 $name。生效时间：$when。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price_when(
+    String name,
+    String price,
+    String when,
+  ) {
+    return '以 $price 安排 $name。生效时间：$when。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_balance(String amount) {
+    return '余额 $amount';
+  }
+
+  @override
+  String rel_admin_buy_confirm(String amount) {
+    return '向此 Nous 账户的付款方式收取 \$$amount。这会花费真实货币。';
+  }
+
+  @override
+  String rel_admin_reload_portal(String url) {
+    return '在门户更改自动充值：$url';
+  }
+
+  @override
+  String rel_admin_team_portal(String url) {
+    return '团队订阅在门户更改：$url';
+  }
+
+  @override
+  String get rel_admin_effort_none => '无';
+
+  @override
+  String get rel_admin_effort_minimal => '最低';
+
+  @override
+  String get rel_admin_effort_low => '低';
+
+  @override
+  String get rel_admin_effort_medium => '中';
+
+  @override
+  String get rel_admin_effort_high => '高';
+
+  @override
+  String get rel_admin_effort_xhigh => '很高';
+
+  @override
+  String get rel_admin_effort_max => '最大';
+
+  @override
+  String get rel_admin_effort_ultra => '超高';
+
+  @override
+  String get rel_admin_auto_lower => '自动';
+
+  @override
+  String get rel_admin_create => '创建';
+
+  @override
+  String get rel_admin_prompt => '提示词';
+
+  @override
+  String get rel_admin_new_profile_id => '新配置档案 ID';
+
+  @override
+  String get rel_admin_this_operation_is_unavailable_on_this_gateway =>
+      '此网关不支持此操作。';
+
+  @override
+  String get rel_admin_access_denied_by_the_gateway => '网关拒绝访问。';
+
+  @override
+  String get rel_admin_connection_changed_reopen_profiles => '连接已更改。请重新打开配置文件。';
+
+  @override
+  String
+  get rel_admin_invalid_input_or_gateway_response_check_the_target_before =>
+      '输入或网关响应无效。重试前请检查目标。';
+
+  @override
+  String get rel_admin_could_not_verify_the_result_refresh_the_target_before =>
+      '无法验证结果。请刷新目标后重试。';
+
+  @override
+  String get rel_admin_edit_soul_md => '编辑 SOUL.md';
+
+  @override
+  String get rel_admin_persona => '角色设定';
+
+  @override
+  String get rel_admin_persona_saved => '角色设定已保存。';
+
+  @override
+  String get rel_admin_not_set => '未设置';
+
+  @override
+  String get rel_admin_enabled => '已启用';
+
+  @override
+  String get rel_admin_keys_to_remove_comma_separated => '要移除的键（逗号分隔）';
+
+  @override
+  String get rel_admin_saved_and_applied_by_the_gateway => '网关已保存并应用。';
+
+  @override
+  String get rel_admin_saved_a_gateway_restart_may_be_required =>
+      '已保存。可能需要重启网关。';
+
+  @override
+  String get rel_admin_create_signed_route => '创建签名路由';
+
+  @override
+  String get rel_admin_route_id => '路由 ID';
+
+  @override
+  String get rel_admin_signature => '签名';
+
+  @override
+  String get rel_admin_events_comma_separated => '事件（逗号分隔）';
+
+  @override
+  String get rel_admin_delivery_target => '投递目标';
+
+  @override
+  String get rel_admin_skills_comma_separated => '技能（逗号分隔）';
+
+  @override
+  String get rel_admin_delivery_mode => '投递模式';
+
+  @override
+  String get rel_admin_delivery_chat_id_optional => '投递聊天 ID（可选）';
+
+  @override
+  String get rel_admin_hide_signing_secret => '隐藏签名密钥';
+
+  @override
+  String get rel_admin_reveal_signing_secret => '显示签名密钥';
+
+  @override
+  String get rel_admin_edit_persona => '编辑角色设定';
+
+  @override
+  String get rel_admin_portable_profile_bundle => '可移植配置文件包';
+
+  @override
+  String get rel_admin_clone_profile => '克隆配置文件';
+
+  @override
+  String get rel_admin_rename_display_label => '重命名显示标签';
+
+  @override
+  String get rel_admin_rename_profile => '重命名配置文件';
+
+  @override
+  String get rel_admin_new_name => '新名称';
+
+  @override
+  String get rel_admin_rename_verified => '重命名已验证。';
+
+  @override
+  String get rel_admin_delete_profile => '删除配置文件';
+
+  @override
+  String get rel_admin_profile_id_to_delete => '要删除的配置文件 ID';
+
+  @override
+  String get rel_admin_profile_deleted => '配置文件已删除。';
+
+  @override
+  String
+  get rel_admin_profile_deleted_server_identity_cleanup_is_still_pending =>
+      '配置文件已删除。服务器身份清理仍待完成。';
+
+  @override
+  String get rel_admin_export_profile_archive => '导出配置文件归档';
+
+  @override
+  String get rel_admin_import_profile_archive => '导入配置文件归档';
+
+  @override
+  String get rel_admin_import_a_trusted_profile => '导入可信配置文件';
+
+  @override
+  String get rel_admin_absolute_archive_path_on_gateway => '网关上的归档绝对路径';
+
+  @override
+  String get rel_admin_messaging_channels => '消息渠道';
+
+  @override
+  String get rel_admin_dm_pairing_requests => '私信配对请求';
+
+  @override
+  String get rel_admin_no_pending_or_approved_users => '没有待处理或已批准的用户。';
+
+  @override
+  String get rel_admin_legacy_pairing_no_verifiable_request_id_ask_the_user =>
+      '旧版配对：没有可验证的请求 ID。请让用户重新配对。';
+
+  @override
+  String get rel_admin_pairing_change_verified => '配对变更已验证。';
+
+  @override
+  String get rel_admin_create_telegram_bot_by_qr => '通过二维码创建 Telegram 机器人';
+
+  @override
+  String get rel_admin_create_telegram_bot => '创建 Telegram 机器人';
+
+  @override
+  String get rel_admin_bot_name => '机器人名称';
+
+  @override
+  String get rel_admin_telegram_bot_creation_qr_code => 'Telegram 机器人创建二维码';
+
+  @override
+  String get rel_admin_check_telegram_pairing => '检查 Telegram 配对';
+
+  @override
+  String get rel_admin_waiting_for_telegram => '正在等待 Telegram。';
+
+  @override
+  String get rel_admin_apply_telegram_bot => '应用 Telegram 机器人';
+
+  @override
+  String get rel_admin_allowed_numeric_user_ids => '允许的数字用户 ID';
+
+  @override
+  String get rel_admin_saved_restart_still_required => '已保存。仍需重启。';
+
+  @override
+  String get rel_admin_saved_gateway_restart_requested => '已保存；已请求重启网关。';
+
+  @override
+  String get rel_admin_cancel_telegram_setup => '取消 Telegram 设置';
+
+  @override
+  String get rel_admin_inbound_webhooks => '入站 Webhook';
+
+  @override
+  String get rel_admin_enable_webhook_service => '启用 Webhook 服务';
+
+  @override
+  String get rel_admin_enable_webhooks => '启用 Webhook';
+
+  @override
+  String get rel_admin_enabled_restart_still_required => '已启用。仍需重启。';
+
+  @override
+  String get rel_admin_enabled_restart_requested => '已启用；已请求重启。';
+
+  @override
+  String get rel_admin_route_change_verified => '路由变更已验证。';
+
+  @override
+  String get rel_admin_delete_route => '删除路由';
+
+  @override
+  String get rel_admin_disable_route => '禁用路由';
+
+  @override
+  String get rel_admin_enable_route => '启用路由';
+
+  @override
+  String get rel_admin_back_up_entire_agent_home => '备份整个智能体主目录';
+
+  @override
+  String get rel_admin_transfer_to_a_cloud_agent => '传输到 Cloud 智能体';
+
+  @override
+  String get rel_admin_check_backup_progress => '检查备份进度';
+
+  @override
+  String get rel_admin_save_backup_to_this_device => '将备份保存到此设备';
+
+  @override
+  String get rel_admin_save_sensitive_full_home_archive => '保存含敏感信息的完整主目录归档';
+
+  @override
+  String get rel_admin_save_cancelled => '已取消保存。';
+
+  @override
+  String get rel_admin_backup_saved => '备份已保存。';
+
+  @override
+  String get rel_admin_up_to_32_mib_larger_archives_remain_on_the_gateway =>
+      '最大 32 MiB。更大的归档保留在网关上。';
+
+  @override
+  String rel_admin_persona_scope(String scope) {
+    return '保存 $scope 的角色设定。';
+  }
+
+  @override
+  String rel_admin_configure_channel(String name) {
+    return '配置 $name';
+  }
+
+  @override
+  String rel_admin_channel_warning(String scope) {
+    return '应用于 $scope。留空保留现有值。要移除值，请在下方列出其键。';
+  }
+
+  @override
+  String rel_admin_hook_warning(String scope) {
+    return '应用于 $scope。请使用唯一名称。网关会创建签名密钥。如果其他操作员同时创建该名称，主机可能替换该路由。';
+  }
+
+  @override
+  String rel_admin_hook_created(String url) {
+    return '已创建 $url。离开前请保存签名密钥。';
+  }
+
+  @override
+  String rel_admin_clone_warning(String scope) {
+    return '从 $scope 复制设置、技能、角色设定，以及可能的提供商凭据。不请求消息令牌。';
+  }
+
+  @override
+  String rel_admin_cloned(String source, String destination) {
+    return '已将 $source 克隆到 $destination。';
+  }
+
+  @override
+  String rel_admin_rename_target(String name) {
+    return '重命名 $name';
+  }
+
+  @override
+  String rel_admin_rename_label_warning(String scope) {
+    return '更改 $scope 的显示标签。其 ID 保持为 default。';
+  }
+
+  @override
+  String rel_admin_rename_warning(String scope) {
+    return '在服务器上重命名 $scope。正在运行的网关可能停止。';
+  }
+
+  @override
+  String rel_admin_delete_target(String name) {
+    return '删除 $name';
+  }
+
+  @override
+  String rel_admin_delete_profile_warning(String scope) {
+    return '永久删除 $scope，包括会话和凭据。请输入准确的配置文件 ID。';
+  }
+
+  @override
+  String rel_admin_export_target(String name) {
+    return '导出 $name';
+  }
+
+  @override
+  String rel_admin_export_warning(String scope) {
+    return '在 $scope 上创建 .tar.gz。已知凭据存储会被排除，但可能仍含私人数据。分享前请检查。';
+  }
+
+  @override
+  String rel_admin_archive_on(String gateway, String path) {
+    return '$gateway 上的归档：$path';
+  }
+
+  @override
+  String rel_admin_import_warning(String gateway) {
+    return '使用已在 $gateway 上且已检查的 .tar.gz。它可能包含插件、脚本和计划。需要新的配置文件 ID。';
+  }
+
+  @override
+  String rel_admin_imported(String name) {
+    return '已导入 $name。';
+  }
+
+  @override
+  String rel_admin_approve_user(String user) {
+    return '批准 $user';
+  }
+
+  @override
+  String rel_admin_revoke_user(String user) {
+    return '撤销 $user';
+  }
+
+  @override
+  String rel_admin_allow_pair(String platform, String scope) {
+    return '$scope 上的 $platform：允许此用户的消息访问权限。';
+  }
+
+  @override
+  String rel_admin_remove_pair(String platform, String scope) {
+    return '$scope 上的 $platform：移除此用户的消息访问权限。';
+  }
+
+  @override
+  String rel_admin_telegram_start(String scope) {
+    return '使用网关的设置服务在 $scope 上开始 Telegram 配对。';
+  }
+
+  @override
+  String rel_admin_expires(String time) {
+    return '到期时间：$time';
+  }
+
+  @override
+  String rel_admin_telegram_apply(String bot, String scope) {
+    return '在 $scope 上启用 @$bot 并尝试重启网关。只有列出的用户可以向其发送消息。';
+  }
+
+  @override
+  String rel_admin_hooks_enable(String scope) {
+    return '在 $scope 上启用入站 Webhook 并尝试重启网关。';
+  }
+
+  @override
+  String rel_admin_disable_target(String name) {
+    return '禁用 $name';
+  }
+
+  @override
+  String rel_admin_enable_target(String name) {
+    return '启用 $name';
+  }
+
+  @override
+  String rel_admin_hook_change(String name, String scope) {
+    return '仅更改 $scope 上的 $name。';
+  }
+
+  @override
+  String rel_admin_backup_warning(String gateway) {
+    return '这不是 Ares 设置备份。保存 $gateway 上的所有配置文件、会话和凭据。此归档含有敏感信息。';
+  }
+
+  @override
+  String rel_admin_backup_started(String gateway) {
+    return '已在 $gateway 上开始备份。';
+  }
+
+  @override
+  String rel_admin_backup_verified(String gateway, String path) {
+    return '已验证 $gateway 上的备份：$path';
+  }
+
+  @override
+  String rel_admin_backup_running(String gateway) {
+    return '备份仍在 $gateway 上运行。';
+  }
+
+  @override
+  String get rel_admin_choice_yes => '是';
+
+  @override
+  String get rel_admin_choice_no => '否';
+
+  @override
+  String get rel_admin_choice_generic => '通用';
+
+  @override
+  String get rel_admin_choice_log => '日志';
+
+  @override
+  String get rel_admin_choice_email => '电子邮件';
+
+  @override
+  String get rel_admin_choice_github_comment => 'GitHub 评论';
+
+  @override
+  String get rel_admin_choice_agent => '智能体处理事件';
+
+  @override
+  String get rel_admin_choice_direct => '直接投递';
+
+  @override
+  String get rel_admin_configured => '已配置';
+
+  @override
+  String get rel_admin_state_pending_restart => '等待重启';
+
+  @override
+  String get rel_admin_state_unknown => '未知';
+
+  @override
+  String get rel_admin_state_connected => '已连接';
+
+  @override
+  String get rel_admin_state_disconnected => '已断开';
+
+  @override
+  String get rel_admin_state_disabled => '已禁用';
+
+  @override
+  String get rel_admin_state_enabled => '已启用';
+
+  @override
+  String get rel_admin_state_running => '运行中';
+
+  @override
+  String get rel_admin_state_stopped => '已停止';
+
+  @override
+  String get rel_admin_state_error => '错误';
+
+  @override
+  String get rel_admin_state_not_configured => '未配置';
+
+  @override
+  String get rel_admin_state_startup_failed => '启动失败';
+
+  @override
+  String get rel_admin_state_gateway_stopped => '网关已停止';
+
+  @override
+  String get rel_admin_state_connecting => '连接中';
+
+  @override
+  String get rel_admin_state_retrying => '重试中';
+
+  @override
+  String get rel_admin_state_fatal => '严重错误';
+
+  @override
+  String get rel_admin_unsupported_or_oversized_profile_archive =>
+      '不支持的配置文件归档或归档过大。';
+
+  @override
+  String get rel_admin_current_layout => '当前布局';
+
+  @override
+  String get rel_admin_one_pane => '单窗格';
+
+  @override
+  String get rel_admin_stacked => '上下堆叠';
+
+  @override
+  String get rel_admin_side_by_side => '并排';
+
+  @override
+  String get rel_admin_no_supported_appearance_in_this_profile =>
+      '此配置文件中没有受支持的外观。';
+
+  @override
+  String get rel_admin_review_appearance_saved_with_this_profile =>
+      '查看随此配置文件保存的外观';
+
+  @override
+  String get rel_admin_applies_only_to_this_named_profile_on_this_device =>
+      '仅应用于此设备上的此命名配置文件。导入的布局从空窗格开始，请自行选择聊天。';
+
+  @override
+  String get rel_admin_apply_to_this_profile_on_this_device => '应用于此设备上的此配置文件';
+
+  @override
+  String get rel_admin_export_prepares_a_tar_gz_on_the_gateway_review =>
+      '导出会在网关上准备 .tar.gz。保存副本到此处前，请查看其中的可移植文件。导入会打开本地归档供查看；仅打开不会上传任何内容。';
+
+  @override
+  String get rel_admin_prepare_profile_export => '准备导出配置文件';
+
+  @override
+  String get rel_admin_open_tar_gz_from_this_device => '打开此设备上的 .tar.gz';
+
+  @override
+  String get rel_admin_only_selected_text_files_travel_review_for_secrets_and =>
+      '仅传输所选文本文件。请检查是否含有密钥和私人信息。配置、技能和计划可能改变新配置文件的行为。';
+
+  @override
+  String get rel_admin_include_this_reviewed_file => '包含此已查看文件';
+
+  @override
+  String get rel_admin_apply_appearance_to_the_new_profile_on_this_device =>
+      '将外观应用于此设备上的新配置文件';
+
+  @override
+  String
+  get rel_admin_imports_colours_and_pane_sizes_never_chats_tools_or_session_ids =>
+      '导入颜色和窗格大小，绝不导入聊天、工具或会话 ID。';
+
+  @override
+  String
+  get rel_admin_the_gateway_retains_a_private_staged_copy_import_creates =>
+      '网关保留私有暂存副本。导入会创建新配置文件，不会替换现有配置文件。';
+
+  @override
+  String get rel_admin_appearance_not_applied_the_gateway_did_not_confirm_the =>
+      ' 外观未应用：网关未确认已查看的叠加配置。';
+
+  @override
+  String get rel_admin_appearance_applied_on_this_device => ' 外观已应用于此设备。';
+
+  @override
+  String get rel_admin_appearance_was_not_saved_on_this_device => ' 外观未保存到此设备。';
+
+  @override
+  String get rel_admin_save_reviewed_profile_bundle => '保存已查看的配置文件包';
+
+  @override
+  String get rel_admin_profile_bundle_saved => '配置文件包已保存。';
+
+  @override
+  String get rel_admin_import_selected_files => '导入所选文件';
+
+  @override
+  String get rel_admin_save_selected_files_to_device => '将所选文件保存到设备';
+
+  @override
+  String rel_admin_layout_first_pane(String layout, String percent) {
+    return '$layout · 首个窗格 $percent%';
+  }
+
+  @override
+  String rel_admin_appearance_summary(String skin, String mode, String layout) {
+    return '皮肤：$skin · 模式：$mode · $layout';
+  }
+
+  @override
+  String rel_admin_appearance_applied(String gateway, String profile) {
+    return '外观已应用于 $gateway / $profile。';
+  }
+
+  @override
+  String rel_admin_bundle_summary(
+    String profile,
+    String count,
+    String omitted,
+  ) {
+    return '包：$profile · $count 个可查看文件 · 已省略 $omitted 个';
+  }
+
+  @override
+  String rel_admin_imported_on(String name, String gateway) {
+    return '已在 $gateway 上导入 $name。';
+  }
+
+  @override
+  String get rel_admin_unchanged => '不变';
+
+  @override
+  String get rel_admin_mode_system => '系统';
+
+  @override
+  String get rel_admin_mode_light => '浅色';
+
+  @override
+  String get rel_admin_mode_dark => '深色';
+
+  @override
+  String get rel_admin_skin_classic => '经典';
+
+  @override
+  String get rel_admin_skin_midnight => '午夜';
+
+  @override
+  String get rel_admin_skin_ember => '余烬';
+
+  @override
+  String get rel_admin_skin_mono => '单色';
+
+  @override
+  String get rel_admin_skin_cyberpunk => '赛博朋克';
+
+  @override
+  String get rel_admin_skin_slate => '石板';
+
+  @override
+  String get rel_admin_no_available_cloud_agents_in_this_account =>
+      '此账户中没有可用的 Cloud 智能体。';
+
+  @override
+  String get rel_admin_the_previous_undo_receipt_could_not_be_verified_no =>
+      '无法验证之前的撤销凭据。未作任何更改。';
+
+  @override
+  String get rel_admin_transfer_to_cloud => '传输到 Cloud';
+
+  @override
+  String
+  get rel_admin_connection_changed_leave_this_page_a_restore_already_submitted =>
+      '连接已更改。请离开此页面。已提交的恢复操作可能继续。';
+
+  @override
+  String get rel_admin_find_my_cloud_agents => '查找我的 Cloud 智能体';
+
+  @override
+  String
+  get rel_admin_undo_replaces_the_destination_with_its_pre_transfer_backup =>
+      '撤销会用传输前的备份替换目标。';
+
+  @override
+  String get rel_admin_replace_this_cloud_agent_with_the_entire_source_home =>
+      '使用整个源主目录替换此 Cloud 智能体，包括凭据、对话和文件。源不会被删除。入站消息机器人将关闭。';
+
+  @override
+  String get rel_admin_type_destination_agent_id => '输入目标智能体 ID';
+
+  @override
+  String
+  get rel_admin_could_not_retain_the_local_undo_receipt_keep_this_page_open =>
+      '无法保留本地撤销凭据。请保持此页面打开。';
+
+  @override
+  String get rel_admin_undo_transfer => '撤销传输';
+
+  @override
+  String get rel_admin_replace_cloud_agent => '替换 Cloud 智能体';
+
+  @override
+  String
+  get rel_admin_local_undo_receipt_forgotten_no_remote_backup_was_removed =>
+      '本地撤销凭据已遗忘。未移除远程备份。';
+
+  @override
+  String get rel_admin_forget_local_undo_receipt_only => '仅遗忘本地撤销凭据';
+
+  @override
+  String get rel_admin_stop_before_restore => '在恢复前停止';
+
+  @override
+  String get rel_admin_do_not_close_this_page_restore_runs_on_the =>
+      '请勿关闭此页面。恢复在目标上运行，无法取消。';
+
+  @override
+  String get rel_admin_files_restored_destination_gateway_needs_attention =>
+      '文件已恢复；目标网关需要处理。';
+
+  @override
+  String rel_admin_transfer_sign_in(String origin) {
+    return '请登录且仅登录一个已保存的 $origin Ares 连接，然后返回此处。';
+  }
+
+  @override
+  String rel_admin_transfer_source(String gateway, String profile) {
+    return '来源：$gateway / $profile';
+  }
+
+  @override
+  String rel_admin_transfer_destination(String name, String origin) {
+    return '目标：$name · $origin / default';
+  }
+
+  @override
+  String rel_admin_agent_id(String id) {
+    return '智能体 ID：$id';
+  }
+
+  @override
+  String rel_admin_transfer_status(String phase) {
+    return '状态：$phase';
+  }
+
+  @override
+  String rel_admin_copied_percent(String percent) {
+    return '已复制 $percent%';
+  }
+
+  @override
+  String rel_admin_undo_point(String path) {
+    return '目标上的撤销点：$path';
+  }
+
+  @override
+  String rel_admin_messaging_disabled(String channels) {
+    return '消息已禁用：$channels';
+  }
+
+  @override
+  String get rel_admin_phase_prepared => '已准备';
+
+  @override
+  String get rel_admin_phase_backup => '备份';
+
+  @override
+  String get rel_admin_phase_upload => '上传';
+
+  @override
+  String get rel_admin_phase_restore => '恢复';
+
+  @override
+  String get rel_admin_phase_finished => '已完成';
+
+  @override
+  String get rel_admin_phase_failed => '失败';
+
+  @override
+  String get rel_admin_phase_undo => '撤销';
+
+  @override
+  String get rel_admin_phase_undone => '已撤销';
+
+  @override
+  String rel_ops_cap_install_blocked(String verdict, String detail) {
+    return '安装已被阻止（$verdict）：$detail';
+  }
+
+  @override
+  String rel_ops_cap_scan_confirm(String verdict, String requested) {
+    return '扫描结果：$verdict。安装前请确认 $requested。';
+  }
+
+  @override
+  String rel_ops_cap_install_unconfirmed(String requested) {
+    return '网关尚未确认 $requested 已安装。';
+  }
+
+  @override
+  String rel_ops_cap_edit_skill(String name) {
+    return '编辑 $name';
+  }
+
+  @override
+  String rel_ops_cap_archive_skill(String name) {
+    return '归档 $name？';
+  }
+
+  @override
+  String rel_ops_cap_archive_explanation(String command) {
+    return '技能将被归档，可通过 $command 恢复。';
+  }
+
+  @override
+  String rel_ops_cap_install_anyway(String name) {
+    return '仍要安装 $name';
+  }
+
+  @override
+  String rel_ops_cap_install_despite_scan(String name) {
+    return '仍要安装扫描未通过的 $name？';
+  }
+
+  @override
+  String rel_ops_cap_scan_warning(String name) {
+    return '安全扫描已阻止 $name。此确认仅适用于 $name。';
+  }
+
+  @override
+  String rel_ops_cap_accept_scan_warning(String name) {
+    return '接受功能权限不会绕过对 $name 的扫描。';
+  }
+
+  @override
+  String rel_ops_cap_review_scan(String name) {
+    return '查看 $name 的扫描结果';
+  }
+
+  @override
+  String rel_ops_cap_desktop_grants(String description) {
+    return '$description\n文件夹和预览脚本的授权保留在该计算机的 Desktop 应用中。在此移除插件不会撤销这些本地授权。';
+  }
+
+  @override
+  String rel_ops_cap_remove_plugin(String name) {
+    return '移除 $name？';
+  }
+
+  @override
+  String rel_ops_cap_probe_result(String name, String tools) {
+    return '探测 $name：$tools';
+  }
+
+  @override
+  String rel_ops_cap_save_tool_grants_for(String connector) {
+    return '保存 $connector 的工具授权';
+  }
+
+  @override
+  String rel_ops_cap_backends_for(String name) {
+    return '$name 的后端';
+  }
+
+  @override
+  String rel_ops_cap_use_backend_confirmation(String name) {
+    return '使用 $name？';
+  }
+
+  @override
+  String rel_ops_cap_unlock_source(String name) {
+    return '解锁 $name';
+  }
+
+  @override
+  String get rel_ops_cap_capabilities => '功能';
+
+  @override
+  String get rel_ops_cap_plugins => '插件';
+
+  @override
+  String get rel_ops_cap_connectors => '连接器';
+
+  @override
+  String get rel_ops_cap_backends => '后端';
+
+  @override
+  String get rel_ops_cap_save_skill => '保存技能';
+
+  @override
+  String get rel_ops_cap_archive => '归档';
+
+  @override
+  String get rel_ops_cap_hub_identifier => 'Hub 标识符';
+
+  @override
+  String get rel_ops_cap_install => '安装';
+
+  @override
+  String get rel_ops_cap_update_all => '全部更新';
+
+  @override
+  String get rel_ops_cap_unlock => '解锁';
+
+  @override
+  String get rel_ops_cap_lock => '锁定';
+
+  @override
+  String get rel_ops_cap_this_update_adds_capabilities_nothing_changed_yet =>
+      '此更新会添加功能。尚未进行任何更改。';
+
+  @override
+  String get rel_ops_cap_the_scan_blocked_this_plugin => '扫描已阻止此插件。';
+
+  @override
+  String get rel_ops_cap_the_plugin_was_not_changed => '插件未更改。';
+
+  @override
+  String get rel_ops_cap_repository => '代码仓库';
+
+  @override
+  String get rel_ops_cap_install_plugin => '安装插件';
+
+  @override
+  String get rel_ops_cap_update_plugins => '更新插件';
+
+  @override
+  String get rel_ops_cap_accept_capabilities => '接受功能权限';
+
+  @override
+  String get rel_ops_cap_update => '更新';
+
+  @override
+  String get rel_ops_cap_remove_desktop_half => '移除桌面端组件';
+
+  @override
+  String get rel_ops_cap_server_name => '服务器名称';
+
+  @override
+  String get rel_ops_cap_command => '命令';
+
+  @override
+  String get rel_ops_cap_http_url => 'HTTP URL';
+
+  @override
+  String get rel_ops_cap_add_server => '添加服务器';
+
+  @override
+  String get rel_ops_cap_probe => '探测';
+
+  @override
+  String get rel_ops_cap_probe_failed => '探测失败。';
+
+  @override
+  String get rel_ops_cap_logs => '日志';
+
+  @override
+  String get rel_ops_cap_mcp_log => 'MCP 日志';
+
+  @override
+  String get rel_ops_cap_connector => '连接器';
+
+  @override
+  String get rel_ops_cap_account_alias => '账户别名';
+
+  @override
+  String get rel_ops_cap_link_account => '关联账户';
+
+  @override
+  String get rel_ops_cap_remove_account => '移除账户';
+
+  @override
+  String get rel_ops_cap_tool_connector => '工具连接器';
+
+  @override
+  String get rel_ops_cap_load_tools => '加载工具';
+
+  @override
+  String get rel_ops_cap_save_tool_grants => '保存工具授权';
+
+  @override
+  String
+  get rel_ops_cap_this_policy_has_no_member_revision_so_tool_grants_stay_unchanged =>
+      '此策略没有成员修订版本，因此工具授权保持不变。';
+
+  @override
+  String get rel_ops_cap_active => '使用中';
+
+  @override
+  String get rel_ops_cap_use => '使用';
+
+  @override
+  String get rel_ops_cap_run_setup => '运行设置';
+
+  @override
+  String get rel_ops_cap_terminal_backends => '终端后端';
+
+  @override
+  String get rel_ops_cap_this_changes_the_terminal_backend_for_this_profile =>
+      '这会更改此配置文件的终端后端。';
+
+  @override
+  String get rel_ops_cap_use_backend => '使用后端';
+
+  @override
+  String get rel_ops_cap_select => '选择';
+
+  @override
+  String get rel_ops_cap_browser_vault => '浏览器保险库';
+
+  @override
+  String
+  get rel_ops_cap_saved_site_logins_addresses_and_cards_passwords_stay_in_the_secure_fields_and_are_not_listed_here =>
+      '已保存的网站登录信息、地址和银行卡。密码保留在安全字段中，不会在此列出。';
+
+  @override
+  String get rel_ops_cap_remove_saved_item => '移除已保存的项目';
+
+  @override
+  String get rel_ops_cap_delete_this_item => '删除此项目？';
+
+  @override
+  String get rel_ops_cap_unlocked => '已解锁';
+
+  @override
+  String get rel_ops_cap_locked => '已锁定';
+
+  @override
+  String get rel_ops_cap_not_detected => '未检测到';
+
+  @override
+  String get rel_ops_cap_master_password => '主密码';
+
+  @override
+  String get rel_ops_cap_login => '登录信息';
+
+  @override
+  String get rel_ops_cap_address => '地址';
+
+  @override
+  String get rel_ops_cap_card => '银行卡';
+
+  @override
+  String get rel_ops_cap_label => '标签';
+
+  @override
+  String get rel_ops_cap_site_origin => '网站源';
+
+  @override
+  String get rel_ops_cap_identifier => '标识符';
+
+  @override
+  String get rel_ops_cap_password => '密码';
+
+  @override
+  String get rel_ops_cap_authenticator_key => '身份验证密钥';
+
+  @override
+  String get rel_ops_cap_street => '街道';
+
+  @override
+  String get rel_ops_cap_city => '城市';
+
+  @override
+  String get rel_ops_cap_postal_code => '邮政编码';
+
+  @override
+  String get rel_ops_cap_country => '国家或地区';
+
+  @override
+  String get rel_ops_cap_name_on_card => '持卡人姓名';
+
+  @override
+  String get rel_ops_cap_card_number => '卡号';
+
+  @override
+  String get rel_ops_cap_expiry_month => '到期月份';
+
+  @override
+  String get rel_ops_cap_expiry_year => '到期年份';
+
+  @override
+  String get rel_ops_cap_security_code => '安全码';
+
+  @override
+  String get rel_ops_cap_this_gateway_has_no_shared_metrics_consent_method =>
+      '此网关没有共享指标的同意授权方法。';
+
+  @override
+  String get rel_ops_cap_agent_policy => '智能体策略';
+
+  @override
+  String get rel_ops_cap_loading_policy => '正在加载策略';
+
+  @override
+  String get rel_ops_cap_approval_timeout => '审批超时';
+
+  @override
+  String get rel_ops_cap_confirm_mcp_reloads => '确认 MCP 重新加载';
+
+  @override
+  String get rel_ops_cap_command_allowlist => '命令允许列表';
+
+  @override
+  String get rel_ops_cap_file_checkpoints => '文件检查点';
+
+  @override
+  String get rel_ops_cap_checkpoint_limit => '检查点上限';
+
+  @override
+  String get rel_ops_cap_browser_private_urls => '浏览器私有 URL';
+
+  @override
+  String get rel_ops_cap_use_my_real_browser_profile => '使用我的真实浏览器配置文件';
+
+  @override
+  String get rel_ops_cap_save_policy => '保存策略';
+
+  @override
+  String get rel_ops_cap_shared_metrics_for_this_profile => '此配置文件的共享指标';
+
+  @override
+  String get rel_ops_cap_send_shared_metrics => '发送共享指标';
+
+  @override
+  String get rel_ops_cap_error_enter_a_label => '请输入标签。';
+
+  @override
+  String get rel_ops_cap_error_enter_a_valid_url_like_https_example_com =>
+      '请输入有效的 URL，例如 https://example.com。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_identifier_and_password =>
+      '请输入标识符和密码。';
+
+  @override
+  String
+  get rel_ops_cap_error_enter_the_card_name_number_expiry_and_security_code =>
+      '请输入持卡人姓名、卡号、有效期和安全码。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_street_city_postal_code_and_country =>
+      '请输入街道、城市、邮政编码和国家或地区。';
+
+  @override
+  String
+  get rel_ops_cap_error_the_gateway_returned_a_response_that_could_not_be_read =>
+      '网关返回了无法读取的响应。';
+
+  @override
+  String rel_ops_cap_error_the_gateway_refused_the_request_status(
+    int statusCode,
+  ) {
+    return '网关拒绝了请求（$statusCode）。';
+  }
+
+  @override
+  String
+  rel_ops_cap_error_this_connection_has_no_gateway_socket_so_method_is_unavailable(
+    String method,
+  ) {
+    return '此连接没有网关套接字，因此 $method 不可用。';
+  }
+
+  @override
+  String get rel_ops_cap_error_choose_a_skill => '请选择技能。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_text_was_not_returned => '未返回技能文本。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_saved => '技能未保存。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_archived => '技能未归档。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_installed => '技能未安装。';
+
+  @override
+  String get rel_ops_cap_error_skill_updates_did_not_start => '技能更新未启动。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_removed => '技能未移除。';
+
+  @override
+  String get rel_ops_cap_error_enter_a_skill_or_plugin_identifier =>
+      '请输入技能或插件标识符。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_plugin => '请选择插件。';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_removed => '插件未移除。';
+
+  @override
+  String get rel_ops_cap_error_the_desktop_half_was_not_removed => '桌面端组件未移除。';
+
+  @override
+  String
+  get rel_ops_cap_error_this_gateway_did_not_give_the_plugin_a_stable_key =>
+      '此网关未为插件分配稳定的键。';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_changed => '插件未更改。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_server => '请选择服务器。';
+
+  @override
+  String get rel_ops_cap_error_name_the_server => '请为服务器命名。';
+
+  @override
+  String get rel_ops_cap_error_give_the_server_a_command_or_an_http_s_url =>
+      '请为服务器提供命令或 http(s) URL。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_toolset => '请选择工具集。';
+
+  @override
+  String get rel_ops_cap_error_tool_backend_status_was_not_returned =>
+      '未返回工具后端状态。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_provider => '请选择提供商。';
+
+  @override
+  String get rel_ops_cap_error_this_provider_has_no_setup_action =>
+      '此提供商没有设置操作。';
+
+  @override
+  String get rel_ops_cap_error_setup_did_not_start => '设置未启动。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_terminal_backend => '请选择终端后端。';
+
+  @override
+  String get rel_ops_cap_error_name_the_connector => '请为连接器命名。';
+
+  @override
+  String get rel_ops_cap_error_choose_an_account => '请选择账户。';
+
+  @override
+  String
+  get rel_ops_cap_error_reload_the_connector_policy_before_changing_tool_grants =>
+      '更改工具授权前，请重新加载连接器策略。';
+
+  @override
+  String get rel_ops_cap_error_choose_an_item => '请选择项目。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_source => '请选择来源。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_master_password => '请输入主密码。';
+
+  @override
+  String get rel_ops_cap_error_gateway_config_was_not_returned => '未返回网关配置。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_known_approval_mode => '请选择已知的审批模式。';
+
+  @override
+  String get rel_ops_cap_error_use_a_positive_limit => '请使用大于零的上限。';
+
+  @override
+  String get rel_ops_cap_error_the_policy_was_not_saved => '策略未保存。';
+
+  @override
+  String get rel_ops_cap_value_manual => '手动';
+
+  @override
+  String get rel_ops_cap_value_smart => '智能';
+
+  @override
+  String get rel_ops_cap_value_off => '关闭';
+
+  @override
+  String get rel_ops_cap_value_safe => '安全';
+
+  @override
+  String get rel_ops_cap_value_caution => '谨慎';
+
+  @override
+  String get rel_ops_cap_value_dangerous => '危险';
+
+  @override
+  String get rel_ops_cap_value_blocked => '已阻止';
+
+  @override
+  String get rel_ops_cap_value_clean => '无威胁';
+
+  @override
+  String get rel_ops_cap_value_ready => '就绪';
+
+  @override
+  String get rel_ops_cap_value_available => '可用';
+
+  @override
+  String get rel_ops_cap_value_unavailable => '不可用';
+
+  @override
+  String get rel_ops_cap_value_enabled => '已启用';
+
+  @override
+  String get rel_ops_cap_value_disabled => '已禁用';
+
+  @override
+  String get rel_ops_cap_value_active => '使用中';
+
+  @override
+  String get rel_ops_cap_value_inactive => '未使用';
+
+  @override
+  String get rel_ops_cap_value_installed => '已安装';
+
+  @override
+  String get rel_ops_cap_value_missing => '缺失';
+
+  @override
+  String get rel_ops_cap_value_configured => '已配置';
+
+  @override
+  String get rel_ops_cap_value_not_configured => '未配置';
+
+  @override
+  String get rel_ops_cap_value_error => '错误';
+
+  @override
+  String get rel_ops_cap_value_unknown => '未知';
+
+  @override
+  String get rel_ops_cap_value_login => '登录信息';
+
+  @override
+  String get rel_ops_cap_value_address => '地址';
+
+  @override
+  String get rel_ops_cap_value_payment => '支付';
+
+  @override
+  String get rel_ops_term_connecting => '正在连接…';
+
+  @override
+  String get rel_ops_term_unbound => '没有匹配的活动会话或主机工作目录。请先打开所属聊天。';
+
+  @override
+  String get rel_ops_term_unsupported => '此网关不提供这项终端功能。未启动本地命令行解释器。';
+
+  @override
+  String get rel_ops_term_local_pty_unavailable => '此设备无法使用随附的本地伪终端（PTY）。';
+
+  @override
+  String get rel_ops_term_operation_failed =>
+      '无法打开或控制终端。请检查主机、凭据和指纹。未启动备用命令行解释器。';
+
+  @override
+  String get rel_ops_term_input_refused => '输入被拒绝。请重新打开原始聊天。';
+
+  @override
+  String get rel_ops_term_cancel => '取消';
+
+  @override
+  String get rel_ops_term_confirm => '确认';
+
+  @override
+  String get rel_ops_term_open_device_title => '在此设备上打开命令行解释器？';
+
+  @override
+  String get rel_ops_term_ssh_shell => 'SSH 命令行解释器';
+
+  @override
+  String get rel_ops_term_local_shell => '本地命令行解释器';
+
+  @override
+  String get rel_ops_term_connection_lost => '连接已丢失';
+
+  @override
+  String get rel_ops_term_shell_ended => '命令行解释器已结束';
+
+  @override
+  String get rel_ops_term_no_owner =>
+      '此聊天没有经过身份验证的网关终端所有者。仅凭 URL 或云端登录无法获得命令行访问权限。';
+
+  @override
+  String get rel_ops_term_open_gateway_title => '打开网关命令行解释器？';
+
+  @override
+  String get rel_ops_term_shell_expired => '命令行解释器已结束或已过期';
+
+  @override
+  String get rel_ops_term_disconnected => '已断开连接';
+
+  @override
+  String get rel_ops_term_gateway_shell => '网关命令行解释器';
+
+  @override
+  String get rel_ops_term_close_body => '结束此命令行解释器。如需保持运行，请改为隐藏面板。';
+
+  @override
+  String get rel_ops_term_closing => '正在关闭…';
+
+  @override
+  String get rel_ops_term_close_unconfirmed => '关闭未确认';
+
+  @override
+  String get rel_ops_term_processes_require_chat => '代理进程需要经过身份验证的所属聊天。';
+
+  @override
+  String get rel_ops_term_watching_processes => '正在监视此聊天的代理进程。关闭镜像视图绝不会停止其进程。';
+
+  @override
+  String get rel_ops_term_paste_limit => '粘贴大小限制为 16 KiB。';
+
+  @override
+  String get rel_ops_term_paste => '粘贴';
+
+  @override
+  String get rel_ops_term_select_first => '请先选择终端输出。';
+
+  @override
+  String get rel_ops_term_open_chat_to_insert => '插入输出前，请打开原始聊天。';
+
+  @override
+  String get rel_ops_term_added_to_draft => '已添加到原始聊天草稿。未发送任何内容。';
+
+  @override
+  String get rel_ops_term_close => '关闭';
+
+  @override
+  String get rel_ops_term_add_selection => '将所选内容添加到聊天草稿';
+
+  @override
+  String get rel_ops_term_new_terminal => '新建终端';
+
+  @override
+  String get rel_ops_term_gateway_terminal => '网关主机终端';
+
+  @override
+  String get rel_ops_term_verified_ssh_terminal => '已验证的 SSH 终端';
+
+  @override
+  String get rel_ops_term_device_local_shell => '此设备（本地命令行解释器）';
+
+  @override
+  String get rel_ops_term_local_unavailable_mobile => '移动设备无法使用本地命令行解释器';
+
+  @override
+  String get rel_ops_term_watch_processes => '监视代理进程';
+
+  @override
+  String get rel_ops_term_select_output => '选择或复制输出';
+
+  @override
+  String get rel_ops_term_add_selected_output => '将所选输出添加到聊天草稿';
+
+  @override
+  String get rel_ops_term_review_paste => '检查剪贴板粘贴内容';
+
+  @override
+  String get rel_ops_term_reconnect => '重新连接同一命令行解释器';
+
+  @override
+  String get rel_ops_term_close_mirror => '关闭镜像视图';
+
+  @override
+  String get rel_ops_term_close_shell => '关闭命令行解释器';
+
+  @override
+  String get rel_ops_term_empty => '选择 + 以打开终端。不会自动启动任何命令行解释器。';
+
+  @override
+  String get rel_ops_term_reason_stale => '已失效';
+
+  @override
+  String get rel_ops_term_reason_mismatch => '不匹配';
+
+  @override
+  String get rel_ops_term_reason_unbound => '未绑定';
+
+  @override
+  String get rel_ops_term_reason_unsupported => '不支持';
+
+  @override
+  String get rel_ops_term_reason_denied => '已拒绝';
+
+  @override
+  String get rel_ops_term_reason_ineligible => '不符合条件';
+
+  @override
+  String get rel_ops_term_reason_unavailable => '不可用';
+
+  @override
+  String get rel_ops_term_reason_invalid => '无效';
+
+  @override
+  String get rel_ops_term_reason_insecure => '不安全';
+
+  @override
+  String rel_ops_term_refused(String reason) {
+    return '网关拒绝了此终端操作（$reason）。';
+  }
+
+  @override
+  String rel_ops_term_open_device_body(String connection) {
+    return '这是运行 Ares 的设备，而不是 $connection。命令行解释器使用应用权限，并在应用存储空间中启动。';
+  }
+
+  @override
+  String rel_ops_term_open_gateway_body(String host) {
+    return '在 $host 上经过验证的聊天工作目录中启动命令行解释器。这不是设备本地的命令行解释器。';
+  }
+
+  @override
+  String rel_ops_term_close_tab_title(String label) {
+    return '关闭 $label？';
+  }
+
+  @override
+  String rel_ops_term_read_only_status(String status) {
+    return '只读 · $status';
+  }
+
+  @override
+  String rel_ops_term_paste_title(String label) {
+    return '粘贴到 $label？';
+  }
+
+  @override
+  String rel_ops_term_output_title(String label) {
+    return '输出 · $label';
+  }
+
+  @override
+  String rel_ops_term_mirror_status(String label) {
+    return '只读进程镜像 · $label';
+  }
+
+  @override
+  String rel_ops_term_status_label(String status, String label) {
+    return '$status · $label';
+  }
+
+  @override
+  String rel_ops_term_ssh_tab(String user, String host, int port, int number) {
+    return 'SSH $user@$host:$port · $number';
+  }
+
+  @override
+  String rel_ops_term_device_tab(int number) {
+    return '此设备 · $number';
+  }
+
+  @override
+  String rel_ops_term_gateway_tab(String host, int number) {
+    return '网关 $host · $number';
+  }
+
+  @override
+  String get rel_ops_term_earlier_output_trimmed => '[较早的输出已截断]';
+
+  @override
+  String get rel_ops_term_ssh_dialog_title => '打开已验证的 SSH 终端';
+
+  @override
+  String get rel_ops_term_ssh_dialog_body =>
+      '请使用通过独立渠道从主机管理员处获得的指纹。此操作会打开新的远程登录会话，而非网关或本地命令行解释器。';
+
+  @override
+  String get rel_ops_term_ssh_host => 'SSH 主机';
+
+  @override
+  String get rel_ops_term_ssh_port => '端口';
+
+  @override
+  String get rel_ops_term_ssh_user => '用户';
+
+  @override
+  String get rel_ops_term_ssh_fingerprint => '主机密钥指纹（SHA256:…）';
+
+  @override
+  String get rel_ops_term_ssh_password => 'SSH 密码（不保存）';
+
+  @override
+  String get rel_ops_term_connect => '连接';
+
+  @override
+  String get rel_ops_ssh_invalid_destination => 'SSH 主机、端口或用户无效。';
+
+  @override
+  String get rel_ops_ssh_public_key_required => '需要 OpenSSH Ed25519 格式的主机公钥。';
+
+  @override
+  String get rel_ops_ssh_invalid_public_key => 'Ed25519 主机密钥无效。';
+
+  @override
+  String get rel_ops_ssh_invalid_saved_key => '已保存的主机密钥无效。';
+
+  @override
+  String get rel_ops_ssh_enrollment_unverified => '无法验证主机密钥注册。';
+
+  @override
+  String get rel_ops_ssh_different_key_pinned => '已固定了另一把密钥。请单独验证此变更。';
+
+  @override
+  String get rel_ops_ssh_open_ssh_unavailable => '系统 OpenSSH 不可用。';
+
+  @override
+  String get rel_ops_ssh_confirm_host_key => '请先确认主机密钥再连接。';
+
+  @override
+  String get rel_ops_ssh_absolute_identity_required => '请选择使用绝对路径的身份密钥文件。';
+
+  @override
+  String get rel_ops_ssh_invalid_remote_port => '远程端口无效。';
+
+  @override
+  String get rel_ops_ssh_preview_too_large => '预览超出 64 KiB 限制。';
+
+  @override
+  String get rel_ops_ssh_connection_refused => 'SSH 连接被拒绝。请检查已注册的主机密钥、身份凭据和服务。';
+
+  @override
+  String get rel_ops_ssh_http_not_ok => '远程服务未返回 HTTP 200。';
+
+  @override
+  String get rel_ops_ssh_encoded_response => '此预览不支持经过编码的响应。';
+
+  @override
+  String get rel_ops_ssh_preview_type_unsupported => '只能预览文本和 HTML 源代码。';
+
+  @override
+  String get rel_ops_ssh_health_unconfirmed => '服务未确认网关运行正常。';
+
+  @override
+  String get rel_ops_ssh_enroll_host_key_first => '请先注册主机的公钥。';
+
+  @override
+  String get rel_ops_ssh_cancel => '取消';
+
+  @override
+  String get rel_ops_ssh_confirm => '确认';
+
+  @override
+  String get rel_ops_ssh_pin_title => '固定此 SSH 主机密钥？';
+
+  @override
+  String rel_ops_ssh_pin_detail(String destination, String fingerprint) {
+    return '$destination\n$fingerprint\n请通过独立渠道与主机管理员核对此指纹。不会建立任何连接。';
+  }
+
+  @override
+  String get rel_ops_ssh_host_key_pinned => '主机密钥已固定。';
+
+  @override
+  String get rel_ops_ssh_shell_detail => '打开交互式登录 shell。';
+
+  @override
+  String rel_ops_ssh_read_detail(String path, int port) {
+    return '通过 SSH 通道读取远程 127.0.0.1:$port 上的 $path。';
+  }
+
+  @override
+  String rel_ops_ssh_connect_title(String destination) {
+    return '连接到 $destination？';
+  }
+
+  @override
+  String rel_ops_ssh_connect_detail(
+    String detail,
+    String fingerprint,
+    String authentication,
+  ) {
+    return '$detail\n$fingerprint\n$authentication';
+  }
+
+  @override
+  String get rel_ops_ssh_agent_auth => '使用你的 SSH 代理进行身份验证。';
+
+  @override
+  String get rel_ops_ssh_identity_auth => '使用选定的身份密钥文件。';
+
+  @override
+  String rel_ops_ssh_gateway_responding(int port) {
+    return '网关正在远程回环端口 $port 上响应。';
+  }
+
+  @override
+  String get rel_ops_ssh_session_closed => 'SSH 会话已关闭。';
+
+  @override
+  String get rel_ops_ssh_session_unclean => 'SSH 会话未正常退出。';
+
+  @override
+  String get rel_ops_ssh_operation_failed => 'SSH 操作失败。请检查目标和身份凭据。';
+
+  @override
+  String get rel_ops_ssh_title => '经验证的 SSH';
+
+  @override
+  String get rel_ops_ssh_unsupported =>
+      '此设备没有受支持的系统 OpenSSH 传输方式。已固定网关的中继会自动接受新密钥，因此不能用于经验证的注册。';
+
+  @override
+  String get rel_ops_ssh_host => 'SSH 主机';
+
+  @override
+  String get rel_ops_ssh_port => 'SSH 端口';
+
+  @override
+  String get rel_ops_ssh_user => 'SSH 用户';
+
+  @override
+  String get rel_ops_ssh_identity => '身份密钥文件（可选；否则使用 SSH 代理）';
+
+  @override
+  String get rel_ops_ssh_public_key => '管理员提供的主机公钥（ssh-ed25519）';
+
+  @override
+  String get rel_ops_ssh_review_key => '审查主机密钥';
+
+  @override
+  String get rel_ops_ssh_remote_port => '远程回环服务端口';
+
+  @override
+  String get rel_ops_ssh_check_gateway => '通过 SSH 检查网关';
+
+  @override
+  String get rel_ops_ssh_preview_source => '通过 SSH 预览源代码';
+
+  @override
+  String get rel_ops_ssh_open_shell => '打开 SSH shell';
+
+  @override
+  String get rel_ops_ssh_shell_line => '发送到远程 shell 的行';
+
+  @override
+  String get rel_ops_ssh_disconnect => '断开 shell 连接';
+
+  @override
+  String get rel_ops_host_cancel => '取消';
+
+  @override
+  String get rel_ops_host_confirm => '确认';
+
+  @override
+  String get rel_ops_host_title => '主机';
+
+  @override
+  String get rel_ops_host_refresh => '刷新';
+
+  @override
+  String get rel_ops_host_update => '更新远程 Hermes';
+
+  @override
+  String rel_ops_host_update_confirmation(String profile) {
+    return '这将在网关主机上为 $profile 执行就地更新，不会更新此设备上的 Ares。更新是否成功以匹配的更新回执为准，而不是以主机是否保持可访问为准。';
+  }
+
+  @override
+  String get rel_ops_host_update_awaiting => '正在等待匹配的回执。更新仍在进行中。';
+
+  @override
+  String get rel_ops_host_receipt_success => '更新回执显示成功。';
+
+  @override
+  String get rel_ops_host_receipt_partial => '更新已应用，但仍有后续步骤需要完成。';
+
+  @override
+  String get rel_ops_host_receipt_failed => '更新回执显示失败。';
+
+  @override
+  String get rel_ops_host_receipt_refused => '更新回执显示已拒绝。';
+
+  @override
+  String get rel_ops_host_update_running => '更新仍在进行中。';
+
+  @override
+  String get rel_ops_host_update_unknown => '更新结果未知。网关正常运行并不代表更新成功。';
+
+  @override
+  String get rel_ops_host_default_profile => '网关默认配置档案';
+
+  @override
+  String get rel_ops_host_restart => '重启远程网关';
+
+  @override
+  String rel_ops_host_restart_shared_confirmation(String profiles) {
+    return '这将重启 $profiles 共享的网关。此网关上正在进行的轮次会被中断。请随后重新连接。可以访问网关并不能证明重启已完成。';
+  }
+
+  @override
+  String rel_ops_host_restart_confirmation(String profile) {
+    return '这将重启 $profile 的远程网关。此网关上正在进行的轮次会被中断。请随后重新连接。';
+  }
+
+  @override
+  String get rel_ops_host_restart_running => '重启命令仍在运行。';
+
+  @override
+  String get rel_ops_host_restart_finished => '重启命令已结束。请手动重新连接主机。';
+
+  @override
+  String get rel_ops_host_restart_failed => '重启命令失败。';
+
+  @override
+  String rel_ops_host_maintenance_running(String name) {
+    return '$name 仍在运行';
+  }
+
+  @override
+  String rel_ops_host_maintenance_finished(String name) {
+    return '$name 已完成';
+  }
+
+  @override
+  String rel_ops_host_maintenance_failed(String name) {
+    return '$name 失败';
+  }
+
+  @override
+  String get rel_ops_host_curator_paused_result => '维护器已暂停。';
+
+  @override
+  String get rel_ops_host_curator_resumed_result => '维护器已恢复。';
+
+  @override
+  String get rel_ops_host_reset => '重置远程记忆文件';
+
+  @override
+  String rel_ops_host_reset_confirmation(String targetName, String profile) {
+    return '删除 $profile 上的 $targetName 记忆文件？此操作无法通过 Ares 撤销。';
+  }
+
+  @override
+  String rel_ops_host_reset_result(String targetName, int count) {
+    return '已重置 $targetName。已删除 $count 个远程文件。';
+  }
+
+  @override
+  String get rel_ops_host_share_not_redacted => '主机未确认诊断包已隐去敏感信息，因此不显示链接。';
+
+  @override
+  String rel_ops_host_scope(String connection, String profile) {
+    return '这些控件操作的是 $profile 的远程网关 $connection，而不是此设备，也不用于更新 Ares 客户端。';
+  }
+
+  @override
+  String rel_ops_host_health_running(String version, int count) {
+    return '网关进程正在运行 $version · $count 个会话';
+  }
+
+  @override
+  String rel_ops_host_health_stopped(String version, int count) {
+    return '网关进程已停止 $version · $count 个会话';
+  }
+
+  @override
+  String rel_ops_host_heartbeat_stale(num seconds) {
+    return '主机心跳已过期（$seconds 秒）。';
+  }
+
+  @override
+  String get rel_ops_host_doctor => '运行 Doctor';
+
+  @override
+  String get rel_ops_host_security_audit => '安全审计';
+
+  @override
+  String get rel_ops_host_check_receipt => '检查更新回执';
+
+  @override
+  String get rel_ops_host_logs => '远程主机日志';
+
+  @override
+  String get rel_ops_host_search_logs => '搜索主机日志';
+
+  @override
+  String get rel_ops_host_driver => '远程主机驱动程序';
+
+  @override
+  String get rel_ops_host_driver_scope =>
+      '计算机操作功能的就绪状态取决于网关机器上的驱动程序和操作系统权限，而不是此设备。';
+
+  @override
+  String rel_ops_host_computer_status(
+    String platform,
+    String installed,
+    String ready,
+  ) {
+    return '$platform · 已安装 $installed · 已就绪 $ready';
+  }
+
+  @override
+  String get rel_ops_host_null => '不可用';
+
+  @override
+  String get rel_ops_host_true => '是';
+
+  @override
+  String get rel_ops_host_false => '否';
+
+  @override
+  String get rel_ops_host_curator => '维护器';
+
+  @override
+  String get rel_ops_host_curator_paused => '维护器已暂停';
+
+  @override
+  String get rel_ops_host_curator_running => '维护器正在运行';
+
+  @override
+  String get rel_ops_host_no_run => '尚无已完成的运行';
+
+  @override
+  String get rel_ops_host_run_curator => '立即运行维护器';
+
+  @override
+  String get rel_ops_host_reset_memory => '重置记忆文件';
+
+  @override
+  String get rel_ops_host_reset_user => '重置用户文件';
+
+  @override
+  String get rel_ops_host_reset_both => '重置两个文件';
+
+  @override
+  String get rel_ops_host_share_consent => '我同意从远程主机上传已隐去敏感信息的诊断包';
+
+  @override
+  String get rel_ops_host_share => '分享已隐去敏感信息的诊断数据';
+
+  @override
+  String get rel_ops_host_update_unknown_installation => '无法识别此安装，因此未发送更新请求';
+
+  @override
+  String get rel_ops_host_update_busy_installation => '此安装上有聊天正在运行';
+
+  @override
+  String get rel_ops_host_update_refused => '远程更新被拒绝';
+
+  @override
+  String get rel_ops_host_error_stale => '远程工作区：已过期';
+
+  @override
+  String get rel_ops_host_error_mismatch => '远程工作区：不匹配';
+
+  @override
+  String get rel_ops_host_error_unbound => '远程工作区：未绑定';
+
+  @override
+  String get rel_ops_host_error_unsupported => '远程工作区：不支持';
+
+  @override
+  String get rel_ops_host_error_denied => '远程工作区：访问被拒绝';
+
+  @override
+  String get rel_ops_host_error_ineligible => '远程工作区：不符合操作条件';
+
+  @override
+  String get rel_ops_host_error_unavailable => '远程工作区：不可用';
+
+  @override
+  String get rel_ops_host_error_invalid => '远程工作区：无效';
+
+  @override
+  String get rel_ops_host_error_insecure => '远程工作区：不安全';
+
+  @override
+  String get rel_ops_host_error_request => '无法完成该请求。';
+
+  @override
+  String get rel_svc_push_api_select_sessions =>
+      '请选择 1–128 个持久会话 ID，每个 ID 包含 1–200 个 ASCII 字符，且只能使用字母、数字、_ . : @ 或 -。请移除空白 ID 和空格。';
+
+  @override
+  String get rel_svc_push_api_unavailable => '此服务器无法使用移动推送。';
+
+  @override
+  String get rel_svc_push_api_invalid_vapid => '服务器 VAPID 公钥无效。';
+
+  @override
+  String get rel_svc_push_api_update_plugin =>
+      '此服务器需要更新 mobile-push 插件才能使用自动订阅。';
+
+  @override
+  String get rel_svc_push_status_android_only => '仅限 Android';
+
+  @override
+  String get rel_svc_push_native_prefs_sync_failed => '无法同步原生通知偏好设置。';
+
+  @override
+  String get rel_svc_push_choose_android_connection => '请先在 Android 上选择已保存的连接。';
+
+  @override
+  String get rel_svc_push_status_checking_authorization => '正在检查服务器授权';
+
+  @override
+  String get rel_svc_push_revoke_persist_failed => '无法保存撤销状态。请在离开应用前再次尝试停用。';
+
+  @override
+  String get rel_svc_push_status_off_api_ready => '已关闭；服务器 API 已就绪';
+
+  @override
+  String get rel_svc_push_status_off_revoke_pending => '已关闭；等待服务器撤销';
+
+  @override
+  String get rel_svc_push_status_off_connection_changed => '已关闭；已保存的连接已更改';
+
+  @override
+  String get rel_svc_push_status_pending_endpoint => '正在等待分发器端点';
+
+  @override
+  String get rel_svc_push_status_registering => '正在注册';
+
+  @override
+  String get rel_svc_push_status_pending_challenge => '加密质询待处理（正在等待静默服务器验证推送）';
+
+  @override
+  String get rel_svc_push_allow_android_notifications_retry =>
+      '请在系统设置中允许 Android 通知，然后重试。';
+
+  @override
+  String get rel_svc_push_plugin_invalid =>
+      '服务器 mobile-push 插件不可用、版本过旧或返回了无效的订阅响应。请让管理员更新该插件，然后重试。';
+
+  @override
+  String get rel_svc_push_transport_unavailable =>
+      '没有可用的推送传输方式。内置传送需要正常工作的 Google Play 服务；也可安装 UnifiedPush 分发器后重试。';
+
+  @override
+  String get rel_svc_push_transport_choice =>
+      '有多个 UnifiedPush 分发器可用。请在“高级传输”中选择一个，然后重试。';
+
+  @override
+  String get rel_svc_push_transport_missing =>
+      '所选 UnifiedPush 分发器不可用。请恢复它，或在“高级传输”中选择其他分发器。';
+
+  @override
+  String get rel_svc_push_companion_unavailable =>
+      '服务器 mobile-push 配套组件不可用。它可能未安装、已停用，或此连接可能指向错误的控制面板。请在服务器上安装或启用该组件，检查控制面板连接，然后刷新。请参阅上方的服务器设置指南。';
+
+  @override
+  String get rel_svc_push_server_denied => '服务器拒绝了移动推送。请让管理员授权此主体和这些会话。';
+
+  @override
+  String get rel_svc_push_not_ready => '移动推送尚未就绪。请检查服务器插件授权、分发器和网络，然后重试。';
+
+  @override
+  String get rel_svc_push_availability_read_failed =>
+      '无法读取 Android 推送可用性。请在下方重试。';
+
+  @override
+  String get rel_svc_push_setup_failed =>
+      '推送设置失败。请检查 Android 权限、服务器授权和传输方式，然后重试。';
+
+  @override
+  String rel_svc_push_status(String status) {
+    return '状态：$status';
+  }
+
+  @override
+  String rel_svc_push_status_bound(
+    String bound,
+    String connection,
+    String status,
+  ) {
+    return '状态：已绑定到 $bound（对 $connection 未启用；握手：$status）';
+  }
+
+  @override
+  String get rel_svc_push_another_saved_connection => '另一个已保存的连接';
+
+  @override
+  String get rel_svc_push_background_notifications => '后台通知';
+
+  @override
+  String rel_svc_push_bound_subtitle(String bound, String connection) {
+    return '已绑定到 $bound — 请先在下方撤销该绑定，再为 $connection 启用';
+  }
+
+  @override
+  String rel_svc_push_private_activity(String connection) {
+    return '$connection 的私密服务器活动';
+  }
+
+  @override
+  String rel_svc_push_bound_warning_named(String bound) {
+    return '已绑定到另一个已保存的连接（$bound）。请先停用并撤销该绑定，再为此连接启用。';
+  }
+
+  @override
+  String get rel_svc_push_bound_warning => '已绑定到另一个已保存的连接。请先停用并撤销该绑定，再为此连接启用。';
+
+  @override
+  String get rel_svc_push_local_notifications_muted =>
+      '上方已关闭本地通知。后台通知授权不变，但在开启“启用通知”之前，普通后台活动提示会保持静音。';
+
+  @override
+  String rel_svc_push_legacy_subscription(int count) {
+    return '旧版订阅：仅限 $count 个已选会话。它不会自动扩展。请先关闭再开启，以选择加入服务器授权的会话。';
+  }
+
+  @override
+  String get rel_svc_push_authorized_binding =>
+      '仅绑定到此已保存的连接和配置文件。会话访问权限遵循当前服务器授权。';
+
+  @override
+  String get rel_svc_push_revocation_pending =>
+      '服务器撤销待处理。本地传送已关闭；请在原始已保存登录仍可用时重试。';
+
+  @override
+  String get rel_svc_push_refresh_retry => '刷新 / 重试';
+
+  @override
+  String rel_svc_push_disable_named(String bound) {
+    return '停用并撤销 $bound';
+  }
+
+  @override
+  String get rel_svc_push_other_connection => '其他连接';
+
+  @override
+  String get rel_svc_push_disable => '停用并撤销';
+
+  @override
+  String get rel_svc_push_refresh_explanation =>
+      '刷新 / 重试会在服务器设置后重新检查可用性；它无法安装配套组件。启用通知仍是单独的选择。';
+
+  @override
+  String get rel_svc_push_companion_required =>
+      '后台通知需要另外安装并启用服务器端 mobile-push 配套组件。Android 无法安装它。仅更新 APK 不会完成服务器设置。';
+
+  @override
+  String get rel_svc_push_server_setup_guide => '服务器设置指南';
+
+  @override
+  String get rel_svc_push_enable_disclosure =>
+      '启用后将请求 Android 通知权限，并与此服务器共享本次安装的端点和加密密钥。加密的活动提示不包含聊天内容。仅包括服务器登录授权的会话。';
+
+  @override
+  String get rel_svc_push_transport_disclosure =>
+      '内置传送使用 Google 推送传输并需要 Google Play 服务，但不包含 Firebase SDK。也可改用可选的 UnifiedPush 分发器。传送为尽力而为；请重新打开 Hermes 进行协调。';
+
+  @override
+  String get rel_svc_push_advanced_transport => '高级传输';
+
+  @override
+  String get rel_svc_push_automatic_explanation =>
+      '自动模式会保留现有分发器选择；否则在可用时使用内置 Google 传送。更改传输方式前请先停用。';
+
+  @override
+  String get rel_svc_push_transport_label => '推送传输';
+
+  @override
+  String get rel_svc_push_automatic_recommended => '自动（推荐）';
+
+  @override
+  String get rel_svc_push_selected_unavailable => '所选分发器（不可用）';
+
+  @override
+  String get rel_svc_push_no_transport_detected =>
+      '未检测到可用的传输方式。内置传送需要 Google Play 服务；若没有，请安装并配置 UnifiedPush 分发器，然后刷新。';
+
+  @override
+  String get rel_svc_push_channel_turns_name => 'Ares 轮次';
+
+  @override
+  String get rel_svc_push_channel_turns_description => '后台轮次完成通知';
+
+  @override
+  String get rel_svc_push_channel_attention_name => 'Ares 待处理';
+
+  @override
+  String get rel_svc_push_channel_attention_description => '需要您处理的审批和输入请求';
+
+  @override
+  String get rel_svc_push_channel_background_name => 'Ares 后台';
+
+  @override
+  String get rel_svc_push_channel_background_description => '后台任务完成';
+
+  @override
+  String get rel_svc_push_channel_notices_name => 'Ares 通知';
+
+  @override
+  String get rel_svc_push_channel_notices_description => '额度和插件通知';
+
+  @override
+  String get rel_svc_push_diag_not_initialised => '未初始化';
+
+  @override
+  String get rel_svc_push_diag_replies_off => '回复通知已关闭';
+
+  @override
+  String get rel_svc_push_diag_conversation => '对话';
+
+  @override
+  String get rel_svc_push_diag_conversation_permission_denied => '对话；权限被拒绝';
+
+  @override
+  String rel_svc_push_diag_conversation_error(String error) {
+    return '对话：$error';
+  }
+
+  @override
+  String get rel_svc_push_diag_failures_off => '失败通知已关闭';
+
+  @override
+  String rel_svc_push_diag_kind_off(String kind) {
+    return '$kind 已关闭';
+  }
+
+  @override
+  String get rel_svc_push_diag_windows_setting_unknown => 'Windows 未报告其通知设置';
+
+  @override
+  String get rel_svc_backup_not_hermes_configuration_backup =>
+      '此文件不是 Hermes 配置备份。';
+
+  @override
+  String get rel_svc_backup_newer_version_cannot_import =>
+      '此备份由较新版本的应用创建，无法导入。';
+
+  @override
+  String get rel_svc_backup_missing_client_certificate =>
+      '此备份声明某个连接使用客户端证书，但并未包含该证书，因此无法完整恢复。';
+
+  @override
+  String get rel_svc_backup_damaged_unreadable => '此备份文件已损坏，无法读取。';
+
+  @override
+  String get rel_svc_backup_unsupported_preference_type =>
+      '某项已保存的偏好设置类型不受支持，无法导出。';
+
+  @override
+  String get rel_svc_backup_choose_passphrase_api_keys =>
+      '请选择密码短语 — 备份包含您的 API 密钥。';
+
+  @override
+  String get rel_svc_backup_could_not_protect_safely => '无法安全保护备份。';
+
+  @override
+  String get rel_svc_backup_unsupported_encryption => '此备份使用不受支持的加密方案。';
+
+  @override
+  String get rel_svc_backup_wrong_passphrase_or_altered => '密码短语错误，或此备份文件已被篡改。';
+
+  @override
+  String get rel_svc_backup_share_subject => 'Hermes 配置备份';
+
+  @override
+  String get rel_svc_backup_selected_file_unreadable => '无法读取该文件。';
+
+  @override
+  String rel_svc_backup_connections_added(int count) {
+    return '已添加 $count 个';
+  }
+
+  @override
+  String rel_svc_backup_connections_updated(int count) {
+    return '已更新 $count 个';
+  }
+
+  @override
+  String rel_svc_backup_connections_removed(int count) {
+    return '已移除 $count 个';
+  }
+
+  @override
+  String get rel_svc_backup_no_connection_changes => '连接无更改';
+
+  @override
+  String rel_svc_backup_connections_summary(String changes) {
+    return '连接：$changes';
+  }
+
+  @override
+  String rel_svc_backup_restore_summary(String connections, int count) {
+    return '$connections · 已恢复 $count 项设置';
+  }
+
+  @override
+  String rel_svc_backup_certificate_not_included(String label, String error) {
+    return '无法将“$label”的客户端证书包含在此备份中：$error';
+  }
+
+  @override
+  String get rel_svc_backup_certificate_password_needed =>
+      '此证书需要密码。在下方输入后，证书将自动打开。';
+
+  @override
+  String get rel_svc_backup_certificate_password_or_corrupt => '证书密码错误，或文件已损坏。';
+
+  @override
+  String get rel_svc_backup_certificate_password_incorrect => '证书密码错误。';
+
+  @override
+  String get rel_svc_backup_certificate_unsupported_encryption =>
+      '此证书使用了应用无法读取的加密方式。';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable_pkcs12 =>
+      '所选文件不是可读取的 PKCS#12（.p12/.pfx）证书。';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable => '无法读取所选证书。';
+
+  @override
+  String get rel_svc_backup_not_certificate_file =>
+      '该文件不是证书：请选择 .p12/.pfx 容器，或 PEM 证书和密钥文件。';
+
+  @override
+  String get rel_svc_backup_not_pem_certificate => '所选证书不是 PEM 证书。';
+
+  @override
+  String get rel_svc_backup_not_pem_private_key => '所选私钥不是 PEM 私钥。';
+
+  @override
+  String get rel_svc_backup_certificate_pair_unloadable => '无法加载所选证书和私钥。';
+
+  @override
+  String get rel_svc_backup_saved_certificate_files_unreadable =>
+      '无法读取已保存的客户端证书文件。';
+
+  @override
+  String get rel_svc_backup_client_certificate_storage_failed =>
+      '无法将客户端证书安全地存储在此设备上。';
+
+  @override
+  String get rel_svc_backup_certificate_storage_failed => '无法将证书安全地存储在此设备上。';
+
+  @override
+  String get rel_svc_backup_client_certificate_label => '客户端证书';
+
+  @override
+  String rel_svc_backup_search_dashboard_unreachable(String error) {
+    return '无法连接到仪表板：$error';
+  }
+
+  @override
+  String get rel_svc_backup_search_credentials_rejected =>
+      '仪表板拒绝了已保存的凭据。请检查此连接的仪表板用户名和密码。';
+
+  @override
+  String get rel_svc_backup_search_not_supported =>
+      '此仪表板未提供会话搜索。请更新主机上的 Hermes，或切换回设备端搜索。';
+
+  @override
+  String rel_svc_backup_search_redirected(int statusCode) {
+    return '仪表板重定向了会话搜索（HTTP $statusCode）。Ares 不会携带已保存的凭据跟随重定向；请检查连接地址。';
+  }
+
+  @override
+  String rel_svc_backup_search_http_failed(int statusCode) {
+    return '会话搜索失败，HTTP $statusCode。';
+  }
+
+  @override
+  String get rel_svc_backup_search_malformed_response => '仪表板返回了格式错误的搜索响应。';
+
+  @override
+  String get rel_svc_backup_search_unexpected_response => '仪表板返回了意外的搜索响应。';
+
+  @override
+  String get rel_svc_backup_search_too_many_results => '仪表板返回的搜索结果多于请求数量。';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_response => '消息搜索响应异常。';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_result => '消息搜索结果异常。';
+
+  @override
+  String get rel_svc_backup_ai_search_api_key_rejected =>
+      'Hermes API 拒绝了已保存的 API 密钥。';
+
+  @override
+  String rel_svc_backup_ai_search_http_failed(int statusCode) {
+    return 'AI 查询改写失败，HTTP $statusCode。';
+  }
+
+  @override
+  String get rel_svc_backup_ai_search_no_usable_query => '所选模型未返回可用的搜索查询。';
+
+  @override
+  String get rel_svc_backup_ai_search_malformed_response =>
+      'Hermes 返回了格式错误的 AI 改写响应。';
+
+  @override
+  String get rel_svc_backup_space_name_already_exists => '已存在同名空间';
+
+  @override
+  String get rel_svc_backup_space_name_length_invalid => '空间名称必须为 1–80 个字符';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_required => '输入您的 Hermes 仪表板地址。';
+
+  @override
+  String ng_rel_svc_backup_gateway_address_scheme(String scheme) {
+    return '地址必须以 http:// 或 https:// 开头（收到 $scheme）。';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_invalid => '该地址无效。';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_no_host => '地址中没有主机名。';
+
+  @override
+  String get ng_rel_svc_backup_sign_in_main_window => '请在主窗口中登录。';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_failed => '网关目前无法续订登录。';
+
+  @override
+  String get rel_svc_backup_sign_in_provider_unreachable =>
+      '网关无法续订登录：登录提供商不可访问。';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_timed_out => '续订登录超时。';
+
+  @override
+  String get rel_svc_backup_sign_in_no_tokens => '网关未返回登录令牌。';
+
+  @override
+  String get ng_rel_svc_backup_probe_timed_out =>
+      '请求超时。请检查地址、VPN 或 Tailscale 连接。';
+
+  @override
+  String ng_rel_svc_backup_probe_tls_failed(String error) {
+    return 'TLS 握手失败：$error';
+  }
+
+  @override
+  String ng_rel_svc_backup_gateway_answered_http(int statusCode) {
+    return '网关返回了 HTTP $statusCode。';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_answer_timed_out => '网关响应时间过长。';
+
+  @override
+  String ng_rel_svc_backup_browser_callback_not_ready(String error) {
+    return '无法准备接收浏览器回调：$error';
+  }
+
+  @override
+  String get ng_rel_svc_backup_browser_signed_in_body => '现在可以返回 Hermes。';
+
+  @override
+  String get ng_rel_svc_backup_browser_waiting_title => '正在等待登录';
+
+  @override
+  String get ng_rel_svc_backup_browser_not_current => '此页面不属于当前登录流程。';
+
+  @override
+  String get ng_rel_svc_backup_browser_open_failed => '无法打开浏览器进行登录。';
+
+  @override
+  String get ng_rel_svc_backup_browser_sign_in_timed_out => '登录用时过长。请重试。';
+
+  @override
+  String ng_rel_svc_backup_gateway_refused_sign_in(int statusCode) {
+    return '网关拒绝了登录（HTTP $statusCode）。';
+  }
+
+  @override
+  String get rel_svc_misc_alert_caution => '注意';
+
+  @override
+  String get rel_svc_misc_alert_important => '重要';
+
+  @override
+  String get rel_svc_misc_alert_tip => '提示';
+
+  @override
+  String get rel_svc_misc_alert_warning => '警告';
+
+  @override
+  String get rel_svc_misc_allow_folder_session => '在会话结束前允许访问此文件夹。';
+
+  @override
+  String get rel_svc_misc_allow_website_session => '在会话结束前允许访问此网站。';
+
+  @override
+  String rel_svc_misc_approval_needed_title(String title) {
+    return '需要批准 — $title';
+  }
+
+  @override
+  String get rel_svc_misc_attach_file_reference => '附加文件引用';
+
+  @override
+  String get rel_svc_misc_attach_folder_reference => '附加文件夹引用';
+
+  @override
+  String get rel_svc_misc_attach_git_context => '附加 git 上下文';
+
+  @override
+  String get rel_svc_misc_attach_image_reference => '附加图像引用';
+
+  @override
+  String get rel_svc_misc_attach_staged_diff => '附加已暂存的差异';
+
+  @override
+  String get rel_svc_misc_attach_tool_reference => '附加工具引用';
+
+  @override
+  String get rel_svc_misc_attach_unstaged_diff => '附加未暂存的差异';
+
+  @override
+  String get rel_svc_misc_attach_url_reference => '附加 URL 引用';
+
+  @override
+  String get rel_svc_misc_background_task_completed => '后台任务已完成';
+
+  @override
+  String rel_svc_misc_background_task_named_completed(String taskId) {
+    return '后台任务 $taskId 已完成';
+  }
+
+  @override
+  String get rel_svc_misc_chat => '聊天';
+
+  @override
+  String get rel_svc_misc_compacting_context => '正在压缩对话上下文…';
+
+  @override
+  String rel_svc_misc_completed_in(String duration) {
+    return '在 $duration 内完成';
+  }
+
+  @override
+  String get rel_svc_misc_context_compacted => '对话上下文已压缩';
+
+  @override
+  String get rel_svc_misc_cron_readback_mismatch => 'Cron 模型回读不匹配';
+
+  @override
+  String get rel_svc_misc_cron_update_rejected => 'Cron 更新被拒绝';
+
+  @override
+  String get rel_svc_misc_deny_folder_grant => '不授予对此文件夹的访问权限。';
+
+  @override
+  String get rel_svc_misc_deny_website_grant => '不授予对此网站的访问权限。';
+
+  @override
+  String rel_svc_misc_failed_after(String duration) {
+    return '在 $duration 后失败';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_folder_unnamed => '网关未指定文件夹。';
+
+  @override
+  String get rel_svc_misc_gateway_idle_unconfirmed => '网关处于空闲状态。无法确认上一轮的结果。';
+
+  @override
+  String get rel_svc_misc_gateway_turn_failed => '网关轮次失败';
+
+  @override
+  String rel_svc_misc_gateway_turn_status(String status) {
+    return '网关轮次：$status';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_website_unnamed => '网关未指定网站。';
+
+  @override
+  String get rel_svc_misc_hermes_review => 'Hermes 审查';
+
+  @override
+  String get rel_svc_misc_hermes_turn_failed => 'Hermes 轮次失败';
+
+  @override
+  String get rel_svc_misc_image_recovery_companion_gap =>
+      '配套恢复不支持图像和文本恢复。此连接无法恢复未获确认的图像发送，也不会自动重新发送任何内容。';
+
+  @override
+  String get rel_svc_misc_image_recovery_rest_gap =>
+      'Classic REST/SSE 不支持图像和文本恢复。此连接无法恢复未获确认的图像发送，也不会自动重新发送任何内容。';
+
+  @override
+  String rel_svc_misc_input_needed_title(String title) {
+    return '需要输入 — $title';
+  }
+
+  @override
+  String get rel_svc_misc_parallel_workspace_connection_changed =>
+      '连接已更改。请重新打开以使用工作区。';
+
+  @override
+  String get rel_svc_misc_preparing => '正在准备';
+
+  @override
+  String get rel_svc_misc_save_folder_grant => '保存此文件夹授权以供后续请求使用。';
+
+  @override
+  String get rel_svc_misc_save_website_grant => '保存此网站授权以供后续请求使用。';
+
+  @override
+  String get rel_svc_misc_stored_identity_turn_conflict =>
+      '在另一个轮次已获准时，此聊天通过其存储的身份打开。未发送的提示未被发送；请在该轮次结束后明确重试。';
+
+  @override
+  String get rel_svc_misc_untitled => '无标题';
+
+  @override
+  String get rel_svc_misc_wake_capture_silent =>
+      '客户端唤醒采集只检测到静音 — 请检查操作系统的麦克风访问权限，并重新开关唤醒词。';
+
+  @override
+  String get rel_svc_misc_wake_capture_stalled => '客户端唤醒采集停滞：未收到麦克风音频回调。';
+
+  @override
+  String rel_svc_misc_wake_feed_refused(int count, String detail) {
+    return '唤醒词音频流拒绝了连续 $count 个帧$detail — 请重新开关唤醒词以重新启用。';
+  }
+
+  @override
+  String rel_svc_misc_wake_microphone_failed(String error) {
+    return '客户端唤醒麦克风流失败：$error';
+  }
+
+  @override
+  String get rel_svc_misc_wake_track_ended =>
+      '唤醒词采集期间麦克风轨道已结束 — 请重新开关唤醒词以重新启用。';
+
+  @override
+  String get rel_svc_misc_website => '网站';
+
+  @override
+  String get rel_svc_lan_timeout => '局域网发现超时';
+
+  @override
+  String get rel_svc_notification_permission_denied => '权限被拒绝';
+
+  @override
+  String get rel_svc_notifications_off => '通知已关闭';
+
+  @override
+  String rel_chat_preview_pin_label(int number, String note) {
+    return '#$number $note';
+  }
+
+  @override
+  String rel_chat_preview_pin_number(int number) {
+    return '#$number';
+  }
+
+  @override
+  String ng_rel_chat_wake_status_notice(String status, String notice) {
+    return '$status — $notice';
+  }
+
+  @override
+  String ng_rel_chat_cost_amount(String amount) {
+    return '\$$amount';
+  }
+
+  @override
+  String ng_rel_chat_context_ratio(String used, String maximum) {
+    return '$used / $maximum';
+  }
+
+  @override
+  String ng_rel_chat_connection_reason(String status, String reason) {
+    return '$status $reason';
+  }
+
+  @override
+  String ng_rel_chat_notice_time(String message, String time) {
+    return '$message · $time';
+  }
+
+  @override
+  String ng_rel_chat_attachment_progress(String name, String progress) {
+    return '$name · $progress';
+  }
+
+  @override
+  String ng_rel_chat_tool_detail(String name, String detail) {
+    return '$name · $detail';
+  }
+
+  @override
+  String get fleet_managed_ssh_title => '网关管理的 SSH';
+
+  @override
+  String get fleet_managed_ssh_intro =>
+      '从任意设备管理已保存在此网关上的 SSH 主机。远程主机上必须已安装 Hermes。此操作会启动或连接到归此网关所有的远程服务，而不是建立 Ares 聊天连接。托管更新和恢复仅在原生桌面应用中可用。';
+
+  @override
+  String get fleet_managed_ssh_read => '读取已保存的 SSH 主机';
+
+  @override
+  String get fleet_managed_ssh_trust =>
+      '首次连接时，网关会信任并记住此主机的 SSH 密钥。之后若密钥发生变化，将会被标记并阻止连接。网关不提供密钥指纹，因此 Ares 无法显示或存储指纹。仅在信任此次首次连接时才继续。';
+
+  @override
+  String get fleet_managed_ssh_changed =>
+      '此主机的 SSH 密钥已更改。连接已被阻止。有权访问网关主机的人必须独立核实新密钥的指纹，并在网关主机上移除旧的受信任密钥。仅在完成核实和修复后才重试。Ares 不会替换受信任的密钥。';
+
+  @override
+  String get fleet_managed_ssh_disconnect_warning =>
+      '断开 SSH 隧道并停止归此网关所有的远程服务？这可能会中断其他正在使用该服务的客户端。';
+
+  @override
+  String get fleet_managed_ssh_verify => '改为自行验证密钥';
+
+  @override
+  String fleet_managed_ssh_pending(int seconds) {
+    return '正在等待网关：$seconds 秒。离开此页面不会取消初始化。如果请求失败，请先检查状态再重试。';
+  }
+
+  @override
+  String fleet_managed_ssh_status(
+    String host,
+    int localPort,
+    int remotePort,
+    String version,
+    String reused,
+  ) {
+    return '主机：$host\n网关回环端口：$localPort\n远程回环端口：$remotePort\nHermes：$version\n已复用：$reused';
+  }
+
+  @override
+  String get fleet_managed_ssh_disconnect => '断开连接';
 
   @override
   String get ng_slash_suggestions_loading => '正在加载命令…';
 
   @override
+  String get ng_slash_suggestions_empty => '没有匹配的命令';
+
+  @override
+  String get ng_slash_suggestions_label => '命令建议';
+
+  @override
   String get ng_slash_suggestions_skill => '技能';
+
+  @override
+  String get settings_classic_title => 'Classic 设置';
+
+  @override
+  String get settings_nextgen_title => 'NextGen 设置';
+
+  @override
+  String get settings_category_general => '常规与语言';
+
+  @override
+  String get settings_category_chat => '聊天与会话';
+
+  @override
+  String get settings_category_device => '设备与快捷键';
+
+  @override
+  String get settings_category_connections => '连接与模型';
+
+  @override
+  String get settings_category_security => '隐私与备份';
+
+  @override
+  String get settings_category_about => '关于与帮助';
+
+  @override
+  String get settings_reopen_chat => '返回网关时恢复上次聊天';
+
+  @override
+  String get settings_reopen_chat_hint => '冷启动时打开欢迎页面。链接和通知会打开指定的聊天。';
+
+  @override
+  String get settings_danger => '危险操作';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
 class AppLocalizationsZhHans extends AppLocalizationsZh {
   AppLocalizationsZhHans() : super('zh_Hans');
+
+  @override
+  String get attachment_audio_failed =>
+      '无法播放此音频。格式或编解码器可能不受支持，或超出了预览大小限制。请重试，或保存、分享原始文件。';
+
+  @override
+  String get attachment_audio_seek => '音频位置';
+
+  @override
+  String get workspace_workers => '运行中的子代理';
+
+  @override
+  String get workers_unattached => '仅显示数量。要向子代理发送指令，请在已连接的上级对话中选择“运行中的子代理”。';
 
   @override
   String get slash_local_arguments => '此处的快捷命令不支持参数。请使用应用中的控件；草稿已保留。';
@@ -5994,6 +14989,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get background_report_collapse => '收起报告';
 
   @override
+  String get ng_brand_open_chat => '打开聊天';
+
+  @override
+  String get ng_brand_recent => '最近聊天';
+
+  @override
+  String get ng_brand_sidebar_hint => '或从侧边栏选择聊天';
+
+  @override
+  String get copy_session_id => '复制会话 ID';
+
+  @override
+  String get copy_session_id_failed => '无法复制会话 ID。';
+
+  @override
   String get setup_interface_title => '选择界面';
 
   @override
@@ -6113,6 +15123,21 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get hands_free_setup_complete => '麦克风设置完成。请再次点击开始。';
 
   @override
+  String message_time_recorded(String time) {
+    return '服务器记录时间：$time（本地时间）';
+  }
+
+  @override
+  String message_time_sent(String time) {
+    return '本设备观察到发送的时间：$time（本地时间）';
+  }
+
+  @override
+  String message_time_received(String time) {
+    return '本设备首次接收时间：$time（本地时间）';
+  }
+
+  @override
   String get stop_and_send => '停止并发送';
 
   @override
@@ -6215,6 +15240,28 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get attachment_retry => '重试';
+
+  @override
+  String get saved_history_heading => '已保存的历史记录';
+
+  @override
+  String get received_output_heading => '已接收的输出 — 尚未确认与已保存的历史记录匹配';
+
+  @override
+  String get received_output_details => '关于已接收的输出';
+
+  @override
+  String get received_output_explanation => '此内容也可能出现在已保存的历史记录中。应用无法确认是否匹配。';
+
+  @override
+  String get local_prompt_context => '本地提示词上下文';
+
+  @override
+  String get received_output_badge => '已接收 · 匹配未确认';
+
+  @override
+  String get received_output_lifetime =>
+      '已接收的输出会在本次应用会话中临时保留，达到限制时可能会被缩短或移除。关闭应用或连接后，这些内容可能无法再查看。';
 
   @override
   String get theme_palette => '颜色主题';
@@ -6410,7 +15457,13 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
       '在此 Hermes 会话结束前允许匹配的命令。';
 
   @override
+  String get allow_folder_until_sandbox_off => '允许此文件夹，直到关闭沙盒为止。';
+
+  @override
   String get allow_once => '允许一次';
+
+  @override
+  String get allow_website_until_sandbox_off => '允许此网站，直到关闭沙盒为止。';
 
   @override
   String get always_allow => '总是允许';
@@ -6474,6 +15527,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get attachment_drafts => '附件草稿';
+
+  @override
+  String get recover_text_draft => '恢复文字草稿';
+
+  @override
+  String get undo_draft_recovery => '撤销';
+
+  @override
+  String get draft_session_exists => '此对话仍然存在。请打开它以继续编辑草稿。';
+
+  @override
+  String get draft_recovery_unavailable => '无法验证此草稿。未作任何更改。';
 
   @override
   String attachment_of(Object index, Object total) {
@@ -6624,10 +15689,34 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get code_copied => '代码已复制';
 
   @override
+  String get code_format => '代码';
+
+  @override
   String get coming_next => '敬请期待';
 
   @override
   String get command => '命令';
+
+  @override
+  String get command_palette => '命令面板';
+
+  @override
+  String get command_palette_hint => '输入命令';
+
+  @override
+  String get command_palette_no_results => '未找到命令';
+
+  @override
+  String get command_palette_new_chat => '新聊天';
+
+  @override
+  String get command_palette_search_chats => '搜索聊天';
+
+  @override
+  String get command_palette_toggle_theme => '切换主题';
+
+  @override
+  String get command_palette_copy_last_code => '复制最后一个代码块';
 
   @override
   String get command_line_chats => '命令行聊天';
@@ -6813,6 +15902,15 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get cron => 'Cron';
+
+  @override
+  String get crons => '定时任务';
+
+  @override
+  String get cron_conversations_empty => '定时任务的对话会显示在此处，包括较早的运行记录。';
+
+  @override
+  String get search_cron_conversations => '搜索定时任务对话';
 
   @override
   String get cron_jobs => 'Cron 任务';
@@ -7578,6 +16676,51 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get notifications => '通知';
 
   @override
+  String get windows_notifications_blocked =>
+      '通知不可用。请使用已安装的 Ares 应用，并检查 Windows 中的“设置 → 系统 → 通知”。';
+
+  @override
+  String get windows_notification_diagnostics => 'Ares 提交给 Windows 的内容';
+
+  @override
+  String get chat_activity_share => '共享聊天活动';
+
+  @override
+  String get chat_activity_share_hint =>
+      '在你使用此聊天时告知兼容的已连接网关，让其手机通知插件避免重复提醒。不会发送任何密钥或消息内容。';
+
+  @override
+  String get completion_sound => '完成提示音';
+
+  @override
+  String get completion_sound_system => '系统默认';
+
+  @override
+  String get completion_sound_mail => '邮件';
+
+  @override
+  String get completion_sound_reminder => '提醒';
+
+  @override
+  String get completion_sound_silent => '静音';
+
+  @override
+  String get completion_sound_scope => '用于回复完成、测试通知和应用内提示。审批和其他提醒仍使用原有声音。';
+
+  @override
+  String get completion_sound_scope_android =>
+      '用于回复完成、测试通知和应用内提示。审批、其他提醒、服务器后台通知和 Android Auto 消息仍使用原有声音。';
+
+  @override
+  String get notification_open_action => '打开';
+
+  @override
+  String get app_sounds_mute => '静音应用音效';
+
+  @override
+  String get app_sounds_mute_hint => '停止 Ares 在打开期间播放的完成提示音。通知仍使用各自的声音。';
+
+  @override
   String get notifications_permission_denied =>
       '系统已阻止通知。请在 Android 设置中允许此应用发送通知。';
 
@@ -8044,6 +17187,12 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get starting_hermes => '正在启动 Hermes…';
 
   @override
+  String get media_card_download => '下载文件';
+
+  @override
+  String get media_card_tap_to_download => '点击下载';
+
+  @override
   String get still_loading_your_projects => '正在加载你的项目。';
 
   @override
@@ -8332,6 +17481,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get verbose_mode => '详细模式';
 
   @override
+  String get message_metadata => '消息详情';
+
+  @override
   String get voice => '语音';
 
   @override
@@ -8585,6 +17737,9 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get destination_label => '目标';
+
+  @override
+  String get markdown_source => '源文本';
 
   @override
   String get preview_label => '预览';
@@ -8851,6 +18006,42 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String
   get compact_removes_the_you_and_hermes_labels_and_trims_bubble_padding_spacing_and_side_margins =>
       '紧凑模式会去掉 You 和 Hermes 标签，并缩小气泡内边距、间距和两侧边距。';
+
+  @override
+  String get client_certificate_mtls => '客户端证书（mTLS）';
+
+  @override
+  String get client_certificate_mtls_description => '在 HTTPS 代理要求双向 TLS 时提供证书。';
+
+  @override
+  String get client_certificate_https_only => '客户端证书仅用于 HTTPS 连接。';
+
+  @override
+  String get choose_certificate => '选择证书';
+
+  @override
+  String get certificate_password => '证书密码';
+
+  @override
+  String get this_certificate_is_password_protected => '此证书受密码保护，输入密码时会自动解锁。';
+
+  @override
+  String get enter_the_certificate_password_to_finish_loading_it =>
+      '输入证书密码，完成加载所选证书。';
+
+  @override
+  String get client_certificate_required => '请加载客户端证书，或关闭客户端证书选项。';
+
+  @override
+  String client_certificate_loaded(String label) {
+    return '已加载：$label';
+  }
+
+  @override
+  String get remove_certificate => '移除证书';
+
+  @override
+  String get certificate_import_failed => '无法加载该证书。';
 
   @override
   String get background_work => '后台运行';
@@ -9298,6 +18489,71 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get provider_oauth_account_status_unknown => '无法获取主机账户状态。';
 
   @override
+  String get app_language => '应用语言';
+
+  @override
+  String get app_language_system => '与手机相同';
+
+  @override
+  String get auto_archives_after_72_hours => '72 小时后自动归档';
+
+  @override
+  String get automation => '自动化';
+
+  @override
+  String get voice_recording_start => '录制语音消息';
+
+  @override
+  String get voice_recording_pause => '暂停录音';
+
+  @override
+  String get voice_recording_preview => '播放录音';
+
+  @override
+  String get voice_recording_resume => '继续录音';
+
+  @override
+  String get voice_recording_send => '发送语音消息';
+
+  @override
+  String get voice_recording_discard => '舍弃录音';
+
+  @override
+  String get voice_recording_processing => '正在准备语音消息…';
+
+  @override
+  String voice_recording_elapsed(String time) {
+    return '录音中 $time';
+  }
+
+  @override
+  String voice_recording_draft(String time) {
+    return '语音消息 $time';
+  }
+
+  @override
+  String get voice_recording_permission => '请允许访问麦克风，以录制语音消息。';
+
+  @override
+  String get voice_recording_limit => '此录音已达到十分钟上限。';
+
+  @override
+  String get voice_recording_empty => '未录到音频。请重试。';
+
+  @override
+  String get voice_recording_failed => '无法处理录音。所有已保存的片段均已保留。';
+
+  @override
+  String get voice_recording_unconfirmed => '尚未确认送达。录音已保存。请先查看聊天，再决定是否重试。';
+
+  @override
+  String get voice_recording_submit_failed =>
+      '无法发送语音消息。录音已保存。请检查连接、仪表盘访问权限和服务器转写设置。';
+
+  @override
+  String get voice_recording_pause_playback => '暂停播放';
+
+  @override
   String get projects_root_title => '服务器上的项目文件夹';
 
   @override
@@ -9436,6 +18692,215 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get slash_sessions_inline => '请打开会话列表选择聊天。草稿已保留。';
+
+  @override
+  String get composer_snippets => '提示词片段';
+
+  @override
+  String get composer_snippets_description => '选择一条起始提示词，填入消息输入框。';
+
+  @override
+  String get composer_snippet_review => '代码审查';
+
+  @override
+  String get composer_snippet_review_body => '审查当前改动中的回归问题、遗漏的边界情况和缺失的测试。';
+
+  @override
+  String get composer_snippet_review_text => '请审查其中的错误、回归问题和缺失的测试。';
+
+  @override
+  String get composer_snippet_plan => '实施计划';
+
+  @override
+  String get composer_snippet_plan_body => '修改代码前先概述方案，使改动保持聚焦。';
+
+  @override
+  String get composer_snippet_plan_text => '请在修改代码前制定简明的实施计划。';
+
+  @override
+  String get composer_snippet_explain => '解释这段代码';
+
+  @override
+  String get composer_snippet_explain_body => '逐步讲解所选代码的工作原理，并指出关键文件。';
+
+  @override
+  String get composer_snippet_explain_text => '请解释其工作原理，并指出关键文件。';
+
+  @override
+  String get composer_status => '状态';
+
+  @override
+  String get composer_status_context => '上下文';
+
+  @override
+  String get composer_status_cache => '缓存命中';
+
+  @override
+  String get composer_status_throughput => '输出 token/秒';
+
+  @override
+  String get composer_status_running => '运行中';
+
+  @override
+  String get composer_status_session => '会话';
+
+  @override
+  String get composer_status_not_reported => '未报告';
+
+  @override
+  String get composer_status_empty => '未报告上下文明细。';
+
+  @override
+  String get composer_status_loading => '正在加载上下文明细';
+
+  @override
+  String get composer_status_reset => '重置状态栏';
+
+  @override
+  String get composer_resume_title => '继续聊天';
+
+  @override
+  String get composer_resume_search => '搜索标题和 ID';
+
+  @override
+  String get composer_resume_empty => '没有匹配的聊天。';
+
+  @override
+  String get composer_resume_unavailable => '此面板没有可供搜索的聊天列表。';
+
+  @override
+  String get composer_failure_retry => '重试';
+
+  @override
+  String composer_failure_retry_at(String time) {
+    return '在 $time 重试';
+  }
+
+  @override
+  String get composer_failure_compress => '压缩';
+
+  @override
+  String get composer_failure_switch_model => '切换模型';
+
+  @override
+  String composer_failure_switch_to(String model) {
+    return '切换到 $model';
+  }
+
+  @override
+  String get composer_failure_new_chat => '新聊天';
+
+  @override
+  String get composer_failure_edit => '编辑消息';
+
+  @override
+  String get composer_failure_details => '详情';
+
+  @override
+  String get composer_failure_hide_details => '隐藏详情';
+
+  @override
+  String get composer_failure_copy => '复制诊断信息';
+
+  @override
+  String get composer_failure_account => '另一项修复需在网关账户端完成，无法在此聊天中进行。';
+
+  @override
+  String get composer_failure_account_only => '此问题必须在网关账户端修复，无法在此聊天中处理。';
+
+  @override
+  String get composer_failure_confirm_compress => '压缩此聊天？网关会缩短对话记录。';
+
+  @override
+  String composer_failure_confirm_model(String model) {
+    return '将此聊天切换到 $model？';
+  }
+
+  @override
+  String get composer_drop_attach => '拖放以添加附件';
+
+  @override
+  String get composer_drop_folder_unsupported => '无法附加文件夹。请改为拖放其中的文件。';
+
+  @override
+  String get composer_drop_reference => '拖放以添加引用';
+
+  @override
+  String get composer_reference_copy => '复制引用';
+
+  @override
+  String get composer_reference_remove => '移除引用';
+
+  @override
+  String get composer_btw_usage => '用法：/btw <question> — 根据此对话的快照回答，不中断当前对话。';
+
+  @override
+  String get composer_background_usage =>
+      '用法：/background <prompt> — 任务独立运行，结果会返回此处。';
+
+  @override
+  String get composer_handoff_usage =>
+      '用法：/handoff <platform> — 将此聊天转移到指定的消息平台。';
+
+  @override
+  String get composer_command_needs_session => '此命令需要已打开的聊天。';
+
+  @override
+  String get composer_retry_not_found =>
+      '已保存的历史记录中没有此轮对话，因此“重试”无法替换它。未重新发送任何内容。请编辑消息并发送以再次尝试。';
+
+  @override
+  String get composer_retry_unavailable =>
+      '此连接不支持通过“重试”替换某轮对话，因此未重新发送任何内容。请编辑消息并发送以再次尝试。';
+
+  @override
+  String get composer_failure_switch_no_retry =>
+      '切换只会更改模型：此连接无法重新运行失败的轮次。切换后请重新发送。';
+
+  @override
+  String get composer_command_needs_gateway_session =>
+      '此聊天尚无网关会话。请先发送消息，再重新运行命令。';
+
+  @override
+  String get composer_side_question => 'btw — 正在根据对话快照回答';
+
+  @override
+  String composer_side_question_id(String id) {
+    return 'btw $id — 正在根据对话快照回答';
+  }
+
+  @override
+  String get composer_background_started => '后台任务已启动。你可以继续聊天，结果会显示在此处。';
+
+  @override
+  String composer_background_started_id(String id) {
+    return '后台任务 $id 已启动。你可以继续聊天，结果会显示在此处。';
+  }
+
+  @override
+  String composer_handoff_requested(String platform) {
+    return '已请求移交至 $platform。';
+  }
+
+  @override
+  String composer_handoff_done(String platform) {
+    return '已将此聊天移交至 $platform。';
+  }
+
+  @override
+  String get composer_handoff_failed => '移交失败。';
+
+  @override
+  String get composer_handoff_timeout => '移交未完成，可能仍在网关上进行。';
+
+  @override
+  String get composer_compress_done => '已压缩此聊天。';
+
+  @override
+  String get composer_file_missing => '此设备上没有该文件。';
+
+  @override
+  String get composer_attach_busy => '此回复完成后即可添加附件。';
 
   @override
   String get nextgen_toggle => 'NextGen 界面';
@@ -10063,6 +19528,24 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
 
   @override
   String get ng_allow_once => '允许一次';
+
+  @override
+  String get ng_allow_until_sandbox_off => '直到关闭沙盒';
+
+  @override
+  String get ng_folder_access => '文件夹访问';
+
+  @override
+  String get ng_folder_access_unspecified => '网关未说明是只读还是可读写。';
+
+  @override
+  String get ng_folder_read_only => '只读';
+
+  @override
+  String get ng_folder_read_write => '可读写';
+
+  @override
+  String get ng_website_access => '网站访问';
 
   @override
   String get ng_allow_for_this_chat => '在此聊天中允许';
@@ -11470,14 +20953,23512 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get ng_aux_curator_hint => '审查技能的使用情况';
 
   @override
-  String get ng_slash_suggestions_label => '命令建议';
+  String get appearance_save_failed => '无法保存此更改。';
 
   @override
-  String get ng_slash_suggestions_empty => '没有匹配的命令';
+  String get appearance_keep_which_theme => '保留哪个主题？';
+
+  @override
+  String get appearance_tour_back => '上一步';
+
+  @override
+  String get appearance_tour_finish => '完成';
+
+  @override
+  String get appearance_tour_next => '下一步';
+
+  @override
+  String get appearance_tour_close => '关闭导览';
+
+  @override
+  String get appearance_dismiss_tip => '关闭提示';
+
+  @override
+  String get appearance_search_settings => '搜索设置';
+
+  @override
+  String get appearance_search_show => '显示';
+
+  @override
+  String get appearance_no_matching_setting => '没有匹配的设置。';
+
+  @override
+  String get appearance_replay_tour => '重新查看导览';
+
+  @override
+  String get appearance_show_tips_again => '再次显示提示';
+
+  @override
+  String get appearance_window_translucency_unavailable =>
+      '此主机不支持窗口半透明。Linux 无法提供此效果，Apple 和 Windows 运行器则会绘制不透明的 Flutter 视图。';
+
+  @override
+  String get appearance_imported_themes => '已导入的主题';
+
+  @override
+  String get appearance_import_theme_file => '导入主题文件';
+
+  @override
+  String get appearance_remove_theme => '移除主题';
+
+  @override
+  String get appearance_chat_font => '聊天字体';
+
+  @override
+  String get appearance_terminal_font => '终端字体';
+
+  @override
+  String get appearance_font_platform => '平台';
+
+  @override
+  String get appearance_automatic => '自动';
+
+  @override
+  String get appearance_force_left_to_right => '强制从左到右';
+
+  @override
+  String get appearance_force_right_to_left => '强制从右到左';
+
+  @override
+  String get appearance_user_bubble_opacity => '用户气泡不透明度';
+
+  @override
+  String get appearance_inline_embeds => '内嵌内容';
+
+  @override
+  String get appearance_inline_embeds_hint =>
+      '丰富预览会从第三方网站加载（YouTube、X 等）。“询问”会先显示占位符，直到你逐一允许；“始终”会自动加载；“关闭”只保留普通链接。';
+
+  @override
+  String get appearance_embeds_ask => '询问';
+
+  @override
+  String get appearance_embeds_always => '始终';
+
+  @override
+  String get appearance_embeds_off => '关闭';
+
+  @override
+  String appearance_embeds_reset(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '重置 $count 个已允许的服务',
+      one: '重置 1 个已允许的服务',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appearance_embed_load => '加载';
+
+  @override
+  String appearance_embed_always_allow(String service) {
+    return '始终允许 $service';
+  }
+
+  @override
+  String get appearance_embed_loading => '正在加载预览…';
+
+  @override
+  String appearance_embed_image_failed(String host) {
+    return '无法从 $host 加载图片。轻触即可打开。';
+  }
+
+  @override
+  String get appearance_embed_preview_unavailable => '无法预览';
+
+  @override
+  String get appearance_emoji_reactions => '表情回应';
+
+  @override
+  String get appearance_celebration_hearts => '庆祝爱心';
+
+  @override
+  String get appearance_celebration_hearts_hint => '你离开期间收到回复时，会播放爱心动画。';
+
+  @override
+  String get appearance_pop_out_companion => '弹出伙伴窗口';
+
+  @override
+  String get appearance_mosskip => 'Mosskip';
+
+  @override
+  String get appearance_emberbun => 'Emberbun';
+
+  @override
+  String get appearance_tideling => 'Tideling';
+
+  @override
+  String get appearance_my_hatchling => '我的幼宠';
+
+  @override
+  String get appearance_at_rest => '休息中';
+
+  @override
+  String get appearance_working => '工作中';
+
+  @override
+  String get appearance_thinking => '思考中';
+
+  @override
+  String get appearance_waiting_for_you => '等待你回应';
+
+  @override
+  String get appearance_reply_ready => '回复已就绪';
+
+  @override
+  String get appearance_turn_failed => '本轮失败';
+
+  @override
+  String get appearance_small => '小';
+
+  @override
+  String get appearance_medium => '中';
+
+  @override
+  String get appearance_large => '大';
+
+  @override
+  String get appearance_hello => '你好！';
+
+  @override
+  String get appearance_unread_reply => '未读回复';
+
+  @override
+  String get appearance_compose => '撰写消息';
+
+  @override
+  String get appearance_say_hello => '打个招呼';
+
+  @override
+  String get appearance_pet_image_failed => '无法打开该图片。请选择较小的 PNG 或 JPEG。';
+
+  @override
+  String get appearance_pet_companion => '宠物伙伴';
+
+  @override
+  String get appearance_pet_companion_hint => '聊天时显示伙伴。';
+
+  @override
+  String get appearance_adopt_a_companion => '领养伙伴';
+
+  @override
+  String get appearance_roam_when_idle => '空闲时漫游';
+
+  @override
+  String get appearance_pet_size => '宠物大小';
+
+  @override
+  String get appearance_hatch_from_a_local_picture => '从本地图片孵化';
+
+  @override
+  String get appearance_pet_image_limits =>
+      '请选择 PNG 或 JPEG（最大 4 MiB、单边最多 4096 px、总计最多 8 MP）。请先预览。孵化会保存一张 24 × 24 像素头像，并替换之前的幼宠。';
+
+  @override
+  String get appearance_choose_picture => '选择图片';
+
+  @override
+  String get appearance_hatchling_preview => '幼宠预览';
+
+  @override
+  String get appearance_hatch_and_adopt => '孵化并领养';
+
+  @override
+  String get appearance_discard_draft => '舍弃草稿';
+
+  @override
+  String get appearance_forget_saved_hatchling => '清除已保存的幼宠';
+
+  @override
+  String get appearance_radio => '电台';
+
+  @override
+  String appearance_radio_hint(String stations) {
+    return '音频流直接来自 $stations，仅在你按下播放时开始。电台搜索仅在此设备上进行。';
+  }
+
+  @override
+  String get appearance_radio_save_failed => '无法保存电台设置。';
+
+  @override
+  String get appearance_choose_a_station => '选择电台';
+
+  @override
+  String get appearance_pause_radio => '暂停电台';
+
+  @override
+  String get appearance_play_radio => '播放电台';
+
+  @override
+  String get appearance_next_station => '下一个电台';
+
+  @override
+  String get appearance_radio_trace_semantics => '音频流活动。无法获取音量电平，因此此线保持平直。';
+
+  @override
+  String get appearance_radio_is_off => '电台已关闭';
+
+  @override
+  String get appearance_paused => '已暂停';
+
+  @override
+  String get appearance_connecting => '连接中…';
+
+  @override
+  String get appearance_live => '直播中';
+
+  @override
+  String get appearance_stream_unavailable => '音频流不可用';
+
+  @override
+  String appearance_now_playing(String credit) {
+    return '正在播放：$credit';
+  }
+
+  @override
+  String get appearance_audio_only_waveform_unavailable => '仅音频 · 波形不可用';
+
+  @override
+  String get appearance_volume => '音量';
+
+  @override
+  String get appearance_search_presets => '搜索预设';
+
+  @override
+  String get appearance_no_stations_found => '未找到电台';
+
+  @override
+  String appearance_unpin_station(String station) {
+    return '取消置顶电台：$station';
+  }
+
+  @override
+  String appearance_pin_station(String station) {
+    return '置顶电台：$station';
+  }
+
+  @override
+  String get appearance_radio_picker_metadata_notice =>
+      '此选择器打开期间，正在播放的电台可能会直接从广播方提供曲目详情。';
+
+  @override
+  String get appearance_message_from_your_companion => '来自伙伴的消息';
+
+  @override
+  String get appearance_send_to_the_open_chat => '发送到当前打开的聊天';
+
+  @override
+  String get appearance_tour_theme_body => '从此设备上的文件导入 VS Code 颜色主题，再选择要保留的变体。';
+
+  @override
+  String get appearance_tour_fonts_title => '阅读字体';
+
+  @override
+  String get appearance_tour_fonts_body => '聊天正文和终端代码分别使用 Ares 内置的不同字体。';
+
+  @override
+  String get appearance_tour_direction_title => '对话文字方向';
+
+  @override
+  String get appearance_tour_direction_body => '保持自动，或强制对话文字从左到右或从右到左。';
+
+  @override
+  String get appearance_tour_pet_title => '伙伴';
+
+  @override
+  String get appearance_tour_pet_body => '领养前，伙伴功能保持关闭。弹出窗口会附带一个小型消息输入框。';
+
+  @override
+  String get appearance_tour_radio_body => '启用前，电台保持关闭。按下播放才会打开音频流。';
+
+  @override
+  String get appearance_tip_theme => '导入的主题会替换内置配色，直到你清除所选主题。仅保留颜色。';
+
+  @override
+  String get appearance_tip_pet => '伙伴仅在此设备上保存一张小头像，不会上传用于孵化的图片。';
+
+  @override
+  String get appearance_theme_import_failed =>
+      '无法导入该主题。请选择以 .vsix、.json 或 .jsonc 文件保存的 VS Code 颜色主题。';
+
+  @override
+  String get render_widget_file_truncated => '只读取了此文件的开头部分，因此小组件可能不完整。';
+
+  @override
+  String get setup_beat_title => '设置';
+
+  @override
+  String setup_beat_use_name(String name) {
+    return '使用 $name';
+  }
+
+  @override
+  String get setup_beat_name_hint => 'Hermes 应该怎么称呼你？';
+
+  @override
+  String get setup_beat_on_computer => '此步骤在运行 Hermes 的电脑上完成。选择“继续”将保留那里已有的设置。';
+
+  @override
+  String get setup_beat_not_waiting => '此设置卡片已不再等待回答。';
+
+  @override
+  String get catalog_kind_plugin => '插件';
+
+  @override
+  String get catalog_kind_skill => '技能';
+
+  @override
+  String get catalog_tier_official => '官方';
+
+  @override
+  String get catalog_tier_verified => '已验证';
+
+  @override
+  String get catalog_tier_community => '社区';
+
+  @override
+  String get catalog_install => '安装';
+
+  @override
+  String get catalog_waiting => '等待你的选择';
+
+  @override
+  String get catalog_installed => '已安装';
+
+  @override
+  String get catalog_installed_off => '已安装，未启用';
+
+  @override
+  String get catalog_skipped => '已跳过';
+
+  @override
+  String get catalog_not_installed => '未安装';
+
+  @override
+  String catalog_target_profile(String profile) {
+    return '安装到 $profile 配置文件';
+  }
+
+  @override
+  String catalog_source(String repo, String sha) {
+    return '$repo（$sha）';
+  }
+
+  @override
+  String catalog_scan(String status, String summary) {
+    return '安全扫描：$status。$summary';
+  }
+
+  @override
+  String catalog_requires_hermes(String range) {
+    return '需要 Hermes $range';
+  }
+
+  @override
+  String catalog_skill_ready(String name) {
+    return '技能 $name 已可使用';
+  }
+
+  @override
+  String catalog_missing_env(String names) {
+    return '仍需要：$names';
+  }
+
+  @override
+  String catalog_server_error(String name, String error) {
+    return '$name 未能连接：$error';
+  }
+
+  @override
+  String get catalog_send_failed => '你的选择未发送，请重试。';
+
+  @override
+  String get attachment_video_speed => '播放速度';
+
+  @override
+  String get catalog_installing => '正在安装…';
+
+  @override
+  String get catalog_phase_downloading => '正在下载…';
+
+  @override
+  String get catalog_phase_python_packages => '正在安装 Python 包…';
+
+  @override
+  String get catalog_phase_loading_tools => '正在加载工具…';
+
+  @override
+  String get setup_beat_send_failed => '你的回答未发送，请重试。';
+
+  @override
+  String catalog_tool_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个工具',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get render_svg_not_drawn => '此 SVG 未绘制。';
+
+  @override
+  String get render_notes_directive => '笔记指令';
+
+  @override
+  String get render_maths_source => '数学公式源码';
+
+  @override
+  String get render_inline_maths_source => '行内数学公式源码';
+
+  @override
+  String get render_sequence_outline => '时序图大纲';
+
+  @override
+  String get render_diagram_outline => '图表大纲';
+
+  @override
+  String render_revision_of(int index, int count) {
+    return '修订版 $index/$count';
+  }
+
+  @override
+  String get render_previous_revision => '上一修订版';
+
+  @override
+  String get render_next_revision => '下一修订版';
+
+  @override
+  String get render_show_rendered => '渲染视图';
+
+  @override
+  String get render_show_source => '源码';
+
+  @override
+  String render_copied_file(String name) {
+    return '已复制 $name';
+  }
+
+  @override
+  String render_copy_file(String name) {
+    return '复制 $name';
+  }
+
+  @override
+  String get render_artifact_too_long => '此产物太长，无法在此处以页面显示。';
+
+  @override
+  String get render_active_content_removed => '已移除脚本、框架和外部地址。';
+
+  @override
+  String render_widget_file(String file) {
+    return '小组件 $file';
+  }
+
+  @override
+  String get render_widget_runs_as_text => '在此聊天中以文本形式运行。脚本和外部框架会被移除。';
+
+  @override
+  String get render_load_widget => '加载小组件';
+
+  @override
+  String get render_not_html_widget => '此文件不是 HTML 小组件。';
+
+  @override
+  String get render_widget_sent => '已发送到此聊天';
+
+  @override
+  String get render_widget_not_sent => '未发送到此聊天';
+
+  @override
+  String get render_widget_throttled => '请稍候再发送';
+
+  @override
+  String get render_widget_too_long => '此请求太长，无法发送';
+
+  @override
+  String get render_widget_no_gesture => '点按小组件中的控件以发送';
+
+  @override
+  String get render_widget_invalid => '无法发送此请求';
+
+  @override
+  String get render_inspected_image => '已检查的图片';
+
+  @override
+  String get render_contributions => '扩展项';
+
+  @override
+  String get render_contributions_intro =>
+      '只有内置在 Ares 中的扩展项才能为回复添加内容。聊天文本无法注册扩展项，授权仅适用于此连接。';
+
+  @override
+  String render_grant_plugin(String name) {
+    return '授权 $name';
+  }
+
+  @override
+  String render_revoke_plugin(String name) {
+    return '撤销 $name';
+  }
+
+  @override
+  String render_plugin_slots(String directive) {
+    return '::$directive 的回复卡片';
+  }
+
+  @override
+  String get render_plugin_notes => '笔记';
+
+  @override
+  String get catalog_scan_passed => '已通过';
+
+  @override
+  String get catalog_scan_warnings => '发现警告';
+
+  @override
+  String get catalog_scan_failed => '未通过';
+
+  @override
+  String get deployment_token_label => '部署令牌（可选）';
+
+  @override
+  String get deployment_token_helper =>
+      '用于以 X-Hermes-Session-Token 发送的 Hermes Dashboard 会话令牌。不会以明文保存在偏好设置中。';
+
+  @override
+  String get deployment_token_hint => '仪表板会话令牌';
+
+  @override
+  String get custom_headers_label => '自定义标头（可选）';
+
+  @override
+  String get custom_headers_helper => '每行一个，例如 X-Custom: 值。禁止的标头会被拒绝。';
+
+  @override
+  String get custom_headers_hint => '例如 X-Custom-Header: 值';
+
+  @override
+  String get desktop_tray_open => '打开 Ares';
+
+  @override
+  String get desktop_tray_new_chat => '新聊天';
+
+  @override
+  String get desktop_tray_quick_entry => '快速输入…';
+
+  @override
+  String get desktop_tray_pause_notifications => '暂停通知';
+
+  @override
+  String get desktop_tray_quit => '退出 Ares';
+
+  @override
+  String get desktop_integration_title => '桌面集成';
+
+  @override
+  String get desktop_tray_setting => '在系统托盘或菜单栏中显示 Ares';
+
+  @override
+  String get desktop_tray_setting_help => '可通过图标打开 Ares、开始聊天、打开快速输入、暂停通知或退出。';
+
+  @override
+  String get desktop_close_to_tray_setting => '关闭窗口后继续在托盘中运行';
+
+  @override
+  String get desktop_tray_unsupported => '此桌面没有可供 Ares 使用的系统托盘。';
+
+  @override
+  String get quick_entry_title => '快速输入';
+
+  @override
+  String get quick_entry_hint => '输入给 Ares 的提示…';
+
+  @override
+  String get quick_entry_submit => '放入输入框';
+
+  @override
+  String get quick_entry_never_sends => '按 Enter 会将文本放入聊天输入框。在你按下发送之前不会发送任何内容。';
+
+  @override
+  String get quick_entry_unavailable => '无法打开快速输入。请重试。';
+
+  @override
+  String get desktop_hotkey_setting => '快速输入快捷键';
+
+  @override
+  String desktop_hotkey_help(String shortcut) {
+    return '在任意位置按 $shortcut 即可打开快速输入。';
+  }
+
+  @override
+  String desktop_hotkey_conflict(String shortcut) {
+    return '其他应用已在使用 $shortcut。请选择其他快捷键。';
+  }
+
+  @override
+  String get desktop_hotkey_unsupported => '此桌面不允许应用注册全局快捷键（例如 Wayland）。';
+
+  @override
+  String get desktop_hotkey_no_modifier => '请包含 Cmd、Ctrl 或 Alt。';
+
+  @override
+  String get desktop_hotkey_super_key => 'Windows 键或 Super 键为系统保留。';
+
+  @override
+  String get desktop_hotkey_reserved => '系统已在使用此快捷键。';
+
+  @override
+  String desktop_hotkey_in_app(String action) {
+    return 'Ares 已将此快捷键用于$action。';
+  }
+
+  @override
+  String get desktop_hotkey_change => '更改';
+
+  @override
+  String get desktop_hotkey_reset => '使用默认值';
+
+  @override
+  String get capture_screen_action => '截取屏幕';
+
+  @override
+  String get capture_screen_help => '将截图作为草稿添加到消息中。在你按下发送之前不会发送任何内容。';
+
+  @override
+  String get capture_screen_unavailable => '此桌面无法使用屏幕截取。';
+
+  @override
+  String get capture_screen_failed => '无法截取屏幕。请重试。';
+
+  @override
+  String get capture_permission_title => '允许录屏';
+
+  @override
+  String get capture_permission_body =>
+      '要截取窗口，Ares 需要录屏权限。请在“系统设置” > “隐私与安全性” > “录屏”中打开 Ares，然后重试。';
+
+  @override
+  String get capture_open_settings => '打开系统设置';
+
+  @override
+  String get keep_awake_title => '保持电脑唤醒';
+
+  @override
+  String get keep_awake_title_mobile => '保持屏幕常亮';
+
+  @override
+  String get keep_awake_mode_off => '关闭';
+
+  @override
+  String get keep_awake_mode_while_working => '工作时';
+
+  @override
+  String get keep_awake_mode_always => '始终';
+
+  @override
+  String get keep_awake_off_help => '从不阻止系统睡眠（默认）。';
+
+  @override
+  String get keep_awake_while_working_help => '仅在代理回合运行时阻止空闲睡眠。';
+
+  @override
+  String get keep_awake_always_help => '在此设备上打开 Ares 期间阻止空闲睡眠。';
+
+  @override
+  String get keep_awake_off_help_mobile => '让屏幕照常关闭（默认）。';
+
+  @override
+  String get keep_awake_while_working_help_mobile =>
+      '在代理回合运行且 Ares 打开期间保持屏幕常亮。';
+
+  @override
+  String get keep_awake_always_help_mobile => '在 Ares 打开期间保持屏幕常亮。';
+
+  @override
+  String get ng_token_gateway_has_no_sign_in =>
+      '此网关没有登录功能，因此无法验证部署令牌。请在主机上启用仪表板身份验证（或更新 Hermes），然后重试。';
+
+  @override
+  String get palette_open => '应用命令面板';
+
+  @override
+  String get palette_no_matches => '没有匹配的操作';
+
+  @override
+  String get palette_filter_hint => '输入以筛选操作…';
+
+  @override
+  String get palette_keys_move => '↑↓ 移动';
+
+  @override
+  String get palette_keys_run => 'Enter 运行';
+
+  @override
+  String get palette_keys_close => 'Esc 关闭';
+
+  @override
+  String get palette_search_sessions => '搜索会话';
+
+  @override
+  String get palette_scheduled_crons => '计划任务 / Cron';
+
+  @override
+  String get palette_capabilities_skills => '能力与技能';
+
+  @override
+  String get palette_insights_usage => '洞察与用量';
+
+  @override
+  String get palette_more_projects => '更多与项目';
+
+  @override
+  String get deeplink_chat_not_found => '列表中找不到该聊天，可能尚未加载。';
+
+  @override
+  String get keyboard_shortcuts_title => '键盘快捷键';
+
+  @override
+  String get shortcuts_reset_all => '全部重置';
+
+  @override
+  String get shortcuts_reset_to_default => '恢复默认';
+
+  @override
+  String get shortcut_action_command_palette => '命令面板';
+
+  @override
+  String get shortcut_action_new_chat => '新建聊天';
+
+  @override
+  String get shortcut_action_search => '搜索';
+
+  @override
+  String get shortcut_action_settings => '设置';
+
+  @override
+  String shortcut_action_go_to_tab(int number) {
+    return '转到标签页 $number';
+  }
+
+  @override
+  String shortcuts_conflict(String first, String second, String chord) {
+    return '冲突：“$first”和“$second”都使用 $chord。在你更改其中一个之前，自定义快捷键保持默认值。';
+  }
+
+  @override
+  String shortcuts_editor_title(String action) {
+    return '快捷键：$action';
+  }
+
+  @override
+  String get shortcuts_editor_help => '按下组合键，或在下方选择修饰键和按键：';
+
+  @override
+  String get shortcuts_editor_needs_modifier =>
+      '请至少选择 Cmd/Meta、Ctrl 或 Alt，以免影响在输入框中打字。';
+
+  @override
+  String shortcuts_text_editing_warning(String chord) {
+    return '$chord 是文本编辑快捷键（复制、粘贴、剪切、撤销、重做或全选）。在此绑定后，文本框将无法使用它。';
+  }
+
+  @override
+  String shortcuts_text_editing_in_use(String action, String chord) {
+    return '“$action”使用了文本编辑快捷键 $chord。在此绑定期间，文本框无法使用它。';
+  }
+
+  @override
+  String custom_headers_problem_format(int line) {
+    return '第 $line 行：应为“名称: 值”';
+  }
+
+  @override
+  String custom_headers_problem_missing_name(int line) {
+    return '第 $line 行：缺少标头名称';
+  }
+
+  @override
+  String custom_headers_problem_invalid_name(int line, String name) {
+    return '第 $line 行：标头名称“$name”无效';
+  }
+
+  @override
+  String custom_headers_problem_reserved(int line, String name) {
+    return '第 $line 行：“$name”为保留标头，不能传递';
+  }
+
+  @override
+  String custom_headers_problem_empty_value(int line) {
+    return '第 $line 行：标头值为空';
+  }
+
+  @override
+  String get ng_enter_a_deployment_token => '请输入部署会话令牌。';
+
+  @override
+  String get ng_custom_headers => '自定义标头';
+
+  @override
+  String get ng_custom_headers_help =>
+      '此网关的额外 HTTP 标头（名称: 值，每行一个），随其 REST 和 WebSocket 调用发送，保存在安全凭据存储中。身份验证标头和逐跳标头会被拒绝。';
+
+  @override
+  String get ng_use_a_deployment_token => '使用部署会话令牌';
+
+  @override
+  String get ng_sign_in_with_deployment_token => '使用部署令牌登录';
+
+  @override
+  String get ng_signed_in_with_deployment_token => '已使用部署令牌登录。';
+
+  @override
+  String get auto_speak_replies_title => '自动朗读回复';
+
+  @override
+  String get auto_speak_replies_subtitle => '每回合结束后自动朗读新回复。默认关闭；聊天内的已朗读开关仍然生效。';
+
+  @override
+  String get ng_auto_read_replies_title => '自动朗读回复';
+
+  @override
+  String get ng_auto_read_replies_subtitle => '每回合结束后自动朗读新回复。默认关闭。';
+
+  @override
+  String get barge_in_title => '插话';
+
+  @override
+  String get barge_in_subtitle => '朗读回复时开口说话即可提前停止。朗读回复期间麦克风保持开启。';
+
+  @override
+  String get barge_in_mic_live => '麦克风已开启：说话即可打断回复';
+
+  @override
+  String get ng_barge_in_title => '插话';
+
+  @override
+  String get ng_barge_in_subtitle => '朗读回复时开口说话即可提前停止。朗读回复期间麦克风保持开启。';
+
+  @override
+  String get ng_barge_in_mic_live => '麦克风已开启：说话即可打断回复';
+
+  @override
+  String get wake_word_title => '唤醒词';
+
+  @override
+  String get wake_word_subtitle => '由网关提供免提唤醒检测。默认关闭；仅在启用设备麦克风采集时发送音频。';
+
+  @override
+  String wake_word_listening(String phrase) {
+    return '正在监听唤醒词“$phrase”';
+  }
+
+  @override
+  String wake_word_paused(String phrase) {
+    return '唤醒词“$phrase” — 已暂停';
+  }
+
+  @override
+  String wake_word_off(String phrase) {
+    return '唤醒词“$phrase” — 已关闭';
+  }
+
+  @override
+  String get wake_word_arming => '正在启用唤醒词…';
+
+  @override
+  String get wake_word_stop => '停止唤醒词';
+
+  @override
+  String get wake_word_rearm => '重新启用';
+
+  @override
+  String get wake_word_capture_mode => '采集模式';
+
+  @override
+  String get wake_word_capture_auto => '自动';
+
+  @override
+  String get wake_word_capture_client => '此设备麦克风';
+
+  @override
+  String get wake_word_capture_local => '网关主机麦克风';
+
+  @override
+  String get wake_word_capture_unavailable =>
+      '此网关不允许应用更改采集模式。请在网关主机的 Hermes 配置中设置 wake_word.capture。';
+
+  @override
+  String get wake_word_input_device => '输入麦克风';
+
+  @override
+  String get wake_word_default_device => '系统默认';
+
+  @override
+  String get ng_wake_word_title => '唤醒词';
+
+  @override
+  String get ng_wake_word_subtitle => '由网关提供免提唤醒检测。默认关闭。';
+
+  @override
+  String get voice_engine_title => '语音对话引擎';
+
+  @override
+  String get voice_engine_subtitle => '选择此网关配置文件中免提语音对话的运行方式。';
+
+  @override
+  String get voice_engine_chained => '串联（语音转文字 → Hermes → 语音）';
+
+  @override
+  String get voice_engine_chained_short => '串联';
+
+  @override
+  String get voice_engine_live => 'GPT-Live（实时语音）';
+
+  @override
+  String get voice_engine_live_short => 'GPT-Live';
+
+  @override
+  String get voice_engine_live_needs_key =>
+      '请在网关主机上配置 OpenAI API 密钥以启用 GPT-Live。';
+
+  @override
+  String voice_engine_fallback_chained(String reason) {
+    return 'GPT-Live 不可用（$reason）— 改用串联语音。';
+  }
+
+  @override
+  String get voice_live_start => '开始语音对话';
+
+  @override
+  String get voice_live_stop => '结束语音对话';
+
+  @override
+  String get voice_live_mute => '麦克风静音';
+
+  @override
+  String get voice_live_unmute => '取消麦克风静音';
+
+  @override
+  String get voice_live_interrupt => '打断或立即回应';
+
+  @override
+  String get voice_live_listening => '正在聆听';
+
+  @override
+  String get voice_live_speaking => '正在说话';
+
+  @override
+  String get voice_live_thinking => '正在思考';
+
+  @override
+  String get voice_live_muted => '已静音';
+
+  @override
+  String get voice_live_ended_connection_lost => '实时语音会话的连接已断开。';
+
+  @override
+  String get voice_live_ended_closed => '实时语音会话已被服务关闭。';
+
+  @override
+  String wake_word_other_profile(String profile) {
+    return '该唤醒词属于配置文件“$profile”。请打开到该配置文件的连接以应答。';
+  }
+
+  @override
+  String get wake_word_reason_disabled => '已关闭 — 点按以启用';
+
+  @override
+  String get wake_word_reason_surface => '仅限其他界面使用（配置 wake_word.surface）';
+
+  @override
+  String get wake_word_reason_owned => '唤醒词监听由其他界面占用';
+
+  @override
+  String wake_word_reason_owned_by(String surface) {
+    return '唤醒词监听由其他界面（$surface）占用';
+  }
+
+  @override
+  String get wake_word_reason_unavailable => '此网关不支持唤醒词';
+
+  @override
+  String get wake_word_reason_permission_denied => '麦克风权限被拒绝';
+
+  @override
+  String get wake_word_reason_permission_required => '需要麦克风权限 — 点按以启用';
+
+  @override
+  String get voice_live_not_enabled => '此配置文件未启用 GPT-Live。';
+
+  @override
+  String get voice_live_not_available => 'GPT-Live 不可用';
+
+  @override
+  String voice_live_start_failed(String error) {
+    return '无法启动 GPT-Live：$error';
+  }
+
+  @override
+  String voice_direct_stt_timeout(String seconds, String provider) {
+    return '转写在 $seconds 秒后超时（$provider 未响应）';
+  }
+
+  @override
+  String voice_direct_stt_error(String provider, String status) {
+    return '$provider 语音转文字错误（HTTP $status）';
+  }
+
+  @override
+  String voice_direct_tts_failed(String provider) {
+    return '$provider 文字转语音请求失败';
+  }
+
+  @override
+  String voice_direct_tts_error(String provider, String status) {
+    return '$provider 文字转语音错误（HTTP $status）';
+  }
+
+  @override
+  String ng_wake_status_listening(String phrase) {
+    return '正在监听（“$phrase”）';
+  }
+
+  @override
+  String ng_wake_status_off(String phrase) {
+    return '已关闭（“$phrase”）';
+  }
+
+  @override
+  String ng_wire_setting_unavailable(Object setting) {
+    return '共享网关暂不支持更改 $setting';
+  }
+
+  @override
+  String ng_wire_method_unavailable(Object method) {
+    return '共享网关暂不支持 $method';
+  }
+
+  @override
+  String ng_wire_session_options_unsupported(Object options) {
+    return '规范网关不支持以下显式会话选项：$options';
+  }
+
+  @override
+  String get ng_wire_prompt_stale => '该请求已过期或不可用；请重新连接后再回复';
+
+  @override
+  String get ng_wire_revision_unavailable => '会话修订版本不可用；请重新打开会话后再编辑元数据';
+
+  @override
+  String get ng_wire_generation_unavailable => '会话执行标识不可用；请重新连接后再使用此命令';
+
+  @override
+  String get ng_wire_message_not_saved => '此消息尚未保存；请等待其完成后再从它创建分支';
+
+  @override
+  String get ng_wire_not_available => '共享网关暂不支持';
+
+  @override
+  String get edit_turn_title => '编辑此提示？';
+
+  @override
+  String get edit_turn_body => '将从此处重新运行该提示，后续轮次会被归档。';
+
+  @override
+  String get edit_turn_send => '发送';
+
+  @override
+  String get restore_turn_title => '恢复到此检查点？';
+
+  @override
+  String get restore_turn_body => '此提示之后的所有内容将从对话中移除，并从此处重新运行该提示。';
+
+  @override
+  String get restore_turn_confirm => '恢复并重跑';
+
+  @override
+  String get edit_turn_later_turns_body => '这会将对话中的后续轮次归档。要继续吗？';
+
+  @override
+  String get session_history => '会话历史';
+
+  @override
+  String get import_claude_or_codex => '导入 Claude 或 Codex';
+
+  @override
+  String get ng_session_history => '会话历史';
+
+  @override
+  String get ng_import_claude_or_codex => '导入 Claude 或 Codex';
+
+  @override
+  String get ng_edit_and_resend => '编辑并重发';
+
+  @override
+  String get ng_restore_turn_confirm => '恢复并重跑';
+
+  @override
+  String get rewind_target_unsaved => '此消息尚未保存。请等待其完成后再编辑。';
+
+  @override
+  String get rewind_turn_busy => '当前回复尚未停止，因此未发送任何内容。请稍后再试。';
+
+  @override
+  String get rewind_session_changed => '此聊天自在此处打开后已发生变化，因此未移除或发送任何内容。请重新打开后再试。';
+
+  @override
+  String get history_lineage => '相关聊天';
+
+  @override
+  String get history_lineage_none => '此聊天没有分支或同级分支。';
+
+  @override
+  String get history_lineage_unavailable => '无法从此网关读取相关聊天。';
+
+  @override
+  String get history_lineage_parent => '父级';
+
+  @override
+  String get history_lineage_sibling => '同级';
+
+  @override
+  String get history_lineage_fork => '分支';
+
+  @override
+  String get history_messages => '消息';
+
+  @override
+  String get history_messages_hint => '选择一条已保存的消息，从那里分支或回退。';
+
+  @override
+  String get history_messages_none => '尚无已保存的消息。';
+
+  @override
+  String get history_messages_unavailable => '无法读取已保存的消息。请打开此聊天后刷新。';
+
+  @override
+  String get history_role_user => '你';
+
+  @override
+  String get history_role_assistant => 'Hermes';
+
+  @override
+  String get history_branch_here => '从这里分支';
+
+  @override
+  String get history_rewind_here => '回退到这里';
+
+  @override
+  String get history_branch_title => '从此消息分支';
+
+  @override
+  String get history_branch_body => '这会创建一个包含到所选消息为止历史的新聊天。当前聊天保持不变。';
+
+  @override
+  String get history_rewind_title => '回退到此消息';
+
+  @override
+  String get history_rewind_body =>
+      '从所选消息起的消息将从此聊天中移除。电脑上的文件不会更改。恢复文件是单独的检查点操作。';
+
+  @override
+  String history_branched(String id) {
+    return '已分支为 $id';
+  }
+
+  @override
+  String get history_open_chat => '打开聊天';
+
+  @override
+  String get history_mutate_unsupported => '分支和回退需要此网关运行 Hermes 0.23 或更高版本。';
+
+  @override
+  String get history_checkpoints => '检查点';
+
+  @override
+  String get history_checkpoints_none => '此会话没有文件检查点。';
+
+  @override
+  String get history_checkpoints_unavailable => '此网关不提供检查点。';
+
+  @override
+  String get history_diff_none => '没有差异。';
+
+  @override
+  String get history_diff_loading => '正在加载更改…';
+
+  @override
+  String get history_diff_failed => '无法加载更改，因此暂时不能恢复此检查点。';
+
+  @override
+  String get history_restore_checkpoint => '恢复检查点';
+
+  @override
+  String get history_restore_title => '恢复此检查点';
+
+  @override
+  String get history_restore_body =>
+      '代理自此检查点以来更改的文件将恢复到当时的状态。你自己的更改会保留。之后的聊天消息也可能被移除。对话不会分支。';
+
+  @override
+  String get history_restore_body_all =>
+      '会话文件夹中的所有文件都将恢复到此检查点，包括你自己的更改。之后的聊天消息也可能被移除。对话不会分支。';
+
+  @override
+  String get history_restore_own_edits => '同时还原我自己的更改';
+
+  @override
+  String get history_restored => '检查点已恢复。';
+
+  @override
+  String history_restored_removed(int count) {
+    return '检查点已恢复。已移除 $count 条聊天消息。';
+  }
+
+  @override
+  String get history_export => '导出';
+
+  @override
+  String get history_export_redact => '隐去令牌';
+
+  @override
+  String get history_export_action => '导出对话记录';
+
+  @override
+  String get history_export_saved => '对话记录已保存。';
+
+  @override
+  String get history_export_unsupported => '导出需要此网关运行 Hermes 0.23 或更高版本。';
+
+  @override
+  String get history_import_unsupported => '此网关不支持导入 Claude 和 Codex。';
+
+  @override
+  String history_import_destination(String profile) {
+    return '目标配置文件：$profile。';
+  }
+
+  @override
+  String history_import_reading(String host, String profile, int count) {
+    return '正在从 $host 读取 · 目标配置文件：$profile。有 $count 个日志无法读取。';
+  }
+
+  @override
+  String get history_import_all => '全部';
+
+  @override
+  String history_import_scan_failed(String reason) {
+    return '无法扫描主机会话：$reason';
+  }
+
+  @override
+  String get history_import_none => '在此主机上未找到 Claude Code 或 Codex 会话。';
+
+  @override
+  String get history_import_no_match => '没有匹配的主机会话。';
+
+  @override
+  String history_import_preview_failed(String reason) {
+    return '无法预览会话：$reason';
+  }
+
+  @override
+  String get history_import_open => '打开已导入的会话';
+
+  @override
+  String get history_import_action => '导入所选会话';
+
+  @override
+  String get history_import_title => '导入此会话';
+
+  @override
+  String history_import_body(String profile) {
+    return '将此 Claude 或 Codex 会话复制到此网关上的配置文件“$profile”。';
+  }
+
+  @override
+  String history_import_body_existing(String profile) {
+    return '此会话已导入到“$profile”。将继续使用现有副本。';
+  }
+
+  @override
+  String history_imported(String id) {
+    return '已导入为 $id';
+  }
+
+  @override
+  String history_imported_already(String id) {
+    return '已导入过，名称为 $id';
+  }
+
+  @override
+  String history_import_directory(String path) {
+    return '目录：$path';
+  }
+
+  @override
+  String history_import_preview_partial(int shown, int total) {
+    return '预览显示 $total 条中的 $shown 条。';
+  }
+
+  @override
+  String history_failed(String reason) {
+    return '无法完成：$reason';
+  }
+
+  @override
+  String get history_error_unavailable => '网关暂时无法执行此操作。请重试。';
+
+  @override
+  String get history_error_unsupported => '此网关不支持此操作。';
+
+  @override
+  String get history_error_denied => '此网关拒绝了该请求。';
+
+  @override
+  String get history_error_changed => '此页面打开期间聊天已发生变化。请刷新后重试。';
+
+  @override
+  String get history_error_unbound => '此聊天未在网关上打开。请打开后重试。';
+
+  @override
+  String get history_error_invalid => '网关返回了此应用无法读取的响应。';
+
+  @override
+  String ng_dock_kanban(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张看板卡片',
+      one: '1 张看板卡片',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_dock_kanban_done(int count) {
+    return '$count 张已完成';
+  }
+
+  @override
+  String get ng_show_kanban => '显示看板卡片';
+
+  @override
+  String get ng_hide_kanban => '隐藏看板卡片';
+
+  @override
+  String get ng_kanban_status_triage => '待分类';
+
+  @override
+  String get ng_kanban_status_todo => '待办';
+
+  @override
+  String get ng_kanban_status_scheduled => '已排期';
+
+  @override
+  String get ng_kanban_status_ready => '就绪';
+
+  @override
+  String get ng_kanban_status_running => '运行中';
+
+  @override
+  String get ng_kanban_status_blocked => '已阻塞';
+
+  @override
+  String get ng_kanban_status_review => '审核中';
+
+  @override
+  String get ng_kanban_status_done => '已完成';
+
+  @override
+  String get ng_kanban_status_archived => '已归档';
+
+  @override
+  String ng_kanban_open_card(String title) {
+    return '在看板中打开“$title”';
+  }
+
+  @override
+  String ng_kanban_show_all(int count) {
+    return '显示全部 $count 张';
+  }
+
+  @override
+  String ng_kanban_this_chat(int count) {
+    return '此聊天（$count）';
+  }
+
+  @override
+  String get ng_kanban_close => '关闭看板';
+
+  @override
+  String get ng_kanban_block_no_dashboard =>
+      '此连接无法访问控制面板，因此卡片状态不会实时更新，也无法打开看板。';
+
+  @override
+  String get ng_kanban_block_unsupported =>
+      '此网关未启用看板。请启用其 kanban 插件，以查看实时状态并打开看板。';
+
+  @override
+  String get ng_kanban_block_denied => '请登录控制面板，以查看卡片的实时状态并打开看板。';
+
+  @override
+  String get ng_kanban_block_insecure =>
+      '看板需要 HTTPS 或本地连接，因此卡片状态不会实时更新，也无法打开看板。';
+
+  @override
+  String get ng_kanban_block_unreachable => '无法连接此网关上的看板。卡片状态可能已过期。';
+
+  @override
+  String get ng_kanban_block_stale => '连接已更改。请重新打开此聊天，以查看卡片的实时状态。';
+
+  @override
+  String get ng_bots_tab_roster => '名单';
+
+  @override
+  String get ng_bots_tab_rooms => '群聊';
+
+  @override
+  String get ng_bots_tab_screen => '屏幕';
+
+  @override
+  String get ng_bots_tab_routines => '例行任务';
+
+  @override
+  String ng_bots_rooms_load_failed(String error) {
+    return '无法加载群聊：$error';
+  }
+
+  @override
+  String ng_bots_routines_load_failed(String error) {
+    return '无法加载例行任务：$error';
+  }
+
+  @override
+  String ng_bots_desktop_failed(String error) {
+    return 'Bot Desktop：$error';
+  }
+
+  @override
+  String get ng_bots_install_not_started => '网关未启动安装。';
+
+  @override
+  String ng_bots_install_failed_error(String error) {
+    return '安装失败：$error';
+  }
+
+  @override
+  String get ng_bots_install_cancelled => '安装已取消。';
+
+  @override
+  String get ng_bots_install_no_sudo => '网关主机上无法使用 sudo。请在该主机上运行上方的命令，然后刷新。';
+
+  @override
+  String ng_bots_install_exit_code(String code) {
+    return '安装失败（退出代码 $code）。';
+  }
+
+  @override
+  String ng_bots_install_done(String bot) {
+    return '已为 $bot 安装 Bot Desktop';
+  }
+
+  @override
+  String get ng_bots_start_failed => '启动失败';
+
+  @override
+  String ng_bots_stop_title(String bot) {
+    return '要停止 $bot 的 Bot Desktop 吗？';
+  }
+
+  @override
+  String get ng_bots_stop_human_held => '有人正在控制此屏幕。停止后将结束其会话，并关闭屏幕上打开的所有内容。';
+
+  @override
+  String get ng_bots_stop_body => '机器人屏幕上打开的所有内容都将被关闭。';
+
+  @override
+  String get ng_bots_stop_refused => '停止请求被拒绝';
+
+  @override
+  String get ng_bots_take_over_reason => '从 Ares 接管';
+
+  @override
+  String ng_bots_take_over_failed(String error) {
+    return '接管失败：$error';
+  }
+
+  @override
+  String ng_bots_force_hand_back_title(String bot) {
+    return '要将 $bot 的屏幕交还给机器人吗？';
+  }
+
+  @override
+  String get ng_bots_force_hand_back_body => '有人正在占用此屏幕。如果对方仍在使用，将失去控制权。';
+
+  @override
+  String get ng_bots_hand_back => '交还';
+
+  @override
+  String get ng_bots_hand_back_failed => '交还失败';
+
+  @override
+  String get ng_bots_adopt_title => '要采用新的沙盒镜像吗？';
+
+  @override
+  String ng_bots_adopt_body(String bot, String current, String target) {
+    return '$bot 将从 $current 切换到 $target。其容器会在下一次终端调用时重建；仅保存在当前容器中的内容将会丢失。';
+  }
+
+  @override
+  String get ng_bots_adopt_image => '采用镜像';
+
+  @override
+  String get ng_bots_image_switch_failed => '镜像切换失败';
+
+  @override
+  String get ng_bots_keep_refused => '保留请求被拒绝';
+
+  @override
+  String ng_bots_chat_open_failed(String error) {
+    return '无法打开 Bot Chat：$error';
+  }
+
+  @override
+  String ng_bots_title(String connection) {
+    return '机器人 · $connection';
+  }
+
+  @override
+  String get ng_bots_protocol_tooltip => '网关会自行注入队友消息协议 — 不会额外发送 SOUL.md 协议。';
+
+  @override
+  String ng_bots_unavailable(String reason) {
+    return '机器人不可用（$reason）';
+  }
+
+  @override
+  String get ng_bots_account_changed => '账户已更改。请重新连接或刷新。';
+
+  @override
+  String get ng_bots_try_refresh => '请尝试刷新。如果问题仍然存在，该网关可能不支持机器人。';
+
+  @override
+  String get ng_bots_search => '搜索机器人';
+
+  @override
+  String get ng_bots_none_found => '未找到机器人。';
+
+  @override
+  String get ng_bots_no_model => '无模型';
+
+  @override
+  String ng_bots_skill_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 项技能',
+      one: '1 项技能',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_bot_chat => 'Bot Chat';
+
+  @override
+  String ng_bots_install_id(String id, String protocol) {
+    return '网关报告的安装 ID 为 $id · bot_mode_protocol：$protocol';
+  }
+
+  @override
+  String get ng_bots_protocol_note =>
+      '设置 bot_mode_protocol 后，网关会注入队友消息协议。标识名：default→hermes，否则为配置档案名称。';
+
+  @override
+  String get ng_bots_no_rooms => '还没有群聊。请从名单中创建一个。';
+
+  @override
+  String ng_bots_member_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 名成员',
+      one: '1 名成员',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_room_disbanded => '已解散';
+
+  @override
+  String get ng_bots_room_adopted => '已采用';
+
+  @override
+  String get ng_bots_rooms_gateway => '网关群聊';
+
+  @override
+  String get ng_bots_rooms_desktop => '桌面端驱动的群聊';
+
+  @override
+  String ng_bots_rooms_gateway_body(String methods) {
+    return '群聊归网关所有。方法：$methods。';
+  }
+
+  @override
+  String get ng_bots_rooms_no_seat => '此网关可能无法承载群聊（需要常驻进程）。';
+
+  @override
+  String get ng_bots_rooms_fallback => '经典回退模式：由桌面端驱动群聊轮次（不会在此新建）。';
+
+  @override
+  String get ng_bots_create_room => '创建群聊';
+
+  @override
+  String get ng_bots_refresh_rooms => '刷新群聊';
+
+  @override
+  String get ng_bots_room_created => '群聊已创建';
+
+  @override
+  String ng_bots_room_refused(String reason) {
+    return '群聊创建被拒绝（$reason）';
+  }
+
+  @override
+  String ng_bots_room_failed(String error) {
+    return '群聊创建失败：$error';
+  }
+
+  @override
+  String get ng_bots_bot => '机器人';
+
+  @override
+  String get ng_bots_screen_unavailable => '无法获取屏幕状态';
+
+  @override
+  String get ng_bots_screen_unavailable_body => '启动机器人的屏幕即可查看其缩略图，或接管后亲自使用。';
+
+  @override
+  String get ng_bots_take_over_note =>
+      '接管会打开实时屏幕并将控制权交给你。当你关闭实时屏幕、离开此页面或将应用切换到后台时，控制权会交还给机器人。';
+
+  @override
+  String get ng_bots_not_installed => '未安装';
+
+  @override
+  String get ng_bots_unsupported_host => '不支持的主机';
+
+  @override
+  String ng_bots_pid(String pid) {
+    return 'pid $pid';
+  }
+
+  @override
+  String ng_bots_missing(String items) {
+    return '缺少：$items';
+  }
+
+  @override
+  String ng_bots_blocked(String reason) {
+    return '受阻：$reason';
+  }
+
+  @override
+  String get ng_bots_no_switch => '没有待处理的沙盒镜像切换。';
+
+  @override
+  String ng_bots_switch_image(String current, String target) {
+    return '切换镜像：$current → $target';
+  }
+
+  @override
+  String get ng_bots_bot_in_control => '由机器人控制';
+
+  @override
+  String get ng_bots_person_in_control => '由真人控制';
+
+  @override
+  String get ng_bots_installing => '正在网关主机上安装 Bot Desktop…';
+
+  @override
+  String get ng_bots_install_unfinished => '安装未完成';
+
+  @override
+  String get ng_bots_install => '安装';
+
+  @override
+  String get ng_bots_start => '启动';
+
+  @override
+  String get ng_bots_take_over => '接管';
+
+  @override
+  String get ng_bots_keep_image => '保留当前镜像';
+
+  @override
+  String ng_bots_missing_pieces(String items) {
+    return '网关报告缺少组件：$items';
+  }
+
+  @override
+  String get ng_bots_install_missing => '安装缺少的组件';
+
+  @override
+  String get ng_bots_thumbnail_unavailable => '缩略图不可用';
+
+  @override
+  String get ng_bots_thumbnail_title => '屏幕缩略图（实时）';
+
+  @override
+  String get ng_bots_thumbnail_suppressed => '屏幕由真人控制期间不显示缩略图。';
+
+  @override
+  String get ng_bots_thumbnail_pending => '缩略图暂不可用。';
+
+  @override
+  String ng_bots_routines_of(String bot) {
+    return '$bot · 例行任务';
+  }
+
+  @override
+  String get ng_bots_add_routine => '添加例行任务';
+
+  @override
+  String get ng_bots_no_routines => '此机器人没有例行任务。';
+
+  @override
+  String get ng_bots_routines_note =>
+      '例行任务是带有 [bot:<name>] 标签的任务，归机器人的配置档案存储所有。旧版委派例行任务在加载时会被强制暂停。';
+
+  @override
+  String ng_bots_routine_last(String status) {
+    return '上次：$status';
+  }
+
+  @override
+  String ng_bots_routine_next(String time) {
+    return '下次：$time';
+  }
+
+  @override
+  String ng_bots_routine_error(String error) {
+    return '错误：$error';
+  }
+
+  @override
+  String ng_bots_remove_routine_title(String routine) {
+    return '要移除例行任务 $routine 吗？';
+  }
+
+  @override
+  String ng_bots_remove_routine_body(String bot) {
+    return '该例行任务将从 $bot 的计划中删除。此操作无法撤销。';
+  }
+
+  @override
+  String ng_bots_routine_action_failed(String action, String error) {
+    return '$action 失败：$error';
+  }
+
+  @override
+  String get ng_bots_not_connected => '未连接。';
+
+  @override
+  String ng_bots_add_failed(String error) {
+    return '添加失败：$error';
+  }
+
+  @override
+  String get ng_bots_routine_added => '已添加例行任务';
+
+  @override
+  String get ng_bots_routine_enabled => '已启用';
+
+  @override
+  String get ng_bots_routine_paused => '已暂停';
+
+  @override
+  String ng_bots_path(String path) {
+    return '路径：$path';
+  }
+
+  @override
+  String get ng_bots_chat_present => 'Bot Chat 已存在';
+
+  @override
+  String get ng_bots_chat_missing => '缺少 Bot Chat';
+
+  @override
+  String ng_bots_last_session(String preview) {
+    return '上次会话：$preview';
+  }
+
+  @override
+  String get ng_bots_open_chat => '打开 Bot Chat';
+
+  @override
+  String get ng_bots_desktop => 'Bot Desktop';
+
+  @override
+  String get ng_bots_room_name => '群聊名称';
+
+  @override
+  String get ng_bots_select_member => '请至少选择一名成员。';
+
+  @override
+  String get ng_bots_sudo_title => '管理员密码';
+
+  @override
+  String ng_bots_sudo_body(String bot) {
+    return '为 $bot 安装 Bot Desktop 需要在网关主机上使用 sudo。密码仅会发送到该网关，仅用于本次安装，且不会被保存。';
+  }
+
+  @override
+  String get ng_bots_sudo_password => 'sudo 密码';
+
+  @override
+  String get ng_bots_new_routine => '新建例行任务';
+
+  @override
+  String get ng_bots_routine_title => '标题';
+
+  @override
+  String get ng_bots_routine_instruction => '指令';
+
+  @override
+  String get ng_bots_cron => 'Cron 表达式';
+
+  @override
+  String get ng_bots_interval => '间隔';
+
+  @override
+  String get ng_bots_cron_help => '0 9 * * * 表示每天 09:00 运行';
+
+  @override
+  String get ng_bots_every => '每隔';
+
+  @override
+  String get ng_bots_unit_minutes => '分钟';
+
+  @override
+  String get ng_bots_unit_hours => '小时';
+
+  @override
+  String get ng_bots_unit_days => '天';
+
+  @override
+  String get ng_bots_stop_after => '运行几次后停止';
+
+  @override
+  String get ng_bots_stop_after_help => '留空则持续运行';
+
+  @override
+  String get ng_bots_send_results => '结果发送至';
+
+  @override
+  String get ng_bots_run_history => '仅记录运行历史';
+
+  @override
+  String get ng_bots_continuity => '接续上一次运行';
+
+  @override
+  String get ng_bots_account_changed_refresh => '账户已更改。请刷新后再继续。';
+
+  @override
+  String ng_bots_room_load_failed(String error) {
+    return '无法加载群聊：$error';
+  }
+
+  @override
+  String ng_bots_send_failed(String error) {
+    return '发送失败：$error';
+  }
+
+  @override
+  String ng_bots_stop_failed(String error) {
+    return '停止失败：$error';
+  }
+
+  @override
+  String get ng_bots_stop_room => '停止群聊';
+
+  @override
+  String get ng_bots_send_message => '发送消息';
+
+  @override
+  String get ng_bots_room_hint => '向群聊发送消息（使用 @handle 提及成员）';
+
+  @override
+  String get ng_bots_history => '历史记录';
+
+  @override
+  String ng_bots_revision(String revision) {
+    return '修订版本 $revision';
+  }
+
+  @override
+  String ng_bots_last_error(String error) {
+    return '上次错误：$error';
+  }
+
+  @override
+  String get ng_bots_members => '成员';
+
+  @override
+  String get ng_bots_room_context => '群聊上下文';
+
+  @override
+  String ng_bots_purpose(String purpose) {
+    return '目的：$purpose';
+  }
+
+  @override
+  String ng_bots_notes(String notes) {
+    return '备注：$notes';
+  }
+
+  @override
+  String ng_bots_routing(String routing) {
+    return '路由：$routing';
+  }
+
+  @override
+  String ng_bots_lead(String member) {
+    return '主导 $member';
+  }
+
+  @override
+  String get ng_bots_viewer_you_control => '你正在控制此屏幕。机器人会等待你交还控制权。';
+
+  @override
+  String get ng_bots_viewer_handed_back => '控制权已交还给机器人。';
+
+  @override
+  String get ng_bots_viewer_background => '应用已离开前台，控制权已交还给机器人。';
+
+  @override
+  String get ng_bots_viewer_taken => '其他人接管了此屏幕。';
+
+  @override
+  String get ng_bots_viewer_lost => '实时画面已中断，控制权已交还给机器人。';
+
+  @override
+  String ng_bots_viewer_title(String bot) {
+    return 'Bot Desktop · $bot';
+  }
+
+  @override
+  String get ng_bots_viewer_type_hint => '在机器人的屏幕上输入';
+
+  @override
+  String get ng_bots_viewer_type => '键入';
+
+  @override
+  String get ng_bots_viewer_enter => '回车';
+
+  @override
+  String get ng_bots_viewer_backspace => '退格';
+
+  @override
+  String get ng_more_kanban => '看板';
+
+  @override
+  String get ng_more_kanban_subtitle => '看板、任务依赖、工作者分配和日志';
+
+  @override
+  String get ng_more_bots => '机器人';
+
+  @override
+  String get ng_more_bots_subtitle => '名单、群聊、例行任务和 Bot Desktop';
+
+  @override
+  String get ng_slash_kanban => '打开看板';
+
+  @override
+  String get ng_slash_bots => '打开你的机器人';
+
+  @override
+  String ng_board_card_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张卡片',
+      one: '1 张卡片',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_board_event_toast(String task, String event) {
+    return '看板 $task：$event';
+  }
+
+  @override
+  String get ng_board_task => '任务';
+
+  @override
+  String ng_board_refused_http(String status) {
+    return '操作被拒绝（HTTP $status）。';
+  }
+
+  @override
+  String get ng_board_err_unsupported => '此网关未启用看板插件。';
+
+  @override
+  String get ng_board_err_denied => '此网关需要登录或相应权限。';
+
+  @override
+  String get ng_board_err_stale => '网关所有者已更改。请刷新后再继续。';
+
+  @override
+  String get ng_board_err_insecure => '看板工作区操作需要 HTTPS（或回环地址）。';
+
+  @override
+  String get ng_board_err_unreachable => '无法连接此网关上的看板服务。';
+
+  @override
+  String get ng_board_err_failed => '操作失败。请刷新后重试。';
+
+  @override
+  String ng_board_block_title(String task) {
+    return '将 $task 标记为阻塞';
+  }
+
+  @override
+  String get ng_board_block_reason => '阻塞原因';
+
+  @override
+  String get ng_board_block_hint => '是什么阻塞了这张卡片？';
+
+  @override
+  String ng_board_review_title(String task) {
+    return '为 $task 请求审核';
+  }
+
+  @override
+  String get ng_board_review_summary => '审核摘要';
+
+  @override
+  String get ng_board_review_hint => '实现并验证了哪些内容？';
+
+  @override
+  String ng_board_move_title(String cards, String column) {
+    return '要将 $cards 移至 $column 吗？';
+  }
+
+  @override
+  String ng_board_move_body(String board) {
+    return '$board 上所有选中的卡片都会更换列。正在运行的卡片将停止运行。';
+  }
+
+  @override
+  String get ng_board_move => '移动';
+
+  @override
+  String ng_board_moved(String column) {
+    return '已将卡片移至 $column';
+  }
+
+  @override
+  String ng_board_unassign_title(String cards) {
+    return '要取消分配 $cards 吗？';
+  }
+
+  @override
+  String ng_board_assign_title(String cards, String profile) {
+    return '要将 $cards 分配给 @$profile 吗？';
+  }
+
+  @override
+  String get ng_board_assign_body => '正在运行的卡片会先被收回：其工作者将被停止。';
+
+  @override
+  String get ng_board_unassign => '取消分配';
+
+  @override
+  String get ng_board_assign => '分配';
+
+  @override
+  String get ng_board_unassigned_done => '已取消分配所选卡片';
+
+  @override
+  String ng_board_assigned_done(String profile) {
+    return '已分配给 @$profile';
+  }
+
+  @override
+  String ng_board_archive_title(String cards) {
+    return '要归档 $cards 吗？';
+  }
+
+  @override
+  String ng_board_archive_body(String board) {
+    return '已归档的卡片将从 $board 中移除。开启“已归档”即可再次查看。';
+  }
+
+  @override
+  String get ng_board_archived_done => '已归档所选卡片';
+
+  @override
+  String ng_board_delete_title(String cards) {
+    return '要删除 $cards 吗？';
+  }
+
+  @override
+  String ng_board_delete_body(String board) {
+    return '这将从 $board 中永久删除所选卡片。';
+  }
+
+  @override
+  String ng_board_deleted(String cards) {
+    return '已删除 $cards。';
+  }
+
+  @override
+  String ng_board_partial_failure(String failed, String total, String reason) {
+    return '$total 项中有 $failed 项失败：$reason';
+  }
+
+  @override
+  String get ng_board_refused => '已拒绝';
+
+  @override
+  String ng_board_dispatched(
+    String spawned,
+    String promoted,
+    String reclaimed,
+  ) {
+    return '已派发：启动 $spawned 个，推进 $promoted 个，收回 $reclaimed 个。';
+  }
+
+  @override
+  String ng_board_board_archived(String board) {
+    return '已归档看板 $board';
+  }
+
+  @override
+  String ng_board_board_archived_to(String path) {
+    return '已归档至 $path';
+  }
+
+  @override
+  String ng_board_exported(String board, String archive) {
+    return '已将 $board 导出至 $archive';
+  }
+
+  @override
+  String ng_board_imported(String board, String warnings) {
+    return '已导入看板 $board$warnings';
+  }
+
+  @override
+  String ng_board_created(String task) {
+    return '已创建 $task';
+  }
+
+  @override
+  String get ng_board_orchestration_saved => '已保存看板编排';
+
+  @override
+  String get ng_board_auto_describe_unavailable => '自动描述不可用';
+
+  @override
+  String ng_board_description_updated(String profile) {
+    return '已更新 @$profile 的描述';
+  }
+
+  @override
+  String ng_board_title(String board) {
+    return '看板 · $board';
+  }
+
+  @override
+  String ng_board_active(String count) {
+    return '$count 个进行中';
+  }
+
+  @override
+  String get ng_board_dispatch => '立即派发就绪任务';
+
+  @override
+  String get ng_board_orchestration => '编排与工作者';
+
+  @override
+  String get ng_board_new_task => '新建任务';
+
+  @override
+  String get ng_board_enable_plugin =>
+      '请在此网关的“功能 → 插件”中启用内置的“kanban”插件，以激活其看板路由。';
+
+  @override
+  String get ng_board_filter => '筛选任务…';
+
+  @override
+  String get ng_board_all_assignees => '所有负责人';
+
+  @override
+  String get ng_board_unassigned => '未分配';
+
+  @override
+  String get ng_board_running_by_profile => '各配置档案运行中';
+
+  @override
+  String get ng_board_select => '选择';
+
+  @override
+  String ng_board_selected_chip(String count) {
+    return '已选择（$count）';
+  }
+
+  @override
+  String get ng_board_locked_column => '受管理的列 — 已禁用拖放';
+
+  @override
+  String ng_board_add_to(String column) {
+    return '添加到 $column';
+  }
+
+  @override
+  String ng_board_collapse(String column) {
+    return '折叠 $column';
+  }
+
+  @override
+  String ng_board_column_empty(String column) {
+    return '$column 中没有任务';
+  }
+
+  @override
+  String get ng_board_drop_here => '拖放至此或 + 任务';
+
+  @override
+  String get ng_board_card_actions => '卡片操作';
+
+  @override
+  String get ng_board_open_details => '打开详情';
+
+  @override
+  String get ng_board_select_card => '选择卡片';
+
+  @override
+  String ng_board_move_to(String column) {
+    return '移至 $column';
+  }
+
+  @override
+  String get ng_board_parked => '搁置';
+
+  @override
+  String ng_board_blocked_by(String count) {
+    return '被 $count 项阻塞';
+  }
+
+  @override
+  String get ng_board_goal_loop => '目标循环';
+
+  @override
+  String ng_board_selected(String count) {
+    return '已选择 $count 项';
+  }
+
+  @override
+  String get ng_board_move_menu => '移动…';
+
+  @override
+  String get ng_board_assign_menu => '分配…';
+
+  @override
+  String get ng_board_new_board_title => '新建看板';
+
+  @override
+  String get ng_board_slug => '短标识（小写，例如 release-v5）';
+
+  @override
+  String get ng_board_display_name => '显示名称';
+
+  @override
+  String get ng_board_linked_project => '关联项目（可选）';
+
+  @override
+  String get ng_board_none => '无';
+
+  @override
+  String get ng_board_default_workdir => '主机上的默认工作目录（可选）';
+
+  @override
+  String get ng_board_import_title => '导入看板归档';
+
+  @override
+  String get ng_board_import_path => '主机上的 .tar.gz 归档路径';
+
+  @override
+  String get ng_board_import => '导入';
+
+  @override
+  String ng_board_edit_board(String board) {
+    return '编辑 $board';
+  }
+
+  @override
+  String get ng_board_name => '名称';
+
+  @override
+  String get ng_board_description => '描述';
+
+  @override
+  String get ng_board_workdir_clear => '默认工作目录（留空则清除）';
+
+  @override
+  String get ng_board_boards => '看板列表';
+
+  @override
+  String get ng_board_new_board => '新建看板';
+
+  @override
+  String get ng_board_search_boards => '搜索看板…';
+
+  @override
+  String get ng_board_unpin => '取消固定标签页';
+
+  @override
+  String get ng_board_pin => '固定标签页';
+
+  @override
+  String ng_board_archive_board_title(String board) {
+    return '要归档看板 $board 吗？';
+  }
+
+  @override
+  String ng_board_archive_board_body(String cards) {
+    return '该看板及其 $cards 将从看板列表中移除。网关会在其主机上保留归档。';
+  }
+
+  @override
+  String get ng_board_edit_metadata => '编辑元数据';
+
+  @override
+  String get ng_board_export => '在主机上导出 .tar.gz';
+
+  @override
+  String get ng_board_move_pin_left => '将固定标签页左移';
+
+  @override
+  String get ng_board_archive_board => '归档看板';
+
+  @override
+  String get ng_board_new_task_title => '新建看板任务';
+
+  @override
+  String get ng_board_title_required => '标题 *';
+
+  @override
+  String get ng_board_spec => '规格与验收标准';
+
+  @override
+  String get ng_board_estimate => '估算';
+
+  @override
+  String ng_board_estimate_draft(String complexity, String tokens) {
+    return '复杂度 $complexity（~$tokens 令牌 — 仅为令牌估算，并非美元成本）';
+  }
+
+  @override
+  String get ng_board_estimate_unavailable => '无法估算';
+
+  @override
+  String get ng_board_initial_column => '初始列';
+
+  @override
+  String get ng_board_worker_assignee => '负责的工作者';
+
+  @override
+  String get ng_board_parked_unassigned => '搁置（未分配）';
+
+  @override
+  String get ng_board_priority => '优先级';
+
+  @override
+  String get ng_board_workspace => '工作区';
+
+  @override
+  String get ng_board_scratch => '临时目录';
+
+  @override
+  String get ng_board_worktree => 'Git 工作树';
+
+  @override
+  String get ng_board_shared_dir => '共享目录';
+
+  @override
+  String get ng_board_workspace_path => '主机工作区路径';
+
+  @override
+  String get ng_board_parent => '父任务依赖（可选）';
+
+  @override
+  String get ng_board_skills => '固定技能（以逗号分隔，可选）';
+
+  @override
+  String get ng_board_provider_override => '提供商覆盖';
+
+  @override
+  String get ng_board_model_override => '模型覆盖';
+
+  @override
+  String get ng_board_reasoning => '推理强度';
+
+  @override
+  String get ng_board_profile_default => '配置档案默认值';
+
+  @override
+  String get ng_board_xhigh => '极高';
+
+  @override
+  String get ng_board_goal_mode => '目标循环模式';
+
+  @override
+  String get ng_board_goal_turns => '目标最大轮数（留空 = 默认）';
+
+  @override
+  String get ng_board_create_task => '创建任务';
+
+  @override
+  String get ng_board_orchestration_title => '编排与工作者配置档案';
+
+  @override
+  String ng_board_orchestrator(String profile) {
+    return '编排器配置档案（解析结果：$profile）';
+  }
+
+  @override
+  String get ng_board_inherit_default => '继承当前默认值';
+
+  @override
+  String ng_board_default_assignee(String profile) {
+    return '默认负责人（解析结果：$profile）';
+  }
+
+  @override
+  String get ng_board_auto_decompose => '自动拆解待分类卡片';
+
+  @override
+  String get ng_board_auto_decompose_help =>
+      '对待分类任务使用已配置的 kanban_decomposer 模型';
+
+  @override
+  String get ng_board_save_orchestration => '保存编排';
+
+  @override
+  String get ng_board_worker_descriptions => '工作者专长描述';
+
+  @override
+  String ng_board_worker_label(String profile, String model, String skills) {
+    return '@$profile（$model · $skills）';
+  }
+
+  @override
+  String get ng_board_default_model => '默认模型';
+
+  @override
+  String get ng_board_save_description => '保存描述';
+
+  @override
+  String get ng_board_auto_describe => '根据技能和角色自动描述';
+
+  @override
+  String get ng_board_manual_block => '操作员手动阻塞';
+
+  @override
+  String get ng_board_requested_review => '已请求审核';
+
+  @override
+  String ng_board_requeue_title(String task) {
+    return '要将 $task 重新排队吗？';
+  }
+
+  @override
+  String get ng_board_requeue_body => '正在运行此卡片的工作者将被停止，卡片将返回队列。';
+
+  @override
+  String get ng_board_requeue => '重新排队';
+
+  @override
+  String ng_board_reassign_title(String task, String profile) {
+    return '要将 $task 重新分配给 @$profile 吗？';
+  }
+
+  @override
+  String get ng_board_reassign_body => '此卡片正在运行：将先停止其工作者。';
+
+  @override
+  String get ng_board_reassign => '重新分配';
+
+  @override
+  String ng_board_saved_task(String task) {
+    return '已保存任务 $task';
+  }
+
+  @override
+  String get ng_board_commented_requeued => '已发表评论并将任务重新排队';
+
+  @override
+  String get ng_board_commented => '已发表评论';
+
+  @override
+  String ng_board_requeued(String task) {
+    return '已将 $task 重新排队';
+  }
+
+  @override
+  String get ng_board_decompose_failed => '拆解失败。';
+
+  @override
+  String ng_board_decompose_failed_reason(String reason) {
+    return '拆解失败：$reason';
+  }
+
+  @override
+  String ng_board_decomposed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已拆解为 $count 个子任务',
+      one: '已拆解为 1 个子任务',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_board_no_children => '未创建任何子任务。';
+
+  @override
+  String ng_board_no_children_reason(String reason) {
+    return '未创建任何子任务：$reason';
+  }
+
+  @override
+  String ng_board_uploaded(String file) {
+    return '已上传 $file';
+  }
+
+  @override
+  String ng_board_linked_parent(String task) {
+    return '已关联父任务 $task';
+  }
+
+  @override
+  String ng_board_unlinked_parent(String task) {
+    return '已移除父任务关联 $task';
+  }
+
+  @override
+  String get ng_board_task_load_failed => '无法加载任务';
+
+  @override
+  String get ng_board_refresh_task => '刷新任务';
+
+  @override
+  String get ng_board_tab_overview => '概览';
+
+  @override
+  String get ng_board_tab_comments => '评论与链接';
+
+  @override
+  String get ng_board_tab_runs => '运行与日志';
+
+  @override
+  String get ng_board_tab_events => '事件';
+
+  @override
+  String get ng_board_decompose => '拆解';
+
+  @override
+  String get ng_board_attach => '附加文件';
+
+  @override
+  String ng_board_estimate_task(
+    String complexity,
+    String tokens,
+    String rationale,
+  ) {
+    return '估算：$complexity · ~$tokens 令牌（$rationale）— 并非美元成本。';
+  }
+
+  @override
+  String get ng_board_no_rationale => '无理由说明';
+
+  @override
+  String get ng_board_status => '状态';
+
+  @override
+  String get ng_board_assignee => '负责人';
+
+  @override
+  String get ng_board_title_label => '标题';
+
+  @override
+  String get ng_board_body => '正文 / 规格说明';
+
+  @override
+  String get ng_board_save_changes => '保存更改';
+
+  @override
+  String get ng_board_clear_model => '清除模型覆盖';
+
+  @override
+  String ng_board_blocked_reason(String reason) {
+    return '阻塞原因：$reason';
+  }
+
+  @override
+  String ng_board_result(String result) {
+    return '结果：$result';
+  }
+
+  @override
+  String ng_board_parents(String count) {
+    return '受阻于（父任务 · $count）';
+  }
+
+  @override
+  String get ng_board_add_parent => '+ 添加父任务';
+
+  @override
+  String ng_board_children(String count) {
+    return '阻塞对象（子任务 · $count）';
+  }
+
+  @override
+  String ng_board_attachments(String count) {
+    return '附件（$count）';
+  }
+
+  @override
+  String get ng_board_worker => '工作者';
+
+  @override
+  String ng_board_comments(String count) {
+    return '评论（$count）';
+  }
+
+  @override
+  String get ng_board_comment_hint => '添加评论 / 工作者指引';
+
+  @override
+  String get ng_board_post_comment => '发表评论';
+
+  @override
+  String get ng_board_comment_requeue => '评论并重新排队';
+
+  @override
+  String ng_board_runs(String count) {
+    return '运行记录（$count）';
+  }
+
+  @override
+  String get ng_board_no_runs => '尚无工作者运行记录。';
+
+  @override
+  String ng_board_run_error(String error) {
+    return '错误：$error';
+  }
+
+  @override
+  String ng_board_log_tail_truncated(String bytes) {
+    return '工作者日志末尾（$bytes B，已截断）';
+  }
+
+  @override
+  String ng_board_log_tail(String bytes) {
+    return '工作者日志末尾（$bytes B）';
+  }
+
+  @override
+  String get ng_board_refresh_log => '刷新日志';
+
+  @override
+  String get ng_board_no_log => '无工作者日志输出。';
+
+  @override
+  String get ng_board_no_events => '未记录任何事件。';
+
+  @override
+  String get ng_bots_room_unknown => '未知';
+
+  @override
+  String get ng_bots_room_blocked => '已阻塞';
+
+  @override
+  String get ng_bots_room_working => '工作中';
+
+  @override
+  String get ng_bots_room_running => '运行中';
+
+  @override
+  String get ng_bots_room_idle => '空闲';
+
+  @override
+  String ng_board_run_title(String id, String profile, String outcome) {
+    return '运行 #$id · @$profile · $outcome';
+  }
+
+  @override
+  String get ng_bots_new_bot => '新建机器人';
+
+  @override
+  String get ng_bots_new_bot_hint => '一个有名字的队友，拥有自己的记忆、技能和聊天，可以给你的其他智能体发消息。';
+
+  @override
+  String get ng_bots_field_name => '名称';
+
+  @override
+  String get ng_bots_field_title => '标题';
+
+  @override
+  String get ng_bots_field_description => '描述';
+
+  @override
+  String get ng_bots_description_hint => '这个机器人应该帮忙做什么？';
+
+  @override
+  String get ng_bots_name_invalid => '使用小写字母、数字、连字符或下划线，并以字母或数字开头（最多 64 个字符）。';
+
+  @override
+  String ng_bots_name_taken(String name) {
+    return '名为“$name”的智能体已存在。';
+  }
+
+  @override
+  String ng_bots_profile_id(String id) {
+    return '配置文件 ID：$id';
+  }
+
+  @override
+  String get ng_bots_advanced => '高级 — 模型、技能、工具集、SOUL.md';
+
+  @override
+  String get ng_bots_clone_from => '从配置文件克隆';
+
+  @override
+  String get ng_bots_clone_main => '主配置文件（default）';
+
+  @override
+  String get ng_bots_fresh_profile => '全新配置文件（内置技能）';
+
+  @override
+  String get ng_bots_create_empty => '创建空配置（跳过内置技能）';
+
+  @override
+  String get ng_bots_share_keys => '与主配置文件共享密钥和账户';
+
+  @override
+  String get ng_bots_provider => '提供商';
+
+  @override
+  String get ng_bots_model => '模型';
+
+  @override
+  String get ng_bots_model_pair => '请同时输入提供商和模型。';
+
+  @override
+  String get ng_bots_soul => 'SOUL.md（可选 — 替换生成的人设）';
+
+  @override
+  String get ng_bots_soul_edit => 'SOUL.md';
+
+  @override
+  String get ng_bots_creating => '正在创建…';
+
+  @override
+  String get ng_bots_create_bot => '创建机器人';
+
+  @override
+  String ng_bots_created(String name) {
+    return '已创建机器人“$name”';
+  }
+
+  @override
+  String get ng_bots_look_failed => '外观未保存到网关；请在“编辑配置文件”中设置。';
+
+  @override
+  String ng_bots_request_failed(String reason) {
+    return '网关未接受（$reason）。';
+  }
+
+  @override
+  String get ng_bots_avatar_shape => '形状';
+
+  @override
+  String ng_bots_avatar_shape_n(int n) {
+    return '形状 $n';
+  }
+
+  @override
+  String get ng_bots_avatar_colour => '颜色';
+
+  @override
+  String ng_bots_avatar_colour_n(int n) {
+    return '颜色 $n';
+  }
+
+  @override
+  String get ng_bots_avatar_match_name => '跟随名称';
+
+  @override
+  String get ng_bots_avatar_upload => '选择图片…';
+
+  @override
+  String get ng_bots_avatar_remove => '移除图片 — 使用形状';
+
+  @override
+  String get ng_bots_avatar_too_large => '图片过大（最大 15 MB）。';
+
+  @override
+  String get ng_bots_avatar_unreadable => '无法读取该图片。';
+
+  @override
+  String get ng_bots_edit_profile => '编辑配置文件';
+
+  @override
+  String ng_bots_edit_description(String name, String profile) {
+    return '$name（$profile）的外观和角色。';
+  }
+
+  @override
+  String ng_bots_advanced_failed(String reason) {
+    return '无法加载配置文件设置（$reason）。';
+  }
+
+  @override
+  String get ng_bots_skills => '技能';
+
+  @override
+  String get ng_bots_toolsets => '工具集';
+
+  @override
+  String get ng_bots_toolsets_hint => '全部（或都不）勾选时保持默认工具集行为。';
+
+  @override
+  String get ng_bots_mcp_servers => 'MCP 服务器';
+
+  @override
+  String get ng_bots_saving => '正在保存…';
+
+  @override
+  String get ng_bots_confirm_changes_title => '保存这些更改？';
+
+  @override
+  String get ng_bots_change_remove_image => '移除机器人的图片';
+
+  @override
+  String get ng_bots_change_soul => '替换其 SOUL.md';
+
+  @override
+  String ng_bots_change_turn_off(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '关闭 $count 个技能、工具集或 MCP 服务器',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_bots_updated(String name) {
+    return '已更新 $name';
+  }
+
+  @override
+  String ng_bots_sections_failed(String sections) {
+    return '部分内容失败：$sections';
+  }
+
+  @override
+  String get ng_bots_model_confirm_title => '切换模型？';
+
+  @override
+  String get ng_bots_model_confirm_ok => '切换';
+
+  @override
+  String get ng_bots_model_not_switched => '未切换模型。';
+
+  @override
+  String get ng_bots_section_new => '新建分组';
+
+  @override
+  String get ng_bots_section_new_ellipsis => '新建分组…';
+
+  @override
+  String get ng_bots_section_name => '分组名称';
+
+  @override
+  String get ng_bots_section_name_hint => '例如：客户';
+
+  @override
+  String get ng_bots_section_create => '创建';
+
+  @override
+  String get ng_bots_section_rename => '重命名分组';
+
+  @override
+  String get ng_bots_section_delete => '删除分组';
+
+  @override
+  String get ng_bots_section_move_up => '上移';
+
+  @override
+  String get ng_bots_section_move_down => '下移';
+
+  @override
+  String get ng_bots_section_unassigned => '未分组';
+
+  @override
+  String ng_bots_section_options(String name) {
+    return '分组“$name”的选项';
+  }
+
+  @override
+  String get ng_bots_section_empty => '这里还没有机器人。请对机器人使用“移到分组”。';
+
+  @override
+  String get ng_bots_section_move_to => '移到分组';
+
+  @override
+  String get ng_bots_section_remove => '移出分组';
+
+  @override
+  String ng_bots_section_deleted(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已删除“$name” — $count 个机器人移到未分组',
+      zero: '已删除“$name”',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_undo => '撤销';
+
+  @override
+  String ng_bots_section_move_failed(String reason) {
+    return '无法移动机器人（$reason）。';
+  }
+
+  @override
+  String ng_bots_bot_actions(String name) {
+    return '$name 的操作';
+  }
+
+  @override
+  String ng_bots_section_toggle(String name) {
+    return '显示或隐藏“$name”';
+  }
+
+  @override
+  String
+  get release_core_transcript_reader_this_passage_is_no_longer_in_the_loaded =>
+      '这段内容已不在当前加载的范围内。';
+
+  @override
+  String get release_core_transcript_reader_loaded_prompts => '已加载的提示词';
+
+  @override
+  String get release_core_transcript_reader_jump_to_latest => '跳至最新内容';
+
+  @override
+  String get release_core_transcript_reader_no_prompts_loaded => '未加载提示词';
+
+  @override
+  String get release_core_transcript_reader_find_in_loaded_messages =>
+      '在已加载的消息中查找';
+
+  @override
+  String get release_core_transcript_reader_previous_match => '上一个匹配项';
+
+  @override
+  String get release_core_transcript_reader_next_match => '下一个匹配项';
+
+  @override
+  String get release_core_transcript_reader_prompt_timeline => '提示词时间线';
+
+  @override
+  String get release_core_transcript_reader_close_find => '关闭查找';
+
+  @override
+  String get release_core_session_organisation_organise_chats => '整理聊天';
+
+  @override
+  String get release_core_session_organisation_show_model_and_usage =>
+      '显示模型和用量';
+
+  @override
+  String
+  get release_core_session_files_view_connection_changed_reopen_files_on_the_new_connection =>
+      '连接已更改。请通过新连接重新打开文件。';
+
+  @override
+  String
+  get release_core_session_files_view_the_connection_or_session_changed_reopen_this_pane =>
+      '连接或会话已更改。请重新打开此面板。';
+
+  @override
+  String
+  get release_core_session_files_view_no_verified_host_working_directory_for_this_session =>
+      '此会话没有经验证的主机工作目录。';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_denied_this_operation =>
+      '网关拒绝了此操作。';
+
+  @override
+  String
+  get release_core_session_files_view_this_gateway_does_not_support_this_operation =>
+      '此网关不支持此操作。';
+
+  @override
+  String
+  get release_core_session_files_view_the_file_owner_or_working_directory_changed_reload =>
+      '文件、所有者或工作目录已更改。请重新加载并检查。';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_returned_an_unsafe_path_or_invalid =>
+      '网关返回了不安全的路径或无效的文件响应。';
+
+  @override
+  String
+  get release_core_session_files_view_workspace_access_requires_a_secure_gateway_connection =>
+      '访问工作区需要安全的网关连接。';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_unavailable_refresh_to_check_the_current_state =>
+      '网关不可用。请刷新以查看当前状态。';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_operation_could_not_be_confirmed =>
+      '无法确认网关操作。';
+
+  @override
+  String get release_core_session_files_view_git_status_unavailable =>
+      '无法获取 Git 状态。';
+
+  @override
+  String
+  get release_core_session_files_view_change_this_chat_s_working_directory =>
+      '更改此聊天的工作目录？';
+
+  @override
+  String get release_core_session_files_view_absolute_gateway_directory =>
+      '网关目录的绝对路径';
+
+  @override
+  String get release_core_session_files_view_change_directory => '更改目录';
+
+  @override
+  String get release_core_session_files_view_replace_gateway_file =>
+      '替换网关上的文件？';
+
+  @override
+  String
+  release_core_session_files_view_only_if_the_file_still_matches_the_version(
+    String path,
+  ) {
+    return '$path\n\n仅当文件仍与已检查的版本一致时才会替换。兼容的主机会保留被替换的文件，以便恢复。';
+  }
+
+  @override
+  String get release_core_session_files_view_save_changes => '保存更改';
+
+  @override
+  String
+  get release_core_session_files_view_saved_and_verified_on_the_gateway =>
+      '已在网关上保存并验证。';
+
+  @override
+  String
+  get release_core_session_files_view_guarded_saving_is_unavailable_on_this_gateway_your =>
+      '此网关不提供受保护的保存功能。你的草稿仍在。';
+
+  @override
+  String
+  release_core_session_files_view_save_was_not_confirmed_your_draft_is_still(
+    String reason,
+  ) {
+    return '$reason 保存未获确认。你的草稿仍在。';
+  }
+
+  @override
+  String get release_core_session_files_view_review_current_gateway_version =>
+      '检查网关上的当前版本';
+
+  @override
+  String get release_core_session_files_view_discard_draft_and_reload =>
+      '丢弃草稿并重新加载';
+
+  @override
+  String get release_core_session_files_view_keep_draft_against_this_version =>
+      '基于此版本保留草稿';
+
+  @override
+  String get release_core_session_files_view_discard_unsaved_edits =>
+      '丢弃未保存的编辑？';
+
+  @override
+  String get release_core_session_files_view_keep_editing => '继续编辑';
+
+  @override
+  String get release_core_session_files_view_discard_edits => '丢弃编辑';
+
+  @override
+  String get release_core_session_files_view_remote_working_directory =>
+      '远程工作目录';
+
+  @override
+  String get release_core_session_files_view_change_working_directory =>
+      '更改工作目录';
+
+  @override
+  String get release_core_session_files_view_show_ignored_files => '显示已忽略的文件';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_does_not_report_ignored_status =>
+      '网关未报告忽略状态。';
+
+  @override
+  String get release_core_session_files_view_no_visible_entries => '无可见条目';
+
+  @override
+  String get release_core_session_files_view_changed => '已更改';
+
+  @override
+  String get release_core_session_files_view_ignored => '已忽略';
+
+  @override
+  String release_core_session_files_view_actions_for(String name) {
+    return '$name 的操作';
+  }
+
+  @override
+  String get release_core_session_files_view_copy_relative_path => '复制相对路径';
+
+  @override
+  String get release_core_session_files_view_copy_gateway_path => '复制网关路径';
+
+  @override
+  String get release_core_session_files_view_attach_folder_reference =>
+      '附加文件夹引用';
+
+  @override
+  String get release_core_session_files_view_attach_file_reference => '附加文件引用';
+
+  @override
+  String
+  get release_core_session_files_view_preview_truncated_editing_disabled =>
+      '预览已截断，编辑已禁用。';
+
+  @override
+  String get release_core_session_files_view_select_lines => '选择行';
+
+  @override
+  String get release_core_session_files_view_review_gateway_version =>
+      '检查网关上的版本';
+
+  @override
+  String get release_core_session_files_view_attach_selected_lines => '附加所选行';
+
+  @override
+  String get release_core_session_files_view_binary_file_no_text_preview =>
+      '二进制文件，无文本预览。';
+
+  @override
+  String get release_core_session_files_view_file_source => '文件来源';
+
+  @override
+  String get release_core_session_files_view_close_session_files => '关闭会话文件';
+
+  @override
+  String get release_core_session_files_view_back_to_tree => '返回文件树';
+
+  @override
+  String get release_core_session_files_view_session_files => '会话文件';
+
+  @override
+  String get release_core_session_files_view_git_review => 'Git 审查';
+
+  @override
+  String get release_core_session_files_view_refresh_tree => '刷新文件树';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_this_connection_changed_reopen_its_chat =>
+      '此连接已更改。请重新打开对应的聊天。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_disconnected_reconnect_the_chat_then_refresh =>
+      '连接已断开。请重新连接聊天，然后刷新。';
+
+  @override
+  String release_core_gateway_queue_screen_gateway_queue_unavailable(
+    String reason,
+  ) {
+    return '网关队列不可用：$reason。';
+  }
+
+  @override
+  String release_core_gateway_queue_screen_not_confirmed_nothing_was_resent(
+    String reason,
+  ) {
+    return '未获确认（$reason）。未重新发送任何内容。';
+  }
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_confirmed_admission =>
+      '网关已确认接收。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_edited_entry_admitted_at_the_end_of_the =>
+      '编辑后的条目已被接收并加入队尾。';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_unknown_outcome =>
+      '丢弃结果未知的条目？';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_this_entry => '移除此条目？';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_the_lost_turn_will_not_be_retried_waiting =>
+      '不会重试丢失的轮次。等待中的轮次现在可以运行。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_if_the_gateway_has_just_started_this_entry =>
+      '如果网关刚开始处理此条目，移除它可能会停止该轮次。';
+
+  @override
+  String get release_core_gateway_queue_screen_keep => '保留';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_and_resume => '丢弃并恢复';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_entry => '移除条目';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_lost_admission_resolved_it_was_not_resent =>
+      '接收确认丢失的问题已解决；未重新发送。';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_acknowledged_removal =>
+      '网关已确认移除。';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_queue => '网关队列';
+
+  @override
+  String get release_core_gateway_queue_screen_refresh_queue => '刷新队列';
+
+  @override
+  String get release_core_gateway_queue_screen_queue_paused_unknown_outcome =>
+      '队列已暂停：结果未知';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_review_the_lost_admission_before_resuming_nothing_is =>
+      '请先检查缺失的接收确认，再恢复队列。不会重新发送任何内容。';
+
+  @override
+  String get release_core_gateway_queue_screen_no_pending_admissions =>
+      '无待接收条目';
+
+  @override
+  String get release_core_gateway_queue_screen_discard => '丢弃…';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_gateway_acknowledged_the_steering_request =>
+      '网关已确认引导请求。';
+
+  @override
+  String get release_core_gateway_queue_screen_steer_running_turn =>
+      '引导正在运行的轮次';
+
+  @override
+  String get release_core_gateway_queue_screen_remove => '移除…';
+
+  @override
+  String get release_core_gateway_queue_screen_next_prompt => '下一条提示词';
+
+  @override
+  String get release_core_gateway_queue_screen_edit_queued_prompt =>
+      '编辑排队中的提示词';
+
+  @override
+  String get release_core_gateway_queue_screen_submit_to_gateway_queue =>
+      '提交到网关队列';
+
+  @override
+  String get release_core_gateway_queue_screen_save_at_queue_end => '保存到队尾';
+
+  @override
+  String get release_core_gateway_queue_screen_cancel_edit => '取消编辑';
+
+  @override
+  String get release_core_git_review_pane_the_git_operation_did_not_complete =>
+      'Git 操作未完成。';
+
+  @override
+  String get release_core_git_review_pane_close_git_review => '关闭 Git 审查';
+
+  @override
+  String get release_core_git_review_pane_pin_lane => '固定泳道';
+
+  @override
+  String get release_core_git_review_pane_refresh_git_review => '刷新 Git 审查';
+
+  @override
+  String get release_core_git_review_pane_uncommitted => '未提交';
+
+  @override
+  String get release_core_git_review_pane_last_turn => '上一轮';
+
+  @override
+  String
+  get release_core_git_review_pane_branch_and_last_turn_views_are_read_only =>
+      '分支和上一轮视图均为只读。';
+
+  @override
+  String get release_core_git_review_pane_mark_head_as_the_turn_baseline =>
+      '将 HEAD 标记为轮次基准';
+
+  @override
+  String get release_core_git_review_pane_stage_all => '暂存全部';
+
+  @override
+  String get release_core_git_review_pane_discard_every_uncommitted_change =>
+      '丢弃所有未提交的更改？';
+
+  @override
+  String
+  get release_core_git_review_pane_tracked_files_return_to_head_and_untracked_files =>
+      '已跟踪文件将恢复到 HEAD，此会话目录中未跟踪的文件将被移除。';
+
+  @override
+  String get release_core_git_review_pane_discard => '丢弃';
+
+  @override
+  String get release_core_git_review_pane_discard_all => '全部丢弃';
+
+  @override
+  String get release_core_git_review_pane_unstage => '取消暂存';
+
+  @override
+  String get release_core_git_review_pane_stage => '暂存';
+
+  @override
+  String get release_core_git_review_pane_discard_file => '丢弃文件';
+
+  @override
+  String release_core_git_review_pane_discard_2(String path) {
+    return '丢弃 $path？';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_this_restores_the_committed_copy_or_removes_the =>
+      '这会恢复已提交的副本，或移除未跟踪的文件。';
+
+  @override
+  String get release_core_git_review_pane_commit_message => '提交说明';
+
+  @override
+  String get release_core_git_review_pane_nothing_in_the_diff_to_summarise =>
+      '差异中没有可供总结的内容。';
+
+  @override
+  String get release_core_git_review_pane_generate_message => '生成提交说明';
+
+  @override
+  String get release_core_git_review_pane_commit => '提交';
+
+  @override
+  String get release_core_git_review_pane_commit_and_push => '提交并推送';
+
+  @override
+  String get release_core_git_review_pane_push => '推送';
+
+  @override
+  String get release_core_git_review_pane_create_pull_request => '创建拉取请求';
+
+  @override
+  String get release_core_git_review_pane_pull_request_ready => '拉取请求已就绪';
+
+  @override
+  String get release_core_git_review_pane_ask_hermes_to_ship => '请 Hermes 完成发布';
+
+  @override
+  String get release_core_git_review_pane_gh_is_authenticated_on_this_gateway =>
+      'gh 已在此网关上通过身份验证。';
+
+  @override
+  String
+  get release_core_git_review_pane_install_the_github_cli_gh_and_sign_in =>
+      '安装 GitHub CLI（gh）并登录，即可创建拉取请求';
+
+  @override
+  String get release_core_git_review_pane_worktrees => '工作树';
+
+  @override
+  String get release_core_git_review_pane_main => '主工作树';
+
+  @override
+  String release_core_git_review_pane_follow(String branch) {
+    return '跟随 $branch？';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_working_directory_becomes_this_worktree_unless =>
+      '除非泳道已固定，否则会话工作目录将切换为此工作树。';
+
+  @override
+  String get release_core_git_review_pane_follow_2 => '跟随';
+
+  @override
+  String release_core_git_review_pane_remove(String branch) {
+    return '移除 $branch？';
+  }
+
+  @override
+  String get release_core_git_review_pane_the_worktree_directory_is_removed =>
+      '工作树目录将被移除。';
+
+  @override
+  String get release_core_git_review_pane_remove_2 => '移除';
+
+  @override
+  String get release_core_git_review_pane_new_worktree_name => '新工作树名称';
+
+  @override
+  String get release_core_git_review_pane_new_branch => '新分支';
+
+  @override
+  String get release_core_git_review_pane_base_branch => '基础分支';
+
+  @override
+  String get release_core_git_review_pane_create_worktree => '创建工作树';
+
+  @override
+  String get release_core_git_review_pane_existing_branch => '现有分支';
+
+  @override
+  String get release_core_git_review_pane_convert_branch_to_worktree =>
+      '将分支转换为工作树';
+
+  @override
+  String get release_core_git_review_pane_switch_branch => '切换分支';
+
+  @override
+  String
+  get release_core_git_review_pane_this_gateway_does_not_support_that_git_operation =>
+      '此网关不支持该 Git 操作。';
+
+  @override
+  String
+  get release_core_git_review_pane_git_needs_the_session_directory_on_the_local =>
+      'Git 需要会话目录位于本地终端后端。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_refused_the_git_operation =>
+      '网关拒绝了 Git 操作。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_changed_refresh_and_try_again =>
+      '会话已更改。请刷新后重试。';
+
+  @override
+  String
+  get release_core_git_review_pane_this_review_is_no_longer_the_selected_session =>
+      '此审查已不再对应当前选中的会话。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_returned_an_unexpected_git_result =>
+      '网关返回了意外的 Git 结果。';
+
+  @override
+  String
+  get release_core_git_review_pane_git_review_requires_the_gateway_transport =>
+      'Git 审查需要通过网关传输。';
+
+  @override
+  String get release_core_client_held_queue_bar_resume => '恢复';
+
+  @override
+  String get release_core_client_held_queue_bar_send_queued_prompt =>
+      '发送排队中的提示词';
+
+  @override
+  String get release_core_client_held_queue_bar_edit_unsent_prompt =>
+      '编辑未发送的提示词';
+
+  @override
+  String get release_core_client_held_queue_bar_remove_unsent_prompt =>
+      '移除未发送的提示词';
+
+  @override
+  String get release_core_workspace_discovery_view_repository_discovery =>
+      '仓库发现';
+
+  @override
+  String get release_core_workspace_discovery_view_refresh_results => '刷新结果';
+
+  @override
+  String release_core_workspace_discovery_view_hide(String path) {
+    return '隐藏 $path';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_invalid_path_or_discovery_data_use_absolute_server =>
+      '路径或发现数据无效。请使用不含 . 或 .. 路径段的服务器绝对路径。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_does_not_support_repository_discovery =>
+      '此网关不支持仓库发现。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_denied_access_to_repository_discovery =>
+      '网关拒绝访问仓库发现功能。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_connection_changed_reopen_discovery_on_the_current =>
+      '连接已更改。请在当前网关上重新打开仓库发现。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_displayed_settings_have_changed_refresh_before_trying =>
+      '显示的设置已更改。请刷新后重试。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_could_not_load_or_verify_discovery_settings_refresh =>
+      '无法加载或验证发现设置。请刷新以重试。';
+
+  @override
+  String release_core_workspace_discovery_view_repositories_shown_of(
+    int visible,
+    int total,
+  ) {
+    return '已显示仓库：$visible / $total';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_returned_no_repositories =>
+      '网关未返回任何仓库。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_no_repositories_match_your_device_filters =>
+      '没有仓库符合此设备上的筛选条件。';
+
+  @override
+  String get release_core_workspace_discovery_view_gateway_scan_policy =>
+      '网关扫描策略';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_did_not_report_a_scan_policy =>
+      '此网关未报告扫描策略。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_to_scan_folders_configure_repository_scanning_in_the =>
+      '要扫描文件夹，请在网关配置档案的桌面设置中配置仓库扫描。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_results_can_include_cached_repositories_and_repositories_with =>
+      '结果可能包含已缓存的仓库及有关联会话的仓库。扫描并不保证遍历了每个文件夹。';
+
+  @override
+  String get release_core_workspace_discovery_view_scan_gateway_roots =>
+      '扫描网关根目录';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_filter_results_on_this_device =>
+      '在此设备上筛选结果';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_only_this_discovery_list_changes_not_the_gateway =>
+      '仅更改此发现列表，不影响网关扫描。';
+
+  @override
+  String get release_core_workspace_discovery_view_include_subtrees_empty_all =>
+      '包含的子目录树（留空表示全部）';
+
+  @override
+  String get release_core_workspace_discovery_view_exclude_subtrees =>
+      '排除的子目录树';
+
+  @override
+  String get release_core_workspace_discovery_view_apply_filters => '应用筛选条件';
+
+  @override
+  String release_core_workspace_discovery_view_hidden_repositories(int count) {
+    return '隐藏的仓库（$count）';
+  }
+
+  @override
+  String get release_core_workspace_discovery_view_undo_hide => '撤销隐藏';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_one_absolute_server_path_per_line =>
+      '每行一个服务器绝对路径';
+
+  @override
+  String get release_core_project_settings_view_project_settings => '项目设置';
+
+  @override
+  String
+  get release_core_project_settings_view_the_gateway_did_not_confirm_the_selected_project =>
+      '网关未确认所选项目或更改。请检查设置后重试。';
+
+  @override
+  String
+  get release_core_project_settings_view_could_not_verify_these_settings_use_one_absolute =>
+      '无法验证这些设置。请每行填写一个服务器文件夹的绝对路径，且不含 . 或 .. 路径段。';
+
+  @override
+  String get release_core_project_settings_view_set_active => '设为活动项目';
+
+  @override
+  String get release_core_project_settings_view_icon => '图标';
+
+  @override
+  String get release_core_project_settings_view_folder => '文件夹';
+
+  @override
+  String get release_core_project_settings_view_repository => '仓库';
+
+  @override
+  String get release_core_project_settings_view_rocket => '火箭';
+
+  @override
+  String get release_core_project_settings_view_star => '星星';
+
+  @override
+  String get release_core_project_settings_view_book => '书籍';
+
+  @override
+  String get release_core_project_settings_view_terminal => '终端';
+
+  @override
+  String get release_core_project_settings_view_colour => '颜色';
+
+  @override
+  String get release_core_project_settings_view_primary_folder => '主文件夹';
+
+  @override
+  String get release_core_project_settings_view_server_folder_paths =>
+      '服务器文件夹路径';
+
+  @override
+  String
+  get release_core_project_settings_view_one_absolute_path_per_line_existing_folders_are =>
+      '每行一个绝对路径。现有文件夹将保留。';
+
+  @override
+  String get release_core_project_settings_view_add_folders => '添加文件夹';
+
+  @override
+  String release_core_project_settings_view_choose(String label) {
+    return '选择$label';
+  }
+
+  @override
+  String
+  get release_core_prepared_image_recovery_wait_for_an_empty_draft_before_restoring =>
+      '请等草稿为空后再恢复。';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_no_unacknowledged_image_drafts_in_this_chat =>
+      '此聊天中没有未获接收确认的图片草稿。';
+
+  @override
+  String get release_core_prepared_image_recovery_unacknowledged_image_drafts =>
+      '未获接收确认的图片草稿';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_the_gateway_may_already_have_received_these_restore =>
+      '网关可能已收到这些内容。恢复后可查看，不会发送任何内容。';
+
+  @override
+  String get release_core_prepared_image_recovery_image_draft => '图片草稿';
+
+  @override
+  String get release_core_prepared_image_recovery_discard_local_copy =>
+      '丢弃本地副本';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_discard_this_local_image_draft =>
+      '丢弃此本地图片草稿？';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_image_draft_recovery_is_unavailable =>
+      '图片草稿恢复功能不可用。';
+
+  @override
+  String get release_core_prepared_image_recovery_recover_image_draft =>
+      '恢复图片草稿…';
+
+  @override
+  String get release_core_session_search_mode_menu_could_not_save_search_mode =>
+      '无法保存搜索模式。';
+
+  @override
+  String get release_core_projects_pane_discover_repositories => '发现仓库';
+
+  @override
+  String
+  get release_core_projects_pane_project_created_but_the_gateway_did_not_confirm =>
+      '项目已创建，但网关未确认项目构想。';
+
+  @override
+  String get release_core_projects_pane_project_idea_optional => '项目构想（可选）';
+
+  @override
+  String
+  get release_core_projects_pane_saved_in_the_project_description_not_a_file =>
+      '保存在项目描述中，而非文件中。';
+
+  @override
+  String get release_core_project_detail_screen_new_chat_in_this_lane =>
+      '在此泳道中新建聊天';
+
+  @override
+  String get release_core_project_detail_screen_review_git => '审查 Git 更改';
+
+  @override
+  String get release_core_more_pane_gateway_fleet => '网关集群';
+
+  @override
+  String
+  get release_core_more_pane_connected_sessions_hermes_cloud_and_desktop_webapp =>
+      '已连接的会话、Hermes Cloud 和桌面网页应用';
+
+  @override
+  String get release_core_more_pane_use_dashboard_sign_in_for_a_named_profile =>
+      '请通过仪表盘登录指定的配置档案。此旧版 API 无法确认聊天记录属于哪个配置档案。';
+
+  @override
+  String get release_core_more_pane_capabilities => '功能';
+
+  @override
+  String
+  get release_core_more_pane_install_and_govern_skills_plugins_connectors_and_tool =>
+      '安装和管理技能、插件、连接器及工具后端';
+
+  @override
+  String get release_core_more_pane_browser_vault => '浏览器保险库';
+
+  @override
+  String
+  get release_core_more_pane_site_logins_addresses_cards_and_credential_sources =>
+      '网站登录信息、地址、银行卡和凭据来源';
+
+  @override
+  String get release_core_more_pane_agent_policy => '智能体策略';
+
+  @override
+  String
+  get release_core_more_pane_approvals_checkpoints_browser_access_and_shared_metrics =>
+      '审批、检查点、浏览器访问和共享指标';
+
+  @override
+  String get release_core_more_pane_remote_logs_health_maintenance_and_update =>
+      '远程日志、健康状态、维护和更新';
+
+  @override
+  String get release_core_more_pane_schedules => '计划任务';
+
+  @override
+  String get release_core_more_pane_all_profiles_blueprints_catch_up_and_stop =>
+      '所有配置档案、蓝图、补跑和停止';
+
+  @override
+  String get release_core_more_pane_memory_graph => '记忆图谱';
+
+  @override
+  String get release_core_more_pane_timeline_edits_and_memory_providers =>
+      '时间线、编辑和记忆提供商';
+
+  @override
+  String get release_core_more_pane_providers_and_routes => '提供商和路由';
+
+  @override
+  String get release_core_more_pane_keys_endpoints_delegation_and_mixtures =>
+      '密钥、端点、委派和混合配置';
+
+  @override
+  String get release_core_more_pane_credits_and_plans => '额度和套餐';
+
+  @override
+  String
+  get release_core_more_pane_consented_nous_billing_when_the_account_allows_it =>
+      '账户允许且经你同意后使用 Nous 计费';
+
+  @override
+  String
+  get release_core_fleet_screen_this_gateway_does_not_offer_this_service =>
+      '此网关不提供此服务。';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_or_permission_required_on_this_gateway =>
+      '需要在此网关上登录或取得权限。';
+
+  @override
+  String get release_core_fleet_screen_a_secure_gateway_address_is_required =>
+      '需要安全的网关地址。';
+
+  @override
+  String
+  get release_core_fleet_screen_the_owner_changed_refresh_before_continuing =>
+      '所有者已更改。请刷新后再继续。';
+
+  @override
+  String
+  get release_core_fleet_screen_could_not_verify_the_operation_check_the_gateway =>
+      '无法验证操作。请检查网关并刷新。';
+
+  @override
+  String get release_core_fleet_screen_verified_ssh => '已验证的 SSH';
+
+  @override
+  String
+  get release_core_fleet_screen_confirm_a_host_key_inspect_a_remote_service =>
+      '确认主机密钥、检查远程服务或打开其命令行';
+
+  @override
+  String get release_core_fleet_screen_cloud_and_desktop_webapp => '云端和桌面网页应用';
+
+  @override
+  String get release_core_fleet_screen_register_an_existing_gateway_or_webapp =>
+      '注册现有网关或网页应用';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_to_its_address_nothing_is_hosted =>
+      '通过其地址登录。此设备不会托管任何服务。';
+
+  @override
+  String get release_core_fleet_screen_fleet_updates => '网关集群更新';
+
+  @override
+  String get release_core_fleet_screen_refresh_roster => '刷新网关列表';
+
+  @override
+  String release_core_fleet_screen_disconnect(String gateway) {
+    return '断开 $gateway 的连接';
+  }
+
+  @override
+  String get release_core_fleet_screen_open_this_gateway_on_launch =>
+      '启动时打开此网关';
+
+  @override
+  String
+  get release_core_fleet_screen_primary_for_ares_does_not_change_the_last =>
+      '设为 Ares 的主网关；不会更改上次使用的网关。';
+
+  @override
+  String get release_core_fleet_screen_reconnect_in_fleet_on_launch =>
+      '启动时在集群中重新连接';
+
+  @override
+  String get release_core_fleet_screen_no_sessions_for_this_profile =>
+      '此配置档案没有会话。';
+
+  @override
+  String get release_core_fleet_screen_more_sessions => '更多会话';
+
+  @override
+  String get release_core_fleet_screen_this_gateway_was_disconnected =>
+      '此网关已断开连接。';
+
+  @override
+  String
+  get release_core_fleet_screen_some_conversation_data_could_not_be_loaded =>
+      '部分对话数据无法加载。';
+
+  @override
+  String get release_core_fleet_screen_message_this_session => '向此会话发送消息';
+
+  @override
+  String get release_core_fleet_screen_send_to_this_session => '发送到此会话';
+
+  @override
+  String get release_core_fleet_updates_screen_update_these_remote_gateways =>
+      '更新这些远程网关？';
+
+  @override
+  String
+  release_core_fleet_updates_screen_this_can_restart_the_backend_and_interrupt_other(
+    String gateways,
+  ) {
+    return '这可能会重启后端并中断其他用户的使用。不会更新 Ares。\n\n$gateways';
+  }
+
+  @override
+  String get release_core_fleet_updates_screen_update_listed_gateways =>
+      '更新列出的网关';
+
+  @override
+  String
+  get release_core_fleet_updates_screen_checks_connected_gateways_cloud_is_platform_managed_entries =>
+      '检查已连接的网关。云端由平台管理；没有注册来源记录的条目不包含在内。';
+
+  @override
+  String get release_core_fleet_updates_screen_check_connected_gateways =>
+      '检查已连接的网关';
+
+  @override
+  String get release_core_fleet_updates_screen_read_update_receipt => '读取更新回执';
+
+  @override
+  String get release_core_fleet_updates_screen_review_eligible_updates =>
+      '检查符合条件的更新';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_account_changed_reopen_this_page =>
+      '账户已更改。请重新打开此页面。';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_set_the_webapp_s_primary_gateway =>
+      '设置网页应用的主网关？';
+
+  @override
+  String
+  release_core_fleet_webapp_screen_this_changes_the_shared_registry_not_the_last(
+    String webapp,
+    String gateway,
+    String id,
+  ) {
+    return '$webapp → $gateway ($id)\n这会更改共享注册表，而非上次使用的网关。';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_set_primary => '设为主网关';
+
+  @override
+  String get release_core_fleet_webapp_screen_serving_profile => '提供服务的配置档案';
+
+  @override
+  String get release_core_fleet_webapp_screen_hermes_cloud => 'Hermes Cloud';
+
+  @override
+  String get release_core_fleet_webapp_screen_discover_signed_in_agents =>
+      '发现已登录的智能体';
+
+  @override
+  String release_core_fleet_webapp_screen_organisation(String organisation) {
+    return '组织：$organisation';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_no_agents_available =>
+      '没有可用的智能体。';
+
+  @override
+  String get release_core_fleet_webapp_screen_existing_desktop_webapp =>
+      '现有桌面网页应用';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_check_gateway_and_web_access_status =>
+      '检查网关和网页访问状态';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_these_settings_belong_to_the_machine_serving_this =>
+      '这些设置属于为此网页应用提供服务的机器。发布和重启不是远程操作。';
+
+  @override
+  String get release_core_fleet_webapp_screen_read_webapp_gateway_registry =>
+      '读取网页应用的网关注册表';
+
+  @override
+  String get release_core_fleet_webapp_screen_last_used => '上次使用';
+
+  @override
+  String get release_core_fleet_webapp_screen_primary => '主网关';
+
+  @override
+  String release_core_fleet_webapp_screen_set_primary_2(String gateway) {
+    return '设为主网关：$gateway';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_read_shared_display_preferences =>
+      '读取共享显示偏好设置';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_chat_text_direction_on_this_webapp_and_desktop =>
+      '此网页应用及桌面端的聊天文本方向';
+
+  @override
+  String release_core_schedule_desk_screen_created_on(
+    String job,
+    String profile,
+  ) {
+    return '已在 $profile 上创建 $job。';
+  }
+
+  @override
+  String
+  get release_core_schedule_desk_screen_the_list_covers_every_profile_on_this_gateway =>
+      '此列表涵盖此网关上的所有配置档案。停止、暂停、补跑、投递和蓝图操作都会发送到任务所属的配置档案。';
+
+  @override
+  String get release_core_schedule_desk_screen_a_run_is_in_progress => '任务正在运行';
+
+  @override
+  String get release_core_schedule_desk_screen_no_current_run => '当前没有运行中的任务';
+
+  @override
+  String release_core_schedule_desk_screen_stop_requested_for(String job) {
+    return '已请求停止 $job。';
+  }
+
+  @override
+  String release_core_schedule_desk_screen_no_run_was_in_flight_for(
+    String job,
+  ) {
+    return '$job 没有正在运行的任务。';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_stop_current_run => '停止当前运行';
+
+  @override
+  String get release_core_schedule_desk_screen_pause_future_runs => '暂停后续运行';
+
+  @override
+  String get release_core_schedule_desk_screen_resume_future_runs => '恢复后续运行';
+
+  @override
+  String get release_core_schedule_desk_screen_catch_up_default => '默认补跑方式';
+
+  @override
+  String get release_core_schedule_desk_screen_run_one_missed => '补跑一次错过的任务';
+
+  @override
+  String get release_core_schedule_desk_screen_skip_missed => '跳过错过的任务';
+
+  @override
+  String get release_core_schedule_desk_screen_blueprint_recipes => '蓝图模板';
+
+  @override
+  String get release_core_schedule_desk_screen_profile_for_the_new_job =>
+      '新任务使用的配置档案';
+
+  @override
+  String release_core_schedule_desk_screen_create(String blueprint) {
+    return '创建 $blueprint';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_loading_delivery_targets =>
+      '正在加载投递目标';
+
+  @override
+  String release_core_schedule_desk_screen_no_home_channel(String target) {
+    return '$target（无默认频道）';
+  }
+
+  @override
+  String release_core_memory_graph_screen_edit(String label) {
+    return '编辑$label';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_content => '内容';
+
+  @override
+  String get release_core_memory_graph_screen_archive_skill => '归档技能';
+
+  @override
+  String get release_core_memory_graph_screen_delete_memory => '删除记忆';
+
+  @override
+  String release_core_memory_graph_screen_archive_on_it_can_be_restored_on_the(
+    String label,
+    String profile,
+  ) {
+    return '将 $profile 上的 $label 归档？可以在主机上使用 Curator 恢复。';
+  }
+
+  @override
+  String release_core_memory_graph_screen_delete_from_this_removes_that_memory(
+    String label,
+    String profile,
+  ) {
+    return '从 $profile 中删除 $label？这会移除该条记忆。';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_filter => '筛选';
+
+  @override
+  String get release_core_memory_graph_screen_timeline => '时间线';
+
+  @override
+  String get release_core_memory_graph_screen_play_timeline => '播放时间线';
+
+  @override
+  String get release_core_memory_graph_screen_layout_code => '布局代码';
+
+  @override
+  String get release_core_memory_graph_screen_external_memory_providers =>
+      '外部记忆提供商';
+
+  @override
+  String
+  get release_core_memory_graph_screen_a_value_is_stored_leave_blank_to_keep =>
+      '已存储一个值。留空即可保留。';
+
+  @override
+  String get release_core_memory_graph_screen_save_provider => '保存提供商';
+
+  @override
+  String release_core_workspace_profiles_screen_applies_to(String profile) {
+    return '适用于：$profile';
+  }
+
+  @override
+  String get release_core_workspace_profiles_screen_choose_another_profile =>
+      '选择其他配置档案';
+
+  @override
+  String
+  get release_core_workspace_profiles_screen_could_not_verify_the_selected_profile_on_this =>
+      '无法在此网关上验证所选配置档案。';
+
+  @override
+  String get release_core_workspace_profiles_screen_create_profile => '创建配置档案';
+
+  @override
+  String get release_core_workspace_profiles_screen_new_profile_id =>
+      '新配置档案 ID';
+
+  @override
+  String get release_core_assets_screen_links => '链接';
+
+  @override
+  String get release_core_workspace_picker_no_matching_items => '没有匹配的项目。';
+
+  @override
+  String get release_core_workspace_picker_save_layout => '保存布局';
+
+  @override
+  String get release_core_workspace_picker_layout_name => '布局名称';
+
+  @override
+  String
+  get release_core_workspace_popout_this_chat_already_has_a_pop_out_window =>
+      '此聊天已有一个独立窗口。';
+
+  @override
+  String
+  get release_core_workspace_popout_could_not_open_this_saved_chat_check_the =>
+      '无法打开此已保存的聊天。请检查连接后重试。';
+
+  @override
+  String
+  get release_core_popout_bootstrap_use_the_main_window_to_change_your_connection =>
+      '请在主窗口中更改连接。';
+
+  @override
+  String get release_core_guarded_save_refused => '网关无法保存此文件';
+
+  @override
+  String get release_core_guarded_save_unavailable => '此网关不提供受保护的保存功能';
+
+  @override
+  String release_core_git_files_changed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '本轮更改了 $count 个文件',
+      one: '本轮更改了 1 个文件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_git_entries_omitted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '因无法安全显示，已省略 $count 个 Git 条目。',
+      one: '因无法安全显示，已省略 1 个 Git 条目。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get release_core_git_staged => '已暂存';
+
+  @override
+  String get release_core_session_sort_recent => '最近活动';
+
+  @override
+  String get release_core_session_sort_created => '最新创建';
+
+  @override
+  String get release_core_session_sort_status => '运行中的优先';
+
+  @override
+  String get release_core_session_sort_tokens => '令牌最多';
+
+  @override
+  String get release_core_session_sort_cost => '费用最高';
+
+  @override
+  String get release_core_session_group_standard => '默认分组';
+
+  @override
+  String get release_core_session_group_status => '按状态分组';
+
+  @override
+  String get release_core_session_group_project => '按项目分组';
+
+  @override
+  String release_core_session_tokens(int count) {
+    return '$count 个令牌';
+  }
+
+  @override
+  String release_core_search_gateway_mode(String mode) {
+    return '$mode（网关）';
+  }
+
+  @override
+  String release_core_search_mode_tooltip(String label, String mode) {
+    return '$label：$mode';
+  }
+
+  @override
+  String get release_core_image_recovery_new_turn => '发送会创建新的轮次';
+
+  @override
+  String release_core_image_recovery_metadata(int count, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 张图片 · $date',
+      one: '1 张图片 · $date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_discovery_scanning(String state) {
+    return '扫描：$state';
+  }
+
+  @override
+  String get release_core_discovery_enabled => '已启用';
+
+  @override
+  String get release_core_discovery_disabled => '已禁用';
+
+  @override
+  String get release_core_discovery_none => '无';
+
+  @override
+  String release_core_discovery_roots(String paths) {
+    return '扫描根目录：$paths';
+  }
+
+  @override
+  String release_core_discovery_excluded(String paths) {
+    return '排除的子目录树：$paths';
+  }
+
+  @override
+  String release_core_discovery_repository_sessions(String path, int count) {
+    return '$path\n会话数：$count';
+  }
+
+  @override
+  String get release_core_projects_local_only =>
+      '此 Hermes 网关版本较旧，不支持服务器端项目，因此聊天分组仅保留在此设备上。请更新 Hermes，以便在各设备间共享相同的项目。';
+
+  @override
+  String get release_core_fleet_no_address => '尚无网关地址';
+
+  @override
+  String release_core_fleet_diagnostics(String version, String access) {
+    return '网关 $version · $access';
+  }
+
+  @override
+  String get release_core_schedule_builtin => '内置';
+
+  @override
+  String get release_core_memory_gateway_profile => '网关';
+
+  @override
+  String release_core_memory_profile_summary(String profile, String gateway) {
+    return '$gateway 上的配置档案 $profile。分享代码仅存储缩放、时间和筛选条件。';
+  }
+
+  @override
+  String release_core_memory_layers_summary(
+    int memoryBytes,
+    int userBytes,
+    String provider,
+  ) {
+    return '内置记忆 $memoryBytes 字节，用户信息 $userBytes 字节。当前提供商为 $provider。';
+  }
+
+  @override
+  String get release_core_memory_kind_all => '全部';
+
+  @override
+  String get release_core_memory_kind_skill => '技能';
+
+  @override
+  String get release_core_memory_kind_memory => '记忆';
+
+  @override
+  String get release_core_workspace_failure_stale => '连接已更改';
+
+  @override
+  String get release_core_workspace_failure_unbound => '无经验证的工作目录';
+
+  @override
+  String get release_core_workspace_failure_denied => '权限被拒绝';
+
+  @override
+  String get release_core_workspace_failure_ineligible => '不允许对此文件执行该操作';
+
+  @override
+  String get release_core_workspace_failure_unsupported => '此网关不支持';
+
+  @override
+  String get release_core_workspace_failure_mismatch => '远程状态已更改';
+
+  @override
+  String get release_core_workspace_failure_invalid => '网关响应无效';
+
+  @override
+  String get release_core_workspace_failure_insecure => '需要安全连接';
+
+  @override
+  String get release_core_workspace_failure_unavailable => '网关不可用';
+
+  @override
+  String get release_core_queue_state_queued => '已排队';
+
+  @override
+  String get release_core_queue_state_started => '已开始';
+
+  @override
+  String get release_core_queue_state_unknown => '结果未知';
+
+  @override
+  String get release_core_unknown_state => '未知';
+
+  @override
+  String get release_core_fleet_state_idle => '离线';
+
+  @override
+  String get release_core_fleet_state_connected => '已连接';
+
+  @override
+  String get release_core_fleet_state_reconnecting => '正在重新连接…';
+
+  @override
+  String get release_core_fleet_state_sessionExpired => '已退出登录';
+
+  @override
+  String get release_core_fleet_state_failed => '连接失败';
+
+  @override
+  String release_core_workspace_operation_failed(String reason) {
+    return '无法确认网关操作：$reason。';
+  }
+
+  @override
+  String get release_core_workspace_invalid_data => '无法验证数据或输入。请检查后重试。';
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_changed_in_this_window_but_could_not =>
+      '此窗口中的布局已更改，但无法保存。';
+
+  @override
+  String get release_core_parallel_workspace_first_pane => '第一个面板';
+
+  @override
+  String get release_core_parallel_workspace_second_pane => '第二个面板';
+
+  @override
+  String get release_core_parallel_workspace_unavailable_page => '页面不可用';
+
+  @override
+  String release_core_parallel_workspace_close_a_tab_first_maximum(
+    String maximum,
+  ) {
+    return '请先关闭一个标签页（最多 $maximum 个）。';
+  }
+
+  @override
+  String get release_core_parallel_workspace_dock_beside_current_pane =>
+      '停靠在当前面板旁';
+
+  @override
+  String get release_core_parallel_workspace_add_chat => '添加聊天';
+
+  @override
+  String
+  get release_core_parallel_workspace_action_failed_check_the_connection_and_try_again =>
+      '操作失败。请检查连接后重试。';
+
+  @override
+  String
+  get release_core_parallel_workspace_close_a_tab_before_reopening_another =>
+      '请先关闭一个标签页，再重新打开另一个。';
+
+  @override
+  String release_core_parallel_workspace_replace_layout(String name) {
+    return '替换布局“$name”？';
+  }
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_limit_reached_replace_an_existing_layout =>
+      '已达布局数量上限。请替换现有布局。';
+
+  @override
+  String get release_core_parallel_workspace_restore_layout => '恢复布局';
+
+  @override
+  String get release_core_parallel_workspace_workspace_options => '工作区选项';
+
+  @override
+  String get release_core_parallel_workspace_dock_another_pane => '停靠另一个面板';
+
+  @override
+  String get release_core_parallel_workspace_swap_panes => '交换面板';
+
+  @override
+  String get release_core_parallel_workspace_undock_second_pane => '取消停靠第二个面板';
+
+  @override
+  String get release_core_parallel_workspace_arrange_side_by_side => '左右排列';
+
+  @override
+  String get release_core_parallel_workspace_arrange_top_to_bottom => '上下排列';
+
+  @override
+  String release_core_parallel_workspace_change_split_size(String percent) {
+    return '调整分割比例（$percent%）';
+  }
+
+  @override
+  String get release_core_parallel_workspace_focus_pane_full_screen => '全屏聚焦面板';
+
+  @override
+  String get release_core_parallel_workspace_open_chat_in_new_window =>
+      '在新窗口中打开聊天';
+
+  @override
+  String get release_core_parallel_workspace_hide_pane_keep_running =>
+      '隐藏面板（保持运行）';
+
+  @override
+  String get release_core_parallel_workspace_previous_tab => '上一个标签页';
+
+  @override
+  String get release_core_parallel_workspace_next_tab => '下一个标签页';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_left => '向左移动标签页';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_right => '向右移动标签页';
+
+  @override
+  String get release_core_parallel_workspace_reload_current_tab => '重新加载当前标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_tab => '关闭标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_other_tabs => '关闭其他标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_tabs_to_the_right =>
+      '关闭右侧标签页';
+
+  @override
+  String get release_core_parallel_workspace_close_all_tabs => '关闭所有标签页';
+
+  @override
+  String get release_core_parallel_workspace_reopen_closed_tab => '重新打开已关闭的标签页';
+
+  @override
+  String get release_core_parallel_workspace_save_named_layout => '保存命名布局';
+
+  @override
+  String get release_core_parallel_workspace_restore_named_layout => '恢复命名布局';
+
+  @override
+  String get release_core_parallel_workspace_refresh_chat_list => '刷新聊天列表';
+
+  @override
+  String get release_core_parallel_workspace_workspace_tools => '工作区工具';
+
+  @override
+  String get release_core_parallel_workspace_choose_a_chat_for_this_pane =>
+      '为此面板选择聊天';
+
+  @override
+  String release_core_parallel_workspace_choose_chat_for(String pane) {
+    return '为$pane选择聊天';
+  }
+
+  @override
+  String get release_core_parallel_workspace_add_a_chat_to_start_a_workspace =>
+      '添加聊天以开始使用工作区。';
+
+  @override
+  String get release_core_parallel_workspace_select_a_tab_to_show_its_pane =>
+      '选择一个标签页以显示对应的面板。';
+
+  @override
+  String get release_core_parallel_workspace_parallel_workspace => '并行工作区';
+
+  @override
+  String get release_core_parallel_workspace_show_workspace => '显示工作区';
+
+  @override
+  String get release_core_parallel_workspace_could_not_load_chats_retry =>
+      '无法加载聊天。重试';
+
+  @override
+  String release_core_parallel_workspace_close(String pane) {
+    return '关闭$pane';
+  }
+
+  @override
+  String release_core_parallel_workspace_switch_pane(String pane) {
+    return '切换面板：$pane';
+  }
+
+  @override
+  String get release_core_workspace_registry_session_id_copied => '已复制会话 ID。';
+
+  @override
+  String get release_core_workspace_registry_chat_details => '聊天详情';
+
+  @override
+  String get release_core_workspace_registry_server_default => '服务器默认值';
+
+  @override
+  String get release_core_workspace_registry_session_id => '会话 ID';
+
+  @override
+  String get release_core_workspace_registry_title => '标题';
+
+  @override
+  String get release_core_workspace_label_terminals => '终端';
+
+  @override
+  String get release_core_workspace_label_copy_id => '复制会话 ID';
+
+  @override
+  String get release_core_workspace_label_contributions => '扩展项';
+
+  @override
+  String get release_core_workspace_owner_inactive => '此工作区的所有者已不再处于活动状态。';
+
+  @override
+  String get release_core_workspace_select_chat => '请先选择聊天。';
+
+  @override
+  String get release_core_workspace_chat_unavailable => '此连接无法使用该聊天。';
+
+  @override
+  String get release_core_workspace_page_unavailable => '此连接无法使用该页面。';
+
+  @override
+  String release_core_client_queue_count(int count) {
+    return '$count 条已排队';
+  }
+
+  @override
+  String release_core_client_queue_paused_count(int count) {
+    return '$count 条已排队，已暂停';
+  }
+
+  @override
+  String release_core_git_diff_truncated(String diff) {
+    return '$diff\n…已截断';
+  }
+
+  @override
+  String get release_core_search_no_models => 'Hermes 未返回任何已配置的可选模型。';
+
+  @override
+  String get release_core_chat_archive_unavailable => '聊天归档操作不可用。';
+
+  @override
+  String get release_core_chat_pin_unconfirmed => '置顶状态未获确认。';
+
+  @override
+  String get release_core_chat_archive_unconfirmed => '归档状态未获确认。';
+
+  @override
+  String get release_core_chat_archive_history_unavailable => '已归档的历史记录不可用';
+
+  @override
+  String get release_core_quick_chat_history_unavailable => '快速聊天的历史记录不可用';
+
+  @override
+  String get release_core_chat_project_ownership_unavailable => '无法确认项目归属';
+
+  @override
+  String get release_core_chat_unknown_project => '未知项目';
+
+  @override
+  String get release_core_chat_local_search_fallback => '消息搜索不可用。正在显示本地匹配结果。';
+
+  @override
+  String release_core_fleet_update_eligible(String version) {
+    return '符合条件 · $version';
+  }
+
+  @override
+  String get release_core_fleet_update_state_1 => '已跳过：同一安装实例';
+
+  @override
+  String get release_core_fleet_update_state_2 => '尚未检查';
+
+  @override
+  String get release_core_fleet_update_state_3 => '已跳过：由云端管理';
+
+  @override
+  String get release_core_fleet_update_state_4 => '已跳过：未注册为直连网关';
+
+  @override
+  String get release_core_fleet_update_state_5 => '已跳过：已断开连接或正忙';
+
+  @override
+  String get release_core_fleet_update_state_6 => '没有适用的更新';
+
+  @override
+  String get release_core_fleet_update_state_7 => '无法验证更新资格';
+
+  @override
+  String get release_core_fleet_update_state_8 => '已跳过：状态已过期、正忙或已请求';
+
+  @override
+  String get release_core_fleet_update_state_9 => '正在请求';
+
+  @override
+  String get release_core_fleet_update_state_10 => '已接受；回执不可用';
+
+  @override
+  String get release_core_fleet_update_state_11 => '已接受；正在等待回执';
+
+  @override
+  String get release_core_fleet_update_state_12 => '已跳过：此安装实例上有聊天正在运行';
+
+  @override
+  String get release_core_fleet_update_state_13 => '未获确认；不要自动重新发送';
+
+  @override
+  String get release_core_fleet_update_state_14 => '重新连接以检查回执';
+
+  @override
+  String get release_core_fleet_update_state_15 => '回执不可用';
+
+  @override
+  String get release_core_fleet_update_state_16 => '正在等待匹配的回执';
+
+  @override
+  String get release_core_fleet_update_state_17 => '已更新；需要后续处理';
+
+  @override
+  String get release_core_fleet_update_state_19 => '已部分更新';
+
+  @override
+  String get release_core_fleet_update_state_20 => '更新失败';
+
+  @override
+  String get release_core_fleet_update_state_21 => '未获确认';
+
+  @override
+  String get release_core_cloud_status_ready => '就绪';
+
+  @override
+  String get release_core_cloud_status_online => '在线';
+
+  @override
+  String get release_core_cloud_status_stopped => '已停止';
+
+  @override
+  String get release_core_cloud_status_error => '错误';
+
+  @override
+  String get ng_release_more_contributions_subtitle => '此连接中已审核的回复卡片';
+
+  @override
+  String get ng_release_more_gateway_fleet => '网关集群';
+
+  @override
+  String get ng_release_more_memory_graph => '记忆图谱';
+
+  @override
+  String get ng_release_more_memory_graph_subtitle => '时间线、编辑和记忆提供商';
+
+  @override
+  String get ng_release_more_capabilities_subtitle => '安装和管理技能、插件、连接器及工具后端';
+
+  @override
+  String get ng_release_more_browser_vault => '浏览器保险库';
+
+  @override
+  String get ng_release_more_browser_vault_subtitle => '网站登录信息、地址、银行卡和凭据来源';
+
+  @override
+  String get ng_release_more_agent_policy => '智能体策略';
+
+  @override
+  String get ng_release_more_agent_policy_subtitle => '审批、检查点、浏览器访问和共享指标';
+
+  @override
+  String get ng_release_more_schedules => '计划任务';
+
+  @override
+  String get ng_release_more_schedules_subtitle => '所有配置档案、蓝图、补跑和停止';
+
+  @override
+  String get ng_release_more_host_subtitle => '远程日志、健康状态、维护和更新';
+
+  @override
+  String get ng_release_more_providers_routes => '提供商和路由';
+
+  @override
+  String get ng_release_more_providers_routes_subtitle => '密钥、端点、委派和混合配置';
+
+  @override
+  String get ng_release_more_credits_plans => '额度和套餐';
+
+  @override
+  String get ng_release_more_credits_plans_subtitle => '账户允许且经你同意后使用 Nous 计费';
+
+  @override
+  String get ng_release_sign_in_or => '或';
+
+  @override
+  String ng_release_deployment_sign_in_hint(String message) {
+    return '$message 你仍可在下一步使用部署会话令牌登录。';
+  }
+
+  @override
+  String get ng_release_message_search_unavailable => '消息搜索不可用。正在显示本地匹配结果。';
+
+  @override
+  String ng_release_insights_days(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days 天',
+      one: '$days 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_release_signed_in_you => '你';
+
+  @override
+  String get release_chat_unsent_prompt_gone => '该未发送的提示词已不在队列中。';
+
+  @override
+  String ng_release_attachment_not_attached(String name) {
+    return '网关未附加 $name。';
+  }
+
+  @override
+  String get ng_release_gateway_not_connected => '尚未连接到网关。';
+
+  @override
+  String get ng_release_gateway_unreachable => '无法连接到网关。';
+
+  @override
+  String get ng_release_projects_scope_changed => '项目所属的连接或配置档案已不再选中';
+
+  @override
+  String get ng_release_missing_providers => '缺少提供商';
+
+  @override
+  String get ng_release_missing_tasks => '缺少任务';
+
+  @override
+  String ng_release_age_minutes(int count) {
+    return '$count分';
+  }
+
+  @override
+  String ng_release_age_hours(int count) {
+    return '$count小时';
+  }
+
+  @override
+  String ng_release_age_days(int count) {
+    return '$count天';
+  }
+
+  @override
+  String ng_release_age_weeks(int count) {
+    return '$count周';
+  }
+
+  @override
+  String ng_release_age_years(int count) {
+    return '$count年';
+  }
+
+  @override
+  String ng_release_compact_billions(String count) {
+    return '$count十亿';
+  }
+
+  @override
+  String ng_release_compact_millions(String count) {
+    return '$count百万';
+  }
+
+  @override
+  String ng_release_compact_thousands(String count) {
+    return '$count千';
+  }
+
+  @override
+  String ng_release_token_thousands(String count) {
+    return '$count千';
+  }
+
+  @override
+  String ng_release_elapsed_minutes_seconds(int minutes, int seconds) {
+    return '$minutes分 $seconds秒';
+  }
+
+  @override
+  String ng_release_elapsed_seconds(int seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get ng_release_notification_foreground => 'Ares 当时显示在屏幕上';
+
+  @override
+  String get ng_release_notification_stopped => '该轮次已停止';
+
+  @override
+  String get ng_release_more_parallel_workspace => '并行工作区';
+
+  @override
+  String get ng_release_more_parallel_workspace_subtitle => '在标签页中或并排打开多个聊天。';
+
+  @override
+  String get release_chat_unknown_model => '未知';
+
+  @override
+  String release_chat_profile_default(String model) {
+    return '配置档案默认值：$model';
+  }
+
+  @override
+  String release_chat_profile_default_provider(String model, String provider) {
+    return '配置档案默认值：$model • $provider';
+  }
+
+  @override
+  String get release_chat_choose_provider => '此模型可通过多个提供商使用。请选择一个提供商以继续。';
+
+  @override
+  String get release_chat_slash_needs_gateway => '斜杠命令需要桌面网关';
+
+  @override
+  String get release_chat_recovering_without_resending => '正在恢复，不会重新发送';
+
+  @override
+  String get release_chat_live_request_unreachable => '抱歉，无法连接到 Hermes 来处理该请求。';
+
+  @override
+  String release_chat_live_working(String tool) {
+    return 'Hermes 正在处理：$tool。尚未完成。';
+  }
+
+  @override
+  String get release_chat_live_finished_without_spoken_result =>
+      'Hermes 已完成该请求，但没有语音回复。';
+
+  @override
+  String get release_chat_reply_language_unavailable => '所选回复语言不可用';
+
+  @override
+  String get release_chat_reply_voice_unavailable => '所选回复音色不可用';
+
+  @override
+  String get release_chat_reply_voice_configuration_unavailable => '回复语音配置不可用';
+
+  @override
+  String get release_chat_notification_review_action => '打开聊天以检查请求的操作。';
+
+  @override
+  String get release_chat_notification_respond => '打开聊天以回复。';
+
+  @override
+  String get release_chat_start_new_main_window => '请在主窗口中开始新的聊天。';
+
+  @override
+  String get release_chat_no_desktop_gateway => '无桌面网关';
+
+  @override
+  String get release_chat_attachment_preparation_cancelled => '附件准备已取消。';
+
+  @override
+  String get release_chat_approval_authority_revoked => '审批权限已被撤销。';
+
+  @override
+  String get release_chat_gateway_session_disconnected => '桌面网关会话已断开连接';
+
+  @override
+  String get release_chat_stop_requested => '已请求停止。正在等待 Hermes 结束。';
+
+  @override
+  String release_chat_stop_request_failed(String error) {
+    return '无法请求停止：$error';
+  }
+
+  @override
+  String get release_chat_queued_prompt_not_sent => '排队中的提示词未发送。';
+
+  @override
+  String get release_chat_running_turn_unreachable =>
+      '无法联系到正在运行的轮次。正在重新连接，不会重新发送。';
+
+  @override
+  String get release_chat_wait_for_composer => '请等待消息输入框可用。';
+
+  @override
+  String get release_chat_find_in_transcript => '在对话记录中查找';
+
+  @override
+  String get release_chat_open_browser_preview => '打开浏览器预览';
+
+  @override
+  String get release_chat_more_tools => '更多聊天工具';
+
+  @override
+  String get release_chat_queue_until_finished => '排队等待本轮结束';
+
+  @override
+  String get release_chat_format_bold => '粗体';
+
+  @override
+  String get release_chat_format_italic => '斜体';
+
+  @override
+  String get ng_release_chat_gateway_queue_requirements =>
+      '网关队列需要已关联的聊天和纯文本提示词。';
+
+  @override
+  String get ng_release_chat_start_new_main_screen => '请从聊天主界面开始新的聊天。';
+
+  @override
+  String get ng_release_chat_image => '图片';
+
+  @override
+  String ng_release_chat_tool_seconds(String seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get release_preview_chat_changed => '聊天已更改。请重新连接预览以继续。';
+
+  @override
+  String get release_preview_authenticating_chat => '正在验证聊天身份…';
+
+  @override
+  String release_preview_unavailable_reason(String reason) {
+    return '预览不可用：$reason';
+  }
+
+  @override
+  String get release_preview_operation_failed => '预览操作失败。';
+
+  @override
+  String get release_preview_added_to_draft => '已添加到草稿。未发送任何内容。';
+
+  @override
+  String get release_preview_open_site_title => '打开此网站？';
+
+  @override
+  String release_preview_open_site_body(String origin) {
+    return '$origin\n\n阅读模式仅加载此文档，不会与 Hermes 共享 Cookie、登录信息或页面。';
+  }
+
+  @override
+  String get release_preview_open_site => '打开网站';
+
+  @override
+  String get release_preview_discard_pins_title => '丢弃尚未添加到草稿的标注？';
+
+  @override
+  String get release_preview_keep_pins => '保留标注';
+
+  @override
+  String get release_preview_share_page_title => '与此聊天共享此页面？';
+
+  @override
+  String release_preview_share_page_body(String origin) {
+    return 'Hermes 可以读取 $origin 中显示的文本和元素列表，并滚动此面板。导航到其他页面后将结束共享。不会共享表单和凭据。';
+  }
+
+  @override
+  String get release_preview_share_page => '共享页面';
+
+  @override
+  String release_preview_comment_number(int number) {
+    return '评论 #$number';
+  }
+
+  @override
+  String get release_preview_note => '备注';
+
+  @override
+  String get release_preview_keep_pin => '保留标注';
+
+  @override
+  String get release_preview_title => '浏览器预览';
+
+  @override
+  String get release_preview_hide => '隐藏预览';
+
+  @override
+  String get release_preview_close_and_forget => '关闭并清除此页面';
+
+  @override
+  String get release_preview_site_address => '网站地址';
+
+  @override
+  String get release_preview_go_to_address => '前往地址';
+
+  @override
+  String get release_preview_forward => '前进';
+
+  @override
+  String get release_preview_reload => '重新加载';
+
+  @override
+  String get release_preview_share_with_hermes => '与 Hermes 共享页面';
+
+  @override
+  String get release_preview_stop_sharing => '停止共享页面';
+
+  @override
+  String get release_preview_annotate => '标注元素或区域';
+
+  @override
+  String get release_preview_reader_console => '阅读器控制台';
+
+  @override
+  String get release_preview_reconnect => '重新连接预览';
+
+  @override
+  String get release_preview_reader_mode_help =>
+      '阅读模式：仅 HTML 和文本。不运行脚本、不加载嵌入资源，也不使用已登录的浏览器配置档案。';
+
+  @override
+  String release_preview_sharing_origin(String origin) {
+    return '正在与此聊天共享阅读器：$origin';
+  }
+
+  @override
+  String get release_preview_annotation_help => '点按元素或拖选区域以添加评论。';
+
+  @override
+  String get release_preview_reader_requests => '阅读器请求（JavaScript 已关闭）';
+
+  @override
+  String release_preview_selected_requests(int count) {
+    return '已选择 $count 项 · JavaScript 已关闭';
+  }
+
+  @override
+  String get release_preview_copy_all => '全部复制';
+
+  @override
+  String get release_preview_copy_selected => '复制所选内容';
+
+  @override
+  String get release_preview_add_log_to_draft => '将日志添加到草稿';
+
+  @override
+  String release_preview_requests_draft(String log) {
+    return '阅读器请求：\n$log';
+  }
+
+  @override
+  String release_preview_add_pins_to_draft(int count) {
+    return '将 $count 个标注添加到草稿';
+  }
+
+  @override
+  String release_preview_request_loaded(String origin, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个阅读器元素',
+      one: '$count 个阅读器元素',
+    );
+    return 'HTTP 200 · $origin · $_temp0';
+  }
+
+  @override
+  String release_preview_annotation_intro(String origin) {
+    return '请检查对 $origin 预览的这些评论。附带的裁剪图按相同顺序编号。';
+  }
+
+  @override
+  String get release_preview_reader_region => '阅读器区域';
+
+  @override
+  String get release_preview_capture_failed => '无法截取这些像素。';
+
+  @override
+  String get release_preview_address_not_approved => '此地址不属于已批准的预览来源。';
+
+  @override
+  String get release_preview_page_limit => '页面超出阅读器限制。';
+
+  @override
+  String get release_preview_page_unreadable => '无法读取此页面。';
+
+  @override
+  String get release_preview_page_complex => '此页面过于复杂，无法使用阅读模式。';
+
+  @override
+  String release_preview_http_failed(int statusCode) {
+    return 'HTTP $statusCode。未跟随任何重定向，也未进行登录。';
+  }
+
+  @override
+  String get release_preview_unsupported_type => '阅读模式只能打开 HTML 和纯文本。';
+
+  @override
+  String get release_preview_load_insecure => '无法安全加载此网站。';
+
+  @override
+  String get release_preview_crop_limit => '预览裁剪图超出限制。';
+
+  @override
+  String get release_preview_image_unreadable => '所选图片为空或无法读取。';
+
+  @override
+  String get release_preview_image_budget => '所选图片超出草稿的 64 MiB 大小限制。';
+
+  @override
+  String get release_preview_image_format => '不支持此图片格式。请选择 JPEG、PNG 或 WebP 图片。';
+
+  @override
+  String get release_preview_image_decode => '无法安全解码所选的 JPEG、PNG 或 WebP 图片。';
+
+  @override
+  String get release_preview_image_sanitize =>
+      '无法安全清除此图片的元数据。请选择有效的 JPEG、PNG 或 WebP 图片。';
+
+  @override
+  String get release_preview_draft_budget => '每份草稿的附件总大小不得超过 64 MiB。';
+
+  @override
+  String get release_preview_generic_file_limit => '通用文件每个不得超过 16 MiB。';
+
+  @override
+  String get release_preview_image_not_sanitized => '远程图片必须先经过安全清理才能上传。';
+
+  @override
+  String get release_preview_stage_failed => '无法将预览证据添加到草稿。请重试。';
+
+  @override
+  String get release_misc_find_hermes_on_lan => '在局域网中查找 Hermes';
+
+  @override
+  String release_misc_discovery_failed(String error) {
+    return '发现失败：$error';
+  }
+
+  @override
+  String get release_misc_no_lan_servers => '在本地网络中未找到 Hermes 服务器。';
+
+  @override
+  String release_misc_api_key_rejected(String endpoint, int statusCode) {
+    return '$endpoint 拒绝了 API 密钥（HTTP $statusCode）。';
+  }
+
+  @override
+  String get release_misc_api_key_required =>
+      '服务器需要 API 密钥。请输入你的 API_SERVER_KEY。';
+
+  @override
+  String release_misc_gateway_not_found(String endpoint) {
+    return '网关端点 $endpoint 返回 HTTP 404。请检查网关路径前缀和反向代理路由。';
+  }
+
+  @override
+  String release_misc_gateway_http_error(String endpoint, int statusCode) {
+    return '网关端点 $endpoint 返回 HTTP $statusCode。';
+  }
+
+  @override
+  String release_misc_gateway_unreachable(String endpoint) {
+    return '无法连接到网关端点 $endpoint。';
+  }
+
+  @override
+  String get release_core_schedule_invalid_delivery_target => '无效的投递目标';
+
+  @override
+  String get release_core_file_save_direct_only => '只能保存工作目录直属的文件。';
+
+  @override
+  String get release_core_file_save_hidden => '网关无法保存隐藏文件。';
+
+  @override
+  String get rel_admin_choose_provider => '请选择提供商和模型。';
+
+  @override
+  String get rel_admin_known_effort => '请选择已知的推理强度。';
+
+  @override
+  String get rel_admin_endpoint_name_required => '请输入此端点的名称。';
+
+  @override
+  String get rel_admin_endpoint_model_required => '请输入此端点提供的模型。';
+
+  @override
+  String get rel_admin_known_api_mode => '请选择自动或已知的 API 模式。';
+
+  @override
+  String get rel_admin_endpoint_id_invalid => '此端点标识符不可用。';
+
+  @override
+  String get rel_admin_endpoint_https => '远程端点请使用 HTTPS，localhost 请使用 HTTP。';
+
+  @override
+  String get rel_admin_key_invalid => '无法保存该 API 密钥。';
+
+  @override
+  String get rel_admin_response_shape => '网关响应与预期结构不符。';
+
+  @override
+  String get rel_admin_limits_required => '保存前请输入迭代次数、并发数和超时限制。';
+
+  @override
+  String get rel_admin_route_required => '每条路由都需要名称和模型才能保存。';
+
+  @override
+  String get rel_admin_route_unique => '路由名称必须唯一。';
+
+  @override
+  String get rel_admin_route_default_invalid => '默认路由必须是已保存的路由之一。';
+
+  @override
+  String get rel_admin_policy_required => '请选择有声或静默的参考模型降级策略。';
+
+  @override
+  String get rel_admin_mixture_missing => '网关未返回活动的混合配置。';
+
+  @override
+  String get rel_admin_mixture_slots_required => '请为聚合器和每个参考模型指定提供商及模型。';
+
+  @override
+  String get rel_admin_chat_id_required => '请输入要应用此更改的聊天 ID。';
+
+  @override
+  String rel_admin_http_error(String status) {
+    return '网关返回了 HTTP $status。';
+  }
+
+  @override
+  String get rel_admin_response_unreadable => '无法读取网关响应。';
+
+  @override
+  String get rel_admin_connect_before_change => '更改账单或聊天前，请连接网关实时会话。';
+
+  @override
+  String get rel_admin_operation_unavailable => '此网关不支持该操作。';
+
+  @override
+  String get rel_admin_key_required => '请输入要保存的密钥。';
+
+  @override
+  String get rel_admin_key_save_failed => '网关未保存该密钥。';
+
+  @override
+  String get rel_admin_key_clear_required => '请选择要清除的提供商密钥。';
+
+  @override
+  String get rel_admin_key_clear_failed => '网关未清除该密钥。';
+
+  @override
+  String get rel_admin_endpoint_save_failed => '网关未保存该端点。';
+
+  @override
+  String get rel_admin_endpoint_activate_failed => '网关未激活该端点。';
+
+  @override
+  String get rel_admin_accounts_secure_required =>
+      '提供商账户需要经过身份验证的 HTTPS 网关或 localhost。';
+
+  @override
+  String get rel_admin_accounts_read_failed => '无法读取提供商账户。';
+
+  @override
+  String get rel_admin_account_disconnect_failed => '网关未断开该账户。';
+
+  @override
+  String get rel_admin_account_not_disconnectable => '无法断开该提供商账户。';
+
+  @override
+  String get rel_admin_backend_required => '请选择一个可用的委派后端。';
+
+  @override
+  String get rel_admin_backend_save_failed => '网关未选择该后端。';
+
+  @override
+  String get rel_admin_routes_save_failed => '网关未保存这些路由。';
+
+  @override
+  String get rel_admin_profile_route_required => '每条配置文件路由都需要配置文件名称。';
+
+  @override
+  String get rel_admin_profile_route_unique => '配置文件路由必须唯一。';
+
+  @override
+  String get rel_admin_profile_route_default_invalid => '默认配置文件路由必须是允许的配置文件之一。';
+
+  @override
+  String get rel_admin_profile_routes_save_failed => '网关未保存这些配置文件路由。';
+
+  @override
+  String get rel_admin_limits_save_failed => '网关未保存这些限制。';
+
+  @override
+  String get rel_admin_mixture_save_failed => '网关未保存该混合配置。';
+
+  @override
+  String get rel_admin_credit_amount_required => '请选择一个提供的额度金额。';
+
+  @override
+  String get rel_admin_charge_check_failed => '无法检查该笔扣款。';
+
+  @override
+  String get rel_admin_reload_amounts_missing => '未提供自动充值金额，因此未作更改。';
+
+  @override
+  String get rel_admin_plan_required => '请先选择套餐。';
+
+  @override
+  String get rel_admin_plan_scheduled_only => '这里只能确认已安排的套餐变更。';
+
+  @override
+  String get rel_admin_billing_refused => '网关拒绝了此账单请求。';
+
+  @override
+  String get rel_admin_request_refused => '网关拒绝了此请求。';
+
+  @override
+  String get rel_admin_endpoint_answered => '端点已响应。';
+
+  @override
+  String get rel_admin_endpoint_no_answer => '端点未响应。';
+
+  @override
+  String get rel_admin_charge_unknown => '扣款结果未知，仍可能结算。重试前请检查门户。';
+
+  @override
+  String get rel_admin_connect_before_billing => '查看账单前请连接网关实时会话。此页面不会扣款。';
+
+  @override
+  String get rel_admin_preset_required => '请先保存预设再应用。';
+
+  @override
+  String get rel_admin_cancel => '取消';
+
+  @override
+  String get rel_admin_refresh => '刷新';
+
+  @override
+  String get rel_admin_credits_and_plans => '额度和套餐';
+
+  @override
+  String get rel_admin_saved => '已保存';
+
+  @override
+  String get rel_admin_name => '名称';
+
+  @override
+  String get rel_admin_base_url => '基础 URL';
+
+  @override
+  String get rel_admin_model => '模型';
+
+  @override
+  String get rel_admin_signed_in => '已登录';
+
+  @override
+  String get rel_admin_not_signed_in => '未登录';
+
+  @override
+  String get rel_admin_provider => '提供商';
+
+  @override
+  String get rel_admin_apply_to_this_chat => '应用到此聊天';
+
+  @override
+  String get rel_admin_auto => '自动';
+
+  @override
+  String get rel_admin_chat_completions => '聊天补全';
+
+  @override
+  String get rel_admin_codex_responses => 'Codex 响应';
+
+  @override
+  String get rel_admin_anthropic_messages => 'Anthropic 消息';
+
+  @override
+  String get rel_admin_could_not_complete_that_request => '无法完成该请求。';
+
+  @override
+  String get rel_admin_confirm => '确认';
+
+  @override
+  String get rel_admin_providers_and_billing => '提供商和账单';
+
+  @override
+  String get rel_admin_api_keys => 'API 密钥';
+
+  @override
+  String get rel_admin_custom_endpoints => '自定义端点';
+
+  @override
+  String get rel_admin_provider_accounts => '提供商账户';
+
+  @override
+  String get rel_admin_effort_and_speed_presets => '推理强度与速度预设';
+
+  @override
+  String get rel_admin_delegation => '委派';
+
+  @override
+  String get rel_admin_mixture_of_agents => '智能体混合';
+
+  @override
+  String get rel_admin_no_provider_keys_were_reported_for_this_profile =>
+      '未报告此配置文件的提供商密钥。';
+
+  @override
+  String get rel_admin_not_saved => '未保存';
+
+  @override
+  String get rel_admin_new_key_value => '新密钥值';
+
+  @override
+  String get rel_admin_provider_key_saved => '提供商密钥已保存。';
+
+  @override
+  String get rel_admin_save_key => '保存密钥';
+
+  @override
+  String get rel_admin_clear_provider_key => '清除提供商密钥';
+
+  @override
+  String get rel_admin_provider_key_cleared => '提供商密钥已清除。';
+
+  @override
+  String get rel_admin_clear_key => '清除密钥';
+
+  @override
+  String get rel_admin_new_endpoint => '新端点';
+
+  @override
+  String get rel_admin_api_key => 'API 密钥';
+
+  @override
+  String get rel_admin_leave_blank_to_keep_a_key_this_endpoint_already_has =>
+      '留空以保留此端点现有的密钥。';
+
+  @override
+  String get rel_admin_reachable => '可访问';
+
+  @override
+  String get rel_admin_unreachable => '不可访问';
+
+  @override
+  String get rel_admin_test_endpoint => '测试端点';
+
+  @override
+  String get rel_admin_endpoint_saved => '端点已保存。';
+
+  @override
+  String get rel_admin_save_endpoint => '保存端点';
+
+  @override
+  String get rel_admin_use_this_endpoint => '使用此端点';
+
+  @override
+  String
+  get rel_admin_make_this_named_endpoint_the_current_model_for_this_profile =>
+      '将此命名端点设为此配置文件的当前模型？';
+
+  @override
+  String get rel_admin_endpoint_is_now_current => '端点现已设为当前端点。';
+
+  @override
+  String get rel_admin_use_endpoint => '使用端点';
+
+  @override
+  String get rel_admin_delete_endpoint => '删除端点';
+
+  @override
+  String get rel_admin_delete_this_named_endpoint_from_the_profile =>
+      '从配置文件中删除此命名端点？';
+
+  @override
+  String get rel_admin_endpoint_deleted => '端点已删除。';
+
+  @override
+  String get rel_admin_signing_in_stays_on_the_provider_sign_in_screen =>
+      '登录仍在提供商登录界面进行。仅当此网关表示可以移除账户时才执行断开操作。';
+
+  @override
+  String get rel_admin_disconnect_this_provider_account_on_the_gateway =>
+      '在网关上断开此提供商账户？';
+
+  @override
+  String get rel_admin_provider_account_disconnected => '提供商账户已断开。';
+
+  @override
+  String get rel_admin_disconnect => '断开连接';
+
+  @override
+  String get rel_admin_not_disconnectable => '无法断开';
+
+  @override
+  String get rel_admin_fast => '快速';
+
+  @override
+  String get rel_admin_preset_saved_for_this_model => '已保存此模型的预设。';
+
+  @override
+  String get rel_admin_save_preset => '保存预设';
+
+  @override
+  String get rel_admin_chat_id => '聊天 ID';
+
+  @override
+  String get rel_admin_apply_preset => '应用预设';
+
+  @override
+  String get rel_admin_set_this_chat_s_effort_and_speed_from_the_saved_preset =>
+      '使用保存的预设设置此聊天的推理强度和速度？';
+
+  @override
+  String get rel_admin_preset_applied_to_this_chat => '预设已应用于此聊天。';
+
+  @override
+  String get rel_admin_this_route_sends_the_picked_effort_unchanged =>
+      '此路由原样发送所选推理强度。';
+
+  @override
+  String get rel_admin_show_route_clamp => '显示路由限制';
+
+  @override
+  String get rel_admin_delegation_backend => '委派后端';
+
+  @override
+  String get rel_admin_delegation_backend_saved => '委派后端已保存。';
+
+  @override
+  String get rel_admin_save_backend => '保存后端';
+
+  @override
+  String get rel_admin_max_iterations => '最大迭代次数';
+
+  @override
+  String get rel_admin_max_concurrent_children => '最大并发子智能体数';
+
+  @override
+  String get rel_admin_child_timeout_seconds => '子智能体超时秒数';
+
+  @override
+  String get rel_admin_delegation_effort_leave_unchanged => '委派推理强度，保持不变';
+
+  @override
+  String get rel_admin_delegation_limits_saved => '委派限制已保存。';
+
+  @override
+  String get rel_admin_save_limits => '保存限制';
+
+  @override
+  String get rel_admin_remove_route => '移除路由';
+
+  @override
+  String get rel_admin_route_name => '路由名称';
+
+  @override
+  String get rel_admin_route_provider => '路由提供商';
+
+  @override
+  String get rel_admin_route_model => '路由模型';
+
+  @override
+  String get rel_admin_route_effort_unchanged => '路由推理强度不变';
+
+  @override
+  String get rel_admin_add_route => '添加路由';
+
+  @override
+  String get rel_admin_default_route => '默认路由';
+
+  @override
+  String get rel_admin_delegation_routes_saved => '委派路由已保存。';
+
+  @override
+  String get rel_admin_save_routes => '保存路由';
+
+  @override
+  String get rel_admin_profile_routes_saved => '配置文件路由已保存。';
+
+  @override
+  String get rel_admin_save_profile_routes => '保存配置文件路由';
+
+  @override
+  String get rel_admin_no_mixture_is_loaded => '未加载混合配置。';
+
+  @override
+  String get rel_admin_mixture_enabled => '启用混合';
+
+  @override
+  String get rel_admin_loud_degraded_references => '参考模型降级时提示';
+
+  @override
+  String get rel_admin_silent_degraded_references => '参考模型降级时静默';
+
+  @override
+  String get rel_admin_aggregator => '聚合器';
+
+  @override
+  String get rel_admin_aggregator_provider => '聚合器提供商';
+
+  @override
+  String get rel_admin_aggregator_model => '聚合器模型';
+
+  @override
+  String get rel_admin_reference_provider => '参考模型提供商';
+
+  @override
+  String get rel_admin_reference_model => '参考模型';
+
+  @override
+  String get rel_admin_add_reference_model => '添加参考模型';
+
+  @override
+  String get rel_admin_mixture_saved => '混合配置已保存。';
+
+  @override
+  String get rel_admin_save_mixture => '保存混合配置';
+
+  @override
+  String get rel_admin_credit_purchase_submitted => '额度购买请求已提交。';
+
+  @override
+  String get rel_admin_credit_purchase_settled => '额度购买已结算。';
+
+  @override
+  String get rel_admin_credit_and_plan_changes_wait_for_confirmation_a_plan =>
+      '额度和套餐变更需等待确认。会立即扣款的套餐会显示，但不会在此确认。';
+
+  @override
+  String get rel_admin_buy_credits => '购买额度';
+
+  @override
+  String get rel_admin_retry_same_charge => '重试同一笔扣款';
+
+  @override
+  String get rel_admin_retry_the_same_credit_charge_this_does_not_start =>
+      '重试同一笔额度扣款。这不会发起第二次购买。';
+
+  @override
+  String get rel_admin_credit_purchases_are_not_available_for_this_account =>
+      '此账户无法购买额度。';
+
+  @override
+  String get rel_admin_auto_reload => '自动充值';
+
+  @override
+  String get rel_admin_read_only_until_this_account_can_charge => '此账户可扣款前为只读。';
+
+  @override
+  String get rel_admin_auto_reload_updated => '自动充值已更新。';
+
+  @override
+  String get rel_admin_keep_going_on_credits => '使用额度继续';
+
+  @override
+  String get rel_admin_continue_on_credits_when_the_plan_window_is_used_up =>
+      '套餐周期额度用完后使用额度继续？';
+
+  @override
+  String
+  get rel_admin_stop_continuing_on_credits_when_the_plan_window_is_used_up =>
+      '停止在套餐周期额度用完后使用额度继续？';
+
+  @override
+  String get rel_admin_credit_continuation_updated => '额度续用设置已更新。';
+
+  @override
+  String get rel_admin_this_plan_change_is_not_confirmed_from_ares =>
+      '此套餐变更不会通过 Ares 确认。';
+
+  @override
+  String get rel_admin_this_change_is_scheduled_confirm_to_apply_it =>
+      '此变更已安排。请确认以应用。';
+
+  @override
+  String get rel_admin_preview_plan => '预览套餐';
+
+  @override
+  String get rel_admin_schedule_plan_change => '安排套餐变更';
+
+  @override
+  String get rel_admin_plan_change_scheduled => '套餐变更已安排。';
+
+  @override
+  String get rel_admin_confirm_scheduled_plan_change => '确认已安排的套餐变更';
+
+  @override
+  String rel_admin_remove_key_confirm(String key) {
+    return '从此配置文件移除已保存的 $key 值？';
+  }
+
+  @override
+  String rel_admin_current_endpoint(String name) {
+    return '$name · 当前';
+  }
+
+  @override
+  String rel_admin_endpoint_result(
+    String status,
+    String transport,
+    String count,
+    String message,
+  ) {
+    return '$status · $transport · $count 个模型。$message';
+  }
+
+  @override
+  String rel_admin_disconnect_account(String name) {
+    return '断开 $name';
+  }
+
+  @override
+  String rel_admin_delegation_blocked(String reason) {
+    return '委派已被阻止：$reason';
+  }
+
+  @override
+  String rel_admin_backend_unavailable(String name) {
+    return '$name · 不可用';
+  }
+
+  @override
+  String rel_admin_reference_number(String number) {
+    return '参考模型 $number';
+  }
+
+  @override
+  String rel_admin_reload_enable_confirm(String amount, String threshold) {
+    return '开启自动充值，在余额低于 $threshold 时扣款 $amount？';
+  }
+
+  @override
+  String rel_admin_reload_disable_confirm(String amount, String threshold) {
+    return '关闭自动充值？目前余额低于 $threshold 时会扣款 $amount。';
+  }
+
+  @override
+  String get rel_admin_this_plan => '此套餐';
+
+  @override
+  String rel_admin_plan_confirm(String name) {
+    return '安排 $name。将在当前周期结束时生效。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price(String name, String price) {
+    return '以 $price 安排 $name。将在当前周期结束时生效。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_when(String name, String when) {
+    return '安排 $name。生效时间：$when。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price_when(
+    String name,
+    String price,
+    String when,
+  ) {
+    return '以 $price 安排 $name。生效时间：$when。现在不会扣款。';
+  }
+
+  @override
+  String rel_admin_balance(String amount) {
+    return '余额 $amount';
+  }
+
+  @override
+  String rel_admin_buy_confirm(String amount) {
+    return '向此 Nous 账户的付款方式收取 \$$amount。这会花费真实货币。';
+  }
+
+  @override
+  String rel_admin_reload_portal(String url) {
+    return '在门户更改自动充值：$url';
+  }
+
+  @override
+  String rel_admin_team_portal(String url) {
+    return '团队订阅在门户更改：$url';
+  }
+
+  @override
+  String get rel_admin_effort_none => '无';
+
+  @override
+  String get rel_admin_effort_minimal => '最低';
+
+  @override
+  String get rel_admin_effort_low => '低';
+
+  @override
+  String get rel_admin_effort_medium => '中';
+
+  @override
+  String get rel_admin_effort_high => '高';
+
+  @override
+  String get rel_admin_effort_xhigh => '很高';
+
+  @override
+  String get rel_admin_effort_max => '最大';
+
+  @override
+  String get rel_admin_effort_ultra => '超高';
+
+  @override
+  String get rel_admin_auto_lower => '自动';
+
+  @override
+  String get rel_admin_create => '创建';
+
+  @override
+  String get rel_admin_prompt => '提示词';
+
+  @override
+  String get rel_admin_new_profile_id => '新配置档案 ID';
+
+  @override
+  String get rel_admin_this_operation_is_unavailable_on_this_gateway =>
+      '此网关不支持此操作。';
+
+  @override
+  String get rel_admin_access_denied_by_the_gateway => '网关拒绝访问。';
+
+  @override
+  String get rel_admin_connection_changed_reopen_profiles => '连接已更改。请重新打开配置文件。';
+
+  @override
+  String
+  get rel_admin_invalid_input_or_gateway_response_check_the_target_before =>
+      '输入或网关响应无效。重试前请检查目标。';
+
+  @override
+  String get rel_admin_could_not_verify_the_result_refresh_the_target_before =>
+      '无法验证结果。请刷新目标后重试。';
+
+  @override
+  String get rel_admin_edit_soul_md => '编辑 SOUL.md';
+
+  @override
+  String get rel_admin_persona => '角色设定';
+
+  @override
+  String get rel_admin_persona_saved => '角色设定已保存。';
+
+  @override
+  String get rel_admin_not_set => '未设置';
+
+  @override
+  String get rel_admin_enabled => '已启用';
+
+  @override
+  String get rel_admin_keys_to_remove_comma_separated => '要移除的键（逗号分隔）';
+
+  @override
+  String get rel_admin_saved_and_applied_by_the_gateway => '网关已保存并应用。';
+
+  @override
+  String get rel_admin_saved_a_gateway_restart_may_be_required =>
+      '已保存。可能需要重启网关。';
+
+  @override
+  String get rel_admin_create_signed_route => '创建签名路由';
+
+  @override
+  String get rel_admin_route_id => '路由 ID';
+
+  @override
+  String get rel_admin_signature => '签名';
+
+  @override
+  String get rel_admin_events_comma_separated => '事件（逗号分隔）';
+
+  @override
+  String get rel_admin_delivery_target => '投递目标';
+
+  @override
+  String get rel_admin_skills_comma_separated => '技能（逗号分隔）';
+
+  @override
+  String get rel_admin_delivery_mode => '投递模式';
+
+  @override
+  String get rel_admin_delivery_chat_id_optional => '投递聊天 ID（可选）';
+
+  @override
+  String get rel_admin_hide_signing_secret => '隐藏签名密钥';
+
+  @override
+  String get rel_admin_reveal_signing_secret => '显示签名密钥';
+
+  @override
+  String get rel_admin_edit_persona => '编辑角色设定';
+
+  @override
+  String get rel_admin_portable_profile_bundle => '可移植配置文件包';
+
+  @override
+  String get rel_admin_clone_profile => '克隆配置文件';
+
+  @override
+  String get rel_admin_rename_display_label => '重命名显示标签';
+
+  @override
+  String get rel_admin_rename_profile => '重命名配置文件';
+
+  @override
+  String get rel_admin_new_name => '新名称';
+
+  @override
+  String get rel_admin_rename_verified => '重命名已验证。';
+
+  @override
+  String get rel_admin_delete_profile => '删除配置文件';
+
+  @override
+  String get rel_admin_profile_id_to_delete => '要删除的配置文件 ID';
+
+  @override
+  String get rel_admin_profile_deleted => '配置文件已删除。';
+
+  @override
+  String
+  get rel_admin_profile_deleted_server_identity_cleanup_is_still_pending =>
+      '配置文件已删除。服务器身份清理仍待完成。';
+
+  @override
+  String get rel_admin_export_profile_archive => '导出配置文件归档';
+
+  @override
+  String get rel_admin_import_profile_archive => '导入配置文件归档';
+
+  @override
+  String get rel_admin_import_a_trusted_profile => '导入可信配置文件';
+
+  @override
+  String get rel_admin_absolute_archive_path_on_gateway => '网关上的归档绝对路径';
+
+  @override
+  String get rel_admin_messaging_channels => '消息渠道';
+
+  @override
+  String get rel_admin_dm_pairing_requests => '私信配对请求';
+
+  @override
+  String get rel_admin_no_pending_or_approved_users => '没有待处理或已批准的用户。';
+
+  @override
+  String get rel_admin_legacy_pairing_no_verifiable_request_id_ask_the_user =>
+      '旧版配对：没有可验证的请求 ID。请让用户重新配对。';
+
+  @override
+  String get rel_admin_pairing_change_verified => '配对变更已验证。';
+
+  @override
+  String get rel_admin_create_telegram_bot_by_qr => '通过二维码创建 Telegram 机器人';
+
+  @override
+  String get rel_admin_create_telegram_bot => '创建 Telegram 机器人';
+
+  @override
+  String get rel_admin_bot_name => '机器人名称';
+
+  @override
+  String get rel_admin_telegram_bot_creation_qr_code => 'Telegram 机器人创建二维码';
+
+  @override
+  String get rel_admin_check_telegram_pairing => '检查 Telegram 配对';
+
+  @override
+  String get rel_admin_waiting_for_telegram => '正在等待 Telegram。';
+
+  @override
+  String get rel_admin_apply_telegram_bot => '应用 Telegram 机器人';
+
+  @override
+  String get rel_admin_allowed_numeric_user_ids => '允许的数字用户 ID';
+
+  @override
+  String get rel_admin_saved_restart_still_required => '已保存。仍需重启。';
+
+  @override
+  String get rel_admin_saved_gateway_restart_requested => '已保存；已请求重启网关。';
+
+  @override
+  String get rel_admin_cancel_telegram_setup => '取消 Telegram 设置';
+
+  @override
+  String get rel_admin_inbound_webhooks => '入站 Webhook';
+
+  @override
+  String get rel_admin_enable_webhook_service => '启用 Webhook 服务';
+
+  @override
+  String get rel_admin_enable_webhooks => '启用 Webhook';
+
+  @override
+  String get rel_admin_enabled_restart_still_required => '已启用。仍需重启。';
+
+  @override
+  String get rel_admin_enabled_restart_requested => '已启用；已请求重启。';
+
+  @override
+  String get rel_admin_route_change_verified => '路由变更已验证。';
+
+  @override
+  String get rel_admin_delete_route => '删除路由';
+
+  @override
+  String get rel_admin_disable_route => '禁用路由';
+
+  @override
+  String get rel_admin_enable_route => '启用路由';
+
+  @override
+  String get rel_admin_back_up_entire_agent_home => '备份整个智能体主目录';
+
+  @override
+  String get rel_admin_transfer_to_a_cloud_agent => '传输到 Cloud 智能体';
+
+  @override
+  String get rel_admin_check_backup_progress => '检查备份进度';
+
+  @override
+  String get rel_admin_save_backup_to_this_device => '将备份保存到此设备';
+
+  @override
+  String get rel_admin_save_sensitive_full_home_archive => '保存含敏感信息的完整主目录归档';
+
+  @override
+  String get rel_admin_save_cancelled => '已取消保存。';
+
+  @override
+  String get rel_admin_backup_saved => '备份已保存。';
+
+  @override
+  String get rel_admin_up_to_32_mib_larger_archives_remain_on_the_gateway =>
+      '最大 32 MiB。更大的归档保留在网关上。';
+
+  @override
+  String rel_admin_persona_scope(String scope) {
+    return '保存 $scope 的角色设定。';
+  }
+
+  @override
+  String rel_admin_configure_channel(String name) {
+    return '配置 $name';
+  }
+
+  @override
+  String rel_admin_channel_warning(String scope) {
+    return '应用于 $scope。留空保留现有值。要移除值，请在下方列出其键。';
+  }
+
+  @override
+  String rel_admin_hook_warning(String scope) {
+    return '应用于 $scope。请使用唯一名称。网关会创建签名密钥。如果其他操作员同时创建该名称，主机可能替换该路由。';
+  }
+
+  @override
+  String rel_admin_hook_created(String url) {
+    return '已创建 $url。离开前请保存签名密钥。';
+  }
+
+  @override
+  String rel_admin_clone_warning(String scope) {
+    return '从 $scope 复制设置、技能、角色设定，以及可能的提供商凭据。不请求消息令牌。';
+  }
+
+  @override
+  String rel_admin_cloned(String source, String destination) {
+    return '已将 $source 克隆到 $destination。';
+  }
+
+  @override
+  String rel_admin_rename_target(String name) {
+    return '重命名 $name';
+  }
+
+  @override
+  String rel_admin_rename_label_warning(String scope) {
+    return '更改 $scope 的显示标签。其 ID 保持为 default。';
+  }
+
+  @override
+  String rel_admin_rename_warning(String scope) {
+    return '在服务器上重命名 $scope。正在运行的网关可能停止。';
+  }
+
+  @override
+  String rel_admin_delete_target(String name) {
+    return '删除 $name';
+  }
+
+  @override
+  String rel_admin_delete_profile_warning(String scope) {
+    return '永久删除 $scope，包括会话和凭据。请输入准确的配置文件 ID。';
+  }
+
+  @override
+  String rel_admin_export_target(String name) {
+    return '导出 $name';
+  }
+
+  @override
+  String rel_admin_export_warning(String scope) {
+    return '在 $scope 上创建 .tar.gz。已知凭据存储会被排除，但可能仍含私人数据。分享前请检查。';
+  }
+
+  @override
+  String rel_admin_archive_on(String gateway, String path) {
+    return '$gateway 上的归档：$path';
+  }
+
+  @override
+  String rel_admin_import_warning(String gateway) {
+    return '使用已在 $gateway 上且已检查的 .tar.gz。它可能包含插件、脚本和计划。需要新的配置文件 ID。';
+  }
+
+  @override
+  String rel_admin_imported(String name) {
+    return '已导入 $name。';
+  }
+
+  @override
+  String rel_admin_approve_user(String user) {
+    return '批准 $user';
+  }
+
+  @override
+  String rel_admin_revoke_user(String user) {
+    return '撤销 $user';
+  }
+
+  @override
+  String rel_admin_allow_pair(String platform, String scope) {
+    return '$scope 上的 $platform：允许此用户的消息访问权限。';
+  }
+
+  @override
+  String rel_admin_remove_pair(String platform, String scope) {
+    return '$scope 上的 $platform：移除此用户的消息访问权限。';
+  }
+
+  @override
+  String rel_admin_telegram_start(String scope) {
+    return '使用网关的设置服务在 $scope 上开始 Telegram 配对。';
+  }
+
+  @override
+  String rel_admin_expires(String time) {
+    return '到期时间：$time';
+  }
+
+  @override
+  String rel_admin_telegram_apply(String bot, String scope) {
+    return '在 $scope 上启用 @$bot 并尝试重启网关。只有列出的用户可以向其发送消息。';
+  }
+
+  @override
+  String rel_admin_hooks_enable(String scope) {
+    return '在 $scope 上启用入站 Webhook 并尝试重启网关。';
+  }
+
+  @override
+  String rel_admin_disable_target(String name) {
+    return '禁用 $name';
+  }
+
+  @override
+  String rel_admin_enable_target(String name) {
+    return '启用 $name';
+  }
+
+  @override
+  String rel_admin_hook_change(String name, String scope) {
+    return '仅更改 $scope 上的 $name。';
+  }
+
+  @override
+  String rel_admin_backup_warning(String gateway) {
+    return '这不是 Ares 设置备份。保存 $gateway 上的所有配置文件、会话和凭据。此归档含有敏感信息。';
+  }
+
+  @override
+  String rel_admin_backup_started(String gateway) {
+    return '已在 $gateway 上开始备份。';
+  }
+
+  @override
+  String rel_admin_backup_verified(String gateway, String path) {
+    return '已验证 $gateway 上的备份：$path';
+  }
+
+  @override
+  String rel_admin_backup_running(String gateway) {
+    return '备份仍在 $gateway 上运行。';
+  }
+
+  @override
+  String get rel_admin_choice_yes => '是';
+
+  @override
+  String get rel_admin_choice_no => '否';
+
+  @override
+  String get rel_admin_choice_generic => '通用';
+
+  @override
+  String get rel_admin_choice_log => '日志';
+
+  @override
+  String get rel_admin_choice_email => '电子邮件';
+
+  @override
+  String get rel_admin_choice_github_comment => 'GitHub 评论';
+
+  @override
+  String get rel_admin_choice_agent => '智能体处理事件';
+
+  @override
+  String get rel_admin_choice_direct => '直接投递';
+
+  @override
+  String get rel_admin_configured => '已配置';
+
+  @override
+  String get rel_admin_state_pending_restart => '等待重启';
+
+  @override
+  String get rel_admin_state_unknown => '未知';
+
+  @override
+  String get rel_admin_state_connected => '已连接';
+
+  @override
+  String get rel_admin_state_disconnected => '已断开';
+
+  @override
+  String get rel_admin_state_disabled => '已禁用';
+
+  @override
+  String get rel_admin_state_enabled => '已启用';
+
+  @override
+  String get rel_admin_state_running => '运行中';
+
+  @override
+  String get rel_admin_state_stopped => '已停止';
+
+  @override
+  String get rel_admin_state_error => '错误';
+
+  @override
+  String get rel_admin_state_not_configured => '未配置';
+
+  @override
+  String get rel_admin_state_startup_failed => '启动失败';
+
+  @override
+  String get rel_admin_state_gateway_stopped => '网关已停止';
+
+  @override
+  String get rel_admin_state_connecting => '连接中';
+
+  @override
+  String get rel_admin_state_retrying => '重试中';
+
+  @override
+  String get rel_admin_state_fatal => '严重错误';
+
+  @override
+  String get rel_admin_unsupported_or_oversized_profile_archive =>
+      '不支持的配置文件归档或归档过大。';
+
+  @override
+  String get rel_admin_current_layout => '当前布局';
+
+  @override
+  String get rel_admin_one_pane => '单窗格';
+
+  @override
+  String get rel_admin_stacked => '上下堆叠';
+
+  @override
+  String get rel_admin_side_by_side => '并排';
+
+  @override
+  String get rel_admin_no_supported_appearance_in_this_profile =>
+      '此配置文件中没有受支持的外观。';
+
+  @override
+  String get rel_admin_review_appearance_saved_with_this_profile =>
+      '查看随此配置文件保存的外观';
+
+  @override
+  String get rel_admin_applies_only_to_this_named_profile_on_this_device =>
+      '仅应用于此设备上的此命名配置文件。导入的布局从空窗格开始，请自行选择聊天。';
+
+  @override
+  String get rel_admin_apply_to_this_profile_on_this_device => '应用于此设备上的此配置文件';
+
+  @override
+  String get rel_admin_export_prepares_a_tar_gz_on_the_gateway_review =>
+      '导出会在网关上准备 .tar.gz。保存副本到此处前，请查看其中的可移植文件。导入会打开本地归档供查看；仅打开不会上传任何内容。';
+
+  @override
+  String get rel_admin_prepare_profile_export => '准备导出配置文件';
+
+  @override
+  String get rel_admin_open_tar_gz_from_this_device => '打开此设备上的 .tar.gz';
+
+  @override
+  String get rel_admin_only_selected_text_files_travel_review_for_secrets_and =>
+      '仅传输所选文本文件。请检查是否含有密钥和私人信息。配置、技能和计划可能改变新配置文件的行为。';
+
+  @override
+  String get rel_admin_include_this_reviewed_file => '包含此已查看文件';
+
+  @override
+  String get rel_admin_apply_appearance_to_the_new_profile_on_this_device =>
+      '将外观应用于此设备上的新配置文件';
+
+  @override
+  String
+  get rel_admin_imports_colours_and_pane_sizes_never_chats_tools_or_session_ids =>
+      '导入颜色和窗格大小，绝不导入聊天、工具或会话 ID。';
+
+  @override
+  String
+  get rel_admin_the_gateway_retains_a_private_staged_copy_import_creates =>
+      '网关保留私有暂存副本。导入会创建新配置文件，不会替换现有配置文件。';
+
+  @override
+  String get rel_admin_appearance_not_applied_the_gateway_did_not_confirm_the =>
+      ' 外观未应用：网关未确认已查看的叠加配置。';
+
+  @override
+  String get rel_admin_appearance_applied_on_this_device => ' 外观已应用于此设备。';
+
+  @override
+  String get rel_admin_appearance_was_not_saved_on_this_device => ' 外观未保存到此设备。';
+
+  @override
+  String get rel_admin_save_reviewed_profile_bundle => '保存已查看的配置文件包';
+
+  @override
+  String get rel_admin_profile_bundle_saved => '配置文件包已保存。';
+
+  @override
+  String get rel_admin_import_selected_files => '导入所选文件';
+
+  @override
+  String get rel_admin_save_selected_files_to_device => '将所选文件保存到设备';
+
+  @override
+  String rel_admin_layout_first_pane(String layout, String percent) {
+    return '$layout · 首个窗格 $percent%';
+  }
+
+  @override
+  String rel_admin_appearance_summary(String skin, String mode, String layout) {
+    return '皮肤：$skin · 模式：$mode · $layout';
+  }
+
+  @override
+  String rel_admin_appearance_applied(String gateway, String profile) {
+    return '外观已应用于 $gateway / $profile。';
+  }
+
+  @override
+  String rel_admin_bundle_summary(
+    String profile,
+    String count,
+    String omitted,
+  ) {
+    return '包：$profile · $count 个可查看文件 · 已省略 $omitted 个';
+  }
+
+  @override
+  String rel_admin_imported_on(String name, String gateway) {
+    return '已在 $gateway 上导入 $name。';
+  }
+
+  @override
+  String get rel_admin_unchanged => '不变';
+
+  @override
+  String get rel_admin_mode_system => '系统';
+
+  @override
+  String get rel_admin_mode_light => '浅色';
+
+  @override
+  String get rel_admin_mode_dark => '深色';
+
+  @override
+  String get rel_admin_skin_classic => '经典';
+
+  @override
+  String get rel_admin_skin_midnight => '午夜';
+
+  @override
+  String get rel_admin_skin_ember => '余烬';
+
+  @override
+  String get rel_admin_skin_mono => '单色';
+
+  @override
+  String get rel_admin_skin_cyberpunk => '赛博朋克';
+
+  @override
+  String get rel_admin_skin_slate => '石板';
+
+  @override
+  String get rel_admin_no_available_cloud_agents_in_this_account =>
+      '此账户中没有可用的 Cloud 智能体。';
+
+  @override
+  String get rel_admin_the_previous_undo_receipt_could_not_be_verified_no =>
+      '无法验证之前的撤销凭据。未作任何更改。';
+
+  @override
+  String get rel_admin_transfer_to_cloud => '传输到 Cloud';
+
+  @override
+  String
+  get rel_admin_connection_changed_leave_this_page_a_restore_already_submitted =>
+      '连接已更改。请离开此页面。已提交的恢复操作可能继续。';
+
+  @override
+  String get rel_admin_find_my_cloud_agents => '查找我的 Cloud 智能体';
+
+  @override
+  String
+  get rel_admin_undo_replaces_the_destination_with_its_pre_transfer_backup =>
+      '撤销会用传输前的备份替换目标。';
+
+  @override
+  String get rel_admin_replace_this_cloud_agent_with_the_entire_source_home =>
+      '使用整个源主目录替换此 Cloud 智能体，包括凭据、对话和文件。源不会被删除。入站消息机器人将关闭。';
+
+  @override
+  String get rel_admin_type_destination_agent_id => '输入目标智能体 ID';
+
+  @override
+  String
+  get rel_admin_could_not_retain_the_local_undo_receipt_keep_this_page_open =>
+      '无法保留本地撤销凭据。请保持此页面打开。';
+
+  @override
+  String get rel_admin_undo_transfer => '撤销传输';
+
+  @override
+  String get rel_admin_replace_cloud_agent => '替换 Cloud 智能体';
+
+  @override
+  String
+  get rel_admin_local_undo_receipt_forgotten_no_remote_backup_was_removed =>
+      '本地撤销凭据已遗忘。未移除远程备份。';
+
+  @override
+  String get rel_admin_forget_local_undo_receipt_only => '仅遗忘本地撤销凭据';
+
+  @override
+  String get rel_admin_stop_before_restore => '在恢复前停止';
+
+  @override
+  String get rel_admin_do_not_close_this_page_restore_runs_on_the =>
+      '请勿关闭此页面。恢复在目标上运行，无法取消。';
+
+  @override
+  String get rel_admin_files_restored_destination_gateway_needs_attention =>
+      '文件已恢复；目标网关需要处理。';
+
+  @override
+  String rel_admin_transfer_sign_in(String origin) {
+    return '请登录且仅登录一个已保存的 $origin Ares 连接，然后返回此处。';
+  }
+
+  @override
+  String rel_admin_transfer_source(String gateway, String profile) {
+    return '来源：$gateway / $profile';
+  }
+
+  @override
+  String rel_admin_transfer_destination(String name, String origin) {
+    return '目标：$name · $origin / default';
+  }
+
+  @override
+  String rel_admin_agent_id(String id) {
+    return '智能体 ID：$id';
+  }
+
+  @override
+  String rel_admin_transfer_status(String phase) {
+    return '状态：$phase';
+  }
+
+  @override
+  String rel_admin_copied_percent(String percent) {
+    return '已复制 $percent%';
+  }
+
+  @override
+  String rel_admin_undo_point(String path) {
+    return '目标上的撤销点：$path';
+  }
+
+  @override
+  String rel_admin_messaging_disabled(String channels) {
+    return '消息已禁用：$channels';
+  }
+
+  @override
+  String get rel_admin_phase_prepared => '已准备';
+
+  @override
+  String get rel_admin_phase_backup => '备份';
+
+  @override
+  String get rel_admin_phase_upload => '上传';
+
+  @override
+  String get rel_admin_phase_restore => '恢复';
+
+  @override
+  String get rel_admin_phase_finished => '已完成';
+
+  @override
+  String get rel_admin_phase_failed => '失败';
+
+  @override
+  String get rel_admin_phase_undo => '撤销';
+
+  @override
+  String get rel_admin_phase_undone => '已撤销';
+
+  @override
+  String rel_ops_cap_install_blocked(String verdict, String detail) {
+    return '安装已被阻止（$verdict）：$detail';
+  }
+
+  @override
+  String rel_ops_cap_scan_confirm(String verdict, String requested) {
+    return '扫描结果：$verdict。安装前请确认 $requested。';
+  }
+
+  @override
+  String rel_ops_cap_install_unconfirmed(String requested) {
+    return '网关尚未确认 $requested 已安装。';
+  }
+
+  @override
+  String rel_ops_cap_edit_skill(String name) {
+    return '编辑 $name';
+  }
+
+  @override
+  String rel_ops_cap_archive_skill(String name) {
+    return '归档 $name？';
+  }
+
+  @override
+  String rel_ops_cap_archive_explanation(String command) {
+    return '技能将被归档，可通过 $command 恢复。';
+  }
+
+  @override
+  String rel_ops_cap_install_anyway(String name) {
+    return '仍要安装 $name';
+  }
+
+  @override
+  String rel_ops_cap_install_despite_scan(String name) {
+    return '仍要安装扫描未通过的 $name？';
+  }
+
+  @override
+  String rel_ops_cap_scan_warning(String name) {
+    return '安全扫描已阻止 $name。此确认仅适用于 $name。';
+  }
+
+  @override
+  String rel_ops_cap_accept_scan_warning(String name) {
+    return '接受功能权限不会绕过对 $name 的扫描。';
+  }
+
+  @override
+  String rel_ops_cap_review_scan(String name) {
+    return '查看 $name 的扫描结果';
+  }
+
+  @override
+  String rel_ops_cap_desktop_grants(String description) {
+    return '$description\n文件夹和预览脚本的授权保留在该计算机的 Desktop 应用中。在此移除插件不会撤销这些本地授权。';
+  }
+
+  @override
+  String rel_ops_cap_remove_plugin(String name) {
+    return '移除 $name？';
+  }
+
+  @override
+  String rel_ops_cap_probe_result(String name, String tools) {
+    return '探测 $name：$tools';
+  }
+
+  @override
+  String rel_ops_cap_save_tool_grants_for(String connector) {
+    return '保存 $connector 的工具授权';
+  }
+
+  @override
+  String rel_ops_cap_backends_for(String name) {
+    return '$name 的后端';
+  }
+
+  @override
+  String rel_ops_cap_use_backend_confirmation(String name) {
+    return '使用 $name？';
+  }
+
+  @override
+  String rel_ops_cap_unlock_source(String name) {
+    return '解锁 $name';
+  }
+
+  @override
+  String get rel_ops_cap_capabilities => '功能';
+
+  @override
+  String get rel_ops_cap_plugins => '插件';
+
+  @override
+  String get rel_ops_cap_connectors => '连接器';
+
+  @override
+  String get rel_ops_cap_backends => '后端';
+
+  @override
+  String get rel_ops_cap_save_skill => '保存技能';
+
+  @override
+  String get rel_ops_cap_archive => '归档';
+
+  @override
+  String get rel_ops_cap_hub_identifier => 'Hub 标识符';
+
+  @override
+  String get rel_ops_cap_install => '安装';
+
+  @override
+  String get rel_ops_cap_update_all => '全部更新';
+
+  @override
+  String get rel_ops_cap_unlock => '解锁';
+
+  @override
+  String get rel_ops_cap_lock => '锁定';
+
+  @override
+  String get rel_ops_cap_this_update_adds_capabilities_nothing_changed_yet =>
+      '此更新会添加功能。尚未进行任何更改。';
+
+  @override
+  String get rel_ops_cap_the_scan_blocked_this_plugin => '扫描已阻止此插件。';
+
+  @override
+  String get rel_ops_cap_the_plugin_was_not_changed => '插件未更改。';
+
+  @override
+  String get rel_ops_cap_repository => '代码仓库';
+
+  @override
+  String get rel_ops_cap_install_plugin => '安装插件';
+
+  @override
+  String get rel_ops_cap_update_plugins => '更新插件';
+
+  @override
+  String get rel_ops_cap_accept_capabilities => '接受功能权限';
+
+  @override
+  String get rel_ops_cap_update => '更新';
+
+  @override
+  String get rel_ops_cap_remove_desktop_half => '移除桌面端组件';
+
+  @override
+  String get rel_ops_cap_server_name => '服务器名称';
+
+  @override
+  String get rel_ops_cap_command => '命令';
+
+  @override
+  String get rel_ops_cap_http_url => 'HTTP URL';
+
+  @override
+  String get rel_ops_cap_add_server => '添加服务器';
+
+  @override
+  String get rel_ops_cap_probe => '探测';
+
+  @override
+  String get rel_ops_cap_probe_failed => '探测失败。';
+
+  @override
+  String get rel_ops_cap_logs => '日志';
+
+  @override
+  String get rel_ops_cap_mcp_log => 'MCP 日志';
+
+  @override
+  String get rel_ops_cap_connector => '连接器';
+
+  @override
+  String get rel_ops_cap_account_alias => '账户别名';
+
+  @override
+  String get rel_ops_cap_link_account => '关联账户';
+
+  @override
+  String get rel_ops_cap_remove_account => '移除账户';
+
+  @override
+  String get rel_ops_cap_tool_connector => '工具连接器';
+
+  @override
+  String get rel_ops_cap_load_tools => '加载工具';
+
+  @override
+  String get rel_ops_cap_save_tool_grants => '保存工具授权';
+
+  @override
+  String
+  get rel_ops_cap_this_policy_has_no_member_revision_so_tool_grants_stay_unchanged =>
+      '此策略没有成员修订版本，因此工具授权保持不变。';
+
+  @override
+  String get rel_ops_cap_active => '使用中';
+
+  @override
+  String get rel_ops_cap_use => '使用';
+
+  @override
+  String get rel_ops_cap_run_setup => '运行设置';
+
+  @override
+  String get rel_ops_cap_terminal_backends => '终端后端';
+
+  @override
+  String get rel_ops_cap_this_changes_the_terminal_backend_for_this_profile =>
+      '这会更改此配置文件的终端后端。';
+
+  @override
+  String get rel_ops_cap_use_backend => '使用后端';
+
+  @override
+  String get rel_ops_cap_select => '选择';
+
+  @override
+  String get rel_ops_cap_browser_vault => '浏览器保险库';
+
+  @override
+  String
+  get rel_ops_cap_saved_site_logins_addresses_and_cards_passwords_stay_in_the_secure_fields_and_are_not_listed_here =>
+      '已保存的网站登录信息、地址和银行卡。密码保留在安全字段中，不会在此列出。';
+
+  @override
+  String get rel_ops_cap_remove_saved_item => '移除已保存的项目';
+
+  @override
+  String get rel_ops_cap_delete_this_item => '删除此项目？';
+
+  @override
+  String get rel_ops_cap_unlocked => '已解锁';
+
+  @override
+  String get rel_ops_cap_locked => '已锁定';
+
+  @override
+  String get rel_ops_cap_not_detected => '未检测到';
+
+  @override
+  String get rel_ops_cap_master_password => '主密码';
+
+  @override
+  String get rel_ops_cap_login => '登录信息';
+
+  @override
+  String get rel_ops_cap_address => '地址';
+
+  @override
+  String get rel_ops_cap_card => '银行卡';
+
+  @override
+  String get rel_ops_cap_label => '标签';
+
+  @override
+  String get rel_ops_cap_site_origin => '网站源';
+
+  @override
+  String get rel_ops_cap_identifier => '标识符';
+
+  @override
+  String get rel_ops_cap_password => '密码';
+
+  @override
+  String get rel_ops_cap_authenticator_key => '身份验证密钥';
+
+  @override
+  String get rel_ops_cap_street => '街道';
+
+  @override
+  String get rel_ops_cap_city => '城市';
+
+  @override
+  String get rel_ops_cap_postal_code => '邮政编码';
+
+  @override
+  String get rel_ops_cap_country => '国家或地区';
+
+  @override
+  String get rel_ops_cap_name_on_card => '持卡人姓名';
+
+  @override
+  String get rel_ops_cap_card_number => '卡号';
+
+  @override
+  String get rel_ops_cap_expiry_month => '到期月份';
+
+  @override
+  String get rel_ops_cap_expiry_year => '到期年份';
+
+  @override
+  String get rel_ops_cap_security_code => '安全码';
+
+  @override
+  String get rel_ops_cap_this_gateway_has_no_shared_metrics_consent_method =>
+      '此网关没有共享指标的同意授权方法。';
+
+  @override
+  String get rel_ops_cap_agent_policy => '智能体策略';
+
+  @override
+  String get rel_ops_cap_loading_policy => '正在加载策略';
+
+  @override
+  String get rel_ops_cap_approval_timeout => '审批超时';
+
+  @override
+  String get rel_ops_cap_confirm_mcp_reloads => '确认 MCP 重新加载';
+
+  @override
+  String get rel_ops_cap_command_allowlist => '命令允许列表';
+
+  @override
+  String get rel_ops_cap_file_checkpoints => '文件检查点';
+
+  @override
+  String get rel_ops_cap_checkpoint_limit => '检查点上限';
+
+  @override
+  String get rel_ops_cap_browser_private_urls => '浏览器私有 URL';
+
+  @override
+  String get rel_ops_cap_use_my_real_browser_profile => '使用我的真实浏览器配置文件';
+
+  @override
+  String get rel_ops_cap_save_policy => '保存策略';
+
+  @override
+  String get rel_ops_cap_shared_metrics_for_this_profile => '此配置文件的共享指标';
+
+  @override
+  String get rel_ops_cap_send_shared_metrics => '发送共享指标';
+
+  @override
+  String get rel_ops_cap_error_enter_a_label => '请输入标签。';
+
+  @override
+  String get rel_ops_cap_error_enter_a_valid_url_like_https_example_com =>
+      '请输入有效的 URL，例如 https://example.com。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_identifier_and_password =>
+      '请输入标识符和密码。';
+
+  @override
+  String
+  get rel_ops_cap_error_enter_the_card_name_number_expiry_and_security_code =>
+      '请输入持卡人姓名、卡号、有效期和安全码。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_street_city_postal_code_and_country =>
+      '请输入街道、城市、邮政编码和国家或地区。';
+
+  @override
+  String
+  get rel_ops_cap_error_the_gateway_returned_a_response_that_could_not_be_read =>
+      '网关返回了无法读取的响应。';
+
+  @override
+  String rel_ops_cap_error_the_gateway_refused_the_request_status(
+    int statusCode,
+  ) {
+    return '网关拒绝了请求（$statusCode）。';
+  }
+
+  @override
+  String
+  rel_ops_cap_error_this_connection_has_no_gateway_socket_so_method_is_unavailable(
+    String method,
+  ) {
+    return '此连接没有网关套接字，因此 $method 不可用。';
+  }
+
+  @override
+  String get rel_ops_cap_error_choose_a_skill => '请选择技能。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_text_was_not_returned => '未返回技能文本。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_saved => '技能未保存。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_archived => '技能未归档。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_installed => '技能未安装。';
+
+  @override
+  String get rel_ops_cap_error_skill_updates_did_not_start => '技能更新未启动。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_removed => '技能未移除。';
+
+  @override
+  String get rel_ops_cap_error_enter_a_skill_or_plugin_identifier =>
+      '请输入技能或插件标识符。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_plugin => '请选择插件。';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_removed => '插件未移除。';
+
+  @override
+  String get rel_ops_cap_error_the_desktop_half_was_not_removed => '桌面端组件未移除。';
+
+  @override
+  String
+  get rel_ops_cap_error_this_gateway_did_not_give_the_plugin_a_stable_key =>
+      '此网关未为插件分配稳定的键。';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_changed => '插件未更改。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_server => '请选择服务器。';
+
+  @override
+  String get rel_ops_cap_error_name_the_server => '请为服务器命名。';
+
+  @override
+  String get rel_ops_cap_error_give_the_server_a_command_or_an_http_s_url =>
+      '请为服务器提供命令或 http(s) URL。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_toolset => '请选择工具集。';
+
+  @override
+  String get rel_ops_cap_error_tool_backend_status_was_not_returned =>
+      '未返回工具后端状态。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_provider => '请选择提供商。';
+
+  @override
+  String get rel_ops_cap_error_this_provider_has_no_setup_action =>
+      '此提供商没有设置操作。';
+
+  @override
+  String get rel_ops_cap_error_setup_did_not_start => '设置未启动。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_terminal_backend => '请选择终端后端。';
+
+  @override
+  String get rel_ops_cap_error_name_the_connector => '请为连接器命名。';
+
+  @override
+  String get rel_ops_cap_error_choose_an_account => '请选择账户。';
+
+  @override
+  String
+  get rel_ops_cap_error_reload_the_connector_policy_before_changing_tool_grants =>
+      '更改工具授权前，请重新加载连接器策略。';
+
+  @override
+  String get rel_ops_cap_error_choose_an_item => '请选择项目。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_source => '请选择来源。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_master_password => '请输入主密码。';
+
+  @override
+  String get rel_ops_cap_error_gateway_config_was_not_returned => '未返回网关配置。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_known_approval_mode => '请选择已知的审批模式。';
+
+  @override
+  String get rel_ops_cap_error_use_a_positive_limit => '请使用大于零的上限。';
+
+  @override
+  String get rel_ops_cap_error_the_policy_was_not_saved => '策略未保存。';
+
+  @override
+  String get rel_ops_cap_value_manual => '手动';
+
+  @override
+  String get rel_ops_cap_value_smart => '智能';
+
+  @override
+  String get rel_ops_cap_value_off => '关闭';
+
+  @override
+  String get rel_ops_cap_value_safe => '安全';
+
+  @override
+  String get rel_ops_cap_value_caution => '谨慎';
+
+  @override
+  String get rel_ops_cap_value_dangerous => '危险';
+
+  @override
+  String get rel_ops_cap_value_blocked => '已阻止';
+
+  @override
+  String get rel_ops_cap_value_clean => '无威胁';
+
+  @override
+  String get rel_ops_cap_value_ready => '就绪';
+
+  @override
+  String get rel_ops_cap_value_available => '可用';
+
+  @override
+  String get rel_ops_cap_value_unavailable => '不可用';
+
+  @override
+  String get rel_ops_cap_value_enabled => '已启用';
+
+  @override
+  String get rel_ops_cap_value_disabled => '已禁用';
+
+  @override
+  String get rel_ops_cap_value_active => '使用中';
+
+  @override
+  String get rel_ops_cap_value_inactive => '未使用';
+
+  @override
+  String get rel_ops_cap_value_installed => '已安装';
+
+  @override
+  String get rel_ops_cap_value_missing => '缺失';
+
+  @override
+  String get rel_ops_cap_value_configured => '已配置';
+
+  @override
+  String get rel_ops_cap_value_not_configured => '未配置';
+
+  @override
+  String get rel_ops_cap_value_error => '错误';
+
+  @override
+  String get rel_ops_cap_value_unknown => '未知';
+
+  @override
+  String get rel_ops_cap_value_login => '登录信息';
+
+  @override
+  String get rel_ops_cap_value_address => '地址';
+
+  @override
+  String get rel_ops_cap_value_payment => '支付';
+
+  @override
+  String get rel_ops_term_connecting => '正在连接…';
+
+  @override
+  String get rel_ops_term_unbound => '没有匹配的活动会话或主机工作目录。请先打开所属聊天。';
+
+  @override
+  String get rel_ops_term_unsupported => '此网关不提供这项终端功能。未启动本地命令行解释器。';
+
+  @override
+  String get rel_ops_term_local_pty_unavailable => '此设备无法使用随附的本地伪终端（PTY）。';
+
+  @override
+  String get rel_ops_term_operation_failed =>
+      '无法打开或控制终端。请检查主机、凭据和指纹。未启动备用命令行解释器。';
+
+  @override
+  String get rel_ops_term_input_refused => '输入被拒绝。请重新打开原始聊天。';
+
+  @override
+  String get rel_ops_term_cancel => '取消';
+
+  @override
+  String get rel_ops_term_confirm => '确认';
+
+  @override
+  String get rel_ops_term_open_device_title => '在此设备上打开命令行解释器？';
+
+  @override
+  String get rel_ops_term_ssh_shell => 'SSH 命令行解释器';
+
+  @override
+  String get rel_ops_term_local_shell => '本地命令行解释器';
+
+  @override
+  String get rel_ops_term_connection_lost => '连接已丢失';
+
+  @override
+  String get rel_ops_term_shell_ended => '命令行解释器已结束';
+
+  @override
+  String get rel_ops_term_no_owner =>
+      '此聊天没有经过身份验证的网关终端所有者。仅凭 URL 或云端登录无法获得命令行访问权限。';
+
+  @override
+  String get rel_ops_term_open_gateway_title => '打开网关命令行解释器？';
+
+  @override
+  String get rel_ops_term_shell_expired => '命令行解释器已结束或已过期';
+
+  @override
+  String get rel_ops_term_disconnected => '已断开连接';
+
+  @override
+  String get rel_ops_term_gateway_shell => '网关命令行解释器';
+
+  @override
+  String get rel_ops_term_close_body => '结束此命令行解释器。如需保持运行，请改为隐藏面板。';
+
+  @override
+  String get rel_ops_term_closing => '正在关闭…';
+
+  @override
+  String get rel_ops_term_close_unconfirmed => '关闭未确认';
+
+  @override
+  String get rel_ops_term_processes_require_chat => '代理进程需要经过身份验证的所属聊天。';
+
+  @override
+  String get rel_ops_term_watching_processes => '正在监视此聊天的代理进程。关闭镜像视图绝不会停止其进程。';
+
+  @override
+  String get rel_ops_term_paste_limit => '粘贴大小限制为 16 KiB。';
+
+  @override
+  String get rel_ops_term_paste => '粘贴';
+
+  @override
+  String get rel_ops_term_select_first => '请先选择终端输出。';
+
+  @override
+  String get rel_ops_term_open_chat_to_insert => '插入输出前，请打开原始聊天。';
+
+  @override
+  String get rel_ops_term_added_to_draft => '已添加到原始聊天草稿。未发送任何内容。';
+
+  @override
+  String get rel_ops_term_close => '关闭';
+
+  @override
+  String get rel_ops_term_add_selection => '将所选内容添加到聊天草稿';
+
+  @override
+  String get rel_ops_term_new_terminal => '新建终端';
+
+  @override
+  String get rel_ops_term_gateway_terminal => '网关主机终端';
+
+  @override
+  String get rel_ops_term_verified_ssh_terminal => '已验证的 SSH 终端';
+
+  @override
+  String get rel_ops_term_device_local_shell => '此设备（本地命令行解释器）';
+
+  @override
+  String get rel_ops_term_local_unavailable_mobile => '移动设备无法使用本地命令行解释器';
+
+  @override
+  String get rel_ops_term_watch_processes => '监视代理进程';
+
+  @override
+  String get rel_ops_term_select_output => '选择或复制输出';
+
+  @override
+  String get rel_ops_term_add_selected_output => '将所选输出添加到聊天草稿';
+
+  @override
+  String get rel_ops_term_review_paste => '检查剪贴板粘贴内容';
+
+  @override
+  String get rel_ops_term_reconnect => '重新连接同一命令行解释器';
+
+  @override
+  String get rel_ops_term_close_mirror => '关闭镜像视图';
+
+  @override
+  String get rel_ops_term_close_shell => '关闭命令行解释器';
+
+  @override
+  String get rel_ops_term_empty => '选择 + 以打开终端。不会自动启动任何命令行解释器。';
+
+  @override
+  String get rel_ops_term_reason_stale => '已失效';
+
+  @override
+  String get rel_ops_term_reason_mismatch => '不匹配';
+
+  @override
+  String get rel_ops_term_reason_unbound => '未绑定';
+
+  @override
+  String get rel_ops_term_reason_unsupported => '不支持';
+
+  @override
+  String get rel_ops_term_reason_denied => '已拒绝';
+
+  @override
+  String get rel_ops_term_reason_ineligible => '不符合条件';
+
+  @override
+  String get rel_ops_term_reason_unavailable => '不可用';
+
+  @override
+  String get rel_ops_term_reason_invalid => '无效';
+
+  @override
+  String get rel_ops_term_reason_insecure => '不安全';
+
+  @override
+  String rel_ops_term_refused(String reason) {
+    return '网关拒绝了此终端操作（$reason）。';
+  }
+
+  @override
+  String rel_ops_term_open_device_body(String connection) {
+    return '这是运行 Ares 的设备，而不是 $connection。命令行解释器使用应用权限，并在应用存储空间中启动。';
+  }
+
+  @override
+  String rel_ops_term_open_gateway_body(String host) {
+    return '在 $host 上经过验证的聊天工作目录中启动命令行解释器。这不是设备本地的命令行解释器。';
+  }
+
+  @override
+  String rel_ops_term_close_tab_title(String label) {
+    return '关闭 $label？';
+  }
+
+  @override
+  String rel_ops_term_read_only_status(String status) {
+    return '只读 · $status';
+  }
+
+  @override
+  String rel_ops_term_paste_title(String label) {
+    return '粘贴到 $label？';
+  }
+
+  @override
+  String rel_ops_term_output_title(String label) {
+    return '输出 · $label';
+  }
+
+  @override
+  String rel_ops_term_mirror_status(String label) {
+    return '只读进程镜像 · $label';
+  }
+
+  @override
+  String rel_ops_term_status_label(String status, String label) {
+    return '$status · $label';
+  }
+
+  @override
+  String rel_ops_term_ssh_tab(String user, String host, int port, int number) {
+    return 'SSH $user@$host:$port · $number';
+  }
+
+  @override
+  String rel_ops_term_device_tab(int number) {
+    return '此设备 · $number';
+  }
+
+  @override
+  String rel_ops_term_gateway_tab(String host, int number) {
+    return '网关 $host · $number';
+  }
+
+  @override
+  String get rel_ops_term_earlier_output_trimmed => '[较早的输出已截断]';
+
+  @override
+  String get rel_ops_term_ssh_dialog_title => '打开已验证的 SSH 终端';
+
+  @override
+  String get rel_ops_term_ssh_dialog_body =>
+      '请使用通过独立渠道从主机管理员处获得的指纹。此操作会打开新的远程登录会话，而非网关或本地命令行解释器。';
+
+  @override
+  String get rel_ops_term_ssh_host => 'SSH 主机';
+
+  @override
+  String get rel_ops_term_ssh_port => '端口';
+
+  @override
+  String get rel_ops_term_ssh_user => '用户';
+
+  @override
+  String get rel_ops_term_ssh_fingerprint => '主机密钥指纹（SHA256:…）';
+
+  @override
+  String get rel_ops_term_ssh_password => 'SSH 密码（不保存）';
+
+  @override
+  String get rel_ops_term_connect => '连接';
+
+  @override
+  String get rel_ops_ssh_invalid_destination => 'SSH 主机、端口或用户无效。';
+
+  @override
+  String get rel_ops_ssh_public_key_required => '需要 OpenSSH Ed25519 格式的主机公钥。';
+
+  @override
+  String get rel_ops_ssh_invalid_public_key => 'Ed25519 主机密钥无效。';
+
+  @override
+  String get rel_ops_ssh_invalid_saved_key => '已保存的主机密钥无效。';
+
+  @override
+  String get rel_ops_ssh_enrollment_unverified => '无法验证主机密钥注册。';
+
+  @override
+  String get rel_ops_ssh_different_key_pinned => '已固定了另一把密钥。请单独验证此变更。';
+
+  @override
+  String get rel_ops_ssh_open_ssh_unavailable => '系统 OpenSSH 不可用。';
+
+  @override
+  String get rel_ops_ssh_confirm_host_key => '请先确认主机密钥再连接。';
+
+  @override
+  String get rel_ops_ssh_absolute_identity_required => '请选择使用绝对路径的身份密钥文件。';
+
+  @override
+  String get rel_ops_ssh_invalid_remote_port => '远程端口无效。';
+
+  @override
+  String get rel_ops_ssh_preview_too_large => '预览超出 64 KiB 限制。';
+
+  @override
+  String get rel_ops_ssh_connection_refused => 'SSH 连接被拒绝。请检查已注册的主机密钥、身份凭据和服务。';
+
+  @override
+  String get rel_ops_ssh_http_not_ok => '远程服务未返回 HTTP 200。';
+
+  @override
+  String get rel_ops_ssh_encoded_response => '此预览不支持经过编码的响应。';
+
+  @override
+  String get rel_ops_ssh_preview_type_unsupported => '只能预览文本和 HTML 源代码。';
+
+  @override
+  String get rel_ops_ssh_health_unconfirmed => '服务未确认网关运行正常。';
+
+  @override
+  String get rel_ops_ssh_enroll_host_key_first => '请先注册主机的公钥。';
+
+  @override
+  String get rel_ops_ssh_cancel => '取消';
+
+  @override
+  String get rel_ops_ssh_confirm => '确认';
+
+  @override
+  String get rel_ops_ssh_pin_title => '固定此 SSH 主机密钥？';
+
+  @override
+  String rel_ops_ssh_pin_detail(String destination, String fingerprint) {
+    return '$destination\n$fingerprint\n请通过独立渠道与主机管理员核对此指纹。不会建立任何连接。';
+  }
+
+  @override
+  String get rel_ops_ssh_host_key_pinned => '主机密钥已固定。';
+
+  @override
+  String get rel_ops_ssh_shell_detail => '打开交互式登录 shell。';
+
+  @override
+  String rel_ops_ssh_read_detail(String path, int port) {
+    return '通过 SSH 通道读取远程 127.0.0.1:$port 上的 $path。';
+  }
+
+  @override
+  String rel_ops_ssh_connect_title(String destination) {
+    return '连接到 $destination？';
+  }
+
+  @override
+  String rel_ops_ssh_connect_detail(
+    String detail,
+    String fingerprint,
+    String authentication,
+  ) {
+    return '$detail\n$fingerprint\n$authentication';
+  }
+
+  @override
+  String get rel_ops_ssh_agent_auth => '使用你的 SSH 代理进行身份验证。';
+
+  @override
+  String get rel_ops_ssh_identity_auth => '使用选定的身份密钥文件。';
+
+  @override
+  String rel_ops_ssh_gateway_responding(int port) {
+    return '网关正在远程回环端口 $port 上响应。';
+  }
+
+  @override
+  String get rel_ops_ssh_session_closed => 'SSH 会话已关闭。';
+
+  @override
+  String get rel_ops_ssh_session_unclean => 'SSH 会话未正常退出。';
+
+  @override
+  String get rel_ops_ssh_operation_failed => 'SSH 操作失败。请检查目标和身份凭据。';
+
+  @override
+  String get rel_ops_ssh_title => '经验证的 SSH';
+
+  @override
+  String get rel_ops_ssh_unsupported =>
+      '此设备没有受支持的系统 OpenSSH 传输方式。已固定网关的中继会自动接受新密钥，因此不能用于经验证的注册。';
+
+  @override
+  String get rel_ops_ssh_host => 'SSH 主机';
+
+  @override
+  String get rel_ops_ssh_port => 'SSH 端口';
+
+  @override
+  String get rel_ops_ssh_user => 'SSH 用户';
+
+  @override
+  String get rel_ops_ssh_identity => '身份密钥文件（可选；否则使用 SSH 代理）';
+
+  @override
+  String get rel_ops_ssh_public_key => '管理员提供的主机公钥（ssh-ed25519）';
+
+  @override
+  String get rel_ops_ssh_review_key => '审查主机密钥';
+
+  @override
+  String get rel_ops_ssh_remote_port => '远程回环服务端口';
+
+  @override
+  String get rel_ops_ssh_check_gateway => '通过 SSH 检查网关';
+
+  @override
+  String get rel_ops_ssh_preview_source => '通过 SSH 预览源代码';
+
+  @override
+  String get rel_ops_ssh_open_shell => '打开 SSH shell';
+
+  @override
+  String get rel_ops_ssh_shell_line => '发送到远程 shell 的行';
+
+  @override
+  String get rel_ops_ssh_disconnect => '断开 shell 连接';
+
+  @override
+  String get rel_ops_host_cancel => '取消';
+
+  @override
+  String get rel_ops_host_confirm => '确认';
+
+  @override
+  String get rel_ops_host_title => '主机';
+
+  @override
+  String get rel_ops_host_refresh => '刷新';
+
+  @override
+  String get rel_ops_host_update => '更新远程 Hermes';
+
+  @override
+  String rel_ops_host_update_confirmation(String profile) {
+    return '这将在网关主机上为 $profile 执行就地更新，不会更新此设备上的 Ares。更新是否成功以匹配的更新回执为准，而不是以主机是否保持可访问为准。';
+  }
+
+  @override
+  String get rel_ops_host_update_awaiting => '正在等待匹配的回执。更新仍在进行中。';
+
+  @override
+  String get rel_ops_host_receipt_success => '更新回执显示成功。';
+
+  @override
+  String get rel_ops_host_receipt_partial => '更新已应用，但仍有后续步骤需要完成。';
+
+  @override
+  String get rel_ops_host_receipt_failed => '更新回执显示失败。';
+
+  @override
+  String get rel_ops_host_receipt_refused => '更新回执显示已拒绝。';
+
+  @override
+  String get rel_ops_host_update_running => '更新仍在进行中。';
+
+  @override
+  String get rel_ops_host_update_unknown => '更新结果未知。网关正常运行并不代表更新成功。';
+
+  @override
+  String get rel_ops_host_default_profile => '网关默认配置档案';
+
+  @override
+  String get rel_ops_host_restart => '重启远程网关';
+
+  @override
+  String rel_ops_host_restart_shared_confirmation(String profiles) {
+    return '这将重启 $profiles 共享的网关。此网关上正在进行的轮次会被中断。请随后重新连接。可以访问网关并不能证明重启已完成。';
+  }
+
+  @override
+  String rel_ops_host_restart_confirmation(String profile) {
+    return '这将重启 $profile 的远程网关。此网关上正在进行的轮次会被中断。请随后重新连接。';
+  }
+
+  @override
+  String get rel_ops_host_restart_running => '重启命令仍在运行。';
+
+  @override
+  String get rel_ops_host_restart_finished => '重启命令已结束。请手动重新连接主机。';
+
+  @override
+  String get rel_ops_host_restart_failed => '重启命令失败。';
+
+  @override
+  String rel_ops_host_maintenance_running(String name) {
+    return '$name 仍在运行';
+  }
+
+  @override
+  String rel_ops_host_maintenance_finished(String name) {
+    return '$name 已完成';
+  }
+
+  @override
+  String rel_ops_host_maintenance_failed(String name) {
+    return '$name 失败';
+  }
+
+  @override
+  String get rel_ops_host_curator_paused_result => '维护器已暂停。';
+
+  @override
+  String get rel_ops_host_curator_resumed_result => '维护器已恢复。';
+
+  @override
+  String get rel_ops_host_reset => '重置远程记忆文件';
+
+  @override
+  String rel_ops_host_reset_confirmation(String targetName, String profile) {
+    return '删除 $profile 上的 $targetName 记忆文件？此操作无法通过 Ares 撤销。';
+  }
+
+  @override
+  String rel_ops_host_reset_result(String targetName, int count) {
+    return '已重置 $targetName。已删除 $count 个远程文件。';
+  }
+
+  @override
+  String get rel_ops_host_share_not_redacted => '主机未确认诊断包已隐去敏感信息，因此不显示链接。';
+
+  @override
+  String rel_ops_host_scope(String connection, String profile) {
+    return '这些控件操作的是 $profile 的远程网关 $connection，而不是此设备，也不用于更新 Ares 客户端。';
+  }
+
+  @override
+  String rel_ops_host_health_running(String version, int count) {
+    return '网关进程正在运行 $version · $count 个会话';
+  }
+
+  @override
+  String rel_ops_host_health_stopped(String version, int count) {
+    return '网关进程已停止 $version · $count 个会话';
+  }
+
+  @override
+  String rel_ops_host_heartbeat_stale(num seconds) {
+    return '主机心跳已过期（$seconds 秒）。';
+  }
+
+  @override
+  String get rel_ops_host_doctor => '运行 Doctor';
+
+  @override
+  String get rel_ops_host_security_audit => '安全审计';
+
+  @override
+  String get rel_ops_host_check_receipt => '检查更新回执';
+
+  @override
+  String get rel_ops_host_logs => '远程主机日志';
+
+  @override
+  String get rel_ops_host_search_logs => '搜索主机日志';
+
+  @override
+  String get rel_ops_host_driver => '远程主机驱动程序';
+
+  @override
+  String get rel_ops_host_driver_scope =>
+      '计算机操作功能的就绪状态取决于网关机器上的驱动程序和操作系统权限，而不是此设备。';
+
+  @override
+  String rel_ops_host_computer_status(
+    String platform,
+    String installed,
+    String ready,
+  ) {
+    return '$platform · 已安装 $installed · 已就绪 $ready';
+  }
+
+  @override
+  String get rel_ops_host_null => '不可用';
+
+  @override
+  String get rel_ops_host_true => '是';
+
+  @override
+  String get rel_ops_host_false => '否';
+
+  @override
+  String get rel_ops_host_curator => '维护器';
+
+  @override
+  String get rel_ops_host_curator_paused => '维护器已暂停';
+
+  @override
+  String get rel_ops_host_curator_running => '维护器正在运行';
+
+  @override
+  String get rel_ops_host_no_run => '尚无已完成的运行';
+
+  @override
+  String get rel_ops_host_run_curator => '立即运行维护器';
+
+  @override
+  String get rel_ops_host_reset_memory => '重置记忆文件';
+
+  @override
+  String get rel_ops_host_reset_user => '重置用户文件';
+
+  @override
+  String get rel_ops_host_reset_both => '重置两个文件';
+
+  @override
+  String get rel_ops_host_share_consent => '我同意从远程主机上传已隐去敏感信息的诊断包';
+
+  @override
+  String get rel_ops_host_share => '分享已隐去敏感信息的诊断数据';
+
+  @override
+  String get rel_ops_host_update_unknown_installation => '无法识别此安装，因此未发送更新请求';
+
+  @override
+  String get rel_ops_host_update_busy_installation => '此安装上有聊天正在运行';
+
+  @override
+  String get rel_ops_host_update_refused => '远程更新被拒绝';
+
+  @override
+  String get rel_ops_host_error_stale => '远程工作区：已过期';
+
+  @override
+  String get rel_ops_host_error_mismatch => '远程工作区：不匹配';
+
+  @override
+  String get rel_ops_host_error_unbound => '远程工作区：未绑定';
+
+  @override
+  String get rel_ops_host_error_unsupported => '远程工作区：不支持';
+
+  @override
+  String get rel_ops_host_error_denied => '远程工作区：访问被拒绝';
+
+  @override
+  String get rel_ops_host_error_ineligible => '远程工作区：不符合操作条件';
+
+  @override
+  String get rel_ops_host_error_unavailable => '远程工作区：不可用';
+
+  @override
+  String get rel_ops_host_error_invalid => '远程工作区：无效';
+
+  @override
+  String get rel_ops_host_error_insecure => '远程工作区：不安全';
+
+  @override
+  String get rel_ops_host_error_request => '无法完成该请求。';
+
+  @override
+  String get rel_svc_push_api_select_sessions =>
+      '请选择 1–128 个持久会话 ID，每个 ID 包含 1–200 个 ASCII 字符，且只能使用字母、数字、_ . : @ 或 -。请移除空白 ID 和空格。';
+
+  @override
+  String get rel_svc_push_api_unavailable => '此服务器无法使用移动推送。';
+
+  @override
+  String get rel_svc_push_api_invalid_vapid => '服务器 VAPID 公钥无效。';
+
+  @override
+  String get rel_svc_push_api_update_plugin =>
+      '此服务器需要更新 mobile-push 插件才能使用自动订阅。';
+
+  @override
+  String get rel_svc_push_status_android_only => '仅限 Android';
+
+  @override
+  String get rel_svc_push_native_prefs_sync_failed => '无法同步原生通知偏好设置。';
+
+  @override
+  String get rel_svc_push_choose_android_connection => '请先在 Android 上选择已保存的连接。';
+
+  @override
+  String get rel_svc_push_status_checking_authorization => '正在检查服务器授权';
+
+  @override
+  String get rel_svc_push_revoke_persist_failed => '无法保存撤销状态。请在离开应用前再次尝试停用。';
+
+  @override
+  String get rel_svc_push_status_off_api_ready => '已关闭；服务器 API 已就绪';
+
+  @override
+  String get rel_svc_push_status_off_revoke_pending => '已关闭；等待服务器撤销';
+
+  @override
+  String get rel_svc_push_status_off_connection_changed => '已关闭；已保存的连接已更改';
+
+  @override
+  String get rel_svc_push_status_pending_endpoint => '正在等待分发器端点';
+
+  @override
+  String get rel_svc_push_status_registering => '正在注册';
+
+  @override
+  String get rel_svc_push_status_pending_challenge => '加密质询待处理（正在等待静默服务器验证推送）';
+
+  @override
+  String get rel_svc_push_allow_android_notifications_retry =>
+      '请在系统设置中允许 Android 通知，然后重试。';
+
+  @override
+  String get rel_svc_push_plugin_invalid =>
+      '服务器 mobile-push 插件不可用、版本过旧或返回了无效的订阅响应。请让管理员更新该插件，然后重试。';
+
+  @override
+  String get rel_svc_push_transport_unavailable =>
+      '没有可用的推送传输方式。内置传送需要正常工作的 Google Play 服务；也可安装 UnifiedPush 分发器后重试。';
+
+  @override
+  String get rel_svc_push_transport_choice =>
+      '有多个 UnifiedPush 分发器可用。请在“高级传输”中选择一个，然后重试。';
+
+  @override
+  String get rel_svc_push_transport_missing =>
+      '所选 UnifiedPush 分发器不可用。请恢复它，或在“高级传输”中选择其他分发器。';
+
+  @override
+  String get rel_svc_push_companion_unavailable =>
+      '服务器 mobile-push 配套组件不可用。它可能未安装、已停用，或此连接可能指向错误的控制面板。请在服务器上安装或启用该组件，检查控制面板连接，然后刷新。请参阅上方的服务器设置指南。';
+
+  @override
+  String get rel_svc_push_server_denied => '服务器拒绝了移动推送。请让管理员授权此主体和这些会话。';
+
+  @override
+  String get rel_svc_push_not_ready => '移动推送尚未就绪。请检查服务器插件授权、分发器和网络，然后重试。';
+
+  @override
+  String get rel_svc_push_availability_read_failed =>
+      '无法读取 Android 推送可用性。请在下方重试。';
+
+  @override
+  String get rel_svc_push_setup_failed =>
+      '推送设置失败。请检查 Android 权限、服务器授权和传输方式，然后重试。';
+
+  @override
+  String rel_svc_push_status(String status) {
+    return '状态：$status';
+  }
+
+  @override
+  String rel_svc_push_status_bound(
+    String bound,
+    String connection,
+    String status,
+  ) {
+    return '状态：已绑定到 $bound（对 $connection 未启用；握手：$status）';
+  }
+
+  @override
+  String get rel_svc_push_another_saved_connection => '另一个已保存的连接';
+
+  @override
+  String get rel_svc_push_background_notifications => '后台通知';
+
+  @override
+  String rel_svc_push_bound_subtitle(String bound, String connection) {
+    return '已绑定到 $bound — 请先在下方撤销该绑定，再为 $connection 启用';
+  }
+
+  @override
+  String rel_svc_push_private_activity(String connection) {
+    return '$connection 的私密服务器活动';
+  }
+
+  @override
+  String rel_svc_push_bound_warning_named(String bound) {
+    return '已绑定到另一个已保存的连接（$bound）。请先停用并撤销该绑定，再为此连接启用。';
+  }
+
+  @override
+  String get rel_svc_push_bound_warning => '已绑定到另一个已保存的连接。请先停用并撤销该绑定，再为此连接启用。';
+
+  @override
+  String get rel_svc_push_local_notifications_muted =>
+      '上方已关闭本地通知。后台通知授权不变，但在开启“启用通知”之前，普通后台活动提示会保持静音。';
+
+  @override
+  String rel_svc_push_legacy_subscription(int count) {
+    return '旧版订阅：仅限 $count 个已选会话。它不会自动扩展。请先关闭再开启，以选择加入服务器授权的会话。';
+  }
+
+  @override
+  String get rel_svc_push_authorized_binding =>
+      '仅绑定到此已保存的连接和配置文件。会话访问权限遵循当前服务器授权。';
+
+  @override
+  String get rel_svc_push_revocation_pending =>
+      '服务器撤销待处理。本地传送已关闭；请在原始已保存登录仍可用时重试。';
+
+  @override
+  String get rel_svc_push_refresh_retry => '刷新 / 重试';
+
+  @override
+  String rel_svc_push_disable_named(String bound) {
+    return '停用并撤销 $bound';
+  }
+
+  @override
+  String get rel_svc_push_other_connection => '其他连接';
+
+  @override
+  String get rel_svc_push_disable => '停用并撤销';
+
+  @override
+  String get rel_svc_push_refresh_explanation =>
+      '刷新 / 重试会在服务器设置后重新检查可用性；它无法安装配套组件。启用通知仍是单独的选择。';
+
+  @override
+  String get rel_svc_push_companion_required =>
+      '后台通知需要另外安装并启用服务器端 mobile-push 配套组件。Android 无法安装它。仅更新 APK 不会完成服务器设置。';
+
+  @override
+  String get rel_svc_push_server_setup_guide => '服务器设置指南';
+
+  @override
+  String get rel_svc_push_enable_disclosure =>
+      '启用后将请求 Android 通知权限，并与此服务器共享本次安装的端点和加密密钥。加密的活动提示不包含聊天内容。仅包括服务器登录授权的会话。';
+
+  @override
+  String get rel_svc_push_transport_disclosure =>
+      '内置传送使用 Google 推送传输并需要 Google Play 服务，但不包含 Firebase SDK。也可改用可选的 UnifiedPush 分发器。传送为尽力而为；请重新打开 Hermes 进行协调。';
+
+  @override
+  String get rel_svc_push_advanced_transport => '高级传输';
+
+  @override
+  String get rel_svc_push_automatic_explanation =>
+      '自动模式会保留现有分发器选择；否则在可用时使用内置 Google 传送。更改传输方式前请先停用。';
+
+  @override
+  String get rel_svc_push_transport_label => '推送传输';
+
+  @override
+  String get rel_svc_push_automatic_recommended => '自动（推荐）';
+
+  @override
+  String get rel_svc_push_selected_unavailable => '所选分发器（不可用）';
+
+  @override
+  String get rel_svc_push_no_transport_detected =>
+      '未检测到可用的传输方式。内置传送需要 Google Play 服务；若没有，请安装并配置 UnifiedPush 分发器，然后刷新。';
+
+  @override
+  String get rel_svc_push_channel_turns_name => 'Ares 轮次';
+
+  @override
+  String get rel_svc_push_channel_turns_description => '后台轮次完成通知';
+
+  @override
+  String get rel_svc_push_channel_attention_name => 'Ares 待处理';
+
+  @override
+  String get rel_svc_push_channel_attention_description => '需要您处理的审批和输入请求';
+
+  @override
+  String get rel_svc_push_channel_background_name => 'Ares 后台';
+
+  @override
+  String get rel_svc_push_channel_background_description => '后台任务完成';
+
+  @override
+  String get rel_svc_push_channel_notices_name => 'Ares 通知';
+
+  @override
+  String get rel_svc_push_channel_notices_description => '额度和插件通知';
+
+  @override
+  String get rel_svc_push_diag_not_initialised => '未初始化';
+
+  @override
+  String get rel_svc_push_diag_replies_off => '回复通知已关闭';
+
+  @override
+  String get rel_svc_push_diag_conversation => '对话';
+
+  @override
+  String get rel_svc_push_diag_conversation_permission_denied => '对话；权限被拒绝';
+
+  @override
+  String rel_svc_push_diag_conversation_error(String error) {
+    return '对话：$error';
+  }
+
+  @override
+  String get rel_svc_push_diag_failures_off => '失败通知已关闭';
+
+  @override
+  String rel_svc_push_diag_kind_off(String kind) {
+    return '$kind 已关闭';
+  }
+
+  @override
+  String get rel_svc_push_diag_windows_setting_unknown => 'Windows 未报告其通知设置';
+
+  @override
+  String get rel_svc_backup_not_hermes_configuration_backup =>
+      '此文件不是 Hermes 配置备份。';
+
+  @override
+  String get rel_svc_backup_newer_version_cannot_import =>
+      '此备份由较新版本的应用创建，无法导入。';
+
+  @override
+  String get rel_svc_backup_missing_client_certificate =>
+      '此备份声明某个连接使用客户端证书，但并未包含该证书，因此无法完整恢复。';
+
+  @override
+  String get rel_svc_backup_damaged_unreadable => '此备份文件已损坏，无法读取。';
+
+  @override
+  String get rel_svc_backup_unsupported_preference_type =>
+      '某项已保存的偏好设置类型不受支持，无法导出。';
+
+  @override
+  String get rel_svc_backup_choose_passphrase_api_keys =>
+      '请选择密码短语 — 备份包含您的 API 密钥。';
+
+  @override
+  String get rel_svc_backup_could_not_protect_safely => '无法安全保护备份。';
+
+  @override
+  String get rel_svc_backup_unsupported_encryption => '此备份使用不受支持的加密方案。';
+
+  @override
+  String get rel_svc_backup_wrong_passphrase_or_altered => '密码短语错误，或此备份文件已被篡改。';
+
+  @override
+  String get rel_svc_backup_share_subject => 'Hermes 配置备份';
+
+  @override
+  String get rel_svc_backup_selected_file_unreadable => '无法读取该文件。';
+
+  @override
+  String rel_svc_backup_connections_added(int count) {
+    return '已添加 $count 个';
+  }
+
+  @override
+  String rel_svc_backup_connections_updated(int count) {
+    return '已更新 $count 个';
+  }
+
+  @override
+  String rel_svc_backup_connections_removed(int count) {
+    return '已移除 $count 个';
+  }
+
+  @override
+  String get rel_svc_backup_no_connection_changes => '连接无更改';
+
+  @override
+  String rel_svc_backup_connections_summary(String changes) {
+    return '连接：$changes';
+  }
+
+  @override
+  String rel_svc_backup_restore_summary(String connections, int count) {
+    return '$connections · 已恢复 $count 项设置';
+  }
+
+  @override
+  String rel_svc_backup_certificate_not_included(String label, String error) {
+    return '无法将“$label”的客户端证书包含在此备份中：$error';
+  }
+
+  @override
+  String get rel_svc_backup_certificate_password_needed =>
+      '此证书需要密码。在下方输入后，证书将自动打开。';
+
+  @override
+  String get rel_svc_backup_certificate_password_or_corrupt => '证书密码错误，或文件已损坏。';
+
+  @override
+  String get rel_svc_backup_certificate_password_incorrect => '证书密码错误。';
+
+  @override
+  String get rel_svc_backup_certificate_unsupported_encryption =>
+      '此证书使用了应用无法读取的加密方式。';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable_pkcs12 =>
+      '所选文件不是可读取的 PKCS#12（.p12/.pfx）证书。';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable => '无法读取所选证书。';
+
+  @override
+  String get rel_svc_backup_not_certificate_file =>
+      '该文件不是证书：请选择 .p12/.pfx 容器，或 PEM 证书和密钥文件。';
+
+  @override
+  String get rel_svc_backup_not_pem_certificate => '所选证书不是 PEM 证书。';
+
+  @override
+  String get rel_svc_backup_not_pem_private_key => '所选私钥不是 PEM 私钥。';
+
+  @override
+  String get rel_svc_backup_certificate_pair_unloadable => '无法加载所选证书和私钥。';
+
+  @override
+  String get rel_svc_backup_saved_certificate_files_unreadable =>
+      '无法读取已保存的客户端证书文件。';
+
+  @override
+  String get rel_svc_backup_client_certificate_storage_failed =>
+      '无法将客户端证书安全地存储在此设备上。';
+
+  @override
+  String get rel_svc_backup_certificate_storage_failed => '无法将证书安全地存储在此设备上。';
+
+  @override
+  String get rel_svc_backup_client_certificate_label => '客户端证书';
+
+  @override
+  String rel_svc_backup_search_dashboard_unreachable(String error) {
+    return '无法连接到仪表板：$error';
+  }
+
+  @override
+  String get rel_svc_backup_search_credentials_rejected =>
+      '仪表板拒绝了已保存的凭据。请检查此连接的仪表板用户名和密码。';
+
+  @override
+  String get rel_svc_backup_search_not_supported =>
+      '此仪表板未提供会话搜索。请更新主机上的 Hermes，或切换回设备端搜索。';
+
+  @override
+  String rel_svc_backup_search_redirected(int statusCode) {
+    return '仪表板重定向了会话搜索（HTTP $statusCode）。Ares 不会携带已保存的凭据跟随重定向；请检查连接地址。';
+  }
+
+  @override
+  String rel_svc_backup_search_http_failed(int statusCode) {
+    return '会话搜索失败，HTTP $statusCode。';
+  }
+
+  @override
+  String get rel_svc_backup_search_malformed_response => '仪表板返回了格式错误的搜索响应。';
+
+  @override
+  String get rel_svc_backup_search_unexpected_response => '仪表板返回了意外的搜索响应。';
+
+  @override
+  String get rel_svc_backup_search_too_many_results => '仪表板返回的搜索结果多于请求数量。';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_response => '消息搜索响应异常。';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_result => '消息搜索结果异常。';
+
+  @override
+  String get rel_svc_backup_ai_search_api_key_rejected =>
+      'Hermes API 拒绝了已保存的 API 密钥。';
+
+  @override
+  String rel_svc_backup_ai_search_http_failed(int statusCode) {
+    return 'AI 查询改写失败，HTTP $statusCode。';
+  }
+
+  @override
+  String get rel_svc_backup_ai_search_no_usable_query => '所选模型未返回可用的搜索查询。';
+
+  @override
+  String get rel_svc_backup_ai_search_malformed_response =>
+      'Hermes 返回了格式错误的 AI 改写响应。';
+
+  @override
+  String get rel_svc_backup_space_name_already_exists => '已存在同名空间';
+
+  @override
+  String get rel_svc_backup_space_name_length_invalid => '空间名称必须为 1–80 个字符';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_required => '输入您的 Hermes 仪表板地址。';
+
+  @override
+  String ng_rel_svc_backup_gateway_address_scheme(String scheme) {
+    return '地址必须以 http:// 或 https:// 开头（收到 $scheme）。';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_invalid => '该地址无效。';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_no_host => '地址中没有主机名。';
+
+  @override
+  String get ng_rel_svc_backup_sign_in_main_window => '请在主窗口中登录。';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_failed => '网关目前无法续订登录。';
+
+  @override
+  String get rel_svc_backup_sign_in_provider_unreachable =>
+      '网关无法续订登录：登录提供商不可访问。';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_timed_out => '续订登录超时。';
+
+  @override
+  String get rel_svc_backup_sign_in_no_tokens => '网关未返回登录令牌。';
+
+  @override
+  String get ng_rel_svc_backup_probe_timed_out =>
+      '请求超时。请检查地址、VPN 或 Tailscale 连接。';
+
+  @override
+  String ng_rel_svc_backup_probe_tls_failed(String error) {
+    return 'TLS 握手失败：$error';
+  }
+
+  @override
+  String ng_rel_svc_backup_gateway_answered_http(int statusCode) {
+    return '网关返回了 HTTP $statusCode。';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_answer_timed_out => '网关响应时间过长。';
+
+  @override
+  String ng_rel_svc_backup_browser_callback_not_ready(String error) {
+    return '无法准备接收浏览器回调：$error';
+  }
+
+  @override
+  String get ng_rel_svc_backup_browser_signed_in_body => '现在可以返回 Hermes。';
+
+  @override
+  String get ng_rel_svc_backup_browser_waiting_title => '正在等待登录';
+
+  @override
+  String get ng_rel_svc_backup_browser_not_current => '此页面不属于当前登录流程。';
+
+  @override
+  String get ng_rel_svc_backup_browser_open_failed => '无法打开浏览器进行登录。';
+
+  @override
+  String get ng_rel_svc_backup_browser_sign_in_timed_out => '登录用时过长。请重试。';
+
+  @override
+  String ng_rel_svc_backup_gateway_refused_sign_in(int statusCode) {
+    return '网关拒绝了登录（HTTP $statusCode）。';
+  }
+
+  @override
+  String get rel_svc_misc_alert_caution => '注意';
+
+  @override
+  String get rel_svc_misc_alert_important => '重要';
+
+  @override
+  String get rel_svc_misc_alert_tip => '提示';
+
+  @override
+  String get rel_svc_misc_alert_warning => '警告';
+
+  @override
+  String get rel_svc_misc_allow_folder_session => '在会话结束前允许访问此文件夹。';
+
+  @override
+  String get rel_svc_misc_allow_website_session => '在会话结束前允许访问此网站。';
+
+  @override
+  String rel_svc_misc_approval_needed_title(String title) {
+    return '需要批准 — $title';
+  }
+
+  @override
+  String get rel_svc_misc_attach_file_reference => '附加文件引用';
+
+  @override
+  String get rel_svc_misc_attach_folder_reference => '附加文件夹引用';
+
+  @override
+  String get rel_svc_misc_attach_git_context => '附加 git 上下文';
+
+  @override
+  String get rel_svc_misc_attach_image_reference => '附加图像引用';
+
+  @override
+  String get rel_svc_misc_attach_staged_diff => '附加已暂存的差异';
+
+  @override
+  String get rel_svc_misc_attach_tool_reference => '附加工具引用';
+
+  @override
+  String get rel_svc_misc_attach_unstaged_diff => '附加未暂存的差异';
+
+  @override
+  String get rel_svc_misc_attach_url_reference => '附加 URL 引用';
+
+  @override
+  String get rel_svc_misc_background_task_completed => '后台任务已完成';
+
+  @override
+  String rel_svc_misc_background_task_named_completed(String taskId) {
+    return '后台任务 $taskId 已完成';
+  }
+
+  @override
+  String get rel_svc_misc_chat => '聊天';
+
+  @override
+  String get rel_svc_misc_compacting_context => '正在压缩对话上下文…';
+
+  @override
+  String rel_svc_misc_completed_in(String duration) {
+    return '在 $duration 内完成';
+  }
+
+  @override
+  String get rel_svc_misc_context_compacted => '对话上下文已压缩';
+
+  @override
+  String get rel_svc_misc_cron_readback_mismatch => 'Cron 模型回读不匹配';
+
+  @override
+  String get rel_svc_misc_cron_update_rejected => 'Cron 更新被拒绝';
+
+  @override
+  String get rel_svc_misc_deny_folder_grant => '不授予对此文件夹的访问权限。';
+
+  @override
+  String get rel_svc_misc_deny_website_grant => '不授予对此网站的访问权限。';
+
+  @override
+  String rel_svc_misc_failed_after(String duration) {
+    return '在 $duration 后失败';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_folder_unnamed => '网关未指定文件夹。';
+
+  @override
+  String get rel_svc_misc_gateway_idle_unconfirmed => '网关处于空闲状态。无法确认上一轮的结果。';
+
+  @override
+  String get rel_svc_misc_gateway_turn_failed => '网关轮次失败';
+
+  @override
+  String rel_svc_misc_gateway_turn_status(String status) {
+    return '网关轮次：$status';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_website_unnamed => '网关未指定网站。';
+
+  @override
+  String get rel_svc_misc_hermes_review => 'Hermes 审查';
+
+  @override
+  String get rel_svc_misc_hermes_turn_failed => 'Hermes 轮次失败';
+
+  @override
+  String get rel_svc_misc_image_recovery_companion_gap =>
+      '配套恢复不支持图像和文本恢复。此连接无法恢复未获确认的图像发送，也不会自动重新发送任何内容。';
+
+  @override
+  String get rel_svc_misc_image_recovery_rest_gap =>
+      'Classic REST/SSE 不支持图像和文本恢复。此连接无法恢复未获确认的图像发送，也不会自动重新发送任何内容。';
+
+  @override
+  String rel_svc_misc_input_needed_title(String title) {
+    return '需要输入 — $title';
+  }
+
+  @override
+  String get rel_svc_misc_parallel_workspace_connection_changed =>
+      '连接已更改。请重新打开以使用工作区。';
+
+  @override
+  String get rel_svc_misc_preparing => '正在准备';
+
+  @override
+  String get rel_svc_misc_save_folder_grant => '保存此文件夹授权以供后续请求使用。';
+
+  @override
+  String get rel_svc_misc_save_website_grant => '保存此网站授权以供后续请求使用。';
+
+  @override
+  String get rel_svc_misc_stored_identity_turn_conflict =>
+      '在另一个轮次已获准时，此聊天通过其存储的身份打开。未发送的提示未被发送；请在该轮次结束后明确重试。';
+
+  @override
+  String get rel_svc_misc_untitled => '无标题';
+
+  @override
+  String get rel_svc_misc_wake_capture_silent =>
+      '客户端唤醒采集只检测到静音 — 请检查操作系统的麦克风访问权限，并重新开关唤醒词。';
+
+  @override
+  String get rel_svc_misc_wake_capture_stalled => '客户端唤醒采集停滞：未收到麦克风音频回调。';
+
+  @override
+  String rel_svc_misc_wake_feed_refused(int count, String detail) {
+    return '唤醒词音频流拒绝了连续 $count 个帧$detail — 请重新开关唤醒词以重新启用。';
+  }
+
+  @override
+  String rel_svc_misc_wake_microphone_failed(String error) {
+    return '客户端唤醒麦克风流失败：$error';
+  }
+
+  @override
+  String get rel_svc_misc_wake_track_ended =>
+      '唤醒词采集期间麦克风轨道已结束 — 请重新开关唤醒词以重新启用。';
+
+  @override
+  String get rel_svc_misc_website => '网站';
+
+  @override
+  String get rel_svc_lan_timeout => '局域网发现超时';
+
+  @override
+  String get rel_svc_notification_permission_denied => '权限被拒绝';
+
+  @override
+  String get rel_svc_notifications_off => '通知已关闭';
+
+  @override
+  String rel_chat_preview_pin_label(int number, String note) {
+    return '#$number $note';
+  }
+
+  @override
+  String rel_chat_preview_pin_number(int number) {
+    return '#$number';
+  }
+
+  @override
+  String ng_rel_chat_wake_status_notice(String status, String notice) {
+    return '$status — $notice';
+  }
+
+  @override
+  String ng_rel_chat_cost_amount(String amount) {
+    return '\$$amount';
+  }
+
+  @override
+  String ng_rel_chat_context_ratio(String used, String maximum) {
+    return '$used / $maximum';
+  }
+
+  @override
+  String ng_rel_chat_connection_reason(String status, String reason) {
+    return '$status $reason';
+  }
+
+  @override
+  String ng_rel_chat_notice_time(String message, String time) {
+    return '$message · $time';
+  }
+
+  @override
+  String ng_rel_chat_attachment_progress(String name, String progress) {
+    return '$name · $progress';
+  }
+
+  @override
+  String ng_rel_chat_tool_detail(String name, String detail) {
+    return '$name · $detail';
+  }
+
+  @override
+  String get fleet_managed_ssh_title => '网关管理的 SSH';
+
+  @override
+  String get fleet_managed_ssh_intro =>
+      '从任意设备管理已保存在此网关上的 SSH 主机。远程主机上必须已安装 Hermes。此操作会启动或连接到归此网关所有的远程服务，而不是建立 Ares 聊天连接。托管更新和恢复仅在原生桌面应用中可用。';
+
+  @override
+  String get fleet_managed_ssh_read => '读取已保存的 SSH 主机';
+
+  @override
+  String get fleet_managed_ssh_trust =>
+      '首次连接时，网关会信任并记住此主机的 SSH 密钥。之后若密钥发生变化，将会被标记并阻止连接。网关不提供密钥指纹，因此 Ares 无法显示或存储指纹。仅在信任此次首次连接时才继续。';
+
+  @override
+  String get fleet_managed_ssh_changed =>
+      '此主机的 SSH 密钥已更改。连接已被阻止。有权访问网关主机的人必须独立核实新密钥的指纹，并在网关主机上移除旧的受信任密钥。仅在完成核实和修复后才重试。Ares 不会替换受信任的密钥。';
+
+  @override
+  String get fleet_managed_ssh_disconnect_warning =>
+      '断开 SSH 隧道并停止归此网关所有的远程服务？这可能会中断其他正在使用该服务的客户端。';
+
+  @override
+  String get fleet_managed_ssh_verify => '改为自行验证密钥';
+
+  @override
+  String fleet_managed_ssh_pending(int seconds) {
+    return '正在等待网关：$seconds 秒。离开此页面不会取消初始化。如果请求失败，请先检查状态再重试。';
+  }
+
+  @override
+  String fleet_managed_ssh_status(
+    String host,
+    int localPort,
+    int remotePort,
+    String version,
+    String reused,
+  ) {
+    return '主机：$host\n网关回环端口：$localPort\n远程回环端口：$remotePort\nHermes：$version\n已复用：$reused';
+  }
+
+  @override
+  String get fleet_managed_ssh_disconnect => '断开连接';
 
   @override
   String get ng_slash_suggestions_loading => '正在加载命令…';
 
   @override
+  String get ng_slash_suggestions_empty => '没有匹配的命令';
+
+  @override
+  String get ng_slash_suggestions_label => '命令建议';
+
+  @override
   String get ng_slash_suggestions_skill => '技能';
+
+  @override
+  String get settings_classic_title => 'Classic 设置';
+
+  @override
+  String get settings_nextgen_title => 'NextGen 设置';
+
+  @override
+  String get settings_category_general => '常规与语言';
+
+  @override
+  String get settings_category_chat => '聊天与会话';
+
+  @override
+  String get settings_category_device => '设备与快捷键';
+
+  @override
+  String get settings_category_connections => '连接与模型';
+
+  @override
+  String get settings_category_security => '隐私与备份';
+
+  @override
+  String get settings_category_about => '关于与帮助';
+
+  @override
+  String get settings_reopen_chat => '返回网关时恢复上次聊天';
+
+  @override
+  String get settings_reopen_chat_hint => '冷启动时打开欢迎页面。链接和通知会打开指定的聊天。';
+
+  @override
+  String get settings_danger => '危险操作';
+}
+
+/// The translations for Chinese, using the Han script (`zh_Hant`).
+class AppLocalizationsZhHant extends AppLocalizationsZh {
+  AppLocalizationsZhHant() : super('zh_Hant');
+
+  @override
+  String get attachment_audio_failed =>
+      '無法播放此音訊。格式或編解碼器可能不受支援，或超出了預覽大小限制。請重試，或儲存、分享原始檔案。';
+
+  @override
+  String get attachment_audio_seek => '音訊位置';
+
+  @override
+  String get workspace_workers => '即時工作者';
+
+  @override
+  String get workers_unattached => '僅顯示數量。若要引導工作者，請在其所屬的上層聊天中選擇「即時工作者」。';
+
+  @override
+  String get slash_local_arguments => '此處的快捷指令不支援參數。請使用應用程式中的控制項；草稿已保留。';
+
+  @override
+  String get fallback_title => '備用模型';
+
+  @override
+  String get fallback_notice => '主模型無法使用時，會依序嘗試清單中的模型。變更只適用於此設定檔；編輯後請儲存整份清單。';
+
+  @override
+  String get fallback_unavailable => '無法使用備用模型設定，或設定無效。請檢查連線、所選設定檔和主機版本後重試。';
+
+  @override
+  String get fallback_discovery_unavailable =>
+      '無法取得供應商清單。現有項目會保留；重試後可選擇供應商和模型。';
+
+  @override
+  String get fallback_empty => '尚未設定備用模型。';
+
+  @override
+  String get fallback_incomplete => '儲存前，請為每個項目選擇供應商和模型，或移除尚未填完的項目。';
+
+  @override
+  String get fallback_add => '新增備用模型';
+
+  @override
+  String get fallback_save => '儲存備用清單';
+
+  @override
+  String get fallback_save_failed => '無法驗證已儲存的備用清單。草稿已保留。請重新儲存，或重新整理以重新載入主機設定。';
+
+  @override
+  String get fallback_saved => '備用模型清單已儲存並通過驗證。';
+
+  @override
+  String get fallback_legacy_title => '舊版備用設定（唯讀）';
+
+  @override
+  String get fallback_legacy_notice =>
+      '嘗試完清單中的模型後，主機還會使用 fallback_model，並略過重複的路由。即使上方清單是空的，這些舊版項目仍會保留。請在主機上編輯。';
+
+  @override
+  String fallback_priority(String position) {
+    return '優先順序 $position';
+  }
+
+  @override
+  String get fallback_move_up => '上移';
+
+  @override
+  String get fallback_move_down => '下移';
+
+  @override
+  String get fallback_routing_read_only =>
+      '路由詳細資料或未列出的供應商已保留。請在主機上編輯此供應商／模型；此處仍可調整順序或刪除項目。';
+
+  @override
+  String get cron_model_default => '使用預設設定';
+
+  @override
+  String get cron_model_notice =>
+      '僅適用於此 cron 任務。未固定模型時，Hermes 先使用 cron 預設模型，再使用主模型。請在主機上管理自訂模型。';
+
+  @override
+  String get model_management_unavailable => '無法載入或儲存模型設定。請重新整理後重試。';
+
+  @override
+  String get model_management_subtitle => '此設定檔的主模型、備用模型和輔助模型';
+
+  @override
+  String get usage => '用量';
+
+  @override
+  String get nous_portal => 'Nous Portal';
+
+  @override
+  String get portal_menu_subtitle => '閘道狀態和已記錄用量';
+
+  @override
+  String get portal_read_only =>
+      '這些閘道資料僅供檢視。請在 Hermes 主機上管理 Nous 身分驗證。這些端點不提供訂閱餘額或點數。';
+
+  @override
+  String get portal_status => '閘道的 Nous Portal 狀態';
+
+  @override
+  String get portal_free_tier => '免費方案（未登入帳戶）';
+
+  @override
+  String get portal_signed_in => '已登入';
+
+  @override
+  String get portal_signed_out => '未登入';
+
+  @override
+  String get portal_account_tier => '帳戶等級';
+
+  @override
+  String get portal_recorded_usage => '已記錄用量';
+
+  @override
+  String get portal_all_providers => '涵蓋所選閘道設定檔中的所有供應商。記錄的費用為零，不代表模型免費。';
+
+  @override
+  String portal_period(String days) {
+    return '最近 $days 天';
+  }
+
+  @override
+  String get portal_sessions => '工作階段';
+
+  @override
+  String get portal_input => '輸入令牌';
+
+  @override
+  String get portal_output => '輸出令牌';
+
+  @override
+  String get portal_estimated => '已記錄的預估費用';
+
+  @override
+  String get portal_actual => '已記錄的實際費用';
+
+  @override
+  String get portal_recorded_models => '已記錄模型';
+
+  @override
+  String get portal_no_models => '沒有已記錄模型。';
+
+  @override
+  String get portal_unavailable => '無法取得資料。請檢查連線、所選設定檔和閘道版本後重試。';
+
+  @override
+  String get paste_attachment_failed_text_kept => '無法將貼上的文字加為附件，文字已保留在訊息中。';
+
+  @override
+  String get background_task_report => '背景任務';
+
+  @override
+  String get background_process_report => '背景程序';
+
+  @override
+  String get background_report_issues => '已報告問題，展開查看詳細資料。';
+
+  @override
+  String get background_report_expand => '展開報告';
+
+  @override
+  String get background_report_collapse => '收合報告';
+
+  @override
+  String get ng_brand_open_chat => '開啟聊天';
+
+  @override
+  String get ng_brand_recent => '最近聊天';
+
+  @override
+  String get ng_brand_sidebar_hint => '或從側邊欄選擇聊天';
+
+  @override
+  String get copy_session_id => '複製工作階段 ID';
+
+  @override
+  String get copy_session_id_failed => '無法複製工作階段 ID。';
+
+  @override
+  String get setup_interface_title => '選擇介面';
+
+  @override
+  String get setup_interface_classic => '經典版';
+
+  @override
+  String get setup_interface_nextgen => 'NextGen';
+
+  @override
+  String get setup_interface_classic_description =>
+      '原有的 Ares 工作區，提供完整的連線控制選項和所有經典版設定。';
+
+  @override
+  String get setup_interface_nextgen_description =>
+      '全新介面，只需登入儀表板一次，即可查看即時計畫、子代理和通知。';
+
+  @override
+  String get setup_interface_switch_later => '你可以隨時在「設定」中切換。';
+
+  @override
+  String get ng_confirm_model_switch => '切換模型？';
+
+  @override
+  String get ng_switch => '切換';
+
+  @override
+  String get ng_model_confirmation_required => '選擇此模型前需要確認。';
+
+  @override
+  String ng_model_switches_next_turn(String model) {
+    return '將在下一輪切換到 $model。';
+  }
+
+  @override
+  String get ng_model_switch_not_connected => '聊天尚未準備好切換模型。請重新開啟後再試。';
+
+  @override
+  String ng_gateway_kept_default_model(String model) {
+    return '閘道在此聊天中保留了 $model。請在傳送前重新選擇模型。';
+  }
+
+  @override
+  String get hands_free_title => '免持對話';
+
+  @override
+  String get hands_free_start => '開始免持';
+
+  @override
+  String get hands_free_stop => '停止免持';
+
+  @override
+  String get hands_free_preparing => '正在準備語音功能，請等候就緒提示';
+
+  @override
+  String get hands_free_listening => '請說「Hey Hermes」';
+
+  @override
+  String get hands_free_recording => '已就緒，請說話';
+
+  @override
+  String get hands_free_waiting => '等待 Hermes 回覆';
+
+  @override
+  String get hands_free_speaking => '正在朗讀 — 麥克風已關閉';
+
+  @override
+  String hands_free_followup(int seconds) {
+    return '最多聆聽 $seconds 秒';
+  }
+
+  @override
+  String get hands_free_error => '免持已停止';
+
+  @override
+  String get hands_free_setup => '免持設定';
+
+  @override
+  String hands_free_preview(String transcript) {
+    return '語音預覽：$transcript';
+  }
+
+  @override
+  String get hands_free_short_disclosure =>
+      '只有在前景開啟此聊天時才會聆聽。喚醒詞偵測不需連網，但語音功能可能會使用網路。聆聽會消耗電力。';
+
+  @override
+  String get hands_free_error_action =>
+      '請檢查麥克風權限、語音服務、朗讀聲音和連線，先點選「停止」，再點選「開始」重試。先前的內容不會重新傳送。';
+
+  @override
+  String get hands_free_disclosure =>
+      '喚醒詞由 CPU 離線偵測。Android 語音辨識、所選的朗讀聲音和閘道可能會使用網路。持續聆聽會耗電，也可能誤觸發。聊天畫面遭遮住、關閉或離開前景時，聆聽就會停止；重新開啟聊天也不會自動恢復。手動語音輸入的內容仍可在草稿中編輯。';
+
+  @override
+  String get hands_free_ready_cue =>
+      '請說「Hey Hermes」，等到「已就緒，請說話」再開口。緊接在喚醒詞後的話，以及就緒前的聲音，都不會錄下。如果設定權限時離開了應用程式，請在授權後再點選「開始」。';
+
+  @override
+  String get hands_free_settings_title => '免持語音';
+
+  @override
+  String get hands_free_settings_subtitle =>
+      '在聊天中顯示「Hey Hermes」啟動控制項。關閉會停止正在進行的免持工作階段。';
+
+  @override
+  String get hands_free_timing_limit =>
+      '後續聆聽時間是上限，Android 可能提早停止。若未偵測到聲音，就會回到本機喚醒詞偵測，不會反覆重新啟動語音辨識。';
+
+  @override
+  String get hands_free_followup_off => '後續聆聽已關閉 — 每次提問請說 Hey Hermes';
+
+  @override
+  String get hands_free_start_blocked =>
+      '請先清空草稿、移除附件並結束手動語音操作。聊天必須已連線、沒有正在處理的回覆，且已開啟語音回覆，才能開始免持對話。';
+
+  @override
+  String get hands_free_setup_complete => '麥克風設定完成。請再次點選開始。';
+
+  @override
+  String message_time_recorded(String time) {
+    return '伺服器記錄的時間：$time（當地時間）';
+  }
+
+  @override
+  String message_time_sent(String time) {
+    return '此裝置偵測到送出的時間：$time（當地時間）';
+  }
+
+  @override
+  String message_time_received(String time) {
+    return '此裝置首次收到的時間：$time（當地時間）';
+  }
+
+  @override
+  String get stop_and_send => '停止並傳送';
+
+  @override
+  String get message_queued_for_running_turn => '訊息已加入目前回合的佇列。';
+
+  @override
+  String get running_message_not_accepted =>
+      'Hermes 無法接受這則訊息。草稿已保留；請停止回覆或等候回覆結束，再重新傳送。';
+
+  @override
+  String get running_message_delivery_unknown =>
+      '無法確認訊息是否送達。草稿已保留。請先檢查聊天記錄，再重試。';
+
+  @override
+  String get attachment_tap_to_preview => '點選以預覽';
+
+  @override
+  String get attachment_save => '儲存';
+
+  @override
+  String get attachment_share => '分享';
+
+  @override
+  String get attachment_saved => '檔案已儲存';
+
+  @override
+  String get attachment_save_cancelled => '已取消儲存';
+
+  @override
+  String get attachment_save_failed => '無法儲存此檔案，請重試。';
+
+  @override
+  String get attachment_share_failed => '無法分享此檔案，請重試。';
+
+  @override
+  String get attachment_download_failed => '無法載入此檔案，請檢查連線後重試。';
+
+  @override
+  String get attachment_no_inline_preview =>
+      '此檔案類型不支援內嵌預覽。請儲存或分享原始檔案，以便在其他應用程式中開啟。';
+
+  @override
+  String get attachment_image_failed => '無法解碼這張圖片。你仍可儲存或分享原始檔案。';
+
+  @override
+  String get attachment_text_truncated => '預覽內容已截短。請儲存或分享檔案以閱讀完整內容。';
+
+  @override
+  String get attachment_text_unavailable => '無法將此檔案顯示為文字。請儲存或分享原始檔案。';
+
+  @override
+  String get attachment_pdf_failed => '無法預覽此 PDF。請儲存或分享原始檔案。';
+
+  @override
+  String get attachment_pdf_unavailable => 'PDF 預覽只在 Android 上可用。你仍可儲存或分享這個檔案。';
+
+  @override
+  String attachment_pdf_page(int page, int total) {
+    return '第 $page 頁，共 $total 頁';
+  }
+
+  @override
+  String get attachment_previous_page => '上一頁';
+
+  @override
+  String get attachment_next_page => '下一頁';
+
+  @override
+  String get attachment_loading => '正在載入預覽…';
+
+  @override
+  String get attachment_document_text_notice => '這是純文字預覽，版面配置、圖片和格式可能與原始檔案不同。';
+
+  @override
+  String get attachment_document_failed => '無法預覽此文件。請儲存或分享原始檔案。';
+
+  @override
+  String get attachment_document_empty => '這份文件中沒有可讀取的文字。';
+
+  @override
+  String get attachment_video_failed => '無法播放此影片。其格式或編解碼器可能不受支援。請儲存或分享原始檔案。';
+
+  @override
+  String get attachment_video_play => '播放';
+
+  @override
+  String get attachment_video_pause => '暫停';
+
+  @override
+  String get attachment_video_mute => '靜音';
+
+  @override
+  String get attachment_video_unmute => '取消靜音';
+
+  @override
+  String get attachment_video_seek => '影片進度';
+
+  @override
+  String get attachment_close => '關閉預覽';
+
+  @override
+  String get attachment_retry => '重試';
+
+  @override
+  String get saved_history_heading => '已儲存的記錄';
+
+  @override
+  String get received_output_heading => '已收到的輸出（尚未確認是否與已儲存的記錄相符）';
+
+  @override
+  String get received_output_details => '關於已收到的輸出';
+
+  @override
+  String get received_output_explanation => '已儲存的記錄中可能也有這段內容，但應用程式無法確認兩者是否相符。';
+
+  @override
+  String get local_prompt_context => '本機提示詞上下文';
+
+  @override
+  String get received_output_badge => '已收到 · 尚未確認是否相符';
+
+  @override
+  String get received_output_lifetime =>
+      '這些輸出只會暫存在本次使用期間。達到上限時，內容可能會縮短或移除。關閉應用程式或中斷連線後，可能無法再查看。';
+
+  @override
+  String get theme_palette => '顏色主題';
+
+  @override
+  String get theme_palette_gold => '金色';
+
+  @override
+  String get theme_palette_purple => '紫色';
+
+  @override
+  String get theme_palette_orange => '橙色';
+
+  @override
+  String get theme_palette_green => '綠色';
+
+  @override
+  String get theme_palette_blue => '藍色';
+
+  @override
+  String get theme_palette_red => '紅色';
+
+  @override
+  String get theme_palette_teal => '青綠色';
+
+  @override
+  String get theme_palette_pink => '粉色';
+
+  @override
+  String get theme_palette_indigo => '靛藍色';
+
+  @override
+  String get theme_palette_cyan => '青色';
+
+  @override
+  String get assets_recent_subtitle => '尋找 Hermes 在已儲存的聊天中分享的檔案';
+
+  @override
+  String get assets_scope_notice =>
+      '這裡只顯示 Hermes 在已儲存的回覆中明確分享的生成檔案。內容取自部分聊天記錄，不是完整的檔案或附件目錄。參照的檔案可能已不存在。';
+
+  @override
+  String get assets_download_limit =>
+      '點選檔案才會載入。預覽和下載的單檔上限均為 25 MiB；較大的檔案請從儀表板下載。';
+
+  @override
+  String get assets_search_hint => '搜尋找到的檔案或來源聊天';
+
+  @override
+  String get assets_all => '全部';
+
+  @override
+  String get assets_images => '圖片';
+
+  @override
+  String get assets_audio => '音訊';
+
+  @override
+  String get assets_video => '影片';
+
+  @override
+  String get assets_documents => '文件和其他檔案';
+
+  @override
+  String get assets_empty => '在已掃描的訊息中未找到資產';
+
+  @override
+  String get assets_empty_detail =>
+      '掃描更多聊天或更早的訊息，以查看更早的記錄。一般附件和未連結的檔案不會在這裡建立索引。';
+
+  @override
+  String get assets_no_matches => '找不到相符的資產';
+
+  @override
+  String get assets_load_more_chats => '掃描更多聊天';
+
+  @override
+  String get assets_load_older_messages => '掃描更早的訊息';
+
+  @override
+  String get assets_load_failed => '部分歷史記錄無法讀取。結果不完整。請檢查儀表板連線並重試。';
+
+  @override
+  String get assets_retry_failed => '重試讀取失敗的歷史記錄';
+
+  @override
+  String get assets_partial => '伺服器報告歷史記錄不完整。請檢查儀表板後重新整理。';
+
+  @override
+  String assets_scan_summary(int files, int chats) {
+    return '已掃描 $chats 個聊天，找到 $files 筆檔案參照';
+  }
+
+  @override
+  String assets_open_chat(String title) {
+    return '開啟聊天：$title';
+  }
+
+  @override
+  String get assets_file_too_large => '此檔案超出下載容量上限。請開啟儀表板進行下載。';
+
+  @override
+  String get a_one_off_question_archives_itself_after_72_hours_anything =>
+      '適合只問一次的問題。聊天會在 72 小時後自動封存，值得保留的內容仍會記住。';
+
+  @override
+  String get archive_chat => '封存聊天';
+
+  @override
+  String get unarchive_chat => '取消封存聊天';
+
+  @override
+  String get chat_archived => '聊天已封存';
+
+  @override
+  String get chat_unarchived => '聊天已取消封存';
+
+  @override
+  String could_not_update_chat_archive(Object error) {
+    return '無法更新聊天封存狀態：$error';
+  }
+
+  @override
+  String get quick_chat_description => '只想問一個問題時使用。';
+
+  @override
+  String get ai_full_text => 'AI + 全文';
+
+  @override
+  String get ai_search_model => 'AI 搜尋模型';
+
+  @override
+  String ai_searched_for(Object aiRewrittenQuery) {
+    return 'AI 已搜尋：$aiRewrittenQuery';
+  }
+
+  @override
+  String get ai_assisted_filing => 'AI 輔助封存';
+
+  @override
+  String get api_key => 'API 金鑰';
+
+  @override
+  String get api_server_key_from_hermes_env =>
+      '來自 ~/.hermes/.env 的 API_SERVER_KEY';
+
+  @override
+  String get active => '活躍';
+
+  @override
+  String get activity => '活動';
+
+  @override
+  String get activity_reads_the_durable_turn_journal_to_know_what_hermes =>
+      '「活動」會讀取已儲存的回合記錄，顯示 Hermes 正在做什麼。請確認閘道可連線後再試一次。';
+
+  @override
+  String get add => '新增';
+
+  @override
+  String get add_connection => '新增連線';
+
+  @override
+  String get add_cron_job => '新增 Cron 任務';
+
+  @override
+  String get add_gateway_connection => '新增閘道連線';
+
+  @override
+  String get add_and_update_connections_from_the_backup_keep_the_rest =>
+      '從備份中新增和更新連線，其餘保持不變。';
+
+  @override
+  String get add_attachment => '新增附件';
+
+  @override
+  String get add_new_cron_job => '新增新 Cron 任務';
+
+  @override
+  String get add_to_chat => '新增到聊天';
+
+  @override
+  String get all_chats => '所有聊天';
+
+  @override
+  String get all_stored_message_content => '所有已儲存的訊息內容';
+
+  @override
+  String get allow_for_this_session => '本次工作階段允許';
+
+  @override
+  String get allow_matching_commands_until_this_hermes_session_ends =>
+      '允許符合此規則的指令，直到本次 Hermes 工作階段結束。';
+
+  @override
+  String get allow_folder_until_sandbox_off => '允許此資料夾，直到關閉沙箱為止。';
+
+  @override
+  String get allow_once => '允許一次';
+
+  @override
+  String get allow_website_until_sandbox_off => '允許此網站，直到關閉沙箱為止。';
+
+  @override
+  String get always_allow => '一律允許';
+
+  @override
+  String get apply_to_this_chat => '套用至此聊天';
+
+  @override
+  String get approval_needed => '需要核准';
+
+  @override
+  String get approval_needed_description => '有指令正在等候你核准或拒絕。';
+
+  @override
+  String get approve => '核准';
+
+  @override
+  String get archive => '封存';
+
+  @override
+  String get archive_project => '封存專案';
+
+  @override
+  String archive_2(Object projectName) {
+    return '封存 $projectName？';
+  }
+
+  @override
+  String archive_3(Object name) {
+    return '封存 $name？';
+  }
+
+  @override
+  String get archived => '已封存';
+
+  @override
+  String get archived_conversations_appear_here =>
+      '這裡只顯示已封存的對話。舊聊天仍保留在「所有聊天」中。';
+
+  @override
+  String get archived_quick_chats => '已封存的快速聊天';
+
+  @override
+  String get artifacts_attachments_and_generated_media => '工作成果、附件及產生的媒體檔案';
+
+  @override
+  String get ask_ai_to_find_a_conversation => '讓 AI 尋找對話';
+
+  @override
+  String get assets => '資產';
+
+  @override
+  String get assets_need_a_server_authoritative_assets_index_in_the_hermes =>
+      'Hermes 閘道必須提供由伺服器統一維護的資產索引，才能依專案顯示資產。';
+
+  @override
+  String get assets_unavailable => '資產不可用';
+
+  @override
+  String get attach_image_or_file => '附加圖片或檔案';
+
+  @override
+  String get attachment_drafts => '附件草稿';
+
+  @override
+  String get recover_text_draft => '找回文字草稿';
+
+  @override
+  String get undo_draft_recovery => '復原';
+
+  @override
+  String get draft_session_exists => '此聊天仍然存在。開啟後即可繼續編輯草稿。';
+
+  @override
+  String get draft_recovery_unavailable => '無法驗證此草稿，未做任何變更。';
+
+  @override
+  String attachment_of(Object index, Object total) {
+    return '附件 $index / $total';
+  }
+
+  @override
+  String get auto_device_default => '自動（裝置預設）';
+
+  @override
+  String get agent => '代理程式';
+
+  @override
+  String get autonomous_agents => '自主代理程式';
+
+  @override
+  String get background_recovery_unavailable_legacy_transport =>
+      '無法使用背景復原 — 舊版傳輸';
+
+  @override
+  String get background_task_completed => '背景任務完成';
+
+  @override
+  String get background_task_completed_description => '背景終端機指令已完成。';
+
+  @override
+  String get backup_restore => '備份與還原';
+
+  @override
+  String backup_exported(Object destination) {
+    return '備份已匯出 — $destination';
+  }
+
+  @override
+  String get base_url => '基礎 URL';
+
+  @override
+  String get binary_preview_is_unavailable_download_the_file_to_open_it =>
+      '二進位預覽不可用。請下載檔案後開啟。';
+
+  @override
+  String get branch => '分支';
+
+  @override
+  String get branch_chat => '從聊天建立分支';
+
+  @override
+  String get branch_created_in_hermes_history => '已在 Hermes 歷史記錄中建立分支。';
+
+  @override
+  String get browse_and_manage_your_hermes_agent_sessions_from_your_phone =>
+      '透過手機瀏覽和管理你的 Hermes Agent 工作階段。連線至在區域網路上執行的 Hermes 儀表板。';
+
+  @override
+  String get browse_server_files => '瀏覽伺服器檔案';
+
+  @override
+  String get browse_the_miniserver_folders_behind_your_projects =>
+      '瀏覽各專案使用的 miniserver 資料夾';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get cancel_voice_input => '取消語音輸入';
+
+  @override
+  String cannot_reach(Object host, Object port) {
+    return '無法連線至 $host:$port。';
+  }
+
+  @override
+  String cannot_reach_check_the_host_and_port(Object host, Object port) {
+    return '無法連線至 $host:$port。請檢查主機和連接埠。';
+  }
+
+  @override
+  String get change_ai_search_model => '更改 AI 搜尋模型';
+
+  @override
+  String changes_the_default_for_use_the_selector_in_a_chat(Object label) {
+    return '更改 $label 的預設值。在聊天中使用選擇器可僅覆寫目前對話。';
+  }
+
+  @override
+  String get chat_actions => '聊天操作';
+
+  @override
+  String get chats => '聊天';
+
+  @override
+  String get chats_from_this_gateway_are_not_grouped_yet_grouping_stays =>
+      '此閘道中的聊天尚未分組。分組狀態將保留在此手機上，直到閘道能夠代管專案。';
+
+  @override
+  String get chats_in_this_project_will_show_their_state_and_last =>
+      '此專案中的聊天將在此處顯示其狀態和最後活動。';
+
+  @override
+  String get chats_that_are_not_assigned_to_a_project => '未分配至專案的聊天';
+
+  @override
+  String get chats_you_start_in_this_project_will_appear_here_on =>
+      '你在此專案中發起的聊天將顯示在此處，並同步到登入此 Hermes 的所有裝置上。';
+
+  @override
+  String get check_that_the_gateway_is_running_and_reachable_then_try =>
+      '請檢查閘道是否正在執行且可達，然後重試。';
+
+  @override
+  String get check_the_dashboard_connection_and_try_again => '請檢查儀表板連線並重試。';
+
+  @override
+  String get check_the_connection_and_try_again => '請檢查連線並重試。';
+
+  @override
+  String get choose_a_small_model_to_rewrite_queries => '選擇一個小模型來重寫查詢';
+
+  @override
+  String get choose_an_ai_search_model_before_using_ai_search =>
+      '請在使用 AI 搜尋前選擇一個 AI 搜尋模型。';
+
+  @override
+  String get choose_an_active_project_next => '接下來請選擇使用中的專案';
+
+  @override
+  String get choose_chat_model => '選擇聊天模型';
+
+  @override
+  String get choose_files => '選擇檔案';
+
+  @override
+  String get choose_image => '選擇圖片';
+
+  @override
+  String get choose_images => '選擇圖片';
+
+  @override
+  String get choose_its_destination_space => '選擇其目標空間';
+
+  @override
+  String get clear_search => '清除搜尋';
+
+  @override
+  String get close => '關閉';
+
+  @override
+  String get code_copied => '程式碼已複製';
+
+  @override
+  String get code_format => '程式碼';
+
+  @override
+  String get coming_next => '敬請期待';
+
+  @override
+  String get command => '指令';
+
+  @override
+  String get command_palette => '指令面板';
+
+  @override
+  String get command_palette_hint => '輸入指令';
+
+  @override
+  String get command_palette_no_results => '找不到符合的指令';
+
+  @override
+  String get command_palette_new_chat => '新增聊天';
+
+  @override
+  String get command_palette_search_chats => '搜尋聊天';
+
+  @override
+  String get command_palette_toggle_theme => '切換主題';
+
+  @override
+  String get command_palette_copy_last_code => '複製最後一個程式碼區塊';
+
+  @override
+  String get command_line_chats => '命令列聊天';
+
+  @override
+  String get compatibility_mode => '相容模式';
+
+  @override
+  String get configure_a_valid_desktop_gateway_url_before_attaching_files =>
+      '在附加檔案前，請先設定有效的 Desktop Gateway URL。';
+
+  @override
+  String get confirm_always_allow => '確認一律允許';
+
+  @override
+  String get confirm_passphrase => '確認密碼片語';
+
+  @override
+  String connecting_to(Object baseUrl) {
+    return '正在連線至 $baseUrl...';
+  }
+
+  @override
+  String get connection_issue => '連線問題';
+
+  @override
+  String
+  get connection_switched_the_running_reply_continues_on_the_server_and =>
+      '已切換連線。伺服器仍在產生回覆，應用程式會自動重新接上。';
+
+  @override
+  String get connection_appearance_and_device_preferences => '連線、外觀和裝置偏好設定';
+
+  @override
+  String context_tokens(Object effectiveContextLength) {
+    return '上下文：$effectiveContextLength 令牌';
+  }
+
+  @override
+  String get continue_label => '繼續';
+
+  @override
+  String get continue_working => '繼續工作';
+
+  @override
+  String get conversations_in_this_project => '此專案中的對話';
+
+  @override
+  String get copy_code => '複製程式碼';
+
+  @override
+  String get copy_message => '複製訊息';
+
+  @override
+  String could_not_branch_chat(Object error) {
+    return '無法建立聊天分支：$error';
+  }
+
+  @override
+  String could_not_delete_session(Object error) {
+    return '無法刪除工作階段：$error';
+  }
+
+  @override
+  String could_not_deny_the_command(Object error) {
+    return '無法拒絕該指令：$error';
+  }
+
+  @override
+  String could_not_load_ai_search_models(Object error) {
+    return '無法載入 AI 搜尋模型：$error';
+  }
+
+  @override
+  String get could_not_load_conversations => '無法載入對話';
+
+  @override
+  String get could_not_load_files => '無法載入檔案';
+
+  @override
+  String could_not_load_models_for_this_profile(Object error) {
+    return '無法為該設定檔載入模型：$error';
+  }
+
+  @override
+  String could_not_load_more_chats(Object error) {
+    return '無法載入更多聊天：$error';
+  }
+
+  @override
+  String get could_not_open_link => '無法開啟這個連結。';
+
+  @override
+  String get could_not_open_the_hermes_dashboard => '無法開啟 Hermes 儀表板。';
+
+  @override
+  String get could_not_open_this_project => '無法開啟此專案';
+
+  @override
+  String get could_not_preview_file => '無法預覽檔案';
+
+  @override
+  String get could_not_reach_hermes => '無法連線至 Hermes';
+
+  @override
+  String could_not_reach_authenticate_the_dashboard_at_check_the_port(
+    Object dashboardPort,
+    Object host,
+  ) {
+    return '無法連線至 $host:$dashboardPort 的儀表板，或未通過驗證。請檢查連接埠和登入資訊。';
+  }
+
+  @override
+  String get could_not_read_activity => '無法讀取活動';
+
+  @override
+  String could_not_rename_chat(Object error) {
+    return '無法重新命名聊天：$error';
+  }
+
+  @override
+  String could_not_send_the_approval(Object error) {
+    return '無法傳送核准：$error';
+  }
+
+  @override
+  String get could_not_skip_the_hermes_question => '無法跳過 Hermes 的問題。';
+
+  @override
+  String could_not_the_project(Object action, Object error) {
+    return '無法$action此專案：$error';
+  }
+
+  @override
+  String get couldn_t_delete_project => '無法刪除專案';
+
+  @override
+  String couldn_t_load_runs(Object error) {
+    return '無法載入執行記錄：$error';
+  }
+
+  @override
+  String get couldn_t_move_conversation => '無法移動對話';
+
+  @override
+  String couldn_t_move_to(Object label, Object reason) {
+    return '無法移動至 $label：$reason';
+  }
+
+  @override
+  String get couldn_t_prepare_the_shared_files => '無法準備共用檔案。';
+
+  @override
+  String get couldn_t_promote_conversation => '無法提升工作階段';
+
+  @override
+  String couldn_t_project(Object action) {
+    return '無法$action專案';
+  }
+
+  @override
+  String get create => '建立';
+
+  @override
+  String get create_a_project => '建立專案';
+
+  @override
+  String get create_a_project_first_then_chats_can_live_inside_it =>
+      '請先建立一個專案，聊天內容即可存放在其中。';
+
+  @override
+  String get create_a_space_to_separate_related_conversations =>
+      '建立一個空間以區分相關的聊天。';
+
+  @override
+  String get create_branch => '建立分支';
+
+  @override
+  String get credit_notifications => '額度通知';
+
+  @override
+  String get credit_notifications_description => '額度使用已停止或恢復。';
+
+  @override
+  String get cron => 'Cron';
+
+  @override
+  String get crons => '排程任務';
+
+  @override
+  String get cron_conversations_empty => '排程任務的對話會顯示在這裡，包括先前執行時的對話。';
+
+  @override
+  String get search_cron_conversations => '搜尋排程任務的對話';
+
+  @override
+  String get cron_jobs => 'Cron 任務';
+
+  @override
+  String cron_schedule_timezone(Object zone) {
+    return '排程時區：$zone';
+  }
+
+  @override
+  String get crons_upcoming => '即將執行';
+
+  @override
+  String get crons_history => '執行歷史';
+
+  @override
+  String cron_time_with_zone(Object time, Object zone) {
+    return '$time（$zone）';
+  }
+
+  @override
+  String cron_time_zone_unknown(Object time) {
+    return '$time（時區未知）';
+  }
+
+  @override
+  String get cron_no_next_run => '未安排下次執行';
+
+  @override
+  String get cron_status_scheduled => '已排程';
+
+  @override
+  String get cron_status_paused => '已暫停';
+
+  @override
+  String cron_delivers_to(Object target) {
+    return '投遞至 $target';
+  }
+
+  @override
+  String get cron_upcoming_empty_title => '目前沒有已排程任務';
+
+  @override
+  String get cron_upcoming_empty_message =>
+      '目前沒有待執行的排程。你可以前往「Cron 任務」新增，或請代理程式安排。';
+
+  @override
+  String get cron_upcoming_unavailable => '無法顯示已排程任務';
+
+  @override
+  String get cron_upcoming_needs_dashboard =>
+      '排程任務需要連線至儀表板。此位址未提供 Cron 排程；請檢查儀表板位址，並確認主機支援這項功能。';
+
+  @override
+  String get cron_upcoming_needs_dashboard_auth =>
+      '排程任務需要通過儀表板驗證。請在此連線中填寫儀表板使用者名稱和密碼，或啟用代理伺服器模式。';
+
+  @override
+  String get cron_upcoming_dashboard_unreachable =>
+      '無法連線至儀表板。請檢查主機、儀表板連接埠和網路，然後重試。';
+
+  @override
+  String get cron_upcoming_load_failed => '無法讀取已排程任務。請檢查儀表板連線並重試。';
+
+  @override
+  String get cron_upcoming_refresh_failed => '無法重新整理排程。正在顯示上次成功讀取的結果。';
+
+  @override
+  String get cron_job_added => 'Cron 任務已新增';
+
+  @override
+  String get cron_job_updated => 'Cron 任務已更新';
+
+  @override
+  String get cron_run => 'Cron 執行';
+
+  @override
+  String get cross_device_ordering_and_reversible_bulk_organization =>
+      '跨裝置排序與可復原的批次整理';
+
+  @override
+  String get current_profile_default => '目前設定檔預設值';
+
+  @override
+  String get custom_proxy_and_dashboard_details => '自訂代理伺服器與儀表板詳細資料';
+
+  @override
+  String get dark => '深色';
+
+  @override
+  String get dashboard_proxy_settings => '儀表板 / 代理伺服器設定';
+
+  @override
+  String get dashboard_password_optional => '儀表板密碼（選填）';
+
+  @override
+  String get dashboard_port => '儀表板連接埠';
+
+  @override
+  String get dashboard_username_optional => '儀表板使用者名稱（選填）';
+
+  @override
+  String get dashboard_behind_proxy => '位於代理伺服器後的儀表板';
+
+  @override
+  String get dashboard_path_prefix => '儀表板路徑前置字串';
+
+  @override
+  String delegated_task(Object goal) {
+    return '委派任務：$goal';
+  }
+
+  @override
+  String get delete => '刪除';
+
+  @override
+  String delete_2(Object name) {
+    return '刪除「$name」？';
+  }
+
+  @override
+  String delete_from_the_remote_hermes_history_this_cannot_be_undone(
+    Object title,
+  ) {
+    return '從遠端 Hermes 歷史記錄中刪除「$title」？此操作不可復原。';
+  }
+
+  @override
+  String get delete_cron_job => '刪除 Cron 任務';
+
+  @override
+  String get delete_connections_that_are_not_in_the_backup => '刪除不在備份中的連線。';
+
+  @override
+  String delete_failed(Object error) {
+    return '刪除失敗：$error';
+  }
+
+  @override
+  String get delete_project => '刪除專案';
+
+  @override
+  String get delete_session => '刪除工作階段？';
+
+  @override
+  String delete_3(Object projectName) {
+    return '刪除 $projectName？';
+  }
+
+  @override
+  String deleted(Object name) {
+    return '已刪除「$name」';
+  }
+
+  @override
+  String get delivery_is_uncertain_recovering_without_resending =>
+      '尚無法確認是否送達。正在復原連線，不會重新傳送…';
+
+  @override
+  String get desktop_gateway_url_optional => 'Desktop Gateway URL（選填）';
+
+  @override
+  String get desktop_gateway_is_not_configured_for_this_connection =>
+      '此連線未設定 Desktop Gateway。';
+
+  @override
+  String get desktop_app => '桌面應用程式';
+
+  @override
+  String get developer_tool_calls => '開發者工具呼叫';
+
+  @override
+  String get discord_chats => 'Discord 聊天';
+
+  @override
+  String get dismiss => '忽略';
+
+  @override
+  String get do_not_run_this_command => '請勿執行此指令。';
+
+  @override
+  String get documents_archives_audio_video_or_data => '文件、壓縮檔、音訊、影片或資料';
+
+  @override
+  String get download => '下載';
+
+  @override
+  String download_failed(Object error) {
+    return '下載失敗：$error';
+  }
+
+  @override
+  String get durable_facts_hermes_keeps_about_you => 'Hermes 長期記得的關於你的事';
+
+  @override
+  String get durable_work_inside_one_of_your_projects_shared_with_desktop =>
+      '將工作內容長期保留在專案中，並與桌面版共用。';
+
+  @override
+  String get edit => '編輯';
+
+  @override
+  String get edit_connection => '編輯連線';
+
+  @override
+  String get edit_cron_job => '編輯 Cron 任務';
+
+  @override
+  String get edit_gateway_connection => '編輯閘道連線';
+
+  @override
+  String get edit_and_resend => '編輯並重發';
+
+  @override
+  String get enable_notifications => '啟用通知';
+
+  @override
+  String get enable_notifications_description => '關閉後將停用以下所有通知。';
+
+  @override
+  String get enables_file_attachments_through_the_desktop_remote_gateway =>
+      '允許透過 Desktop 遠端閘道傳送檔案附件。';
+
+  @override
+  String get enter_a_name => '輸入名稱';
+
+  @override
+  String get enter_a_passphrase => '請輸入密碼片語。';
+
+  @override
+  String get enter_the_passphrase_for_this_backup => '請輸入此備份的密碼片語。';
+
+  @override
+  String get every_conversation_is_already_assigned_to_a_project =>
+      '所有對話均已分配至某個專案。';
+
+  @override
+  String get everything_not_yet_native_in_the_authenticated_web_dashboard =>
+      '應用程式尚未內建的功能，可登入網頁版儀表板使用';
+
+  @override
+  String get explain_the_attached_content_clearly => '清晰解釋附件內容。';
+
+  @override
+  String explain_this_content_clearly(Object text) {
+    return '清晰解釋此內容：\n\n$text';
+  }
+
+  @override
+  String
+  get explicit_choices_adjust_android_accessibility_text_size_system_leaves_it =>
+      '選擇指定大小會調整 Android 的無障礙文字大小；選擇「系統」則維持原有大小。';
+
+  @override
+  String get export_label => '匯出';
+
+  @override
+  String get export_share => '匯出 / 分享';
+
+  @override
+  String get external_api_clients => '外部 API 用戶端';
+
+  @override
+  String get extra_high => '極高';
+
+  @override
+  String get extract_tasks => '提取任務';
+
+  @override
+  String
+  get extract_the_decisions_deadlines_owners_and_actionable_action_items_from =>
+      '從附件內容中提取決策、截止日期、負責人以及可執行的待辦事項。';
+
+  @override
+  String
+  extract_the_decisions_deadlines_owners_and_actionable_action_items_from_2(
+    Object text,
+  ) {
+    return '從以下內容中提取決策、截止日期、負責人以及可執行的待辦事項：\n\n$text';
+  }
+
+  @override
+  String failed_to_add_job(Object error) {
+    return '新增任務失敗：$error';
+  }
+
+  @override
+  String get failed_to_load_cron_jobs => '載入 Cron 任務失敗';
+
+  @override
+  String get failed_to_load_memory => '載入記憶失敗';
+
+  @override
+  String get failed_to_load_messages => '載入訊息失敗';
+
+  @override
+  String get failed_to_load_settings => '載入設定失敗';
+
+  @override
+  String get failed_to_load_skills => '載入技能失敗';
+
+  @override
+  String failed_to_update_job(Object error) {
+    return '更新任務失敗：$error';
+  }
+
+  @override
+  String failed(Object error) {
+    return '失敗：$error';
+  }
+
+  @override
+  String get file_attached_document_catalog_registration_is_pending =>
+      '已附加檔案，文件目錄尚未登記完成。';
+
+  @override
+  String get file_reference_added_to_chat => '檔案參照已新增至聊天';
+
+  @override
+  String get files => '檔案';
+
+  @override
+  String get fill_from_document => '從文件填入';
+
+  @override
+  String get folder_is_empty => '這個資料夾是空的';
+
+  @override
+  String get folders => '資料夾';
+
+  @override
+  String get full_text => '全文';
+
+  @override
+  String get gateway_api_access => '閘道 API 存取';
+
+  @override
+  String get gateway_connected_but_the_dashboard_could_not_be_reached_or =>
+      '閘道已連線，但無法存取儀表板或未能通過身分驗證。請檢查儀表板詳細資訊，或清除它們以跳過。';
+
+  @override
+  String get gateway_path_prefix => '閘道路徑前置字串';
+
+  @override
+  String get go_to_end => '轉到末尾';
+
+  @override
+  String get hermes_agent => 'Ares（原名 Hermes Android）';
+
+  @override
+  String get hermes_agent_for_android => 'Ares（原名 Hermes Android）';
+
+  @override
+  String get hermes_could_not_accept_the_answer_please_try_again =>
+      'Hermes 無法接受此回答，請重試。';
+
+  @override
+  String get hermes_could_not_load_your_saved_connections =>
+      'Hermes 無法載入你儲存的連線';
+
+  @override
+  String get hermes_did_not_accept_the_response_please_try_again =>
+      'Hermes 未能接受此回應，請重試。';
+
+  @override
+  String get hermes_is_responding => 'Hermes 正在回應…';
+
+  @override
+  String get hermes_is_waiting_for_input => 'Hermes 正在等待輸入…';
+
+  @override
+  String get hermes_keeps_android_accessibility_text_scaling_active =>
+      'Ares 會保留 Android 無障礙設定中的文字縮放比例。';
+
+  @override
+  String get hermes_needs_your_input => 'Hermes 需要你的輸入';
+
+  @override
+  String get hermes_profile_optional => 'Hermes 設定檔（選填）';
+
+  @override
+  String get hermes_profile_must_be_a_plain_profile_name_such_as =>
+      '請輸入 Hermes 設定檔名稱（例如 sol），而不是路徑。';
+
+  @override
+  String get hermes_reasoning_details => 'Hermes 推理詳細資料';
+
+  @override
+  String hermes_recovery_is_unavailable(Object error) {
+    return '無法復原 Hermes：$error';
+  }
+
+  @override
+  String get hermes_stopped_recovery_safely_no_prompt_was_resent =>
+      'Hermes 已安全停止復原。沒有重新傳送任何提示詞。';
+
+  @override
+  String get hide_passphrase => '隱藏密碼片語';
+
+  @override
+  String get home_needs_your_recent_chats_to_know_what_deserves_your =>
+      '首頁需要你最近的聊天記錄來瞭解哪些內容值得你關注。請檢查閘道是否可達，然後重試。';
+
+  @override
+  String get host => '主機';
+
+  @override
+  String get image_selection_was_interrupted_try_again => '圖片選擇被中斷，請重試。';
+
+  @override
+  String get import_label => '匯入';
+
+  @override
+  String get inbox => '收件匣';
+
+  @override
+  String get inbox_is_clear => '沒有待處理項目';
+
+  @override
+  String get input_needed => '需要輸入';
+
+  @override
+  String get input_needed_description => 'Hermes 提出了問題，或需要密碼或金鑰。';
+
+  @override
+  String get insert_a_remote_file_reference => '插入遠端 @file 引用';
+
+  @override
+  String get invalid_port_number => '無效的連接埠號碼。';
+
+  @override
+  String get job_paused => '任務已暫停';
+
+  @override
+  String get job_resumed => '任務已繼續';
+
+  @override
+  String get job_triggered => '任務已觸發';
+
+  @override
+  String get label => '標籤';
+
+  @override
+  String last_activity(Object day, Object month, Object year) {
+    return '最後活動於 $year年$month月$day日';
+  }
+
+  @override
+  String last(Object lastRun) {
+    return '最後執行：$lastRun';
+  }
+
+  @override
+  String get leave_blank_for_default_8642_443_with_https =>
+      '留空則使用預設值（8642；使用 https 時為 443）';
+
+  @override
+  String get leave_blank_for_default_9119 => '留空則使用預設值 (9119)';
+
+  @override
+  String get light => '淺色';
+
+  @override
+  String listening(Object elapsed) {
+    return '正在聆聽 • $elapsed';
+  }
+
+  @override
+  String listening_elapsed(Object elapsed) {
+    return '正在聆聽，已耗時 $elapsed';
+  }
+
+  @override
+  String get load_more => '載入更多…';
+
+  @override
+  String get loading => '正在載入';
+
+  @override
+  String get location => '位置';
+
+  @override
+  String get make_sure_the_gateway_api_server_is_running_hermes_gateway =>
+      '請確認閘道的 API 伺服器正在執行\n(hermes gateway status)';
+
+  @override
+  String matches(Object assigned, Object name) {
+    return '符合 $name · $assigned';
+  }
+
+  @override
+  String get memory => '記憶';
+
+  @override
+  String get memory_about_you => '關於你';
+
+  @override
+  String get memory_agent_notes => '助手筆記';
+
+  @override
+  String get memory_builtin_scope =>
+      '此設定檔的 USER.md 和 MEMORY.md 中儲存的事實。這裡不顯示外部記憶服務（包括 MemPalace）的內容。';
+
+  @override
+  String get memory_read_only => '僅供查看。可在聊天中請 Hermes 更正或忘記某條事實。';
+
+  @override
+  String get memory_unavailable => '此閘道或設定檔無法提供已儲存的事實。請檢查所選設定檔，並在需要時更新 Hermes。';
+
+  @override
+  String get memory_load_error => '請檢查儀表板連線和身分驗證，然後重試。';
+
+  @override
+  String get memory_read_full_fact => '閱讀完整事實';
+
+  @override
+  String get memory_full_fact_requires_update =>
+      '查看完整事實需要更新的 Hermes 閘道。請更新 Hermes 並重新整理清單。';
+
+  @override
+  String get memory_fact_detail_error => '無法載入完整事實。它可能已更改；請重新整理清單後重試。';
+
+  @override
+  String get memory_entries_are_cross_session_facts_the_agent_remembers_they =>
+      'Hermes 記住的事實會顯示在這裡。';
+
+  @override
+  String get merge => '合併';
+
+  @override
+  String get message => '訊息';
+
+  @override
+  String get message_hermes => '給 Hermes 傳送訊息…';
+
+  @override
+  String get message_actions => '訊息操作';
+
+  @override
+  String get message_copied => '已複製訊息';
+
+  @override
+  String get migrating => '正在遷移…';
+
+  @override
+  String get migration_complete => '遷移完成';
+
+  @override
+  String get migration_failed_local_spaces_were_kept_unchanged =>
+      '遷移失敗。本機空間保持不變。';
+
+  @override
+  String get migration_incomplete => '遷移未完成';
+
+  @override
+  String get migration_preview => '遷移預覽';
+
+  @override
+  String get model => '模型';
+
+  @override
+  String get model_and_thinking_for_this_chat => '此聊天的模型和思考狀態';
+
+  @override
+  String model_was_not_changed(Object error) {
+    return '模型未更改：$error';
+  }
+
+  @override
+  String get move_attachment_next => '將附件往後移一位';
+
+  @override
+  String get move_attachment_previous => '將附件往前移一位';
+
+  @override
+  String get move_chat => '移動聊天';
+
+  @override
+  String get move_conversation => '移動工作階段';
+
+  @override
+  String get move_to_project => '移動到專案';
+
+  @override
+  String get move_to_space => '移動到空間';
+
+  @override
+  String get moved_to_a_project => '已移動到專案';
+
+  @override
+  String moved_to(Object label) {
+    return '已移動到 $label';
+  }
+
+  @override
+  String get name => '名稱';
+
+  @override
+  String get name_prompt_and_schedule_are_required => '名稱、提示詞和排程均為必填項';
+
+  @override
+  String get nav_activity => '活動';
+
+  @override
+  String get nav_projects => '專案';
+
+  @override
+  String get needs_a_correction_aware_filing_contract_in_the_hermes_gateway =>
+      'Hermes 閘道必須支援可依使用者更正來調整的歸類機制。';
+
+  @override
+  String get needs_a_reachable_hermes_dashboard_check_the_host_port_and =>
+      '需要可存取的 Hermes 儀表板。請檢查此連線的主機、連接埠和驗證資訊。';
+
+  @override
+  String get needs_a_server_authoritative_assets_index_in_the_hermes_gateway =>
+      'Hermes 閘道必須提供由伺服器統一維護的資產索引。';
+
+  @override
+  String get needs_durable_pin_ordering_batch_mutation_and_undo_contracts_in =>
+      'Hermes 閘道必須能儲存置頂順序，並支援批次變更與復原。';
+
+  @override
+  String get needs_you => '需要你';
+
+  @override
+  String get new_label => '新';
+
+  @override
+  String get new_chat => '新增聊天';
+
+  @override
+  String get new_chat_2 => '新增聊天';
+
+  @override
+  String new_chat_3(Object projectName) {
+    return '新增聊天 · $projectName';
+  }
+
+  @override
+  String get new_project => '新增專案';
+
+  @override
+  String get new_space => '新增空間';
+
+  @override
+  String next(Object nextRun) {
+    return '下次執行：$nextRun';
+  }
+
+  @override
+  String get nginx_injects_auth_app_sends_clean_requests =>
+      '由 Nginx 加入驗證資訊，應用程式送出要求時不附驗證資訊';
+
+  @override
+  String get no_tts_voices_found_ninstall_google_text_to_speech_and =>
+      '未找到 TTS 語音。\n請安裝 Google Text-to-Speech 並下載語音資料。';
+
+  @override
+  String get no_active_projects_on_this_gateway => '此閘道目前沒有使用中的專案';
+
+  @override
+  String get no_activity_yet => '目前沒有活動';
+
+  @override
+  String get no_chat_is_blocked_running_or_waiting_to_be_resumed =>
+      '沒有受阻、正在執行或等待繼續的聊天。準備好後可以開始新的聊天。';
+
+  @override
+  String no_chats_in_this_project_match(Object searchQuery) {
+    return '此專案中找不到符合「$searchQuery」的聊天。';
+  }
+
+  @override
+  String get no_chats_in_this_space_yet_tap_to_start_one =>
+      '此空間目前沒有聊天。點選 + 開始聊天。';
+
+  @override
+  String get no_chats_yet => '目前沒有聊天';
+
+  @override
+  String get no_connections => '無連線';
+
+  @override
+  String get no_conversation_matches_this_view => '沒有符合目前篩選條件的對話。';
+
+  @override
+  String get no_cron_jobs => '目前沒有 Cron 任務';
+
+  @override
+  String get no_folders_yet => '目前沒有資料夾';
+
+  @override
+  String get no_local_spaces_were_found_for_this_connection_so_projects =>
+      '在此連線中未找到本機空間，因此專案已是此處的唯一組織方式。';
+
+  @override
+  String get no_matches => '無相符項目';
+
+  @override
+  String get no_memory_entries => '目前沒有記憶項目';
+
+  @override
+  String get no_message_content_matches => '無符合的訊息內容';
+
+  @override
+  String get no_new_messages => '目前沒有新訊息';
+
+  @override
+  String get no_projects_yet => '目前沒有專案';
+
+  @override
+  String get no_runs_yet => '目前沒有執行記錄。';
+
+  @override
+  String no_server_project_matches_this_name(Object assigned) {
+    return '伺服器上沒有同名的專案 · $assigned';
+  }
+
+  @override
+  String get no_sessions_yet => '目前沒有工作階段';
+
+  @override
+  String get no_skills_found => '未找到技能';
+
+  @override
+  String get no_spaces_on_this_device => '此裝置上無空間';
+
+  @override
+  String get no_text_shared => '未共用文字';
+
+  @override
+  String get no_turn_is_blocked_in_flight_or_recently_finished_work =>
+      '沒有受阻、進行中或最近完成的回合。你開始的工作會顯示在這裡。';
+
+  @override
+  String get no_turn_needs_your_input_or_has_failed => '沒有需要你輸入或失敗的回合。';
+
+  @override
+  String get no_unassigned_chats => '目前沒有未分配的聊天。';
+
+  @override
+  String get nothing_changed_in_the_last_seven_days => '最近七天無更改。';
+
+  @override
+  String get nothing_has_moved_yet_this_is_only_what_a_migration =>
+      '尚未移動任何內容 — 這只是遷移將執行的操作。';
+
+  @override
+  String get nothing_here => '這裡什麼也沒有';
+
+  @override
+  String get nothing_is_running => '沒有正在執行的內容';
+
+  @override
+  String get nothing_needs_you => '一切正常，不必處理';
+
+  @override
+  String get nothing_to_migrate => '不必遷移';
+
+  @override
+  String get notifications => '通知';
+
+  @override
+  String get windows_notifications_blocked =>
+      '無法使用通知。請使用已安裝的 Ares 應用程式，並檢查 Windows 的「設定」→「系統」→「通知」。';
+
+  @override
+  String get windows_notification_diagnostics => 'Ares 傳送給 Windows 的內容';
+
+  @override
+  String get chat_activity_share => '分享聊天活動';
+
+  @override
+  String get chat_activity_share_hint =>
+      '在你使用此聊天時告知相容的已連線閘道，讓其手機通知外掛程式避免重複提醒。不會傳送任何金鑰或訊息內容。';
+
+  @override
+  String get completion_sound => '完成提示音';
+
+  @override
+  String get completion_sound_system => '系統預設';
+
+  @override
+  String get completion_sound_mail => '郵件';
+
+  @override
+  String get completion_sound_reminder => '提醒';
+
+  @override
+  String get completion_sound_silent => '靜音';
+
+  @override
+  String get completion_sound_scope => '會在回覆完成、測試通知及應用程式內播放。核准和其他提醒維持原本的音效。';
+
+  @override
+  String get completion_sound_scope_android =>
+      '會在回覆完成、測試通知及應用程式內播放。核准、其他提醒、伺服器的背景通知和 Android Auto 訊息維持原本的音效。';
+
+  @override
+  String get notification_open_action => '開啟';
+
+  @override
+  String get app_sounds_mute => '將應用程式音效設為靜音';
+
+  @override
+  String get app_sounds_mute_hint => '停止 Ares 開啟時播放的完成提示音。通知會保留自己的音效。';
+
+  @override
+  String get notifications_permission_denied =>
+      '系統已阻止通知。請在 Android 設定中允許此應用程式傳送通知。';
+
+  @override
+  String get off_no_thinking => '關閉（無思考）';
+
+  @override
+  String get offline_showing_the_last_known_activity => '離線 — 顯示最後已知的活動。';
+
+  @override
+  String get offline_showing_the_last_known_chats => '離線 — 顯示最後已知的聊天';
+
+  @override
+  String get offline_showing_the_last_known_projects => '離線 — 正在顯示最後已知的專案。';
+
+  @override
+  String get on_this_device => '此裝置上';
+
+  @override
+  String get on_device => '裝置端';
+
+  @override
+  String get open_inbox => '開啟收件匣';
+
+  @override
+  String open_inbox_2(Object count) {
+    return '開啟收件匣（$count）';
+  }
+
+  @override
+  String get open_the_hermes_dashboard => '開啟 Hermes 儀表板';
+
+  @override
+  String get optional_for_the_memory_cron_skills_settings_tabs_leave_blank =>
+      '選填。用於「記憶」、「Cron」、「技能」、「設定」分頁。留空則使用預設儀表板連接埠（9119）且不必登入。';
+
+  @override
+  String get organization => '組織';
+
+  @override
+  String get other_answer => '其他回答';
+
+  @override
+  String get overview => '概覽';
+
+  @override
+  String get passphrase => '密碼片語';
+
+  @override
+  String get password_optional => '密碼（選填）';
+
+  @override
+  String get phone_or_tablet => '手機或平板電腦';
+
+  @override
+  String get pin_batch_and_undo => '置頂、批次操作與復原';
+
+  @override
+  String get plugin_notifications => '外掛程式通知';
+
+  @override
+  String get plugin_notifications_description => '應用程式在背景時，閘道發來了通知。';
+
+  @override
+  String get port => '連接埠';
+
+  @override
+  String get preparing_attachments => '正在準備附件…';
+
+  @override
+  String get preview_truncated => '預覽已截斷';
+
+  @override
+  String get preview_unavailable => '預覽不可用';
+
+  @override
+  String get profile => '設定檔';
+
+  @override
+  String get profile_default_model => '設定檔預設模型';
+
+  @override
+  String profile_default_set_to_chats_with_their_own_model_keep(
+    Object selectedModel,
+  ) {
+    return '此設定檔的預設模型已設為 $selectedModel。已個別指定模型的聊天不受影響。';
+  }
+
+  @override
+  String
+  get profile_this_connection_chats_as_when_the_dashboard_serves_several =>
+      '如果儀表板提供多個設定檔，請指定此連線聊天時使用哪一個。若儀表板只供單一設定檔使用，請留白。';
+
+  @override
+  String get project => '專案';
+
+  @override
+  String get project_actions => '專案操作';
+
+  @override
+  String get project_chat => '專案聊天';
+
+  @override
+  String get project_chats_unavailable => '專案聊天不可用';
+
+  @override
+  String get projects => '專案';
+
+  @override
+  String get projects_group_related_chats_files_and_activity_and_stay_in =>
+      '專案將相關的聊天、檔案和活動進行分組，並與你電腦上的 Hermes 保持同步。';
+
+  @override
+  String
+  get projects_need_a_desktop_gateway_connection_add_the_desktop_gateway =>
+      '專案需要 Desktop Gateway 連線。請將 Desktop Gateway URL 新增到此連線，以便跨裝置管理聊天。';
+
+  @override
+  String get projects_unavailable => '專案不可用';
+
+  @override
+  String get projects_activity_new_navigation => '專案、活動 — 新導覽';
+
+  @override
+  String get promote_to_project => '提升為專案';
+
+  @override
+  String get prompt => '提示詞';
+
+  @override
+  String get protect_this_backup => '保護此備份';
+
+  @override
+  String get provider => '供應商';
+
+  @override
+  String get proxy_injects_auth_app_sends_clean_requests =>
+      '由代理伺服器加入驗證資訊，應用程式送出要求時不附驗證資訊';
+
+  @override
+  String get quick_chat => '快速聊天';
+
+  @override
+  String get quick_chats_appear_here_after_their_retention_period =>
+      '快速聊天將在保留期過後顯示在此處。';
+
+  @override
+  String get read_aloud => '朗讀';
+
+  @override
+  String get read_aloud_is_unavailable_on_this_device => '此裝置不支援朗讀功能';
+
+  @override
+  String get reading_response_aloud => '正在朗讀回覆';
+
+  @override
+  String get ready_to_upload => '準備上傳';
+
+  @override
+  String get reasoning => '推理';
+
+  @override
+  String get recently_completed => '最近完成';
+
+  @override
+  String get recently_active => '最近活躍';
+
+  @override
+  String get recovering_hermes => '正在復原 Hermes…';
+
+  @override
+  String get refresh => '重新整理';
+
+  @override
+  String get regenerate_response => '重新生成回覆';
+
+  @override
+  String get remove_attachment => '移除附件';
+
+  @override
+  String get rename => '重新命名';
+
+  @override
+  String get rename_chat => '重新命名聊天';
+
+  @override
+  String get rename_project => '重新命名專案';
+
+  @override
+  String get rename_space => '重新命名空間';
+
+  @override
+  String rename_2(Object projectName) {
+    return '重新命名 $projectName';
+  }
+
+  @override
+  String rename_3(Object name) {
+    return '重新命名 $name';
+  }
+
+  @override
+  String get replace => '替換';
+
+  @override
+  String get repositories => '程式碼儲存庫';
+
+  @override
+  String
+  get research_the_attached_content_verify_the_important_claims_and_cite =>
+      '研究附件內容，核實重要主張並引用來源。';
+
+  @override
+  String research_this_content_verify_the_important_claims_and_cite_sources(
+    Object text,
+  ) {
+    return '研究此內容，核實重要主張並引用來源：\n\n$text';
+  }
+
+  @override
+  String reset_failed_the_secure_storage_may_need_reinstall(Object retryError) {
+    return '重設失敗：$retryError。安全儲存可能需要重新安裝。';
+  }
+
+  @override
+  String get reset_saved_connections => '重設已儲存的連線';
+
+  @override
+  String get responding => '正在回應…';
+
+  @override
+  String response_closed_locally_gateway_stop_failed(Object error) {
+    return '回應已在本機關閉；閘道停止失敗：$error';
+  }
+
+  @override
+  String get response_closed_locally_no_active_gateway_turn_was_found =>
+      '回應已在本機關閉；未找到活動的閘道回合。';
+
+  @override
+  String get response_complete => '回應完成';
+
+  @override
+  String get response_complete_description => '應用程式在背景時，一輪對話已完成。';
+
+  @override
+  String get response_ready => '回覆就緒';
+
+  @override
+  String get response_stopped => '回覆已停止。';
+
+  @override
+  String get restore => '還原';
+
+  @override
+  String get restore_configuration => '還原設定';
+
+  @override
+  String get restore_project => '還原專案';
+
+  @override
+  String get retry => '重試';
+
+  @override
+  String retry_failed_for_the_draft_and_prompt_were_kept(Object name) {
+    return '$name 重試失敗。草稿和提示詞已保留。';
+  }
+
+  @override
+  String get retry_upload => '重試上傳';
+
+  @override
+  String retrying(Object name) {
+    return '正在重試 $name…';
+  }
+
+  @override
+  String get review_local_spaces => '檢查本機空間';
+
+  @override
+  String get review_or_promote_quick_chats_past_their_retention_period =>
+      '查看或提升超出保留期限的快速聊天';
+
+  @override
+  String get review_the_attached_content => '查看附件內容。';
+
+  @override
+  String get run_only_this_command => '僅執行此指令。';
+
+  @override
+  String get running_now => '正在執行';
+
+  @override
+  String get save => '儲存';
+
+  @override
+  String get save_changes => '儲存更改';
+
+  @override
+  String get save_a_permanent_rule_in_the_hermes_configuration =>
+      '在 Hermes 設定中儲存永久規則。';
+
+  @override
+  String get save_the_durable_facts_from_the_attached_content_to_memory =>
+      '將附件內容中的持久事實儲存到記憶中，然後確認保留的內容。';
+
+  @override
+  String save_the_durable_facts_from_this_content_to_memory_then(Object text) {
+    return '將此內容中的持久事實儲存到記憶中，然後確認保留的內容：\n\n$text';
+  }
+
+  @override
+  String get save_your_connections_and_settings_to_an_encrypted_file_then =>
+      '將連線和設定儲存為加密檔案，重新安裝後或換用其他裝置時即可還原。';
+
+  @override
+  String save_2(Object filename) {
+    return '儲存 $filename';
+  }
+
+  @override
+  String get schedule => '排程';
+
+  @override
+  String get scheduled_jobs_and_their_last_runs => '排程任務及其最近執行情況';
+
+  @override
+  String get scheduled_tasks => '排程任務';
+
+  @override
+  String get script_only_no_agent => '僅執行指令稿（不使用代理程式）';
+
+  @override
+  String get scroll_horizontally => '水平捲動';
+
+  @override
+  String get search_all_chats => '搜尋所有聊天';
+
+  @override
+  String get search_all_message_content => '搜尋所有訊息內容';
+
+  @override
+  String get search_chats => '搜尋聊天';
+
+  @override
+  String get search_conversations => '搜尋對話';
+
+  @override
+  String get search_loaded_chats => '搜尋已載入的聊天';
+
+  @override
+  String get search_mode => '搜尋模式';
+
+  @override
+  String get select_one_option_or_enter_another_answer => '選擇一個選項，或輸入其他答案。';
+
+  @override
+  String get select_one_or_more_options_then_continue => '選擇一個或多個選項，然後繼續。';
+
+  @override
+  String get select_text => '選擇文字';
+
+  @override
+  String get send => '傳送';
+
+  @override
+  String send_failed(Object error) {
+    return '傳送失敗：$error';
+  }
+
+  @override
+  String send_failed_api_only_permission_denied(Object error) {
+    return '傳送失敗：$error。伺服器拒絕了以 API 金鑰身分進行的寫入。如果這個工作階段屬於儀表板，為此連線填寫儀表板使用者名稱和密碼或許就能傳送；伺服器也可能是刻意拒絕這項操作。';
+  }
+
+  @override
+  String get send_message => '傳送訊息';
+
+  @override
+  String get send_test_notification => '傳送測試通知';
+
+  @override
+  String get session_sources => '工作階段來源';
+
+  @override
+  String get session_deleted_from_remote_hermes => '已從遠端 Hermes 中刪除工作階段。';
+
+  @override
+  String session_search_failed(Object error) {
+    return '工作階段搜尋失敗：$error';
+  }
+
+  @override
+  String get set_profile_default => '設為此設定檔的預設模型';
+
+  @override
+  String get settings => '設定';
+
+  @override
+  String get share_to_hermes => '分享到 Hermes';
+
+  @override
+  String get show_passphrase => '顯示密碼片語';
+
+  @override
+  String get show_tool_calls_thinking_and_message_metadata =>
+      '顯示工具呼叫、思考過程和訊息中繼資料';
+
+  @override
+  String get signal_messages => 'Signal 訊息';
+
+  @override
+  String get skills => '技能';
+
+  @override
+  String skills_2(Object count) {
+    return '技能（$count）';
+  }
+
+  @override
+  String get skills_and_tools => '技能與工具';
+
+  @override
+  String get skip => '跳過';
+
+  @override
+  String get slack_chats => 'Slack 聊天';
+
+  @override
+  String source(Object source) {
+    return '來源：$source';
+  }
+
+  @override
+  String get space_actions => '空間操作';
+
+  @override
+  String get spaces => '空間';
+
+  @override
+  String get speak_to_hermes => '對 Hermes 說話';
+
+  @override
+  String get speech_recognition_is_unavailable => '語音辨識不可用';
+
+  @override
+  String get spoken_replies => '語音回覆';
+
+  @override
+  String get spoken_replies_off => '語音回覆已關閉';
+
+  @override
+  String get spoken_replies_on => '語音回覆已開啟';
+
+  @override
+  String get stalled_no_update_from_hermes => '已停滯 — 未收到來自 Hermes 的更新';
+
+  @override
+  String get start_something_new => '開啟新任務';
+
+  @override
+  String get start_voice_input => '開始語音輸入';
+
+  @override
+  String get starting_hermes => '正在啟動 Hermes…';
+
+  @override
+  String get media_card_download => '下載檔案';
+
+  @override
+  String get media_card_tap_to_download => '點選即可下載';
+
+  @override
+  String get still_loading_your_projects => '正在載入你的專案。';
+
+  @override
+  String get stop => '停止';
+
+  @override
+  String get stop_response => '停止回應';
+
+  @override
+  String get stop_voice_input => '停止語音輸入';
+
+  @override
+  String get submitted_waiting_for_hermes => '已送出，等待 Hermes 回應';
+
+  @override
+  String get suggest_projects_and_learn_from_your_corrections =>
+      '建議專案並從你的更正中學習';
+
+  @override
+  String get summarize_the_attached_content => '摘要附件內容。';
+
+  @override
+  String summarize_this_content(Object text) {
+    return '摘要此內容：\n\n$text';
+  }
+
+  @override
+  String get switch_profile => '切換設定檔';
+
+  @override
+  String get system => '系統';
+
+  @override
+  String get take_photo => '拍照';
+
+  @override
+  String get tap_to_add_a_remote_hermes_gateway_api_server_port =>
+      '點選 + 新增遠端 Hermes 閘道\n（API 伺服器，連接埠 8642）';
+
+  @override
+  String get tap_the_button_to_start_a_new_chat => '點選 + 按鈕開始新的聊天';
+
+  @override
+  String get telegram_messages => 'Telegram 訊息';
+
+  @override
+  String get terminal_sessions => '終端機工作階段';
+
+  @override
+  String get test_notification_body => '如果你能看到這條通知，說明通知功能正常。';
+
+  @override
+  String get test_notification_sent => '已傳送測試通知。';
+
+  @override
+  String get test_notification_title => 'Hermes 通知測試';
+
+  @override
+  String get test_notification_unsupported => '無法傳送通知——請檢查系統是否允許通知。';
+
+  @override
+  String get text_size => '文字大小';
+
+  @override
+  String get text_size_preview => '文字大小預覽';
+
+  @override
+  String text_size_2(Object label) {
+    return '文字大小：$label';
+  }
+
+  @override
+  String get the_api_key_could_not_be_stored_securely => '無法安全儲存 API 金鑰。';
+
+  @override
+  String get the_project_will_move_to_archived_its_chats_and_files =>
+      '專案會移至「已封存」，聊天和檔案都會保留。你可以隨時還原專案。';
+
+  @override
+  String get the_project_will_move_to_archived_its_chats_and_files_2 =>
+      '專案會移至「已封存」，聊天和檔案都會保留。你可以稍後還原專案。';
+
+  @override
+  String get the_active_profile_did_not_return_any_selectable_models =>
+      '目前的設定檔未傳回任何可供選擇的模型。';
+
+  @override
+  String get the_backup_could_not_be_exported => '無法匯出備份。';
+
+  @override
+  String get the_backup_could_not_be_restored => '無法還原備份。';
+
+  @override
+  String get the_connection_could_not_be_deleted_safely => '無法安全刪除連線。';
+
+  @override
+  String get the_connection_could_not_be_stored_securely => '無法安全儲存連線。';
+
+  @override
+  String get the_dashboard_credentials_could_not_be_stored_securely =>
+      '無法安全儲存儀表板驗證資訊。';
+
+  @override
+  String get the_detached_reply_failed => '已分離的回覆失敗。';
+
+  @override
+  String the_detached_reply_failed_2(Object error) {
+    return '已分離的回覆失敗：$error';
+  }
+
+  @override
+  String get the_file_contains_your_api_keys_and_dashboard_password_so =>
+      '這份檔案包含你的 API 金鑰和儀表板密碼，因此已加密。沒有密碼片語就無法還原備份。';
+
+  @override
+  String get the_last_turn_failed => '上一輪對話失敗';
+
+  @override
+  String the_local_connection_store_looks_damaged_you_can_reset_the(
+    Object errorType,
+  ) {
+    return '本機連線儲存似乎已損壞 ($errorType)。你可以重設已儲存的連線並重新開始。閘道上的聊天記錄不受影響。';
+  }
+
+  @override
+  String get the_model_only_rewrites_your_question_into_a_short_full =>
+      '該模型僅將你的問題重寫為簡短的全文查詢。Hermes 使用已在主機上設定的供應商驗證資訊。';
+
+  @override
+  String get the_server_has_not_reported_folders_for_this_project_yet =>
+      '伺服器尚未報告此專案的資料夾。全局檔案仍可在「更多」中查看。';
+
+  @override
+  String get the_turn_failed => '本輪對話失敗';
+
+  @override
+  String get the_two_passphrases_do_not_match => '兩次輸入的密碼片語不一致。';
+
+  @override
+  String get the_value_is_sent_directly_to_the_active_hermes_gateway =>
+      '該值將直接傳送至目前活動的 Hermes 閘道，不會被此 Android 應用程式儲存。';
+
+  @override
+  String get there_are_no_visible_files_in_this_server_folder =>
+      '此伺服器資料夾中沒有可見檔案。';
+
+  @override
+  String get thinking_effort => '思考強度';
+
+  @override
+  String get this_hermes_gateway_does_not_support_opening_a_project_yet =>
+      '此 Hermes 閘道尚不支援開啟專案。請更新伺服器上的 Hermes 以在手機上瀏覽專案。';
+
+  @override
+  String get this_hermes_gateway_is_older_than_server_side_projects_so =>
+      '此 Hermes 閘道版本舊於伺服器端專案功能，因此聊天僅在此裝置上分組。請更新 Hermes 以在多台裝置間共用相同專案。';
+
+  @override
+  String get this_project_has_no_folder_to_open_the_chat_in =>
+      '此專案需要先新增資料夾才能在其中開始聊天。新增資料夾後請重試。';
+
+  @override
+  String get this_chat_has_no_messages_available_in_the_desktop_session =>
+      '桌面版的工作階段中尚無此聊天的訊息。';
+
+  @override
+  String get this_creates_a_permanent_rule_in_hermes_review_the_full =>
+      '這將在 Hermes 中建立永久規則。確認前請仔細檢查完整指令。';
+
+  @override
+  String get this_gateway_does_not_host_projects_yet_update_the_gateway =>
+      '此閘道尚不支援代管專案。請更新閘道以在各裝置間整理聊天。';
+
+  @override
+  String get this_permanently_deletes_the_project_chats_will_not_be_deleted =>
+      '這將永久刪除該專案。聊天記錄不會被刪除；它們將返回至未分配狀態。';
+
+  @override
+  String get this_server_doesn_t_offer_background_recovery_chats_run_live =>
+      '此伺服器不提供背景復原 — 聊天只在連線時即時進行';
+
+  @override
+  String get this_week => '本週';
+
+  @override
+  String get titles_previews_and_models => '標題、預覽與模型';
+
+  @override
+  String get tool_activity => '工具活動';
+
+  @override
+  String get trigger_now => '立即觸發';
+
+  @override
+  String get received_outcome_unknown => '本輪對話已結束 — 結果未確認';
+
+  @override
+  String get turn_completed => '本輪對話已完成';
+
+  @override
+  String get turn_failed => '對話失敗';
+
+  @override
+  String get turn_failed_description => '背景對話以錯誤結束。';
+
+  @override
+  String get turn_recovery_failed => '無法復原這個回合';
+
+  @override
+  String get unable_to_prepare_this_file_try_another_one => '無法準備此檔案，請嘗試其他檔案。';
+
+  @override
+  String get unable_to_prepare_this_image_try_another_one => '無法準備此圖片，請嘗試其他圖片。';
+
+  @override
+  String unable_to_prepare(Object name) {
+    return '無法準備 $name。';
+  }
+
+  @override
+  String get unable_to_read_the_selected_image_the_selection_was_kept =>
+      '無法讀取所選圖片，已保留目前選擇。';
+
+  @override
+  String get unassigned => '未分配';
+
+  @override
+  String get unassigned_chats => '未分配的聊天';
+
+  @override
+  String get untitled_chat => '未命名聊天';
+
+  @override
+  String get untitled_session => '未命名工作階段';
+
+  @override
+  String get update_api_key => '更新 API 金鑰';
+
+  @override
+  String get upload_failed => '上傳失敗';
+
+  @override
+  String get upload_failed_tap_retry => '上傳失敗 • 點選重試';
+
+  @override
+  String uploading(Object index, Object name, Object total) {
+    return '正在上傳 $index/$total：$name';
+  }
+
+  @override
+  String get use_as_is => '直接使用';
+
+  @override
+  String get use_at_least_8_characters => '請使用至少 8 個字元。';
+
+  @override
+  String get use_for_cron_jobs_backed_by_scripts => '用於由腳本支援的 Cron 任務。';
+
+  @override
+  String get use_on_device => '使用裝置端';
+
+  @override
+  String get use_the_attached_content_to_identify_and_fill_the_relevant =>
+      '使用附件內容辨識並填寫相關文件或表單欄位。送出任何內容前請先詢問。';
+
+  @override
+  String use_this_content_to_identify_and_fill_the_relevant_document(
+    Object text,
+  ) {
+    return '使用此內容辨識並填寫相關文件或表單欄位。送出任何內容前請先詢問：\n\n$text';
+  }
+
+  @override
+  String get used_for_hosted_path_prefixes_and_for_the_settings_memory =>
+      '用於代管服務的路徑前綴，以及「設定」、「記憶」、「技能」和「Cron」分頁。如果儀表板不需登入，請將使用者名稱和密碼留白；如果由反向代理伺服器加入驗證資訊，請啟用代理伺服器模式。';
+
+  @override
+  String get username_optional => '使用者名稱（選填）';
+
+  @override
+  String using(Object displayName) {
+    return '正在使用 $displayName…';
+  }
+
+  @override
+  String get verbose_mode => '詳細模式';
+
+  @override
+  String get message_metadata => '訊息詳細資料';
+
+  @override
+  String get voice => '語音';
+
+  @override
+  String voice_setup_failed(Object error) {
+    return '語音設定失敗：$error';
+  }
+
+  @override
+  String get waiting_for_your_input => '等待你的輸入';
+
+  @override
+  String get what_hermes_knows_how_to_do => 'Hermes 能夠做的事情';
+
+  @override
+  String get what_should_the_agent_do => '要讓代理程式做什麼？';
+
+  @override
+  String get whatsapp_messages => 'WhatsApp 訊息';
+
+  @override
+  String get which_project => '哪個專案？';
+
+  @override
+  String get workspace => '工作區';
+
+  @override
+  String get wrap_lines => '自動換行';
+
+  @override
+  String you_can_attach_up_to_items(Object maxRemoteAttachmentDrafts) {
+    return '最多可附加 $maxRemoteAttachmentDrafts 個項目。';
+  }
+
+  @override
+  String get your_answer => '你的回答';
+
+  @override
+  String get e_g_dashboard => '例如 /dashboard';
+
+  @override
+  String get e_g_dashboard_proxy_path_before_api =>
+      '例如 /dashboard（/api/ 之前的代理伺服器路徑）';
+
+  @override
+  String get e_g_profile_peter => '例如 /profile/peter';
+
+  @override
+  String get e_g_sol => '例如 sol';
+
+  @override
+  String get e_g_0_9_or_every_2h => '例如 0 9 * * * 或 every 2h';
+
+  @override
+  String get e_g_daily_backup => '例如每日備份';
+
+  @override
+  String downloaded(Object filename) {
+    return '已下載 $filename';
+  }
+
+  @override
+  String activity_name_status(Object displayName, Object statusLabel) {
+    return '$displayName：$statusLabel';
+  }
+
+  @override
+  String connection_status_label(Object connectionLabel, Object label) {
+    return '$connectionLabel $label';
+  }
+
+  @override
+  String get example_host_hint =>
+      '192.168.1.50、100.x.y.z 或 hermes-machine.tailnet.ts.net';
+
+  @override
+  String get example_profile_prefix_hint_full =>
+      '例如 /profile/peter（/api/ 和 /v1/ 之前的代理伺服器路徑）';
+
+  @override
+  String and_more(Object count) {
+    return '另外 $count 個';
+  }
+
+  @override
+  String chats_count(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個聊天',
+      one: '$count 個聊天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String on_this_device_only(Object chats) {
+    return '$chats · 僅在此裝置上';
+  }
+
+  @override
+  String spaces_count(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個空間',
+      one: '$count 個空間',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get no_new_projects_needed => '不必建立新專案';
+
+  @override
+  String projects_to_create(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '待建立 $count 個專案',
+      one: '待建立 $count 個專案',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String chats_migrated_projects_created(
+    Object createdProjects,
+    Object linkedSessions,
+  ) {
+    return '已遷移 $linkedSessions 個聊天 · 已建立 $createdProjects 個專案';
+  }
+
+  @override
+  String chats_stayed_in_local_spaces(Object unlinkedSessions) {
+    return '$unlinkedSessions 個聊天保留在本機空間中，可安全重試。';
+  }
+
+  @override
+  String model_recommended(Object provider) {
+    return '$provider • 推薦：小巧且經濟';
+  }
+
+  @override
+  String session_meta(Object count, Object model, Object time) {
+    return '$count 則訊息 • $model • $time';
+  }
+
+  @override
+  String model_scope_label(Object model, Object scope) {
+    return '$model • $scope';
+  }
+
+  @override
+  String get this_chat => '此聊天';
+
+  @override
+  String get profile_default => '設定檔預設值';
+
+  @override
+  String minutes_ago(Object count) {
+    return '$count 分鐘前';
+  }
+
+  @override
+  String hours_ago(Object count) {
+    return '$count 小時前';
+  }
+
+  @override
+  String days_ago(Object count) {
+    return '$count 天前';
+  }
+
+  @override
+  String get now_label => '剛剛';
+
+  @override
+  String get latest_label => '最新';
+
+  @override
+  String new_count_indicator(Object count) {
+    return '$count 則新訊息';
+  }
+
+  @override
+  String new_messages(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 則新訊息',
+      one: '$count 則新訊息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String activity_failed_summary(Object failures, Object total) {
+    return '$failures 個失敗 • 共 $total 個';
+  }
+
+  @override
+  String activity_completed_summary(Object count) {
+    return '已完成 $count 個';
+  }
+
+  @override
+  String tool_start_observed(Object time) {
+    return '偵測到開始的時間：$time（當地時間）';
+  }
+
+  @override
+  String tool_last_observed(Object time) {
+    return '最後一次偵測到的時間：$time（當地時間）';
+  }
+
+  @override
+  String tool_result_recorded(Object time) {
+    return '結果記錄時間：$time（當地時間）';
+  }
+
+  @override
+  String get tool_time_unavailable => '時間不可用';
+
+  @override
+  String get hermes_is_using_a_tool => 'Hermes 正在使用工具';
+
+  @override
+  String hermes_is_using_tools(Object count) {
+    return 'Hermes 正在使用 $count 個工具';
+  }
+
+  @override
+  String delegated_tasks_completed(Object count) {
+    return '已完成 $count 個委派任務';
+  }
+
+  @override
+  String delegated_tasks_active(Object count) {
+    return '$count 個委派任務進行中';
+  }
+
+  @override
+  String branch_main(Object label) {
+    return '$label · main';
+  }
+
+  @override
+  String get you_heading => '## 你';
+
+  @override
+  String get hermes_heading => '## Hermes';
+
+  @override
+  String get action_label => '操作';
+
+  @override
+  String get destination_label => '目標';
+
+  @override
+  String get markdown_source => '原始碼';
+
+  @override
+  String get preview_label => '預覽';
+
+  @override
+  String get share_action_summarize => '摘要';
+
+  @override
+  String get share_action_explain => '解釋';
+
+  @override
+  String get share_action_research => '研究';
+
+  @override
+  String get share_action_remember => '記住';
+
+  @override
+  String get text_size_small => '小';
+
+  @override
+  String get text_size_default => '預設';
+
+  @override
+  String get text_size_large => '大';
+
+  @override
+  String get text_size_extra_large => '特大';
+
+  @override
+  String get text_size_use_system_description => '完全使用 Android 無障礙文字大小。';
+
+  @override
+  String text_size_percent_description(Object percent) {
+    return 'Android 文字大小的 $percent%。';
+  }
+
+  @override
+  String text_size_label_description(Object description, Object label) {
+    return '$label — $description';
+  }
+
+  @override
+  String files_skipped(Object count) {
+    return '已跳過 $count 個檔案：超出限制、大小超限、無法讀取或檔名包含敏感資訊。';
+  }
+
+  @override
+  String model_scope_applied(Object effort, Object model) {
+    return '$model • $effort 現僅套用至此聊天。';
+  }
+
+  @override
+  String get reasoning_minimal => '極簡';
+
+  @override
+  String get reasoning_low => '低';
+
+  @override
+  String get reasoning_medium => '中';
+
+  @override
+  String get reasoning_high => '高';
+
+  @override
+  String get reasoning_max => '最大';
+
+  @override
+  String get reasoning_ultra => '極致';
+
+  @override
+  String get status_running => '執行中';
+
+  @override
+  String get status_failed => '已失敗';
+
+  @override
+  String get status_done => '完成';
+
+  @override
+  String get status_idle => '空閒';
+
+  @override
+  String get upload_status_uploading => '正在上傳';
+
+  @override
+  String get upload_status_uploaded => '已上傳';
+
+  @override
+  String attachment_count(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個附件',
+      one: '$count 個附件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get action_create => '建立';
+
+  @override
+  String get action_rename => '重新命名';
+
+  @override
+  String get action_archive => '封存';
+
+  @override
+  String get action_restore => '還原';
+
+  @override
+  String get action_delete => '刪除';
+
+  @override
+  String get migrate => '遷移';
+
+  @override
+  String assigned_chats(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個已指派的聊天',
+      one: '$count 個已指派的聊天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get date_today => '今天';
+
+  @override
+  String get date_yesterday => '昨天';
+
+  @override
+  String get date_earlier => '更早';
+
+  @override
+  String get nav_home => '首頁';
+
+  @override
+  String get nav_more => '更多';
+
+  @override
+  String get status_completed => '已完成';
+
+  @override
+  String get filter_all => '全部';
+
+  @override
+  String get filter_recent => '最近';
+
+  @override
+  String connection_address_key(Object address, Object status) {
+    return '$address  •  金鑰：$status';
+  }
+
+  @override
+  String model_via_provider(Object model, Object provider) {
+    return '$model  \n透過 `$provider`';
+  }
+
+  @override
+  String get deny => '拒絕';
+
+  @override
+  String get connect => '連線';
+
+  @override
+  String get appearance => '外觀';
+
+  @override
+  String get connection_section => '連線';
+
+  @override
+  String get about => '關於';
+
+  @override
+  String version_label(Object version) {
+    return '版本 $version';
+  }
+
+  @override
+  String get matched => '相符';
+
+  @override
+  String get search => '搜尋';
+
+  @override
+  String get on => '開';
+
+  @override
+  String get off => '關';
+
+  @override
+  String get reasoning_off => '關';
+
+  @override
+  String get hermes_response_ready => 'Hermes 回覆已就緒';
+
+  @override
+  String get admin_password_needed => '需要管理員密碼';
+
+  @override
+  String get hermes_needs_a_sudo_password_for_the_pending_terminal_command =>
+      'Hermes 需要 sudo 密碼來執行待執行的終端機指令。';
+
+  @override
+  String get sudo_password => 'sudo 密碼';
+
+  @override
+  String get secret_needed => '需要金鑰';
+
+  @override
+  String get hermes_needs_a_secret_for_the_pending_skill =>
+      'Hermes 需要為待處理的技能提供一個金鑰。';
+
+  @override
+  String get secret_value => '金鑰值';
+
+  @override
+  String get attached_file => '已附加檔案';
+
+  @override
+  String get pin_chat => '置頂聊天';
+
+  @override
+  String get unpin_chat => '取消置頂';
+
+  @override
+  String get pinned_chats => '已置頂';
+
+  @override
+  String could_not_update_chat_pin(Object error) {
+    return '無法更新聊天置頂：$error';
+  }
+
+  @override
+  String get could_not_save_chat_spaces => '無法在此裝置上儲存聊天空間';
+
+  @override
+  String get chat_density => '聊天密度';
+
+  @override
+  String chat_density_2(Object label) {
+    return '聊天密度：$label';
+  }
+
+  @override
+  String get chat_density_comfortable => '舒適';
+
+  @override
+  String get chat_density_compact => '緊湊';
+
+  @override
+  String get chat_density_comfortable_description =>
+      '訊息泡泡的留白較多，每則訊息上方也會顯示傳送者名稱。';
+
+  @override
+  String get chat_density_compact_description => '訊息泡泡較緊湊，不顯示傳送者名稱，讓螢幕能容納更多訊息。';
+
+  @override
+  String chat_density_label_description(Object description, Object label) {
+    return '$label — $description';
+  }
+
+  @override
+  String
+  get compact_removes_the_you_and_hermes_labels_and_trims_bubble_padding_spacing_and_side_margins =>
+      '緊湊模式不顯示「你」和「Hermes」標籤，並縮小訊息泡泡的內距、間距及兩側留白。';
+
+  @override
+  String get client_certificate_mtls => '用戶端憑證（mTLS）';
+
+  @override
+  String get client_certificate_mtls_description =>
+      'HTTPS 代理伺服器要求雙向 TLS 驗證時，出示用戶端憑證。';
+
+  @override
+  String get client_certificate_https_only => '只有 HTTPS 連線會使用用戶端憑證。';
+
+  @override
+  String get choose_certificate => '選擇憑證';
+
+  @override
+  String get certificate_password => '憑證密碼';
+
+  @override
+  String get this_certificate_is_password_protected =>
+      '這張憑證受密碼保護。輸入正確密碼後就會自動開啟。';
+
+  @override
+  String get enter_the_certificate_password_to_finish_loading_it =>
+      '請輸入密碼，以完成載入所選的憑證。';
+
+  @override
+  String get client_certificate_required => '請載入用戶端憑證，或關閉用戶端憑證選項。';
+
+  @override
+  String client_certificate_loaded(String label) {
+    return '已載入：$label';
+  }
+
+  @override
+  String get remove_certificate => '移除憑證';
+
+  @override
+  String get certificate_import_failed => '無法載入這張憑證。';
+
+  @override
+  String get background_work => '背景執行';
+
+  @override
+  String get keep_chats_active_in_background => '在背景保持聊天連線';
+
+  @override
+  String get background_work_description =>
+      '應用程式在背景時，你開啟的聊天仍會保持連線。閒置的連線可能會中斷。這會增加耗電量和網路用量。關閉此功能不會停止伺服器上的工作。';
+
+  @override
+  String get background_work_limits =>
+      '在 Doze 模式下，Android 仍可能暫停連線或終止應用程式。程式終止後，必須另外設定推播才能收到通知；強制停止後則不支援通知。';
+
+  @override
+  String get background_work_disclosure => '背景保護開啟時，即使關閉了可選的聊天通知，仍會顯示必需的服務通知。';
+
+  @override
+  String get battery_optimisation_settings => '電池優化設定';
+
+  @override
+  String get battery_optimisation_description =>
+      '開啟 Android 設定以查看電池限制。不會自動申請豁免，更改設定也不能保證通知送達。';
+
+  @override
+  String get battery_settings_unavailable => '無法在此裝置上開啟電池設定。';
+
+  @override
+  String get background_work_save_failed => '無法儲存背景執行設定。';
+
+  @override
+  String get ongoing_chat_channel_name => '進行中的聊天';
+
+  @override
+  String get ongoing_chat_channel_description => '以無聲通知顯示你發起但尚未結束的聊天狀態';
+
+  @override
+  String get task_timeline => '任務時間軸';
+
+  @override
+  String get task_refresh_history => '重新整理任務記錄';
+
+  @override
+  String get task_live_preview => '來自上層任務事件的即時預覽';
+
+  @override
+  String get task_preview_explanation => '這裡只顯示最新提供的預覽，不是已儲存的對話記錄。';
+
+  @override
+  String get task_preview => '預覽';
+
+  @override
+  String get task_recorded_history => '已儲存的任務記錄';
+
+  @override
+  String get task_loading_history => '正在載入任務記錄…';
+
+  @override
+  String get task_empty_history => '目前沒有已儲存的訊息。任務可能還沒寫入記錄，不代表它沒有執行任何工作。';
+
+  @override
+  String get task_load_older => '載入較早的記錄';
+
+  @override
+  String get task_default_goal => '委派任務';
+
+  @override
+  String task_status(Object status) {
+    return '狀態：$status';
+  }
+
+  @override
+  String task_identity(Object id) {
+    return '任務：$id';
+  }
+
+  @override
+  String task_stored_session(Object id) {
+    return '已儲存的工作階段：$id';
+  }
+
+  @override
+  String task_delegation(Object id) {
+    return '委派作業：$id';
+  }
+
+  @override
+  String get task_read_only_notice => '唯讀。任務寫入記錄後，內容才可能出現。請重新整理以查看最新記錄。';
+
+  @override
+  String task_row_label(Object id, Object role) {
+    return '$role · 記錄列 $id';
+  }
+
+  @override
+  String get task_role_assistant => '助理';
+
+  @override
+  String get task_role_user => '使用者';
+
+  @override
+  String get task_role_tool => '工具';
+
+  @override
+  String task_tool_call(Object name) {
+    return '工具呼叫 · $name';
+  }
+
+  @override
+  String task_tool_result(Object name) {
+    return '工具結果 · $name';
+  }
+
+  @override
+  String task_call_details(Object arguments, Object id) {
+    return '呼叫識別碼：$id\n引數\n$arguments';
+  }
+
+  @override
+  String task_result_details(Object id, Object result) {
+    return '呼叫識別碼：$id\n結果\n$result';
+  }
+
+  @override
+  String get task_not_supplied => '未提供';
+
+  @override
+  String get task_missing_arguments => '伺服器未保留呼叫引數。';
+
+  @override
+  String get task_image_placeholder => '[圖片]';
+
+  @override
+  String get task_invalid_reference => '無法顯示任務對話記錄：已儲存的工作階段參照無效。';
+
+  @override
+  String get task_auth_required =>
+      '無法顯示任務對話記錄：請為此閘道設定儀表板驗證。API 伺服器金鑰無法讀取任務的推理內容。';
+
+  @override
+  String get task_auth_rejected => '無法顯示任務對話記錄：儀表板驗證遭拒。請檢查此閘道的儀表板設定。';
+
+  @override
+  String get task_incompatible_history =>
+      '無法顯示任務對話記錄：此儀表板不支援依指定範圍讀取所選設定檔的原始記錄。';
+
+  @override
+  String get task_identity_unproven =>
+      '無法顯示任務對話記錄：儀表板無法確認對應的已儲存工作階段，或其壓縮前後的關聯，因此不會顯示其他工作階段的記錄。';
+
+  @override
+  String get task_partial_compression =>
+      '記錄不完整：任務在壓縮後繼續執行，但閘道尚未提供可驗證的新參照。記錄可能缺少最後的回覆。自動重新整理已暫停；請點選「重新整理」再試一次。';
+
+  @override
+  String get task_partial_ancestors =>
+      '記錄不完整：閘道未提供此任務壓縮前的工作階段，可能缺少較早的任務片段。現有記錄仍會保留；請點選「重新整理」再試一次。';
+
+  @override
+  String get task_missing_reference => '無法顯示任務對話記錄：伺服器未保留此任務的工作階段參照。';
+
+  @override
+  String get task_missing_row_identity => '無法顯示任務對話記錄：伺服器未提供可持續識別各筆訊息的識別碼。';
+
+  @override
+  String get task_history_not_ready =>
+      '目前無法取得任務記錄（HTTP 404）。任務可能尚未寫入記錄，或儀表板不支援此功能。請稍後重試。';
+
+  @override
+  String get task_refresh_failed => '無法重新整理任務記錄。請檢查連線後重試。';
+
+  @override
+  String get task_status_interrupted => '已中斷';
+
+  @override
+  String get task_status_cancelled => '已取消';
+
+  @override
+  String get task_status_requested => '已提出請求';
+
+  @override
+  String get task_status_thinking => '思考中';
+
+  @override
+  String get task_status_tool => '正在使用工具';
+
+  @override
+  String get task_status_pending => '待處理';
+
+  @override
+  String get task_status_dispatched => '已指派';
+
+  @override
+  String task_status_unknown(Object status) {
+    return '未知狀態：$status';
+  }
+
+  @override
+  String task_tasks_finished(Object count) {
+    return '已完成 $count 個委派任務';
+  }
+
+  @override
+  String get activity_status_unconfirmed => '狀態未確認';
+
+  @override
+  String get activity_recently_updated => '最近更新';
+
+  @override
+  String get activity_reconnecting => '正在重新連線 — 正在檢查回合狀態';
+
+  @override
+  String get activity_outcome_unknown => '無法確認本輪對話的結果。請開啟聊天查看。';
+
+  @override
+  String get activity_chat_updated_detail => '閘道已記錄聊天活動；無法取得回合的即時狀態。';
+
+  @override
+  String get activity_updated => '已更新';
+
+  @override
+  String get activity_empty_title => '目前沒有近期活動';
+
+  @override
+  String get activity_empty_detail => '在此應用程式開始的回合，以及過去 7 天內更新過的閘道聊天，都會顯示在這裡。';
+
+  @override
+  String get activity_read_error => '活動功能無法讀取回合記錄或閘道聊天。請檢查連線後重試。';
+
+  @override
+  String get activity_chat_unavailable => '此聊天已不可用，或無法連線至閘道。';
+
+  @override
+  String get activity_partial_title => '活動已部分載入';
+
+  @override
+  String get activity_partial_detail => '目前僅顯示閘道活動的有限範圍。可能還有更多聊天，請下拉重新整理。';
+
+  @override
+  String get provider_usage => '使用記錄';
+
+  @override
+  String get provider_usage_notice =>
+      '這是 Hermes 最近 30 天的用量，不代表帳戶點數或模型定價。請在 Hermes 伺服器上設定供應商的驗證資訊；此應用程式不會儲存供應商的 API 金鑰。';
+
+  @override
+  String get provider_usage_failed => '無法載入使用記錄。';
+
+  @override
+  String get provider_usage_empty => '此供應商目前沒有使用記錄。';
+
+  @override
+  String provider_usage_counts(String sessions, String input, String output) {
+    return '$sessions 個工作階段 · 輸入：$input · 輸出：$output';
+  }
+
+  @override
+  String provider_usage_costs(String estimated, String actual) {
+    return '預估費用：$estimated · 回報費用：$actual';
+  }
+
+  @override
+  String get provider_quota_codex => 'OpenAI Codex 訂閱';
+
+  @override
+  String get provider_quota_claude => 'Claude 訂閱';
+
+  @override
+  String get provider_quota_openai_api => 'OpenAI API 已記錄用量';
+
+  @override
+  String get provider_quota_notice =>
+      '由供應商報告的訂閱用量週期，與 Hermes 記錄的用量及 API 計費分開顯示。各帳戶單獨列出；達到模型限額並不代表整個帳戶的配額已耗盡。';
+
+  @override
+  String get provider_quota_windows_notice =>
+      'Codex 和 Claude 訂閱設有五小時工作階段限額和每週限額。僅顯示供應商報告的週期；未報告的限額和重設時間仍不可用。每週限額可能適用於整個帳戶或特定模型。';
+
+  @override
+  String get provider_quota_five_hour_session => '5 小時工作階段';
+
+  @override
+  String get provider_quota_unavailable => '訂閱配額不可用。';
+
+  @override
+  String get provider_quota_failed => '無法重新整理訂閱配額。保留的數值來自上次查詢。';
+
+  @override
+  String get provider_quota_account => '帳戶';
+
+  @override
+  String get provider_quota_unknown => '未知';
+
+  @override
+  String provider_quota_state(String state) {
+    return '帳戶狀態：$state';
+  }
+
+  @override
+  String provider_quota_scope(String scope) {
+    return '適用範圍：$scope';
+  }
+
+  @override
+  String provider_quota_percent(String used, String remaining) {
+    return '已用 $used% · 剩餘 $remaining%';
+  }
+
+  @override
+  String provider_quota_reset(String reset) {
+    return '重設時間：$reset';
+  }
+
+  @override
+  String get provider_quota_reset_unknown => '重設時間不可用。';
+
+  @override
+  String get auxiliary_models => '輔助模型';
+
+  @override
+  String get auxiliary_notice => '為各任務選擇模型。自訂端點必須在伺服器管理。自動模式遵循任務的繼承規則。';
+
+  @override
+  String get auxiliary_inherit => '自動（繼承）';
+
+  @override
+  String get auxiliary_unavailable => '輔助設定不可用。';
+
+  @override
+  String get provider_oauth_title => '供應商登入';
+
+  @override
+  String get provider_oauth_more_subtitle => '管理 Hermes 主機上的供應商登入';
+
+  @override
+  String get provider_oauth_settings_subtitle =>
+      '在 Hermes 主機上登入；供應商令牌不會儲存在此裝置上';
+
+  @override
+  String get provider_oauth_intro =>
+      '請在外部瀏覽器登入供應商帳戶。令牌只會儲存在 Hermes 主機上，不會留在此裝置。登入不會變更此應用程式選用的聊天模型。';
+
+  @override
+  String get provider_oauth_defaults_notice =>
+      '某些主機流程（包括替換 Nous 免費方案帳戶）可能會更新主機預設設定。登入後請檢查主機設定。';
+
+  @override
+  String get provider_oauth_transport_init_failed =>
+      '無法初始化所選的安全儀表板連線。請檢查其 TLS 身分和連線設定。';
+
+  @override
+  String get provider_oauth_https_required => '供應商登入需要透過 HTTPS 連線至 Hermes 儀表板。';
+
+  @override
+  String get provider_oauth_auth_required => '登入前請設定儀表板密碼驗證或受信任的代理伺服器。';
+
+  @override
+  String get provider_oauth_catalog_failed =>
+      '目前無法在此主機上登入供應商帳戶。請檢查儀表板驗證設定；如果主機不支援供應商 OAuth，請更新主機。';
+
+  @override
+  String get provider_oauth_expired => '登入已過期。請重新開始。';
+
+  @override
+  String get provider_oauth_start_failed => '無法啟動安全的供應商登入。請重試。';
+
+  @override
+  String get provider_oauth_denied => '登入被拒絕。請重新開始。';
+
+  @override
+  String get provider_oauth_cancelled => '登入已取消。';
+
+  @override
+  String get provider_oauth_host_failed => '主機無法完成登入。請重新開始。';
+
+  @override
+  String get provider_oauth_poll_failed => '無法檢查登入狀態。請重新開始。';
+
+  @override
+  String provider_oauth_cancellation_unconfirmed(String message) {
+    return '$message 無法確認取消；主機工作階段可能會持續到過期為止。';
+  }
+
+  @override
+  String get provider_oauth_browser_failed => '無法開啟外部瀏覽器。請重試或取消登入。';
+
+  @override
+  String get provider_oauth_retry => '重試';
+
+  @override
+  String provider_oauth_complete(String provider) {
+    return '完成 $provider 的登入';
+  }
+
+  @override
+  String get provider_oauth_code_instruction => '請在供應商的頁面輸入這組臨時驗證碼：';
+
+  @override
+  String get provider_oauth_waiting => '正在等待核准。此工作階段將自動過期。';
+
+  @override
+  String get provider_oauth_open_browser => '在瀏覽器中開啟供應商';
+
+  @override
+  String get provider_oauth_cancel => '取消登入';
+
+  @override
+  String get provider_oauth_signed_out => '未在主機上登入';
+
+  @override
+  String get provider_oauth_sign_in_again => '重新登入';
+
+  @override
+  String get provider_oauth_sign_in => '登入';
+
+  @override
+  String get provider_oauth_cli_required =>
+      '請在 Hermes 主機上使用供應商 CLI 登入。此主機不支援該供應商的應用程式內登入。';
+
+  @override
+  String get provider_oauth_checking_account => '已收到授權。正在檢查主機帳戶…';
+
+  @override
+  String get provider_oauth_verification_unavailable =>
+      '已收到授權；無法驗證帳戶。請開啟用量頁面以重新整理帳戶用量。';
+
+  @override
+  String provider_oauth_verified_account(String email) {
+    return '已在 Hermes 主機上以 $email 登入。請開啟用量頁面以重新整理帳戶用量。';
+  }
+
+  @override
+  String get provider_oauth_credentials_unverified => '主機報告驗證資訊可用；帳戶身分尚未驗證。';
+
+  @override
+  String get provider_oauth_account_status_unknown => '無法取得主機帳戶狀態。';
+
+  @override
+  String get app_language => '應用程式語言';
+
+  @override
+  String get app_language_system => '與手機相同';
+
+  @override
+  String get auto_archives_after_72_hours => '72 小時後自動封存';
+
+  @override
+  String get automation => '自動化';
+
+  @override
+  String get voice_recording_start => '錄製語音訊息';
+
+  @override
+  String get voice_recording_pause => '暫停錄音';
+
+  @override
+  String get voice_recording_preview => '播放錄音';
+
+  @override
+  String get voice_recording_resume => '繼續錄音';
+
+  @override
+  String get voice_recording_send => '傳送語音訊息';
+
+  @override
+  String get voice_recording_discard => '捨棄錄音';
+
+  @override
+  String get voice_recording_processing => '正在準備語音訊息…';
+
+  @override
+  String voice_recording_elapsed(String time) {
+    return '錄音中 $time';
+  }
+
+  @override
+  String voice_recording_draft(String time) {
+    return '語音訊息 $time';
+  }
+
+  @override
+  String get voice_recording_permission => '請允許使用麥克風，以便錄製語音訊息。';
+
+  @override
+  String get voice_recording_limit => '錄音已達 10 分鐘上限。';
+
+  @override
+  String get voice_recording_empty => '未錄到聲音，請再試一次。';
+
+  @override
+  String get voice_recording_failed => '無法處理錄音。已儲存的錄音片段仍會保留。';
+
+  @override
+  String get voice_recording_unconfirmed => '無法確認語音訊息是否送達。錄音已儲存，請先查看聊天記錄再重試。';
+
+  @override
+  String get voice_recording_submit_failed =>
+      '無法傳送語音訊息。錄音已儲存，請檢查網路連線、儀表板存取權及伺服器的語音轉文字設定。';
+
+  @override
+  String get voice_recording_pause_playback => '暫停播放';
+
+  @override
+  String get projects_root_title => '伺服器上的專案資料夾';
+
+  @override
+  String get projects_root_more_subtitle => '伺服器上新增專案資料夾的位置';
+
+  @override
+  String get projects_root_description =>
+      '從這部手機建立專案時，專案資料夾會放在這裡。選擇 Hermes 使用的同一個資料夾，手機和伺服器就能共用同一批專案。';
+
+  @override
+  String get projects_root_label => '專案根路徑';
+
+  @override
+  String projects_root_default_hint(String path) {
+    return '伺服器預設值：$path';
+  }
+
+  @override
+  String get projects_root_locked_title => '由伺服器設定';
+
+  @override
+  String get projects_root_locked_explanation =>
+      '此伺服器將檔案存取限制在單一根目錄內，因此無法在應用程式中更改專案資料夾。';
+
+  @override
+  String get projects_root_saved => '已儲存專案資料夾。';
+
+  @override
+  String get projects_root_reset => '使用伺服器預設值';
+
+  @override
+  String get projects_root_invalid_empty => '請輸入資料夾路徑。';
+
+  @override
+  String get projects_root_invalid_absolute => '請輸入以斜線開頭的絕對路徑。';
+
+  @override
+  String get projects_root_invalid_segments => '請從路徑中移除點號片段和控制字元。';
+
+  @override
+  String get projects_root_unsupported =>
+      '此連線不支援。讀取或更改伺服器上的專案資料夾需要具有儀表板存取權限的 Desktop Gateway 連線。';
+
+  @override
+  String get projects_root_unavailable => '無法讀取伺服器上的專案資料夾。請檢查儀表板連線後重試。';
+
+  @override
+  String get adopt_folder_action => '新增現有資料夾';
+
+  @override
+  String adopt_folder_description(String root) {
+    return '$root 下尚未註冊為專案的資料夾。';
+  }
+
+  @override
+  String adopt_folder_registered(String name) {
+    return '已是專案：$name';
+  }
+
+  @override
+  String get adopt_folder_none => '此路徑下的所有資料夾都已是專案。';
+
+  @override
+  String get adopt_folder_unsupported => '此連線無法列出伺服器資料夾。請改為輸入現有資料夾的絕對路徑。';
+
+  @override
+  String adopt_folder_failed(String error) {
+    return '無法列出伺服器資料夾：$error';
+  }
+
+  @override
+  String get adopt_folder_manual_label => '現有資料夾路徑';
+
+  @override
+  String get adopt_folder_name_label => '專案名稱';
+
+  @override
+  String get adopt_folder_add => '新增為專案';
+
+  @override
+  String adopt_folder_added(String name, String path) {
+    return '$name 現在使用 $path';
+  }
+
+  @override
+  String adopt_folder_error(String error) {
+    return '無法新增該資料夾：$error';
+  }
+
+  @override
+  String adopt_folder_folderless(String name) {
+    return '已建立 $name，但未關聯資料夾。請在伺服器上的 Hermes 中關聯。';
+  }
+
+  @override
+  String get slash_commands => '斜線指令';
+
+  @override
+  String get slash_commands_loading => '正在載入指令…';
+
+  @override
+  String get slash_commands_empty => '找不到符合的指令';
+
+  @override
+  String slash_command_info_alias(String alias, String command) {
+    return '$alias 是 $command 的別名';
+  }
+
+  @override
+  String get slash_command_info_no_description => '目前沒有說明。';
+
+  @override
+  String get slash_command_info_arguments_options => '接受固定選項中的一個。';
+
+  @override
+  String get slash_command_info_arguments_text => '在指令後接受文字。';
+
+  @override
+  String get slash_command_info_arguments_mixed => '在指令後接受選項或文字。';
+
+  @override
+  String get slash_command_output => '指令輸出';
+
+  @override
+  String get slash_command_no_output => '指令已執行完畢，沒有任何輸出。';
+
+  @override
+  String get slash_command_delivery_unknown =>
+      '指令已送出，但未收到回覆。指令可能仍在閘道上執行，因此已保留草稿。請先查看閘道狀態再重試。';
+
+  @override
+  String get slash_command_failed => '無法執行指令。';
+
+  @override
+  String get slash_command_unsupported => '此指令在此伺服器上不可用。';
+
+  @override
+  String get slash_sessions_inline => '請開啟工作階段清單選擇聊天。草稿已保留。';
+
+  @override
+  String get composer_snippets => '提示詞片段';
+
+  @override
+  String get composer_snippets_description => '選擇一則起始提示詞，填入訊息輸入框。';
+
+  @override
+  String get composer_snippet_review => '程式碼審查';
+
+  @override
+  String get composer_snippet_review_body => '審查目前變更中的回歸問題、遺漏的邊界情況和缺少的測試。';
+
+  @override
+  String get composer_snippet_review_text => '請審查其中的錯誤、回歸問題和缺少的測試。';
+
+  @override
+  String get composer_snippet_plan => '實作計畫';
+
+  @override
+  String get composer_snippet_plan_body => '修改程式碼前先概述做法，讓變更保持聚焦。';
+
+  @override
+  String get composer_snippet_plan_text => '請在修改程式碼前擬定簡明的實作計畫。';
+
+  @override
+  String get composer_snippet_explain => '解釋這段程式碼';
+
+  @override
+  String get composer_snippet_explain_body => '逐步說明所選程式碼的運作方式，並指出關鍵檔案。';
+
+  @override
+  String get composer_snippet_explain_text => '請解釋其運作方式，並指出關鍵檔案。';
+
+  @override
+  String get composer_status => '狀態';
+
+  @override
+  String get composer_status_context => '上下文';
+
+  @override
+  String get composer_status_cache => '快取命中';
+
+  @override
+  String get composer_status_throughput => '輸出 token/秒';
+
+  @override
+  String get composer_status_running => '執行中';
+
+  @override
+  String get composer_status_session => '工作階段';
+
+  @override
+  String get composer_status_not_reported => '未回報';
+
+  @override
+  String get composer_status_empty => '未回報上下文明細。';
+
+  @override
+  String get composer_status_loading => '正在載入上下文明細';
+
+  @override
+  String get composer_status_reset => '重設狀態列';
+
+  @override
+  String get composer_resume_title => '繼續聊天';
+
+  @override
+  String get composer_resume_search => '搜尋標題和 ID';
+
+  @override
+  String get composer_resume_empty => '沒有符合的聊天。';
+
+  @override
+  String get composer_resume_unavailable => '此窗格沒有可供搜尋的聊天清單。';
+
+  @override
+  String get composer_failure_retry => '重試';
+
+  @override
+  String composer_failure_retry_at(String time) {
+    return '於 $time 重試';
+  }
+
+  @override
+  String get composer_failure_compress => '壓縮';
+
+  @override
+  String get composer_failure_switch_model => '切換模型';
+
+  @override
+  String composer_failure_switch_to(String model) {
+    return '切換為 $model';
+  }
+
+  @override
+  String get composer_failure_new_chat => '新增聊天';
+
+  @override
+  String get composer_failure_edit => '編輯訊息';
+
+  @override
+  String get composer_failure_details => '詳細資訊';
+
+  @override
+  String get composer_failure_hide_details => '隱藏詳細資訊';
+
+  @override
+  String get composer_failure_copy => '複製診斷資訊';
+
+  @override
+  String get composer_failure_account => '另一項修復需在閘道帳號端完成，無法在此聊天中進行。';
+
+  @override
+  String get composer_failure_account_only => '此問題必須在閘道帳號端修復，無法在此聊天中處理。';
+
+  @override
+  String get composer_failure_confirm_compress => '壓縮此聊天？閘道會縮短對話記錄。';
+
+  @override
+  String composer_failure_confirm_model(String model) {
+    return '將此聊天切換為 $model？';
+  }
+
+  @override
+  String get composer_drop_attach => '拖放以新增附件';
+
+  @override
+  String get composer_drop_folder_unsupported => '無法附加資料夾。請改為拖放其中的檔案。';
+
+  @override
+  String get composer_drop_reference => '拖放以新增參照';
+
+  @override
+  String get composer_reference_copy => '複製參照';
+
+  @override
+  String get composer_reference_remove => '移除參照';
+
+  @override
+  String get composer_btw_usage => '用法：/btw <question> — 根據此對話的快照回答，不中斷目前的對話。';
+
+  @override
+  String get composer_background_usage =>
+      '用法：/background <prompt> — 任務獨立執行，結果會回到此處。';
+
+  @override
+  String get composer_handoff_usage =>
+      '用法：/handoff <platform> — 將此聊天轉移到指定的訊息平台。';
+
+  @override
+  String get composer_command_needs_session => '此指令需要已開啟的聊天。';
+
+  @override
+  String get composer_retry_not_found =>
+      '已儲存的歷史記錄中沒有此回合，因此「重試」無法取代它。未重新傳送任何內容。請編輯訊息並傳送，以再試一次。';
+
+  @override
+  String get composer_retry_unavailable =>
+      '此連線不支援透過「重試」取代某個回合，因此未重新傳送任何內容。請編輯訊息並傳送，以再試一次。';
+
+  @override
+  String get composer_failure_switch_no_retry =>
+      '切換只會變更模型：此連線無法重新執行失敗的輪次。切換後請重新傳送。';
+
+  @override
+  String get composer_command_needs_gateway_session =>
+      '此聊天尚無閘道工作階段。請先傳送訊息，再重新執行指令。';
+
+  @override
+  String get composer_side_question => 'btw — 正在根據對話快照回答';
+
+  @override
+  String composer_side_question_id(String id) {
+    return 'btw $id — 正在根據對話快照回答';
+  }
+
+  @override
+  String get composer_background_started => '背景任務已啟動。你可以繼續聊天，結果會顯示在此處。';
+
+  @override
+  String composer_background_started_id(String id) {
+    return '背景任務 $id 已啟動。你可以繼續聊天，結果會顯示在此處。';
+  }
+
+  @override
+  String composer_handoff_requested(String platform) {
+    return '已要求移交至 $platform。';
+  }
+
+  @override
+  String composer_handoff_done(String platform) {
+    return '已將此聊天移交至 $platform。';
+  }
+
+  @override
+  String get composer_handoff_failed => '移交失敗。';
+
+  @override
+  String get composer_handoff_timeout => '移交尚未完成，可能仍在閘道上進行。';
+
+  @override
+  String get composer_compress_done => '已壓縮此聊天。';
+
+  @override
+  String get composer_file_missing => '此裝置上沒有該檔案。';
+
+  @override
+  String get composer_attach_busy => '此回覆完成後即可新增附件。';
+
+  @override
+  String get nextgen_toggle => 'NextGen 介面';
+
+  @override
+  String get nextgen_toggle_subtitle => '全新設計：一次登入、即時聊天和網路發現。你的閘道和聊天與此介面共用。';
+
+  @override
+  String get nextgen_single_login => '使用單一登入';
+
+  @override
+  String get nextgen_single_login_subtitle => '只需儀表板位址和一次登入即可新增閘道。';
+
+  @override
+  String get ng_allow_this_command => '允許執行此指令？';
+
+  @override
+  String ng_hermes_wants_to_run_this_with(Object tool) {
+    return 'Hermes 想使用 $tool 執行此操作。';
+  }
+
+  @override
+  String get ng_hermes_wants_to_run_this => 'Hermes 想執行此操作。';
+
+  @override
+  String get ng_hermes_has_a_question => 'Hermes 有一個問題';
+
+  @override
+  String get ng_hermes_has_questions => 'Hermes 有幾個問題';
+
+  @override
+  String get ng_password_for_sudo => 'sudo 密碼';
+
+  @override
+  String get ng_hermes_needs_your_sudo_password_to =>
+      'Hermes 需要你的 sudo 密碼來執行此指令。';
+
+  @override
+  String get ng_a_secret_value => '機密值';
+
+  @override
+  String ng_value_for(Object variable) {
+    return '$variable 的值';
+  }
+
+  @override
+  String get ng_your_password_manager => '你的密碼管理器';
+
+  @override
+  String ng_unlock(Object name) {
+    return '解鎖 $name';
+  }
+
+  @override
+  String ng_hermes_needs_unlocked_to_sign_in(Object name) {
+    return 'Hermes 需要先解鎖 $name，才能為你登入。';
+  }
+
+  @override
+  String get ng_sign_in_code => '登入驗證碼';
+
+  @override
+  String get ng_enter_the_sign_in_code => '輸入登入驗證碼。';
+
+  @override
+  String ng_enter_the_sign_in_code_for(Object site) {
+    return '輸入 $site 的登入驗證碼。';
+  }
+
+  @override
+  String get ng_save_a_login => '儲存登入資訊？';
+
+  @override
+  String ng_save_your_login(Object site) {
+    return '儲存你的 $site 登入資訊？';
+  }
+
+  @override
+  String ng_couldn_t_load_this_chat(Object error) {
+    return '無法載入此聊天：$error';
+  }
+
+  @override
+  String ng_live_updates_are_unavailable(Object error) {
+    return '即時更新不可用：$error';
+  }
+
+  @override
+  String ng_preparing(Object name) {
+    return '正在準備 $name…';
+  }
+
+  @override
+  String get ng_the_turn_failed => '本輪對話失敗。';
+
+  @override
+  String get ng_turn_changed => '該輪對話已結束或已開始新一輪';
+
+  @override
+  String get ng_steer_rejected => '正在進行的對話未接受此內容';
+
+  @override
+  String get ng_turn_not_known_yet => '尚不清楚正在進行的對話；請稍後再試';
+
+  @override
+  String ng_couldn_t_stop(Object error) {
+    return '無法停止：$error';
+  }
+
+  @override
+  String get ng_server_access => '伺服器存取';
+
+  @override
+  String get ng_sign_in => '登入';
+
+  @override
+  String get ng_live_connection => '即時連線';
+
+  @override
+  String get ng_check_that_tailscale_is_on_on => '請確認此手機和伺服器上的 Tailscale 均已開啟。';
+
+  @override
+  String get ng_check_the_address_and_that_the => '請檢查位址，並確認代理伺服器已轉發到儀表板。';
+
+  @override
+  String get ng_use_the_same_network_as_the =>
+      '請使用與伺服器相同的網路，並使用 --host 0.0.0.0 啟動儀表板，以便其他裝置存取。';
+
+  @override
+  String get ng_check_the_address_vpn_or_tailscale =>
+      '請檢查位址、VPN 或 Tailscale 連線。';
+
+  @override
+  String get ng_not_checked_yet => '尚未檢查。';
+
+  @override
+  String get ng_checking => '正在檢查…';
+
+  @override
+  String ng_hermes_answers_at(Object version, Object address) {
+    return 'Hermes $version 可透過 $address 存取。';
+  }
+
+  @override
+  String get ng_something_answered_but_not_a_hermes => '有服務回應，但不是 Hermes 儀表板。';
+
+  @override
+  String ng_something_answered_http_but_not_a(Object status) {
+    return '有服務回應（HTTP $status），但不是 Hermes 儀表板。';
+  }
+
+  @override
+  String get ng_use_the_dashboard_s_address_and =>
+      '請使用儀表板的位址和連接埠（預設為 9119），而不是 API 伺服器的位址和連接埠。';
+
+  @override
+  String get ng_cloudflare_access_turned_the_service_token =>
+      'Cloudflare Access 拒絕了服務令牌。';
+
+  @override
+  String get ng_cloudflare_access_is_in_front_of =>
+      '此位址前方設定了 Cloudflare Access。';
+
+  @override
+  String get ng_check_the_service_token_and_its =>
+      '請檢查服務令牌和對應的 Service Auth 原則。';
+
+  @override
+  String get ng_add_a_cloudflare_access_service_token =>
+      '為此位址新增 Cloudflare Access 服務令牌。';
+
+  @override
+  String get ng_the_server_asks_for_a_client => '伺服器要求提供用戶端憑證。';
+
+  @override
+  String get ng_pick_the_client_certificate_for_this => '為此閘道選擇用戶端憑證，然後再次測試。';
+
+  @override
+  String get ng_needs_server_access_first => '請先連線伺服器。';
+
+  @override
+  String get ng_needs_a_sign_in_first => '請先登入。';
+
+  @override
+  String ng_signed_in_as(Object name) {
+    return '已登入為 $name。';
+  }
+
+  @override
+  String get ng_this_dashboard_doesn_t_need_a => '此儀表板不必登入。';
+
+  @override
+  String get ng_the_saved_sign_in_has_expired => '已儲存的登入資訊已過期。';
+
+  @override
+  String get ng_sign_in_again => '重新登入。';
+
+  @override
+  String get ng_too_many_sign_in_attempts => '登入嘗試次數過多。';
+
+  @override
+  String get ng_wait_a_minute_then_check_again => '請稍等一分鐘後再試。';
+
+  @override
+  String ng_the_gateway_answered(Object message) {
+    return '閘道返回：$message。';
+  }
+
+  @override
+  String get ng_sign_in_again_or_update_hermes => '請重新登入，或更新 Hermes。';
+
+  @override
+  String ng_couldn_t_check_the_sign_in(Object error) {
+    return '無法檢查登入狀態：$error';
+  }
+
+  @override
+  String ng_the_gateway_wouldn_t_issue_a(Object message) {
+    return '閘道無法核發聊天憑證（$message）。';
+  }
+
+  @override
+  String get ng_the_chat_connection_opened_and_the => '聊天連線已建立，閘道已確認就緒。';
+
+  @override
+  String get ng_the_gateway_never_said_it_was => '閘道始終未確認就緒。';
+
+  @override
+  String get ng_check_that_the_agent_is_running => '請確認伺服器上的代理程式正在執行。';
+
+  @override
+  String get ng_the_gateway_refused_the_chat_connection =>
+      '閘道拒絕了聊天連線（HTTP 403）。';
+
+  @override
+  String get ng_this_dashboard_has_no_chat_endpoint => '此儀表板沒有聊天端點（/api/ws）。';
+
+  @override
+  String ng_the_chat_connection_failed(Object detail) {
+    return '聊天連線失敗：$detail';
+  }
+
+  @override
+  String get ng_use_the_exact_address_the_dashboard => '請使用儀表板設定的完整位址。';
+
+  @override
+  String get ng_update_hermes => '更新 Hermes。';
+
+  @override
+  String get ng_make_sure_the_proxy_allows_websocket =>
+      '請確認代理伺服器允許在 /api/ws 上進行 WebSocket 升級。';
+
+  @override
+  String get ng_offline => '離線';
+
+  @override
+  String get ng_connecting => '正在連線…';
+
+  @override
+  String get ng_connected => '已連線';
+
+  @override
+  String get ng_reconnecting => '正在重新連線…';
+
+  @override
+  String get ng_signed_out => '已登出登入';
+
+  @override
+  String get ng_connection_failed => '連線失敗';
+
+  @override
+  String get ng_rate_limited_by_gateway => '已觸發閘道限流';
+
+  @override
+  String ng_couldn_t_open_the_chat_connection(Object message) {
+    return '無法建立聊天連線：$message';
+  }
+
+  @override
+  String get ng_the_gateway_returned_no_websocket_ticket =>
+      '閘道未返回 WebSocket 票據。';
+
+  @override
+  String get ng_connection_lost => '連線已中斷';
+
+  @override
+  String get ng_this_dashboard_has_no_chat_endpoint_2 =>
+      '此儀表板沒有聊天端點（/api/ws）。請更新 Hermes。';
+
+  @override
+  String get ng_the_gateway_refused_the_chat_connection_2 =>
+      '閘道拒絕了聊天連線。請檢查位址是否與儀表板設定的主機相符，並確認已啟用內嵌聊天。';
+
+  @override
+  String ng_the_gateway_refused(Object method) {
+    return '閘道拒絕了 $method。';
+  }
+
+  @override
+  String ng_couldn_t_read_your_saved_gateways(Object error) {
+    return '無法讀取已儲存的閘道：$error';
+  }
+
+  @override
+  String get ng_applies_to_new_chats => '僅套用至新聊天';
+
+  @override
+  String ng_couldn_t_change(Object label, Object error) {
+    return '無法更改$label：$error';
+  }
+
+  @override
+  String get ng_capabilities => '功能';
+
+  @override
+  String get ng_skills => '技能';
+
+  @override
+  String get ng_toolsets => '工具集';
+
+  @override
+  String get ng_search => '搜尋';
+
+  @override
+  String get ng_couldn_t_load => '無法載入';
+
+  @override
+  String get ng_try_again => '重試';
+
+  @override
+  String get ng_no_skills => '沒有技能';
+
+  @override
+  String get ng_no_toolsets => '沒有工具集';
+
+  @override
+  String get ng_no_mcp_servers => '沒有 MCP 伺服器';
+
+  @override
+  String get ng_that_file_is_too_large_to => '該檔案太大，無法作為憑證使用。';
+
+  @override
+  String ng_the_certificate_couldn_t_be_imported(Object error) {
+    return '無法匯入憑證：$error';
+  }
+
+  @override
+  String get ng_now_pick_its_private_key => '現在選擇對應的私密金鑰。';
+
+  @override
+  String get ng_now_pick_its_certificate => '現在選擇對應的憑證。';
+
+  @override
+  String get ng_that_file_isn_t_a_certificate => '該檔案不是憑證或私密金鑰。';
+
+  @override
+  String get ng_if_a_proxy_in_front_of =>
+      '如果此位址前的代理伺服器要求用戶端憑證，請在此選擇憑證，以便測試、登入和聊天時都能出示。';
+
+  @override
+  String get ng_client_certificates_are_only_used_with =>
+      '用戶端憑證僅用於 https:// 位址。';
+
+  @override
+  String get ng_remove => '移除';
+
+  @override
+  String get ng_certificate_password => '憑證密碼';
+
+  @override
+  String get ng_importing => '正在匯入…';
+
+  @override
+  String get ng_pick_certificate => '選擇憑證';
+
+  @override
+  String get ng_pick_a_different_certificate => '選擇其他憑證';
+
+  @override
+  String get ng_accepts_p12_pfx_or_pem_certificate =>
+      '支援 .p12/.pfx 檔案，或 PEM 憑證和金鑰檔案。金鑰會儲存在此應用程式的私有儲存空間中。';
+
+  @override
+  String get ng_photos => '照片';
+
+  @override
+  String get ng_camera => '相機';
+
+  @override
+  String get ng_files => '檔案';
+
+  @override
+  String ng_you_can_attach_up_to_files(Object count) {
+    return '最多可附加 $count 個檔案。';
+  }
+
+  @override
+  String ng_couldn_t_read(Object name) {
+    return '無法讀取 $name。';
+  }
+
+  @override
+  String ng_couldn_t_prepare_that_file(Object error) {
+    return '無法處理該檔案：$error';
+  }
+
+  @override
+  String get ng_hermes_is_still_working => 'Hermes 仍在處理中';
+
+  @override
+  String get ng_steer => '引導';
+
+  @override
+  String get ng_adds_this_to_the_running_turn => '在目前回合的下一步中新增此內容';
+
+  @override
+  String get ng_queue => '排入佇列';
+
+  @override
+  String get ng_sends_it_when_the_turn_finishes => '目前回合結束後傳送';
+
+  @override
+  String get ng_stop_and_send => '停止並傳送';
+
+  @override
+  String get ng_stops_the_turn_then_sends_this => '停止目前回合，然後傳送此內容';
+
+  @override
+  String ng_dictation_stopped(Object message) {
+    return '聽寫已停止：$message';
+  }
+
+  @override
+  String get ng_speech_recognition_isn_t_available => '語音辨識不可用。';
+
+  @override
+  String get ng_working => '處理中';
+
+  @override
+  String get ng_ready => '就緒';
+
+  @override
+  String get ng_chats => '聊天';
+
+  @override
+  String get ng_new_chat => '新增聊天';
+
+  @override
+  String get ng_usage => '用量';
+
+  @override
+  String get ng_rename_chat => '重新命名聊天';
+
+  @override
+  String ng_couldn_t_rename(Object error) {
+    return '無法重新命名：$error';
+  }
+
+  @override
+  String get ng_this_chat => '此聊天';
+
+  @override
+  String get ng_input_tokens => '輸入令牌';
+
+  @override
+  String get ng_output_tokens => '輸出令牌';
+
+  @override
+  String get ng_reasoning_tokens => '推理令牌';
+
+  @override
+  String get ng_cache_reads => '快取讀取';
+
+  @override
+  String get ng_api_calls => 'API 呼叫';
+
+  @override
+  String get ng_cost => '費用';
+
+  @override
+  String get ng_context => '上下文';
+
+  @override
+  String get ng_your_sign_in_expired => '登入已過期。';
+
+  @override
+  String get ng_sign_in_2 => '登入';
+
+  @override
+  String get ng_retry => '重試';
+
+  @override
+  String get ng_project_home => '首頁';
+
+  @override
+  String get ng_choose_project => '選擇專案';
+
+  @override
+  String ng_project_cwd_fallback(String path) {
+    return '專案資料夾不可用，因此此聊天在 $path 中執行。';
+  }
+
+  @override
+  String get ng_project_create_uncertain =>
+      '閘道可能已建立此聊天，但未確認。開始新聊天前請檢查聊天清單；此要求不會自動重試。';
+
+  @override
+  String get ng_what_should_we_work_on => '我們要做些什麼？';
+
+  @override
+  String get ng_ask_hermes_anything_it_can_run =>
+      '向 Hermes 提問。它可以執行工具、瀏覽網頁，還能處理伺服器上的檔案。';
+
+  @override
+  String ng_working_2(Object frame) {
+    return '正在處理 · $frame';
+  }
+
+  @override
+  String get ng_default_model => '預設模型';
+
+  @override
+  String get ng_listening => '正在聆聽…';
+
+  @override
+  String get ng_steer_or_queue_a_message => '引導，或將訊息排入佇列';
+
+  @override
+  String get ng_message_hermes => '給 Hermes 傳送訊息';
+
+  @override
+  String get ng_attach => '新增附件';
+
+  @override
+  String get ng_stop_dictation => '停止聽寫';
+
+  @override
+  String get ng_dictate => '語音輸入';
+
+  @override
+  String get ng_stop => '停止';
+
+  @override
+  String get ng_send => '傳送';
+
+  @override
+  String ng_slash_command_alias(String alias, String command) {
+    return '$alias 是 $command 的別名';
+  }
+
+  @override
+  String get ng_slash_command_no_description => '目前沒有說明。';
+
+  @override
+  String get ng_slash_command_arguments_options => '接受固定選項中的一個。';
+
+  @override
+  String get ng_slash_command_arguments_text => '在指令後接受文字。';
+
+  @override
+  String get ng_slash_command_arguments_mixed => '在指令後接受選項或文字。';
+
+  @override
+  String get ng_slash_command_sent_as_message =>
+      'NextGen 會將此作為普通訊息傳送給 Hermes，不會執行該指令。';
+
+  @override
+  String get ng_slash_command_output => '指令輸出';
+
+  @override
+  String get ng_slash_command_running => '正在執行指令…';
+
+  @override
+  String get ng_slash_command_done => '完成。';
+
+  @override
+  String ng_slash_command_failed(Object error) {
+    return '無法執行指令：$error';
+  }
+
+  @override
+  String get ng_slash_command_refused => 'Hermes 無法在此執行此指令。';
+
+  @override
+  String get ng_slash_command_delivery_unknown =>
+      '指令已傳送，但未收到回覆。它可能仍在閘道上執行，因此沒有重新傳送，並保留了你的草稿。';
+
+  @override
+  String get ng_slash_command_nothing_running => '目前沒有正在執行的任務。';
+
+  @override
+  String get ng_steered => '已調整指示';
+
+  @override
+  String get ng_copied => '已複製';
+
+  @override
+  String ng_not_sent(Object reason) {
+    return '未傳送：$reason';
+  }
+
+  @override
+  String get ng_thinking => '正在思考…';
+
+  @override
+  String get ng_thought => '思考';
+
+  @override
+  String ng_used(Object name) {
+    return '已使用 $name';
+  }
+
+  @override
+  String ng_used_tools(Object count) {
+    return '已使用 $count 個工具';
+  }
+
+  @override
+  String get ng_copy => '複製';
+
+  @override
+  String get ng_read_aloud => '朗讀';
+
+  @override
+  String get ng_the_gateway_connection_dropped_try_again => '閘道連線已中斷，請重試。';
+
+  @override
+  String get ng_allow_once => '允許一次';
+
+  @override
+  String get ng_allow_until_sandbox_off => '直到關閉沙箱為止';
+
+  @override
+  String get ng_folder_access => '資料夾存取權';
+
+  @override
+  String get ng_folder_access_unspecified => '閘道未說明這是唯讀還是可讀寫。';
+
+  @override
+  String get ng_folder_read_only => '唯讀';
+
+  @override
+  String get ng_folder_read_write => '讀取與寫入';
+
+  @override
+  String get ng_website_access => '網站存取權';
+
+  @override
+  String get ng_allow_for_this_chat => '在此聊天中允許';
+
+  @override
+  String get ng_always_allow => '一律允許';
+
+  @override
+  String get ng_deny => '拒絕';
+
+  @override
+  String get ng_your_answer => '你的回答';
+
+  @override
+  String get ng_or_type_an_answer => '或輸入回答';
+
+  @override
+  String get ng_skip => '跳過';
+
+  @override
+  String get ng_answer => '回答';
+
+  @override
+  String get ng_cancel => '取消';
+
+  @override
+  String get ng_username_or_email => '使用者名稱或電子郵件地址';
+
+  @override
+  String get ng_password => '密碼';
+
+  @override
+  String get ng_not_now => '暫不';
+
+  @override
+  String get ng_save => '儲存';
+
+  @override
+  String get ng_enter_both_the_client_id_and => '請同時填寫用戶端識別碼和用戶端密鑰，或將兩者留白。';
+
+  @override
+  String get ng_enter_your_username_and_password => '請輸入使用者名稱和密碼。';
+
+  @override
+  String ng_couldn_t_save_the_sign_in(Object error) {
+    return '無法儲存登入資訊：$error';
+  }
+
+  @override
+  String get ng_wrong_username_or_password => '使用者名稱或密碼錯誤。';
+
+  @override
+  String get ng_too_many_attempts_wait_a_moment => '嘗試次數過多，請稍等片刻再試。';
+
+  @override
+  String get ng_welcome_to_hermes => '歡迎使用 Ares';
+
+  @override
+  String get ng_add_a_gateway => '新增閘道';
+
+  @override
+  String get ng_connect_to_your_hermes_agent_dashboard =>
+      '連線至你的 Hermes Agent 儀表板。使用一個位址和一次登入，即可存取聊天、工具和設定。登入前不會傳送任何內容。';
+
+  @override
+  String get ng_connect_to_another_hermes_agent_dashboard =>
+      '連線至另一個 Hermes Agent 儀表板。先前儲存的儀表板仍會維持登入狀態。';
+
+  @override
+  String get ng_dashboard_address => '儀表板位址';
+
+  @override
+  String get ng_testing => '正在測試…';
+
+  @override
+  String get ng_test => '測試';
+
+  @override
+  String get ng_where_your_hermes_dashboard_runs_lan =>
+      'Hermes 儀表板的位址：可以是區域網路（LAN）、Tailscale 或 HTTPS 位址。';
+
+  @override
+  String get ng_find_on_my_network => '在我的網路中尋找';
+
+  @override
+  String get ng_which_address_do_i_use => '我應該使用哪個位址？';
+
+  @override
+  String get ng_behind_cloudflare_access => '使用 Cloudflare Access 保護？';
+
+  @override
+  String get ng_need_a_client_certificate => '需要用戶端憑證？';
+
+  @override
+  String get ng_this_address_isn_t_private_and =>
+      '此位址不是私有位址，且未使用 https://，因此你的密碼和聊天內容會以未加密的形式透過網際網路傳輸。請改用 https://、Tailscale 或你自己的網路。';
+
+  @override
+  String get ng_continue_to_sign_in => '繼續登入';
+
+  @override
+  String get ng_use_the_classic_interface_instead => '改用經典介面';
+
+  @override
+  String get ng_if_cloudflare_access_protects_this_address =>
+      '如果此位址受 Cloudflare Access 保護，請在 Cloudflare Zero Trust 的 Access → Service credentials 中建立服務令牌，再為 Access 應用程式新增對應的 Service Auth 原則。';
+
+  @override
+  String get ng_a_service_token_is_saved_for => '已為此位址儲存服務令牌';
+
+  @override
+  String get ng_forget => '移除';
+
+  @override
+  String get ng_client_id => '用戶端識別碼（Client ID）';
+
+  @override
+  String get ng_client_secret => '用戶端密鑰（Client Secret）';
+
+  @override
+  String get ng_stored_encrypted_on_this_phone_and => '加密儲存在此手機上，且只傳送到此位址。';
+
+  @override
+  String get ng_hermes_is_reachable => '已連線至 Hermes';
+
+  @override
+  String ng_hermes_is_reachable_2(Object version) {
+    return '已連線至 Hermes $version';
+  }
+
+  @override
+  String get ng_sign_in_is_tested_next_then => '接下來測試登入，然後測試聊天';
+
+  @override
+  String get ng_agent_gateway => '代理程式閘道';
+
+  @override
+  String get ng_running => '執行中';
+
+  @override
+  String get ng_stopped => '已停止';
+
+  @override
+  String get ng_username_password => '使用者名稱和密碼';
+
+  @override
+  String get ng_browser => '瀏覽器';
+
+  @override
+  String get ng_in_the_browser_sso => '在瀏覽器中（SSO）';
+
+  @override
+  String get ng_profiles => '設定檔';
+
+  @override
+  String get ng_this_dashboard_offers_neither_a_username =>
+      '此儀表板既未提供使用者名稱和密碼登入，也未提供瀏覽器登入。請更新 Hermes，或在伺服器上設定使用者名稱和密碼登入。';
+
+  @override
+  String get ng_the_auth_gate_is_off_on => '此儀表板未啟用身分驗證。任何能連線的人都能使用你的代理程式。';
+
+  @override
+  String get ng_couldn_t_reach_the_dashboard => '無法連線至儀表板';
+
+  @override
+  String ng_check_the_address_and_port_9119(Object reason) {
+    return '$reason\n\n請檢查位址和連接埠（預設為 9119）。如果儀表板尚未執行，請在伺服器上執行：\nhermes dashboard --host 0.0.0.0';
+  }
+
+  @override
+  String get ng_that_isn_t_a_hermes_dashboard => '這不是 Hermes 儀表板';
+
+  @override
+  String get ng_something_answered_but_not_a_hermes_2 =>
+      '伺服器有回應，但不是 Hermes 儀表板。請使用儀表板的位址，而不是 API 伺服器的位址（連接埠 8642）。';
+
+  @override
+  String ng_something_answered_http_but_not_a_2(Object status) {
+    return '伺服器有回應（HTTP $status），但不是 Hermes 儀表板。請使用儀表板的位址，而不是 API 伺服器的位址（連接埠 8642）。';
+  }
+
+  @override
+  String get ng_cloudflare_access_stopped_the_request =>
+      'Cloudflare Access 已攔截此要求';
+
+  @override
+  String ng_cloudflare_access_turned_down_the_service(Object status) {
+    return 'Cloudflare Access 拒絕了服務令牌（HTTP $status）。請檢查用戶端識別碼、用戶端密鑰及 Service Auth 原則。';
+  }
+
+  @override
+  String get ng_add_a_cloudflare_access_service_token_2 =>
+      '請在下方新增 Cloudflare Access 服務令牌，然後重新測試。';
+
+  @override
+  String get ng_a_client_certificate_is_needed => '需要用戶端憑證';
+
+  @override
+  String get ng_this_server_asks_for_a_client =>
+      '此伺服器要求先提供用戶端憑證。請在下方選擇伺服器提供的憑證，然後重新測試。';
+
+  @override
+  String get ng_this_dashboard_doesn_t_ask_for => '此儀表板不需要登入。';
+
+  @override
+  String ng_use_the_dashboard_username_and_password(Object address) {
+    return '請使用 $address 上設定的儀表板使用者名稱和密碼，或在瀏覽器中登入。';
+  }
+
+  @override
+  String ng_use_the_dashboard_username_and_password_2(Object address) {
+    return '請使用 $address 上設定的儀表板使用者名稱和密碼。';
+  }
+
+  @override
+  String ng_sign_in_to_in_your_browser(Object address) {
+    return '請在瀏覽器中登入 $address，並使用該儀表板所用的帳號。';
+  }
+
+  @override
+  String ng_gateway(Object address) {
+    return '閘道 $address';
+  }
+
+  @override
+  String get ng_profile => '設定檔';
+
+  @override
+  String get ng_server_default => '伺服器預設設定';
+
+  @override
+  String get ng_continue => '繼續';
+
+  @override
+  String get ng_username => '使用者名稱';
+
+  @override
+  String get ng_signing_in => '正在登入…';
+
+  @override
+  String get ng_waiting_for_the_browser => '正在等待瀏覽器…';
+
+  @override
+  String get ng_sign_in_with_browser => '使用瀏覽器登入';
+
+  @override
+  String get ng_finish_signing_in_on_the_page =>
+      '請在開啟的頁面上完成登入。完成後 Hermes 會自動返回。';
+
+  @override
+  String get ng_use_a_different_gateway => '使用其他閘道';
+
+  @override
+  String get ng_same_wi_fi_or_local_network => '同一 Wi-Fi 或區域網路';
+
+  @override
+  String get ng_use_the_server_s_local_address =>
+      '請輸入伺服器的區域網路位址和連接埠，例如 192.168.1.20:9119。啟動儀表板時加上 --host 0.0.0.0，其他裝置才能連線。';
+
+  @override
+  String get ng_tailscale => 'Tailscale';
+
+  @override
+  String get ng_turn_on_tailscale_on_this_phone =>
+      '在這部手機上啟用 Tailscale，然後使用伺服器的 Tailscale 位址，例如 100.64.0.1:9119 或其 .ts.net 網域名稱。離開家也能使用。';
+
+  @override
+  String get ng_use_your_https_address_when_the =>
+      '如果儀表板位於帶憑證的代理伺服器後面，請使用你的 https:// 位址。代理伺服器還必須支援 /api/ws 上的 WebSocket 升級。';
+
+  @override
+  String get ng_start_the_dashboard_on_the_server => '在伺服器上啟動儀表板：';
+
+  @override
+  String get ng_enter_a_port_from_1_to => '請輸入 1 到 65535 之間的連接埠。';
+
+  @override
+  String get ng_looks_for_hermes_dashboards_on_port =>
+      '在此 Wi-Fi 網路上搜尋連接埠 9119 的 Hermes 儀表板，並檢查已儲存的電腦。';
+
+  @override
+  String ng_looks_for_hermes_dashboards_on_ports(Object port) {
+    return '在此 Wi-Fi 網路上搜尋連接埠 9119 和 $port 的 Hermes 儀表板，並檢查已儲存的電腦。';
+  }
+
+  @override
+  String get ng_other_port_optional => '其他連接埠（選填）';
+
+  @override
+  String get ng_no_dashboards_answered_start_one_with =>
+      '沒有儀表板回應。請執行 hermes dashboard --host 0.0.0.0 啟動，或輸入其位址。';
+
+  @override
+  String get ng_using_tailscale_or_a_vpn_those =>
+      '正在使用 Tailscale 或 VPN？無法搜尋這些網路。請改為輸入電腦的 100.x 位址或 .ts.net 網域名稱。';
+
+  @override
+  String get ng_search_again => '重新搜尋';
+
+  @override
+  String get ng_insights => '使用量分析';
+
+  @override
+  String get ng_couldn_t_load_insights => '無法載入使用量分析';
+
+  @override
+  String get ng_sessions => '工作階段';
+
+  @override
+  String get ng_tokens => '令牌';
+
+  @override
+  String get ng_est_cost => '預估費用';
+
+  @override
+  String get ng_daily_tokens => '每日令牌用量';
+
+  @override
+  String get ng_models => '模型';
+
+  @override
+  String get ng_tools => '工具';
+
+  @override
+  String get ng_hermes_is_waiting_for_you => 'Hermes 正在等你。';
+
+  @override
+  String get ng_hermes_replied => 'Hermes 已回覆';
+
+  @override
+  String get ng_the_turn_finished => '本輪已完成。';
+
+  @override
+  String get ng_off => '關閉';
+
+  @override
+  String get ng_minimal => '最低';
+
+  @override
+  String get ng_low => '低';
+
+  @override
+  String get ng_medium => '中';
+
+  @override
+  String get ng_high => '高';
+
+  @override
+  String get ng_extra_high => '極高';
+
+  @override
+  String get ng_max => '最高';
+
+  @override
+  String get ng_ultra => '超強';
+
+  @override
+  String get ng_default => '預設';
+
+  @override
+  String ng_couldn_t_switch_model(Object error) {
+    return '無法切換模型：$error';
+  }
+
+  @override
+  String get ng_model => '模型';
+
+  @override
+  String get ng_thinking_2 => '思考';
+
+  @override
+  String get ng_search_models => '搜尋模型';
+
+  @override
+  String get ng_no_models_match => '沒有符合這些篩選條件的模型。';
+
+  @override
+  String get privacy_policy => '隱私政策';
+
+  @override
+  String get report_ai_output => '舉報 AI 輸出';
+
+  @override
+  String ng_couldn_t_load_models(Object error) {
+    return '無法載入模型：$error';
+  }
+
+  @override
+  String get ng_no_providers_are_set_up_on => '此閘道尚未設定任何供應商。';
+
+  @override
+  String get ng_starred => '已加星號';
+
+  @override
+  String get ng_recent => '最近';
+
+  @override
+  String get ng_more => '更多';
+
+  @override
+  String get ng_archived_chats => '已封存聊天';
+
+  @override
+  String get ng_projects => '專案';
+
+  @override
+  String get ng_chats_grouped_by_project_and_workspace => '按專案和工作區分組的聊天';
+
+  @override
+  String get ng_agent => '代理程式';
+
+  @override
+  String get ng_memory => '記憶';
+
+  @override
+  String get ng_what_hermes_remembers_about_you => 'Hermes 對你的記憶';
+
+  @override
+  String get ng_skills_library => '技能庫';
+
+  @override
+  String get ng_browse_and_read_installed_skills => '瀏覽並閱讀已安裝的技能';
+
+  @override
+  String get ng_cron_editor => 'Cron 編輯器';
+
+  @override
+  String get ng_edit_schedules_prompts_and_delivery => '編輯排程、提示詞和傳送方式';
+
+  @override
+  String get ng_config_file => '設定檔';
+
+  @override
+  String get ng_edit_config_yaml_on_the_gateway => '在閘道上編輯 config.yaml';
+
+  @override
+  String get ng_models_and_providers => '模型和供應商';
+
+  @override
+  String get ng_model_management => '模型管理';
+
+  @override
+  String get ng_default_fallback_and_auxiliary_models => '預設、備用和輔助模型';
+
+  @override
+  String get ng_provider_sign_in => '供應商登入';
+
+  @override
+  String get ng_connect_provider_accounts_with_oauth => '透過 OAuth 連線供應商帳號';
+
+  @override
+  String get ng_nous_portal => 'Nous Portal';
+
+  @override
+  String get ng_subscription_credits_and_usage => '訂閱、額度和使用情況';
+
+  @override
+  String get ng_interface => '介面';
+
+  @override
+  String get ng_switch_to_the_classic_interface => '切換到經典介面';
+
+  @override
+  String get ng_turns_nextgen_off_you_can_turn => '關閉 NextGen。你可以在設定中重新開啟。';
+
+  @override
+  String get ng_restored => '已還原';
+
+  @override
+  String get ng_archived => '已封存';
+
+  @override
+  String get ng_couldn_t_load_archived_chats => '無法載入已封存的聊天';
+
+  @override
+  String get ng_nothing_archived => '沒有已封存的內容';
+
+  @override
+  String get ng_restore => '還原';
+
+  @override
+  String get ng_saved_new_chats_use_it => '已儲存。新聊天將使用此設定。';
+
+  @override
+  String ng_couldn_t_save(Object error) {
+    return '無法儲存：$error';
+  }
+
+  @override
+  String get ng_saving => '正在儲存…';
+
+  @override
+  String ng_today(Object time) {
+    return '今天 $time';
+  }
+
+  @override
+  String get ng_mon => '週一';
+
+  @override
+  String get ng_tue => '週二';
+
+  @override
+  String get ng_wed => '週三';
+
+  @override
+  String get ng_thu => '週四';
+
+  @override
+  String get ng_fri => '週五';
+
+  @override
+  String get ng_sat => '週六';
+
+  @override
+  String get ng_sun => '週日';
+
+  @override
+  String get ng_scheduled => '排程任務';
+
+  @override
+  String get ng_new_job => '新增任務';
+
+  @override
+  String get ng_couldn_t_load_scheduled_jobs => '無法載入排程任務';
+
+  @override
+  String get ng_nothing_scheduled => '沒有排程任務';
+
+  @override
+  String get ng_ask_hermes_to_do_something_on => '讓 Hermes 按排程執行任務，或在此處新增任務。';
+
+  @override
+  String get ng_active => '執行中';
+
+  @override
+  String get ng_paused => '已暫停';
+
+  @override
+  String ng_next(Object when) {
+    return '下次 $when';
+  }
+
+  @override
+  String ng_last(Object when) {
+    return '上次 $when';
+  }
+
+  @override
+  String ng_last_2(Object when, Object result) {
+    return '上次 $when · $result';
+  }
+
+  @override
+  String ng_job(Object id) {
+    return '任務 $id';
+  }
+
+  @override
+  String get ng_delete => '刪除';
+
+  @override
+  String get ng_delete_this_job => '刪除此任務？';
+
+  @override
+  String get ng_it_stops_running_past_runs_stay => '刪除後將停止執行。以往的執行記錄仍會保留在聊天中。';
+
+  @override
+  String ng_next_run(Object when) {
+    return '下次執行：$when';
+  }
+
+  @override
+  String ng_delivers_to(Object target) {
+    return '傳送至 $target';
+  }
+
+  @override
+  String get ng_run_now => '立即執行';
+
+  @override
+  String get ng_started => '已啟動';
+
+  @override
+  String get ng_pause => '暫停';
+
+  @override
+  String get ng_resume => '繼續';
+
+  @override
+  String get ng_resumed => '已繼續';
+
+  @override
+  String get ng_prompt => '提示詞';
+
+  @override
+  String get ng_runs => '執行記錄';
+
+  @override
+  String get ng_no_runs_yet => '目前沒有執行記錄。';
+
+  @override
+  String get ng_enter_a_schedule_and_a_prompt => '請填寫排程和提示詞。';
+
+  @override
+  String get ng_name_optional => '名稱（選填）';
+
+  @override
+  String get ng_schedule => '排程';
+
+  @override
+  String get ng_every_1h_0_9_or_30m => '例如 every 1h、0 9 * * * 或 30m';
+
+  @override
+  String get ng_create => '建立';
+
+  @override
+  String get ng_unpin => '取消置頂';
+
+  @override
+  String get ng_pin => '置頂';
+
+  @override
+  String get ng_rename => '重新命名';
+
+  @override
+  String get ng_archive => '封存';
+
+  @override
+  String get ng_delete_this_chat => '刪除此聊天？';
+
+  @override
+  String get ng_it_is_removed_from_the_gateway => '此聊天會從閘道中刪除，並從所有裝置上移除。';
+
+  @override
+  String get ng_search_chats => '搜尋聊天';
+
+  @override
+  String get ng_pinned => '已置頂';
+
+  @override
+  String get ng_no_chats_match => '沒有符合的聊天。';
+
+  @override
+  String get ng_no_chats_yet => '目前沒有聊天。';
+
+  @override
+  String get ng_nothing_is_running => '目前沒有執行中的任務。';
+
+  @override
+  String get ng_nothing_is_waiting_on_you => '目前沒有待你處理的事項。';
+
+  @override
+  String get ng_settings => '設定';
+
+  @override
+  String get ng_all => '全部';
+
+  @override
+  String ng_needs_you(Object count) {
+    return '需要你處理 · $count';
+  }
+
+  @override
+  String get ng_needs_you_2 => '需要你處理';
+
+  @override
+  String get ng_gateways => '閘道';
+
+  @override
+  String ng_classic_connection(Object address) {
+    return '$address · 經典連線';
+  }
+
+  @override
+  String get ng_gateway_2 => '閘道';
+
+  @override
+  String get ng_signed_in => '已登入';
+
+  @override
+  String get ng_classic_connection_2 => '經典連線';
+
+  @override
+  String get ng_in_the_browser => '在瀏覽器中';
+
+  @override
+  String ng_in_the_browser_as(Object name) {
+    return '以 $name 身分在瀏覽器中';
+  }
+
+  @override
+  String get ng_not_required => '不需要';
+
+  @override
+  String get ng_test_connection => '測試連線';
+
+  @override
+  String get ng_sign_in_again_2 => '重新登入';
+
+  @override
+  String get ng_sign_out => '登出';
+
+  @override
+  String get ng_saved_gateways => '已儲存的閘道';
+
+  @override
+  String get ng_in_use => '使用中';
+
+  @override
+  String get ng_appearance => '外觀';
+
+  @override
+  String get ng_theme => '主題';
+
+  @override
+  String get ng_system => '跟隨系統';
+
+  @override
+  String get ng_light => '淺色';
+
+  @override
+  String get ng_dark => '深色';
+
+  @override
+  String get ng_accent => '強調色';
+
+  @override
+  String get ng_pure_black => '純黑';
+
+  @override
+  String get ng_dark_theme_uses_true_black_oled => '深色主題使用純黑（OLED）';
+
+  @override
+  String get ng_glow => '光暈';
+
+  @override
+  String get ng_soft_accent_light_behind_each_screen => '在每個畫面背景加上柔和的強調色光暈';
+
+  @override
+  String get ng_the_new_interface_turn_off_to => '新版介面。關閉後可切回經典介面；閘道和聊天記錄會共用。';
+
+  @override
+  String get ng_more_settings => '更多設定';
+
+  @override
+  String get ng_voice_notifications_language_backups_and_the =>
+      '語音、通知、語言、備份和閘道設定';
+
+  @override
+  String get ng_licences => '授權條款';
+
+  @override
+  String ng_sign_out_of(Object name) {
+    return '要登出 $name 嗎？';
+  }
+
+  @override
+  String get ng_this_gateway_and_its_saved_sign =>
+      '此閘道及其已儲存的登入資訊會從這部手機的兩個介面中移除。聊天記錄仍保留在閘道上。';
+
+  @override
+  String get ng_password_or_browser => '密碼或瀏覽器';
+
+  @override
+  String get ng_unsupported => '不支援';
+
+  @override
+  String get ng_background_task_finished => '背景任務已完成';
+
+  @override
+  String get ng_background_process_finished => '背景程序已結束';
+
+  @override
+  String get ng_system_message => '系統訊息';
+
+  @override
+  String get ng_summary => '摘要';
+
+  @override
+  String get classic_interface_only => '僅限經典介面';
+
+  @override
+  String get classic_only_settings_hint =>
+      '標記為「僅限經典介面」的部分只會更改經典介面的外觀和聊天設定，不會影響 NextGen。NextGen 在其「設定」中有自己的外觀選項。';
+
+  @override
+  String get attachment_preview_too_large =>
+      '檔案太大，無法在此預覽。儲存或分享即可將其下載到手機（最大 1 GB）。';
+
+  @override
+  String get attachment_over_phone_limit => '此檔案超過 1 GB，超出下載限制。請開啟儀表板下載。';
+
+  @override
+  String attachment_downloading_percent(int percent) {
+    return '正在下載…$percent%';
+  }
+
+  @override
+  String attachment_downloading_mb(int megabytes) {
+    return '正在下載…$megabytes MB';
+  }
+
+  @override
+  String ng_attachment_too_large_for_gateway(String name) {
+    return '$name 超過 12 MB，超出此閘道的接收上限。更新 Hermes 後即可傳送最大 100 MB 的檔案。';
+  }
+
+  @override
+  String ng_couldn_t_upload(String name) {
+    return '無法上傳 $name。';
+  }
+
+  @override
+  String ng_uploading_percent(int percent) {
+    return '正在上傳…$percent%';
+  }
+
+  @override
+  String get ng_show_tasks => '顯示任務';
+
+  @override
+  String get ng_hide_tasks => '隱藏任務';
+
+  @override
+  String get ng_goal => '目標';
+
+  @override
+  String get ng_loop => '循環';
+
+  @override
+  String get ng_heartbeat => '心跳';
+
+  @override
+  String get ng_goal_working => '進行中';
+
+  @override
+  String get ng_goal_waiting => '等待中';
+
+  @override
+  String get ng_goal_blocked => '受阻';
+
+  @override
+  String get ng_goal_done => '已完成';
+
+  @override
+  String ng_goal_turns_of(int used, int max) {
+    return '第 $used 輪，共 $max 輪';
+  }
+
+  @override
+  String ng_goal_turn(int used) {
+    return '第 $used 輪';
+  }
+
+  @override
+  String get ng_loop_held => '因目標暫停';
+
+  @override
+  String get ng_loop_finished => '已結束';
+
+  @override
+  String get ng_loop_running => '執行中';
+
+  @override
+  String ng_loop_runs_of(int fired, int times) {
+    return '已執行 $fired 次，共 $times 次';
+  }
+
+  @override
+  String ng_loop_runs(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '執行 $count 次',
+      one: '執行 1 次',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_loop_next(String time) {
+    return '下次 $time';
+  }
+
+  @override
+  String get ng_loop_due_now => '現在執行';
+
+  @override
+  String ng_every_seconds(int seconds) {
+    return '每 $seconds 秒';
+  }
+
+  @override
+  String ng_every_minutes(int minutes) {
+    return '每 $minutes 分鐘';
+  }
+
+  @override
+  String ng_every_hours(int hours) {
+    return '每 $hours 小時';
+  }
+
+  @override
+  String ng_every_hours_minutes(int hours, int minutes) {
+    return '每 $hours 小時 $minutes 分鐘';
+  }
+
+  @override
+  String ng_heartbeat_fired(int count) {
+    return '已觸發 $count 次';
+  }
+
+  @override
+  String ng_heartbeat_last_fired(String time) {
+    return '上次觸發時間：$time';
+  }
+
+  @override
+  String ng_wait_until(String time) {
+    return '等待至 $time';
+  }
+
+  @override
+  String get ng_wait_resume => '等待繼續';
+
+  @override
+  String get ng_wait_other_chat => '等待另一個聊天';
+
+  @override
+  String ng_wait_process(String pid) {
+    return '等待程序 $pid';
+  }
+
+  @override
+  String get ng_control_open => '開啟目標與自動化';
+
+  @override
+  String get ng_control_title => '目標與自動化';
+
+  @override
+  String get ng_control_subtitle => '此聊天正在努力實現的目標，以及自動執行的內容。';
+
+  @override
+  String get ng_contract_outcome => '預期結果';
+
+  @override
+  String get ng_contract_verification => '驗證方式';
+
+  @override
+  String get ng_contract_constraints => '約束條件';
+
+  @override
+  String get ng_contract_boundaries => '邊界';
+
+  @override
+  String get ng_contract_stop_when => '停止條件';
+
+  @override
+  String get ng_subgoals => '子目標';
+
+  @override
+  String get ng_subgoal_add_placeholder => '新增子目標';
+
+  @override
+  String get ng_add => '新增';
+
+  @override
+  String get ng_subgoal_remove => '移除子目標';
+
+  @override
+  String get ng_goal_checks => '檢查項';
+
+  @override
+  String get ng_gate_not_run => '尚未執行';
+
+  @override
+  String ng_gate_attempts(int attempts, int tries) {
+    return '已嘗試 $attempts 次，共 $tries 次';
+  }
+
+  @override
+  String ng_gate_exit(int code) {
+    return '結束代碼 $code';
+  }
+
+  @override
+  String get ng_resume_now => '立即繼續';
+
+  @override
+  String get ng_goal_clear => '清除目標';
+
+  @override
+  String get ng_goal_clear_title => '清除此目標？';
+
+  @override
+  String get ng_goal_clear_message => '代理程式會停止執行這個目標，相關的子目標和檢查項目也會一併清除。';
+
+  @override
+  String get ng_subgoal_remove_title => '移除此子目標？';
+
+  @override
+  String ng_subgoal_remove_message(String text) {
+    return '「$text」將不再屬於此目標。';
+  }
+
+  @override
+  String get ng_subgoals_clear_title => '清除所有子目標？';
+
+  @override
+  String get ng_subgoals_clear_message => '目標標題將保留，但所有子目標都會被清除。';
+
+  @override
+  String get ng_clear_all => '全部清除';
+
+  @override
+  String get ng_clear => '清除';
+
+  @override
+  String get ng_dismiss => '關閉';
+
+  @override
+  String get ng_loop_stop_title => '停止此循環？';
+
+  @override
+  String get ng_heartbeat_clear_title => '清除此心跳？';
+
+  @override
+  String get ng_wont_fire_again => '此後將不再觸發。';
+
+  @override
+  String get ng_loop_self_paced => '自主節奏';
+
+  @override
+  String ng_loop_until(String condition) {
+    return '持續至：$condition';
+  }
+
+  @override
+  String get ng_loop_waits_for_goal => '目標進行期間會等待。';
+
+  @override
+  String get ng_loop_awaiting_reply => '正在等待代理程式回覆。';
+
+  @override
+  String ng_loop_stopped_reason(String reason) {
+    return '已停止：$reason';
+  }
+
+  @override
+  String get ng_hide_subagents => '隱藏子代理';
+
+  @override
+  String get ng_show_subagents => '顯示子代理';
+
+  @override
+  String get ng_subagent => '子代理';
+
+  @override
+  String get ng_subagent_queued => '佇列中';
+
+  @override
+  String get ng_subagent_starting => '啟動中…';
+
+  @override
+  String get ng_subagent_running => '執行中';
+
+  @override
+  String get ng_subagent_done => '已完成';
+
+  @override
+  String get ng_subagent_failed => '失敗';
+
+  @override
+  String get ng_subagent_stopped => '已停止';
+
+  @override
+  String get ng_subagent_stop => '停止子代理';
+
+  @override
+  String ng_subagent_tools(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個工具',
+      one: '1 個工具',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_mark_as_read => '標記為已讀';
+
+  @override
+  String get ng_mark_as_unread => '標記為未讀';
+
+  @override
+  String ng_chats_unread(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '聊天，$count 則未讀訊息',
+      one: '聊天，1 則未讀訊息',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_unread_finished => '已完成，回覆未讀';
+
+  @override
+  String get ng_unread_updates => '正在執行，有未讀更新';
+
+  @override
+  String get ng_notifications => '通知';
+
+  @override
+  String get ng_notifications_hint => 'Ares 在背景執行時接收回覆和要求通知';
+
+  @override
+  String get ng_notify_replies => '回覆';
+
+  @override
+  String get ng_notify_replies_hint => '目前開啟的聊天中，一輪對話完成或失敗時通知';
+
+  @override
+  String get ng_notify_requests => '核准和問題';
+
+  @override
+  String get ng_notify_requests_hint => '代理程式等待你處理時提醒你，並提供「允許一次」和「拒絕」選項';
+
+  @override
+  String get ng_keep_running => '回覆生成期間保持連線';
+
+  @override
+  String get ng_keep_running_hint => '在背景保持連線，直到回覆完成，並顯示一條靜默通知';
+
+  @override
+  String get ng_battery_settings => '電池優化';
+
+  @override
+  String get ng_battery_settings_hint => '允許 Ares 在背景執行，以便及時收到通知';
+
+  @override
+  String get ng_send_test_notification => '傳送測試通知';
+
+  @override
+  String get ng_test_notification_title => 'Ares 通知功能正常';
+
+  @override
+  String get ng_test_notification_body => '回覆和要求通知會以這種形式顯示。';
+
+  @override
+  String get ng_test_notification_sent => '測試通知已傳送';
+
+  @override
+  String get ng_notifications_blocked => '通知已被封鎖。請在 Android 設定中允許通知。';
+
+  @override
+  String get ng_notifications_off_hint => '通知已關閉，因此 Ares 在背景執行時不會傳送通知。';
+
+  @override
+  String get ng_insights_building => '正在產生報告。首次產生涵蓋較長期間的報告時，最多可能需要一分鐘。';
+
+  @override
+  String get ng_insights_timed_out => '閘道生成此報告逾時。請重試，或選擇更短的時間段。';
+
+  @override
+  String get ng_dock_goal_active => '目標進行中';
+
+  @override
+  String get ng_dock_goal_paused => '目標已暫停';
+
+  @override
+  String get ng_dock_goal_waiting => '目標等待中';
+
+  @override
+  String get ng_dock_goal_blocked => '目標受阻';
+
+  @override
+  String get ng_dock_goal_done => '目標已完成';
+
+  @override
+  String ng_dock_turn_of(int used, int max) {
+    return '第 $used/$max 輪';
+  }
+
+  @override
+  String ng_dock_turn(int used) {
+    return '第 $used 輪';
+  }
+
+  @override
+  String ng_dock_subagents(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個子代理',
+      one: '1 個子代理',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_dock_subagents_done(int count) {
+    return '$count 個已完成';
+  }
+
+  @override
+  String ng_dock_tasks(int done, int total) {
+    return '任務 $done/$total';
+  }
+
+  @override
+  String ng_dock_previous_tasks(int done, int total) {
+    return '上輪任務 $done/$total';
+  }
+
+  @override
+  String get ng_dock_manage => '管理';
+
+  @override
+  String get ng_recent_notifications => '最近通知';
+
+  @override
+  String get ng_recent_notifications_hint => 'Ares 嘗試發布的內容，以及 Android 是否顯示了通知';
+
+  @override
+  String get ng_recent_notifications_empty =>
+      '目前還沒有。當回覆、問題或失敗會觸發通知時，相關嘗試會顯示在這裡。';
+
+  @override
+  String get ng_notify_permission_granted => '已獲得通知權限';
+
+  @override
+  String get ng_notify_permission_denied => '通知權限已被拒絕';
+
+  @override
+  String get ng_notify_master_on => '通知已開啟';
+
+  @override
+  String get ng_notify_master_off => '通知已關閉';
+
+  @override
+  String get ng_models_default => '預設模型';
+
+  @override
+  String get ng_models_change => '更改';
+
+  @override
+  String get ng_models_custom_endpoint => '使用自訂端點。請在閘道上更改。';
+
+  @override
+  String get ng_models_context_window => '上下文視窗';
+
+  @override
+  String ng_models_token_count(String count) {
+    return '$count 個令牌';
+  }
+
+  @override
+  String ng_models_context_override(String count) {
+    return '已在閘道上設定。自動偵測：$count 令牌。';
+  }
+
+  @override
+  String get ng_models_max_output => '最大輸出';
+
+  @override
+  String get ng_models_input_price => '輸入價格';
+
+  @override
+  String get ng_models_output_price => '輸出價格';
+
+  @override
+  String get ng_models_cache_price => '快取輸入價格';
+
+  @override
+  String ng_models_per_million(String price) {
+    return '每百萬令牌 $price';
+  }
+
+  @override
+  String ng_models_price_pair(String input, String output) {
+    return '每百萬令牌：輸入 $input · 輸出 $output';
+  }
+
+  @override
+  String get ng_models_free => '免費';
+
+  @override
+  String get ng_models_vision => '視覺';
+
+  @override
+  String get ng_models_reasoning => '推理';
+
+  @override
+  String get ng_models_fast => '快速模式';
+
+  @override
+  String get ng_models_in_use => '使用中';
+
+  @override
+  String ng_models_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個模型',
+      one: '$count 個模型',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_models_rate_limited => '已限流';
+
+  @override
+  String get ng_models_plan_locked => '你的方案不包含此模型';
+
+  @override
+  String get ng_models_unsaved => '未儲存的更改';
+
+  @override
+  String get ng_models_discard => '捨棄變更';
+
+  @override
+  String get ng_models_aux_hint => '輔助任務使用預設模型，除非你為其單獨指定。';
+
+  @override
+  String get ng_models_uses_default => '使用預設模型';
+
+  @override
+  String get ng_models_thinking_level => '思考等級';
+
+  @override
+  String get ng_models_providers => '供應商';
+
+  @override
+  String get ng_models_saved => '已儲存';
+
+  @override
+  String get ng_aux_vision => '視覺';
+
+  @override
+  String get ng_aux_vision_hint => '讀取圖片和螢幕截圖';
+
+  @override
+  String get ng_aux_compression => '壓縮';
+
+  @override
+  String get ng_aux_compression_hint => '壓縮較長的聊天，使其適應上下文視窗';
+
+  @override
+  String get ng_aux_approval => '核准';
+
+  @override
+  String get ng_aux_approval_hint => '判斷指令是否可以不經詢問安全執行';
+
+  @override
+  String get ng_aux_mcp => 'MCP';
+
+  @override
+  String get ng_aux_mcp_hint => '選擇要使用的 MCP 工具';
+
+  @override
+  String get ng_aux_title_generation => '聊天標題';
+
+  @override
+  String get ng_aux_title_generation_hint => '為新聊天命名';
+
+  @override
+  String get ng_aux_review => '審查';
+
+  @override
+  String get ng_aux_review_hint => '執行 /review 時檢查工作成果';
+
+  @override
+  String get ng_aux_voice_chat => '語音聊天';
+
+  @override
+  String get ng_aux_voice_chat_hint => '在語音模式下回覆';
+
+  @override
+  String get ng_aux_triage_specifier => '任務分類';
+
+  @override
+  String get ng_aux_triage_specifier_hint => '將一行的看板卡片擴展為規格說明';
+
+  @override
+  String get ng_aux_kanban_decomposer => '看板拆解';
+
+  @override
+  String get ng_aux_kanban_decomposer_hint => '將看板卡片拆分為更小的任務';
+
+  @override
+  String get ng_aux_profile_describer => '設定檔描述';
+
+  @override
+  String get ng_aux_profile_describer_hint => '為每個設定檔撰寫簡短描述';
+
+  @override
+  String get ng_aux_curator => '技能維護';
+
+  @override
+  String get ng_aux_curator_hint => '審查技能的使用情況';
+
+  @override
+  String get appearance_save_failed => '無法儲存這項變更。';
+
+  @override
+  String get appearance_keep_which_theme => '要保留哪個佈景主題？';
+
+  @override
+  String get appearance_tour_back => '上一步';
+
+  @override
+  String get appearance_tour_finish => '完成';
+
+  @override
+  String get appearance_tour_next => '下一步';
+
+  @override
+  String get appearance_tour_close => '關閉導覽';
+
+  @override
+  String get appearance_dismiss_tip => '關閉提示';
+
+  @override
+  String get appearance_search_settings => '搜尋設定';
+
+  @override
+  String get appearance_search_show => '顯示';
+
+  @override
+  String get appearance_no_matching_setting => '找不到相符的設定。';
+
+  @override
+  String get appearance_replay_tour => '再看一次導覽';
+
+  @override
+  String get appearance_show_tips_again => '再次顯示提示';
+
+  @override
+  String get appearance_window_translucency_unavailable =>
+      '此主機無法使用視窗透明度。Linux 不支援，Apple 與 Windows 執行程式繪製的是不透明的 Flutter 視窗。';
+
+  @override
+  String get appearance_imported_themes => '匯入的佈景主題';
+
+  @override
+  String get appearance_import_theme_file => '匯入佈景主題檔';
+
+  @override
+  String get appearance_remove_theme => '移除佈景主題';
+
+  @override
+  String get appearance_chat_font => '聊天字型';
+
+  @override
+  String get appearance_terminal_font => '終端機字型';
+
+  @override
+  String get appearance_font_platform => '系統字型';
+
+  @override
+  String get appearance_automatic => '自動';
+
+  @override
+  String get appearance_force_left_to_right => '強制由左至右';
+
+  @override
+  String get appearance_force_right_to_left => '強制由右至左';
+
+  @override
+  String get appearance_user_bubble_opacity => '自己的訊息氣泡透明度';
+
+  @override
+  String get appearance_inline_embeds => '內嵌內容';
+
+  @override
+  String get appearance_inline_embeds_hint =>
+      '豐富預覽會從第三方網站載入（YouTube、X 等）。「詢問」會先顯示預留位置，直到你逐一允許；「一律」會自動載入；「關閉」只保留一般連結。';
+
+  @override
+  String get appearance_embeds_ask => '詢問';
+
+  @override
+  String get appearance_embeds_always => '一律';
+
+  @override
+  String get appearance_embeds_off => '關閉';
+
+  @override
+  String appearance_embeds_reset(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '重設 $count 個已允許的服務',
+      one: '重設 1 個已允許的服務',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appearance_embed_load => '載入';
+
+  @override
+  String appearance_embed_always_allow(String service) {
+    return '一律允許 $service';
+  }
+
+  @override
+  String get appearance_embed_loading => '正在載入預覽…';
+
+  @override
+  String appearance_embed_image_failed(String host) {
+    return '無法從 $host 載入圖片。輕觸即可開啟。';
+  }
+
+  @override
+  String get appearance_embed_preview_unavailable => '無法預覽';
+
+  @override
+  String get appearance_emoji_reactions => '表情回應';
+
+  @override
+  String get appearance_celebration_hearts => '慶祝愛心';
+
+  @override
+  String get appearance_celebration_hearts_hint => '你離開時若有回覆送達，會播放一顆愛心。';
+
+  @override
+  String get appearance_pop_out_companion => '將夥伴彈出視窗';
+
+  @override
+  String get appearance_mosskip => '苔躍蛙';
+
+  @override
+  String get appearance_emberbun => '餘燼兔';
+
+  @override
+  String get appearance_tideling => '潮汐靈';
+
+  @override
+  String get appearance_my_hatchling => '我的孵化夥伴';
+
+  @override
+  String get appearance_at_rest => '休息中';
+
+  @override
+  String get appearance_working => '工作中';
+
+  @override
+  String get appearance_thinking => '思考中';
+
+  @override
+  String get appearance_waiting_for_you => '等你回應';
+
+  @override
+  String get appearance_reply_ready => '回覆已就緒';
+
+  @override
+  String get appearance_turn_failed => '本次回應失敗';
+
+  @override
+  String get appearance_small => '小';
+
+  @override
+  String get appearance_medium => '中';
+
+  @override
+  String get appearance_large => '大';
+
+  @override
+  String get appearance_hello => '你好！';
+
+  @override
+  String get appearance_unread_reply => '有未讀回覆';
+
+  @override
+  String get appearance_compose => '撰寫訊息';
+
+  @override
+  String get appearance_say_hello => '打個招呼';
+
+  @override
+  String get appearance_pet_image_failed => '無法開啟圖片，請選擇較小的 PNG 或 JPEG。';
+
+  @override
+  String get appearance_pet_companion => '寵物夥伴';
+
+  @override
+  String get appearance_pet_companion_hint => '在聊天時顯示夥伴。';
+
+  @override
+  String get appearance_adopt_a_companion => '領養夥伴';
+
+  @override
+  String get appearance_roam_when_idle => '閒置時漫步';
+
+  @override
+  String get appearance_pet_size => '夥伴大小';
+
+  @override
+  String get appearance_hatch_from_a_local_picture => '從本機圖片孵化';
+
+  @override
+  String get appearance_pet_image_limits =>
+      '選擇 PNG 或 JPEG（最多 4 MiB、每邊 4096 像素且不超過 8 百萬像素）。先預覽，孵化後只儲存一張 24 × 24 像素的肖像，並取代上一次的孵化夥伴。';
+
+  @override
+  String get appearance_choose_picture => '選擇圖片';
+
+  @override
+  String get appearance_hatchling_preview => '預覽孵化夥伴';
+
+  @override
+  String get appearance_hatch_and_adopt => '孵化並領養';
+
+  @override
+  String get appearance_discard_draft => '捨棄草稿';
+
+  @override
+  String get appearance_forget_saved_hatchling => '移除已儲存的孵化夥伴';
+
+  @override
+  String get appearance_radio => '電台';
+
+  @override
+  String appearance_radio_hint(String stations) {
+    return '串流直接來自 $stations，只有在你按下播放後才會開始。搜尋電台只會在此裝置上進行。';
+  }
+
+  @override
+  String get appearance_radio_save_failed => '無法儲存電台設定。';
+
+  @override
+  String get appearance_choose_a_station => '選擇電台';
+
+  @override
+  String get appearance_pause_radio => '暫停電台';
+
+  @override
+  String get appearance_play_radio => '播放電台';
+
+  @override
+  String get appearance_next_station => '下一個電台';
+
+  @override
+  String get appearance_radio_trace_semantics => '串流活動。無法取得音量，所以這條線保持平直。';
+
+  @override
+  String get appearance_radio_is_off => '電台已關閉';
+
+  @override
+  String get appearance_paused => '已暫停';
+
+  @override
+  String get appearance_connecting => '正在連線…';
+
+  @override
+  String get appearance_live => '直播中';
+
+  @override
+  String get appearance_stream_unavailable => '無法播放串流';
+
+  @override
+  String appearance_now_playing(String credit) {
+    return '目前播放：$credit';
+  }
+
+  @override
+  String get appearance_audio_only_waveform_unavailable => '僅播放音訊 · 無法顯示波形';
+
+  @override
+  String get appearance_volume => '音量';
+
+  @override
+  String get appearance_search_presets => '搜尋預設電台';
+
+  @override
+  String get appearance_no_stations_found => '找不到電台';
+
+  @override
+  String appearance_unpin_station(String station) {
+    return '取消釘選電台：$station';
+  }
+
+  @override
+  String appearance_pin_station(String station) {
+    return '釘選電台：$station';
+  }
+
+  @override
+  String get appearance_radio_picker_metadata_notice =>
+      '開啟此面板並播放時，會向支援此功能的廣播業者取得曲目資訊。';
+
+  @override
+  String get appearance_message_from_your_companion => '來自夥伴的訊息';
+
+  @override
+  String get appearance_send_to_the_open_chat => '送到目前的聊天';
+
+  @override
+  String get appearance_tour_theme_body =>
+      '從這台裝置上的檔案匯入 VS Code 色彩佈景主題，再選擇要保留的版本。';
+
+  @override
+  String get appearance_tour_fonts_title => '閱讀字型';
+
+  @override
+  String get appearance_tour_fonts_body => '聊天內文和終端機程式碼使用 Ares 內建的不同字型。';
+
+  @override
+  String get appearance_tour_direction_title => '文字方向';
+
+  @override
+  String get appearance_tour_direction_body => '保持自動，或強制對話文字由左至右或由右至左。';
+
+  @override
+  String get appearance_tour_pet_title => '夥伴';
+
+  @override
+  String get appearance_tour_pet_body => '領養之前不會顯示夥伴。彈出視窗會附上一個小撰寫框。';
+
+  @override
+  String get appearance_tour_radio_body => '啟用之前不會播放電台。按下播放才會開啟串流。';
+
+  @override
+  String get appearance_tip_theme => '匯入的佈景主題會取代內建配色，直到你取消選擇。只會保留色彩。';
+
+  @override
+  String get appearance_tip_pet => '夥伴只在這台裝置上儲存一張小肖像，不會上傳你用來孵化的圖片。';
+
+  @override
+  String get appearance_theme_import_failed =>
+      '無法匯入這個佈景主題。請選擇以 .vsix、.json 或 .jsonc 檔案儲存的 VS Code 色彩佈景主題。';
+
+  @override
+  String get render_widget_file_truncated => '僅讀取了此檔案的開頭，元件可能不完整。';
+
+  @override
+  String get setup_beat_title => '設定';
+
+  @override
+  String setup_beat_use_name(String name) {
+    return '使用 $name';
+  }
+
+  @override
+  String get setup_beat_name_hint => '你希望 Hermes 怎麼稱呼你？';
+
+  @override
+  String get setup_beat_on_computer =>
+      '此步驟需在執行 Hermes 的電腦上，於 Hermes 中完成。繼續會保留該處已完成的設定。';
+
+  @override
+  String get setup_beat_not_waiting => '此設定卡片已不再等待回答。';
+
+  @override
+  String get catalog_kind_plugin => '外掛程式';
+
+  @override
+  String get catalog_kind_skill => '技能';
+
+  @override
+  String get catalog_tier_official => '官方';
+
+  @override
+  String get catalog_tier_verified => '已驗證';
+
+  @override
+  String get catalog_tier_community => '社群';
+
+  @override
+  String get catalog_install => '安裝';
+
+  @override
+  String get catalog_waiting => '等待你選擇';
+
+  @override
+  String get catalog_installed => '已安裝';
+
+  @override
+  String get catalog_installed_off => '已安裝，尚未啟用';
+
+  @override
+  String get catalog_skipped => '已略過';
+
+  @override
+  String get catalog_not_installed => '未安裝';
+
+  @override
+  String catalog_target_profile(String profile) {
+    return '安裝至 $profile 設定檔';
+  }
+
+  @override
+  String catalog_source(String repo, String sha) {
+    return '$repo 的 $sha';
+  }
+
+  @override
+  String catalog_scan(String status, String summary) {
+    return '安全掃描：$status。$summary';
+  }
+
+  @override
+  String catalog_requires_hermes(String range) {
+    return '需要 Hermes $range';
+  }
+
+  @override
+  String catalog_skill_ready(String name) {
+    return '技能 $name 已可使用';
+  }
+
+  @override
+  String catalog_missing_env(String names) {
+    return '仍需要：$names';
+  }
+
+  @override
+  String catalog_server_error(String name, String error) {
+    return '$name 未能連線：$error';
+  }
+
+  @override
+  String get catalog_send_failed => '未能傳送你的選擇。請再試一次。';
+
+  @override
+  String get attachment_video_speed => '播放速度';
+
+  @override
+  String get catalog_installing => '正在安裝…';
+
+  @override
+  String get catalog_phase_downloading => '正在下載…';
+
+  @override
+  String get catalog_phase_python_packages => '正在安裝 Python 套件…';
+
+  @override
+  String get catalog_phase_loading_tools => '正在載入工具…';
+
+  @override
+  String get setup_beat_send_failed => '未能傳送你的回答。請再試一次。';
+
+  @override
+  String catalog_tool_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個工具',
+      one: '1 個工具',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get render_svg_not_drawn => '未繪製此 SVG。';
+
+  @override
+  String get render_notes_directive => '筆記指令';
+
+  @override
+  String get render_maths_source => '數學原始碼';
+
+  @override
+  String get render_inline_maths_source => '行內數學原始碼';
+
+  @override
+  String get render_sequence_outline => '序列大綱';
+
+  @override
+  String get render_diagram_outline => '圖表大綱';
+
+  @override
+  String render_revision_of(int index, int count) {
+    return '第 $index 版，共 $count 版';
+  }
+
+  @override
+  String get render_previous_revision => '上一版';
+
+  @override
+  String get render_next_revision => '下一版';
+
+  @override
+  String get render_show_rendered => '呈現結果';
+
+  @override
+  String get render_show_source => '原始碼';
+
+  @override
+  String render_copied_file(String name) {
+    return '已複製 $name';
+  }
+
+  @override
+  String render_copy_file(String name) {
+    return '複製 $name';
+  }
+
+  @override
+  String get render_artifact_too_long => '此成品太長，無法在此以頁面顯示。';
+
+  @override
+  String get render_active_content_removed => '已移除指令碼、框架和外部位址。';
+
+  @override
+  String render_widget_file(String file) {
+    return '小工具 $file';
+  }
+
+  @override
+  String get render_widget_runs_as_text => '在此聊天中以文字執行。已移除指令碼和外部框架。';
+
+  @override
+  String get render_load_widget => '載入小工具';
+
+  @override
+  String get render_not_html_widget => '此檔案不是 HTML 小工具。';
+
+  @override
+  String get render_widget_sent => '已傳送至此聊天';
+
+  @override
+  String get render_widget_not_sent => '未傳送至此聊天';
+
+  @override
+  String get render_widget_throttled => '請稍候再傳送';
+
+  @override
+  String get render_widget_too_long => '此要求太長，無法傳送';
+
+  @override
+  String get render_widget_no_gesture => '點選小工具中的控制項以傳送';
+
+  @override
+  String get render_widget_invalid => '無法傳送此要求';
+
+  @override
+  String get render_inspected_image => '已檢查的圖片';
+
+  @override
+  String get render_contributions => '擴充內容';
+
+  @override
+  String get render_contributions_intro =>
+      '只有編譯進 Ares 的擴充內容能加入回覆。聊天文字無法註冊擴充內容，而授權僅適用於此連線。';
+
+  @override
+  String render_grant_plugin(String name) {
+    return '授權 $name';
+  }
+
+  @override
+  String render_revoke_plugin(String name) {
+    return '撤銷 $name';
+  }
+
+  @override
+  String render_plugin_slots(String directive) {
+    return '::$directive 的回覆卡片';
+  }
+
+  @override
+  String get render_plugin_notes => '筆記';
+
+  @override
+  String get catalog_scan_passed => '通過';
+
+  @override
+  String get catalog_scan_warnings => '發現警告';
+
+  @override
+  String get catalog_scan_failed => '失敗';
+
+  @override
+  String get deployment_token_label => '部署權杖（選填）';
+
+  @override
+  String get deployment_token_helper =>
+      '用於以 X-Hermes-Session-Token 傳送的 Hermes Dashboard 工作階段權杖。不會以明文儲存在偏好設定中。';
+
+  @override
+  String get deployment_token_hint => '儀表板工作階段權杖';
+
+  @override
+  String get custom_headers_label => '自訂標頭（選填）';
+
+  @override
+  String get custom_headers_helper => '每行一個，例如 X-Custom: 值。禁止的標頭會遭拒絕。';
+
+  @override
+  String get custom_headers_hint => '例如 X-Custom-Header: 值';
+
+  @override
+  String get desktop_tray_open => '開啟 Ares';
+
+  @override
+  String get desktop_tray_new_chat => '新聊天';
+
+  @override
+  String get desktop_tray_quick_entry => '快速輸入…';
+
+  @override
+  String get desktop_tray_pause_notifications => '暫停通知';
+
+  @override
+  String get desktop_tray_quit => '結束 Ares';
+
+  @override
+  String get desktop_integration_title => '桌面整合';
+
+  @override
+  String get desktop_tray_setting => '在系統匣或選單列中顯示 Ares';
+
+  @override
+  String get desktop_tray_setting_help => '可透過圖示開啟 Ares、開始聊天、開啟快速輸入、暫停通知或結束。';
+
+  @override
+  String get desktop_close_to_tray_setting => '關閉視窗後繼續在系統匣中執行';
+
+  @override
+  String get desktop_tray_unsupported => '此桌面沒有可供 Ares 使用的系統匣。';
+
+  @override
+  String get quick_entry_title => '快速輸入';
+
+  @override
+  String get quick_entry_hint => '輸入給 Ares 的提示…';
+
+  @override
+  String get quick_entry_submit => '放入輸入框';
+
+  @override
+  String get quick_entry_never_sends => '按 Enter 會將文字放入聊天輸入框。在你按下傳送之前不會傳送任何內容。';
+
+  @override
+  String get quick_entry_unavailable => '無法開啟快速輸入。請再試一次。';
+
+  @override
+  String get desktop_hotkey_setting => '快速輸入快捷鍵';
+
+  @override
+  String desktop_hotkey_help(String shortcut) {
+    return '在任何地方按 $shortcut 即可開啟快速輸入。';
+  }
+
+  @override
+  String desktop_hotkey_conflict(String shortcut) {
+    return '其他應用程式已在使用 $shortcut。請選擇其他快捷鍵。';
+  }
+
+  @override
+  String get desktop_hotkey_unsupported => '此桌面不允許應用程式註冊全域快捷鍵（例如 Wayland）。';
+
+  @override
+  String get desktop_hotkey_no_modifier => '請包含 Cmd、Ctrl 或 Alt。';
+
+  @override
+  String get desktop_hotkey_super_key => 'Windows 鍵或 Super 鍵保留給系統使用。';
+
+  @override
+  String get desktop_hotkey_reserved => '系統已在使用此快捷鍵。';
+
+  @override
+  String desktop_hotkey_in_app(String action) {
+    return 'Ares 已將此快捷鍵用於$action。';
+  }
+
+  @override
+  String get desktop_hotkey_change => '變更';
+
+  @override
+  String get desktop_hotkey_reset => '使用預設值';
+
+  @override
+  String get capture_screen_action => '擷取螢幕';
+
+  @override
+  String get capture_screen_help => '將螢幕截圖作為草稿加入訊息。在你按下傳送之前不會傳送任何內容。';
+
+  @override
+  String get capture_screen_unavailable => '此桌面無法使用螢幕擷取。';
+
+  @override
+  String get capture_screen_failed => '無法擷取螢幕。請再試一次。';
+
+  @override
+  String get capture_permission_title => '允許螢幕錄製';
+
+  @override
+  String get capture_permission_body =>
+      '若要擷取視窗，Ares 需要螢幕錄製權限。請在「系統設定」>「隱私權與安全性」>「螢幕錄製」中開啟 Ares，然後再試一次。';
+
+  @override
+  String get capture_open_settings => '開啟系統設定';
+
+  @override
+  String get keep_awake_title => '讓電腦保持喚醒';
+
+  @override
+  String get keep_awake_title_mobile => '讓螢幕保持開啟';
+
+  @override
+  String get keep_awake_mode_off => '關閉';
+
+  @override
+  String get keep_awake_mode_while_working => '工作時';
+
+  @override
+  String get keep_awake_mode_always => '一律';
+
+  @override
+  String get keep_awake_off_help => '絕不阻止系統睡眠（預設）。';
+
+  @override
+  String get keep_awake_while_working_help => '僅在代理回合執行時阻止閒置睡眠。';
+
+  @override
+  String get keep_awake_always_help => '在此裝置上開啟 Ares 期間阻止閒置睡眠。';
+
+  @override
+  String get keep_awake_off_help_mobile => '讓螢幕照常關閉（預設）。';
+
+  @override
+  String get keep_awake_while_working_help_mobile =>
+      '在代理回合執行且 Ares 開啟期間讓螢幕保持開啟。';
+
+  @override
+  String get keep_awake_always_help_mobile => '在 Ares 開啟期間讓螢幕保持開啟。';
+
+  @override
+  String get ng_token_gateway_has_no_sign_in =>
+      '此閘道沒有登入功能，因此無法驗證部署權杖。請在主機上啟用儀表板驗證（或更新 Hermes），然後再試一次。';
+
+  @override
+  String get palette_open => '應用程式命令面板';
+
+  @override
+  String get palette_no_matches => '沒有相符的操作';
+
+  @override
+  String get palette_filter_hint => '輸入以篩選操作…';
+
+  @override
+  String get palette_keys_move => '↑↓ 移動';
+
+  @override
+  String get palette_keys_run => 'Enter 執行';
+
+  @override
+  String get palette_keys_close => 'Esc 關閉';
+
+  @override
+  String get palette_search_sessions => '搜尋工作階段';
+
+  @override
+  String get palette_scheduled_crons => '排程 / Cron';
+
+  @override
+  String get palette_capabilities_skills => '功能與技能';
+
+  @override
+  String get palette_insights_usage => '洞察與用量';
+
+  @override
+  String get palette_more_projects => '更多與專案';
+
+  @override
+  String get deeplink_chat_not_found => '清單中找不到此聊天，可能尚未載入。';
+
+  @override
+  String get keyboard_shortcuts_title => '鍵盤快速鍵';
+
+  @override
+  String get shortcuts_reset_all => '全部重設';
+
+  @override
+  String get shortcuts_reset_to_default => '還原預設值';
+
+  @override
+  String get shortcut_action_command_palette => '命令面板';
+
+  @override
+  String get shortcut_action_new_chat => '新增聊天';
+
+  @override
+  String get shortcut_action_search => '搜尋';
+
+  @override
+  String get shortcut_action_settings => '設定';
+
+  @override
+  String shortcut_action_go_to_tab(int number) {
+    return '前往分頁 $number';
+  }
+
+  @override
+  String shortcuts_conflict(String first, String second, String chord) {
+    return '衝突：「$first」和「$second」都使用 $chord。在你變更其中一個之前，自訂快速鍵會保持預設值。';
+  }
+
+  @override
+  String shortcuts_editor_title(String action) {
+    return '快速鍵：$action';
+  }
+
+  @override
+  String get shortcuts_editor_help => '按下按鍵組合，或在下方選擇輔助鍵和按鍵：';
+
+  @override
+  String get shortcuts_editor_needs_modifier =>
+      '請至少選擇 Cmd/Meta、Ctrl 或 Alt，以免影響在輸入框中打字。';
+
+  @override
+  String shortcuts_text_editing_warning(String chord) {
+    return '$chord 是文字編輯快速鍵（複製、貼上、剪下、復原、重做或全選）。在此指定後，文字欄位將無法使用它。';
+  }
+
+  @override
+  String shortcuts_text_editing_in_use(String action, String chord) {
+    return '「$action」使用了文字編輯快速鍵 $chord。在此指定期間，文字欄位無法使用它。';
+  }
+
+  @override
+  String custom_headers_problem_format(int line) {
+    return '第 $line 行：應為「名稱: 值」';
+  }
+
+  @override
+  String custom_headers_problem_missing_name(int line) {
+    return '第 $line 行：缺少標頭名稱';
+  }
+
+  @override
+  String custom_headers_problem_invalid_name(int line, String name) {
+    return '第 $line 行：標頭名稱「$name」無效';
+  }
+
+  @override
+  String custom_headers_problem_reserved(int line, String name) {
+    return '第 $line 行：「$name」為保留標頭，無法傳遞';
+  }
+
+  @override
+  String custom_headers_problem_empty_value(int line) {
+    return '第 $line 行：標頭值為空';
+  }
+
+  @override
+  String get ng_enter_a_deployment_token => '請輸入部署工作階段權杖。';
+
+  @override
+  String get ng_custom_headers => '自訂標頭';
+
+  @override
+  String get ng_custom_headers_help =>
+      '此閘道的額外 HTTP 標頭（名稱: 值，每行一個），隨其 REST 和 WebSocket 呼叫傳送，並保存在安全的憑證儲存區中。驗證標頭和逐跳標頭會遭拒絕。';
+
+  @override
+  String get ng_use_a_deployment_token => '使用部署工作階段權杖';
+
+  @override
+  String get ng_sign_in_with_deployment_token => '使用部署權杖登入';
+
+  @override
+  String get ng_signed_in_with_deployment_token => '已使用部署權杖登入。';
+
+  @override
+  String get auto_speak_replies_title => '自動朗讀回覆';
+
+  @override
+  String get auto_speak_replies_subtitle =>
+      '回合完成後自動朗讀每則新回覆。預設關閉；單一對話的語音回覆開關仍然有效。';
+
+  @override
+  String get ng_auto_read_replies_title => '自動朗讀回覆';
+
+  @override
+  String get ng_auto_read_replies_subtitle => '回合完成後自動朗讀每則新回覆。預設關閉。';
+
+  @override
+  String get barge_in_title => '插話打斷';
+
+  @override
+  String get barge_in_subtitle => '朗讀回覆時開口說話即可中斷播放。朗讀回覆期間麥克風保持開啟。';
+
+  @override
+  String get barge_in_mic_live => '麥克風已開啟：說話即可打斷回覆';
+
+  @override
+  String get ng_barge_in_title => '插話打斷';
+
+  @override
+  String get ng_barge_in_subtitle => '朗讀回覆時開口說話即可中斷播放。朗讀回覆期間麥克風保持開啟。';
+
+  @override
+  String get ng_barge_in_mic_live => '麥克風已開啟：說話即可打斷回覆';
+
+  @override
+  String get wake_word_title => '喚醒詞';
+
+  @override
+  String get wake_word_subtitle => '由閘道器提供免持喚醒偵測。預設關閉；僅在啟用裝置麥克風擷取時傳送音訊。';
+
+  @override
+  String wake_word_listening(String phrase) {
+    return '正在聆聽喚醒詞「$phrase」';
+  }
+
+  @override
+  String wake_word_paused(String phrase) {
+    return '喚醒詞「$phrase」— 已暫停';
+  }
+
+  @override
+  String wake_word_off(String phrase) {
+    return '喚醒詞「$phrase」— 已關閉';
+  }
+
+  @override
+  String get wake_word_arming => '正在啟用喚醒詞…';
+
+  @override
+  String get wake_word_stop => '停止喚醒詞';
+
+  @override
+  String get wake_word_rearm => '重新啟用';
+
+  @override
+  String get wake_word_capture_mode => '擷取模式';
+
+  @override
+  String get wake_word_capture_auto => '自動';
+
+  @override
+  String get wake_word_capture_client => '此裝置麥克風';
+
+  @override
+  String get wake_word_capture_local => '閘道器主機麥克風';
+
+  @override
+  String get wake_word_capture_unavailable =>
+      '此閘道器不允許應用程式變更擷取模式。請在閘道器主機的 Hermes 設定中設定 wake_word.capture。';
+
+  @override
+  String get wake_word_input_device => '輸入麥克風';
+
+  @override
+  String get wake_word_default_device => '系統預設';
+
+  @override
+  String get ng_wake_word_title => '喚醒詞';
+
+  @override
+  String get ng_wake_word_subtitle => '由閘道器提供免持喚醒偵測。預設關閉。';
+
+  @override
+  String get voice_engine_title => '語音對話引擎';
+
+  @override
+  String get voice_engine_subtitle => '選擇此閘道器設定檔中免持語音對話的執行方式。';
+
+  @override
+  String get voice_engine_chained => '串接（語音轉文字 → Hermes → 語音）';
+
+  @override
+  String get voice_engine_chained_short => '串接';
+
+  @override
+  String get voice_engine_live => 'GPT-Live（即時語音）';
+
+  @override
+  String get voice_engine_live_short => 'GPT-Live';
+
+  @override
+  String get voice_engine_live_needs_key =>
+      '請在閘道器主機上設定 OpenAI API 金鑰以啟用 GPT-Live。';
+
+  @override
+  String voice_engine_fallback_chained(String reason) {
+    return 'GPT-Live 無法使用（$reason）— 改用串接語音。';
+  }
+
+  @override
+  String get voice_live_start => '開始語音對話';
+
+  @override
+  String get voice_live_stop => '結束語音對話';
+
+  @override
+  String get voice_live_mute => '麥克風靜音';
+
+  @override
+  String get voice_live_unmute => '取消麥克風靜音';
+
+  @override
+  String get voice_live_interrupt => '打斷或立即回應';
+
+  @override
+  String get voice_live_listening => '正在聆聽';
+
+  @override
+  String get voice_live_speaking => '正在說話';
+
+  @override
+  String get voice_live_thinking => '正在思考';
+
+  @override
+  String get voice_live_muted => '已靜音';
+
+  @override
+  String get voice_live_ended_connection_lost => '即時語音工作階段的連線已中斷。';
+
+  @override
+  String get voice_live_ended_closed => '即時語音工作階段已被服務關閉。';
+
+  @override
+  String wake_word_other_profile(String profile) {
+    return '此喚醒詞屬於設定檔「$profile」。請開啟連到該設定檔的連線以回應。';
+  }
+
+  @override
+  String get wake_word_reason_disabled => '已關閉 — 點按以啟用';
+
+  @override
+  String get wake_word_reason_surface => '僅限其他介面使用（設定 wake_word.surface）';
+
+  @override
+  String get wake_word_reason_owned => '喚醒詞聆聽由其他介面佔用';
+
+  @override
+  String wake_word_reason_owned_by(String surface) {
+    return '喚醒詞聆聽由其他介面（$surface）佔用';
+  }
+
+  @override
+  String get wake_word_reason_unavailable => '此閘道器不支援喚醒詞';
+
+  @override
+  String get wake_word_reason_permission_denied => '麥克風權限遭拒';
+
+  @override
+  String get wake_word_reason_permission_required => '需要麥克風權限 — 點按以啟用';
+
+  @override
+  String get voice_live_not_enabled => '此設定檔未啟用 GPT-Live。';
+
+  @override
+  String get voice_live_not_available => 'GPT-Live 無法使用';
+
+  @override
+  String voice_live_start_failed(String error) {
+    return '無法啟動 GPT-Live：$error';
+  }
+
+  @override
+  String voice_direct_stt_timeout(String seconds, String provider) {
+    return '轉錄在 $seconds 秒後逾時（$provider 未回應）';
+  }
+
+  @override
+  String voice_direct_stt_error(String provider, String status) {
+    return '$provider 語音轉文字錯誤（HTTP $status）';
+  }
+
+  @override
+  String voice_direct_tts_failed(String provider) {
+    return '$provider 文字轉語音要求失敗';
+  }
+
+  @override
+  String voice_direct_tts_error(String provider, String status) {
+    return '$provider 文字轉語音錯誤（HTTP $status）';
+  }
+
+  @override
+  String ng_wake_status_listening(String phrase) {
+    return '正在聆聽（「$phrase」）';
+  }
+
+  @override
+  String ng_wake_status_off(String phrase) {
+    return '已關閉（「$phrase」）';
+  }
+
+  @override
+  String ng_wire_setting_unavailable(Object setting) {
+    return '共用閘道尚不支援變更 $setting';
+  }
+
+  @override
+  String ng_wire_method_unavailable(Object method) {
+    return '共用閘道尚不支援 $method';
+  }
+
+  @override
+  String ng_wire_session_options_unsupported(Object options) {
+    return '標準閘道不支援下列明確指定的工作階段選項：$options';
+  }
+
+  @override
+  String get ng_wire_prompt_stale => '此要求已過期或無法使用；請重新連線後再回覆';
+
+  @override
+  String get ng_wire_revision_unavailable => '無法取得工作階段修訂版本；請重新開啟工作階段後再編輯中繼資料';
+
+  @override
+  String get ng_wire_generation_unavailable => '無法取得工作階段執行識別碼；請重新連線後再使用此指令';
+
+  @override
+  String get ng_wire_message_not_saved => '此訊息尚未儲存；請等它完成後，再從它建立分支';
+
+  @override
+  String get ng_wire_not_available => '共用閘道尚不支援';
+
+  @override
+  String get edit_turn_title => '編輯此提示？';
+
+  @override
+  String get edit_turn_body => '將從此處重新執行該提示，後續輪次會被封存。';
+
+  @override
+  String get edit_turn_send => '傳送';
+
+  @override
+  String get restore_turn_title => '還原至此檢查點？';
+
+  @override
+  String get restore_turn_body => '此提示之後的所有內容將從對話中移除，並從此處重新執行該提示。';
+
+  @override
+  String get restore_turn_confirm => '還原並重新執行';
+
+  @override
+  String get edit_turn_later_turns_body => '這會將對話中的後續輪次封存。要繼續嗎？';
+
+  @override
+  String get session_history => '工作階段紀錄';
+
+  @override
+  String get import_claude_or_codex => '匯入 Claude 或 Codex';
+
+  @override
+  String get ng_session_history => '工作階段紀錄';
+
+  @override
+  String get ng_import_claude_or_codex => '匯入 Claude 或 Codex';
+
+  @override
+  String get ng_edit_and_resend => '編輯並重發';
+
+  @override
+  String get ng_restore_turn_confirm => '還原並重新執行';
+
+  @override
+  String get rewind_target_unsaved => '此訊息尚未儲存。請等待其完成後再編輯。';
+
+  @override
+  String get rewind_turn_busy => '目前的回覆尚未停止，因此未傳送任何內容。請稍後再試。';
+
+  @override
+  String get rewind_session_changed => '此聊天自在此處開啟後已有變更，因此未移除或傳送任何內容。請重新開啟後再試。';
+
+  @override
+  String get history_lineage => '相關聊天';
+
+  @override
+  String get history_lineage_none => '此聊天沒有分支或同層分支。';
+
+  @override
+  String get history_lineage_unavailable => '無法從此閘道讀取相關聊天。';
+
+  @override
+  String get history_lineage_parent => '上層';
+
+  @override
+  String get history_lineage_sibling => '同層';
+
+  @override
+  String get history_lineage_fork => '分支';
+
+  @override
+  String get history_messages => '訊息';
+
+  @override
+  String get history_messages_hint => '選擇一則已儲存的訊息，從該處分支或回溯。';
+
+  @override
+  String get history_messages_none => '尚無已儲存的訊息。';
+
+  @override
+  String get history_messages_unavailable => '無法讀取已儲存的訊息。請開啟此聊天後重新整理。';
+
+  @override
+  String get history_role_user => '你';
+
+  @override
+  String get history_role_assistant => 'Hermes';
+
+  @override
+  String get history_branch_here => '從這裡分支';
+
+  @override
+  String get history_rewind_here => '回溯到這裡';
+
+  @override
+  String get history_branch_title => '從此訊息分支';
+
+  @override
+  String get history_branch_body => '這會建立一個包含到所選訊息為止歷史的新聊天。目前的聊天保持不變。';
+
+  @override
+  String get history_rewind_title => '回溯到此訊息';
+
+  @override
+  String get history_rewind_body =>
+      '從所選訊息起的訊息將從此聊天中移除。電腦上的檔案不會變更。還原檔案是另外的檢查點操作。';
+
+  @override
+  String history_branched(String id) {
+    return '已分支為 $id';
+  }
+
+  @override
+  String get history_open_chat => '開啟聊天';
+
+  @override
+  String get history_mutate_unsupported => '分支和回溯需要此閘道執行 Hermes 0.23 或更新版本。';
+
+  @override
+  String get history_checkpoints => '檢查點';
+
+  @override
+  String get history_checkpoints_none => '此工作階段沒有檔案檢查點。';
+
+  @override
+  String get history_checkpoints_unavailable => '此閘道不提供檢查點。';
+
+  @override
+  String get history_diff_none => '沒有差異。';
+
+  @override
+  String get history_diff_loading => '正在載入變更…';
+
+  @override
+  String get history_diff_failed => '無法載入變更，因此暫時不能還原此檢查點。';
+
+  @override
+  String get history_restore_checkpoint => '還原檢查點';
+
+  @override
+  String get history_restore_title => '還原此檢查點';
+
+  @override
+  String get history_restore_body =>
+      '代理自此檢查點以來變更的檔案將還原到當時的狀態。你自己的變更會保留。之後的聊天訊息也可能被移除。對話不會分支。';
+
+  @override
+  String get history_restore_body_all =>
+      '工作階段資料夾中的所有檔案都將還原到此檢查點，包括你自己的變更。之後的聊天訊息也可能被移除。對話不會分支。';
+
+  @override
+  String get history_restore_own_edits => '同時還原我自己的變更';
+
+  @override
+  String get history_restored => '檢查點已還原。';
+
+  @override
+  String history_restored_removed(int count) {
+    return '檢查點已還原。已移除 $count 則聊天訊息。';
+  }
+
+  @override
+  String get history_export => '匯出';
+
+  @override
+  String get history_export_redact => '隱去權杖';
+
+  @override
+  String get history_export_action => '匯出對話記錄';
+
+  @override
+  String get history_export_saved => '對話記錄已儲存。';
+
+  @override
+  String get history_export_unsupported => '匯出需要此閘道執行 Hermes 0.23 或更新版本。';
+
+  @override
+  String get history_import_unsupported => '此閘道不支援匯入 Claude 和 Codex。';
+
+  @override
+  String history_import_destination(String profile) {
+    return '目標設定檔：$profile。';
+  }
+
+  @override
+  String history_import_reading(String host, String profile, int count) {
+    return '正在從 $host 讀取 · 目標設定檔：$profile。有 $count 個記錄無法讀取。';
+  }
+
+  @override
+  String get history_import_all => '全部';
+
+  @override
+  String history_import_scan_failed(String reason) {
+    return '無法掃描主機工作階段：$reason';
+  }
+
+  @override
+  String get history_import_none => '在此主機上找不到 Claude Code 或 Codex 工作階段。';
+
+  @override
+  String get history_import_no_match => '沒有相符的主機工作階段。';
+
+  @override
+  String history_import_preview_failed(String reason) {
+    return '無法預覽工作階段：$reason';
+  }
+
+  @override
+  String get history_import_open => '開啟已匯入的工作階段';
+
+  @override
+  String get history_import_action => '匯入所選工作階段';
+
+  @override
+  String get history_import_title => '匯入此工作階段';
+
+  @override
+  String history_import_body(String profile) {
+    return '將此 Claude 或 Codex 工作階段複製到此閘道上的設定檔「$profile」。';
+  }
+
+  @override
+  String history_import_body_existing(String profile) {
+    return '此工作階段已匯入到「$profile」。將繼續使用現有副本。';
+  }
+
+  @override
+  String history_imported(String id) {
+    return '已匯入為 $id';
+  }
+
+  @override
+  String history_imported_already(String id) {
+    return '先前已匯入為 $id';
+  }
+
+  @override
+  String history_import_directory(String path) {
+    return '目錄：$path';
+  }
+
+  @override
+  String history_import_preview_partial(int shown, int total) {
+    return '預覽顯示 $total 則中的 $shown 則。';
+  }
+
+  @override
+  String history_failed(String reason) {
+    return '無法完成：$reason';
+  }
+
+  @override
+  String get history_error_unavailable => '閘道暫時無法執行此操作。請重試。';
+
+  @override
+  String get history_error_unsupported => '此閘道不支援此操作。';
+
+  @override
+  String get history_error_denied => '此閘道拒絕了該要求。';
+
+  @override
+  String get history_error_changed => '此頁面開啟期間聊天已有變更。請重新整理後再試。';
+
+  @override
+  String get history_error_unbound => '此聊天未在閘道上開啟。請開啟後再試。';
+
+  @override
+  String get history_error_invalid => '閘道傳回了此應用程式無法讀取的回應。';
+
+  @override
+  String ng_dock_kanban(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 張看板卡片',
+      one: '1 張看板卡片',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_dock_kanban_done(int count) {
+    return '$count 張已完成';
+  }
+
+  @override
+  String get ng_show_kanban => '顯示看板卡片';
+
+  @override
+  String get ng_hide_kanban => '隱藏看板卡片';
+
+  @override
+  String get ng_kanban_status_triage => '待分類';
+
+  @override
+  String get ng_kanban_status_todo => '待辦';
+
+  @override
+  String get ng_kanban_status_scheduled => '已排程';
+
+  @override
+  String get ng_kanban_status_ready => '就緒';
+
+  @override
+  String get ng_kanban_status_running => '執行中';
+
+  @override
+  String get ng_kanban_status_blocked => '受阻';
+
+  @override
+  String get ng_kanban_status_review => '審查中';
+
+  @override
+  String get ng_kanban_status_done => '已完成';
+
+  @override
+  String get ng_kanban_status_archived => '已封存';
+
+  @override
+  String ng_kanban_open_card(String title) {
+    return '在看板中開啟「$title」';
+  }
+
+  @override
+  String ng_kanban_show_all(int count) {
+    return '顯示全部 $count 張';
+  }
+
+  @override
+  String ng_kanban_this_chat(int count) {
+    return '此聊天（$count）';
+  }
+
+  @override
+  String get ng_kanban_close => '關閉看板';
+
+  @override
+  String get ng_kanban_block_no_dashboard => '此連線無法存取控制台，因此卡片狀態不會即時更新，也無法開啟看板。';
+
+  @override
+  String get ng_kanban_block_unsupported =>
+      '此閘道未啟用看板。請啟用其 kanban 外掛程式，以查看即時狀態並開啟看板。';
+
+  @override
+  String get ng_kanban_block_denied => '請登入控制台，以查看卡片的即時狀態並開啟看板。';
+
+  @override
+  String get ng_kanban_block_insecure =>
+      '看板需要 HTTPS 或本機連線，因此卡片狀態不會即時更新，也無法開啟看板。';
+
+  @override
+  String get ng_kanban_block_unreachable => '無法連線到此閘道上的看板。卡片狀態可能已過期。';
+
+  @override
+  String get ng_kanban_block_stale => '連線已變更。請重新開啟此聊天，以查看卡片的即時狀態。';
+
+  @override
+  String get ng_bots_tab_roster => '名單';
+
+  @override
+  String get ng_bots_tab_rooms => '群組';
+
+  @override
+  String get ng_bots_tab_screen => '螢幕';
+
+  @override
+  String get ng_bots_tab_routines => '例行工作';
+
+  @override
+  String ng_bots_rooms_load_failed(String error) {
+    return '無法載入群組：$error';
+  }
+
+  @override
+  String ng_bots_routines_load_failed(String error) {
+    return '無法載入例行工作：$error';
+  }
+
+  @override
+  String ng_bots_desktop_failed(String error) {
+    return 'Bot Desktop：$error';
+  }
+
+  @override
+  String get ng_bots_install_not_started => '閘道未開始安裝。';
+
+  @override
+  String ng_bots_install_failed_error(String error) {
+    return '安裝失敗：$error';
+  }
+
+  @override
+  String get ng_bots_install_cancelled => '安裝已取消。';
+
+  @override
+  String get ng_bots_install_no_sudo => '閘道主機上無法使用 sudo。請在該主機上執行上方的指令，然後重新整理。';
+
+  @override
+  String ng_bots_install_exit_code(String code) {
+    return '安裝失敗（結束代碼 $code）。';
+  }
+
+  @override
+  String ng_bots_install_done(String bot) {
+    return '已為 $bot 安裝 Bot Desktop';
+  }
+
+  @override
+  String get ng_bots_start_failed => '啟動失敗';
+
+  @override
+  String ng_bots_stop_title(String bot) {
+    return '要停止 $bot 的 Bot Desktop 嗎？';
+  }
+
+  @override
+  String get ng_bots_stop_human_held => '有人正在控制此螢幕。停止後會結束其工作階段，並關閉螢幕上開啟的所有內容。';
+
+  @override
+  String get ng_bots_stop_body => '機器人螢幕上開啟的所有內容都會關閉。';
+
+  @override
+  String get ng_bots_stop_refused => '停止要求遭拒';
+
+  @override
+  String get ng_bots_take_over_reason => '從 Ares 接管';
+
+  @override
+  String ng_bots_take_over_failed(String error) {
+    return '接管失敗：$error';
+  }
+
+  @override
+  String ng_bots_force_hand_back_title(String bot) {
+    return '要將 $bot 的螢幕交還給機器人嗎？';
+  }
+
+  @override
+  String get ng_bots_force_hand_back_body => '有人正在佔用此螢幕。如果對方仍在使用，將失去控制權。';
+
+  @override
+  String get ng_bots_hand_back => '交還';
+
+  @override
+  String get ng_bots_hand_back_failed => '交還失敗';
+
+  @override
+  String get ng_bots_adopt_title => '要採用新的沙箱映像檔嗎？';
+
+  @override
+  String ng_bots_adopt_body(String bot, String current, String target) {
+    return '$bot 將從 $current 切換到 $target。其容器會在下一次終端機呼叫時重建；僅保存在目前容器中的內容將會遺失。';
+  }
+
+  @override
+  String get ng_bots_adopt_image => '採用映像檔';
+
+  @override
+  String get ng_bots_image_switch_failed => '映像檔切換失敗';
+
+  @override
+  String get ng_bots_keep_refused => '保留要求遭拒';
+
+  @override
+  String ng_bots_chat_open_failed(String error) {
+    return '無法開啟 Bot Chat：$error';
+  }
+
+  @override
+  String ng_bots_title(String connection) {
+    return '機器人 · $connection';
+  }
+
+  @override
+  String get ng_bots_protocol_tooltip => '閘道會自行注入隊友訊息協定 — 不會另外傳送 SOUL.md 協定。';
+
+  @override
+  String ng_bots_unavailable(String reason) {
+    return '無法使用機器人（$reason）';
+  }
+
+  @override
+  String get ng_bots_account_changed => '帳戶已變更。請重新連線或重新整理。';
+
+  @override
+  String get ng_bots_try_refresh => '請嘗試重新整理。如果問題持續發生，此閘道可能不支援機器人。';
+
+  @override
+  String get ng_bots_search => '搜尋機器人';
+
+  @override
+  String get ng_bots_none_found => '找不到機器人。';
+
+  @override
+  String get ng_bots_no_model => '無模型';
+
+  @override
+  String ng_bots_skill_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 項技能',
+      one: '1 項技能',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_bot_chat => 'Bot Chat';
+
+  @override
+  String ng_bots_install_id(String id, String protocol) {
+    return '閘道回報的安裝 ID 為 $id · bot_mode_protocol：$protocol';
+  }
+
+  @override
+  String get ng_bots_protocol_note =>
+      '設定 bot_mode_protocol 後，閘道會注入隊友訊息協定。代稱：default→hermes，否則為設定檔名稱。';
+
+  @override
+  String get ng_bots_no_rooms => '尚無群組。請從名單建立一個。';
+
+  @override
+  String ng_bots_member_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 位成員',
+      one: '1 位成員',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_room_disbanded => '已解散';
+
+  @override
+  String get ng_bots_room_adopted => '已採用';
+
+  @override
+  String get ng_bots_rooms_gateway => '閘道群組';
+
+  @override
+  String get ng_bots_rooms_desktop => '由桌面端驅動的群組';
+
+  @override
+  String ng_bots_rooms_gateway_body(String methods) {
+    return '群組歸閘道所有。方法：$methods。';
+  }
+
+  @override
+  String get ng_bots_rooms_no_seat => '此閘道可能無法承載群組（需要常駐處理程序）。';
+
+  @override
+  String get ng_bots_rooms_fallback => '傳統備援模式：由桌面端驅動群組輪次（不會在此新建）。';
+
+  @override
+  String get ng_bots_create_room => '建立群組';
+
+  @override
+  String get ng_bots_refresh_rooms => '重新整理群組';
+
+  @override
+  String get ng_bots_room_created => '群組已建立';
+
+  @override
+  String ng_bots_room_refused(String reason) {
+    return '群組建立遭拒（$reason）';
+  }
+
+  @override
+  String ng_bots_room_failed(String error) {
+    return '群組建立失敗：$error';
+  }
+
+  @override
+  String get ng_bots_bot => '機器人';
+
+  @override
+  String get ng_bots_screen_unavailable => '無法取得螢幕狀態';
+
+  @override
+  String get ng_bots_screen_unavailable_body => '啟動機器人的螢幕即可查看其縮圖，或接管後親自使用。';
+
+  @override
+  String get ng_bots_take_over_note =>
+      '接管會開啟即時螢幕並將控制權交給你。當你關閉即時螢幕、離開此頁面或將應用程式切換到背景時，控制權會交還給機器人。';
+
+  @override
+  String get ng_bots_not_installed => '未安裝';
+
+  @override
+  String get ng_bots_unsupported_host => '不支援的主機';
+
+  @override
+  String ng_bots_pid(String pid) {
+    return 'pid $pid';
+  }
+
+  @override
+  String ng_bots_missing(String items) {
+    return '缺少：$items';
+  }
+
+  @override
+  String ng_bots_blocked(String reason) {
+    return '受阻：$reason';
+  }
+
+  @override
+  String get ng_bots_no_switch => '沒有待處理的沙箱映像檔切換。';
+
+  @override
+  String ng_bots_switch_image(String current, String target) {
+    return '切換映像檔：$current → $target';
+  }
+
+  @override
+  String get ng_bots_bot_in_control => '由機器人控制';
+
+  @override
+  String get ng_bots_person_in_control => '由真人控制';
+
+  @override
+  String get ng_bots_installing => '正在閘道主機上安裝 Bot Desktop…';
+
+  @override
+  String get ng_bots_install_unfinished => '安裝未完成';
+
+  @override
+  String get ng_bots_install => '安裝';
+
+  @override
+  String get ng_bots_start => '啟動';
+
+  @override
+  String get ng_bots_take_over => '接管';
+
+  @override
+  String get ng_bots_keep_image => '保留目前映像檔';
+
+  @override
+  String ng_bots_missing_pieces(String items) {
+    return '閘道回報缺少元件：$items';
+  }
+
+  @override
+  String get ng_bots_install_missing => '安裝缺少的元件';
+
+  @override
+  String get ng_bots_thumbnail_unavailable => '無法使用縮圖';
+
+  @override
+  String get ng_bots_thumbnail_title => '螢幕縮圖（即時）';
+
+  @override
+  String get ng_bots_thumbnail_suppressed => '螢幕由真人控制期間不顯示縮圖。';
+
+  @override
+  String get ng_bots_thumbnail_pending => '縮圖尚無法使用。';
+
+  @override
+  String ng_bots_routines_of(String bot) {
+    return '$bot · 例行工作';
+  }
+
+  @override
+  String get ng_bots_add_routine => '新增例行工作';
+
+  @override
+  String get ng_bots_no_routines => '此機器人沒有例行工作。';
+
+  @override
+  String get ng_bots_routines_note =>
+      '例行工作是帶有 [bot:<name>] 標籤的工作，歸機器人的設定檔儲存區所有。舊版委派例行工作在載入時會被強制暫停。';
+
+  @override
+  String ng_bots_routine_last(String status) {
+    return '上次：$status';
+  }
+
+  @override
+  String ng_bots_routine_next(String time) {
+    return '下次：$time';
+  }
+
+  @override
+  String ng_bots_routine_error(String error) {
+    return '錯誤：$error';
+  }
+
+  @override
+  String ng_bots_remove_routine_title(String routine) {
+    return '要移除例行工作 $routine 嗎？';
+  }
+
+  @override
+  String ng_bots_remove_routine_body(String bot) {
+    return '此例行工作將從 $bot 的排程中刪除。此動作無法復原。';
+  }
+
+  @override
+  String ng_bots_routine_action_failed(String action, String error) {
+    return '$action 失敗：$error';
+  }
+
+  @override
+  String get ng_bots_not_connected => '未連線。';
+
+  @override
+  String ng_bots_add_failed(String error) {
+    return '新增失敗：$error';
+  }
+
+  @override
+  String get ng_bots_routine_added => '已新增例行工作';
+
+  @override
+  String get ng_bots_routine_enabled => '已啟用';
+
+  @override
+  String get ng_bots_routine_paused => '已暫停';
+
+  @override
+  String ng_bots_path(String path) {
+    return '路徑：$path';
+  }
+
+  @override
+  String get ng_bots_chat_present => 'Bot Chat 已存在';
+
+  @override
+  String get ng_bots_chat_missing => '缺少 Bot Chat';
+
+  @override
+  String ng_bots_last_session(String preview) {
+    return '上次工作階段：$preview';
+  }
+
+  @override
+  String get ng_bots_open_chat => '開啟 Bot Chat';
+
+  @override
+  String get ng_bots_desktop => 'Bot Desktop';
+
+  @override
+  String get ng_bots_room_name => '群組名稱';
+
+  @override
+  String get ng_bots_select_member => '請至少選取一位成員。';
+
+  @override
+  String get ng_bots_sudo_title => '系統管理員密碼';
+
+  @override
+  String ng_bots_sudo_body(String bot) {
+    return '為 $bot 安裝 Bot Desktop 需要在閘道主機上使用 sudo。密碼只會傳送到該閘道、僅用於本次安裝，且不會儲存。';
+  }
+
+  @override
+  String get ng_bots_sudo_password => 'sudo 密碼';
+
+  @override
+  String get ng_bots_new_routine => '新增例行工作';
+
+  @override
+  String get ng_bots_routine_title => '標題';
+
+  @override
+  String get ng_bots_routine_instruction => '指示';
+
+  @override
+  String get ng_bots_cron => 'Cron 運算式';
+
+  @override
+  String get ng_bots_interval => '間隔';
+
+  @override
+  String get ng_bots_cron_help => '0 9 * * * 表示每天 09:00 執行';
+
+  @override
+  String get ng_bots_every => '每隔';
+
+  @override
+  String get ng_bots_unit_minutes => '分鐘';
+
+  @override
+  String get ng_bots_unit_hours => '小時';
+
+  @override
+  String get ng_bots_unit_days => '天';
+
+  @override
+  String get ng_bots_stop_after => '執行幾次後停止';
+
+  @override
+  String get ng_bots_stop_after_help => '留白即持續執行';
+
+  @override
+  String get ng_bots_send_results => '結果傳送至';
+
+  @override
+  String get ng_bots_run_history => '僅記錄執行歷史';
+
+  @override
+  String get ng_bots_continuity => '接續上一次執行';
+
+  @override
+  String get ng_bots_account_changed_refresh => '帳戶已變更。請重新整理後再繼續。';
+
+  @override
+  String ng_bots_room_load_failed(String error) {
+    return '無法載入群組：$error';
+  }
+
+  @override
+  String ng_bots_send_failed(String error) {
+    return '傳送失敗：$error';
+  }
+
+  @override
+  String ng_bots_stop_failed(String error) {
+    return '停止失敗：$error';
+  }
+
+  @override
+  String get ng_bots_stop_room => '停止群組';
+
+  @override
+  String get ng_bots_send_message => '傳送訊息';
+
+  @override
+  String get ng_bots_room_hint => '傳送訊息到群組（使用 @handle 提及成員）';
+
+  @override
+  String get ng_bots_history => '歷史記錄';
+
+  @override
+  String ng_bots_revision(String revision) {
+    return '修訂版本 $revision';
+  }
+
+  @override
+  String ng_bots_last_error(String error) {
+    return '上次錯誤：$error';
+  }
+
+  @override
+  String get ng_bots_members => '成員';
+
+  @override
+  String get ng_bots_room_context => '群組上下文';
+
+  @override
+  String ng_bots_purpose(String purpose) {
+    return '目的：$purpose';
+  }
+
+  @override
+  String ng_bots_notes(String notes) {
+    return '備註：$notes';
+  }
+
+  @override
+  String ng_bots_routing(String routing) {
+    return '路由：$routing';
+  }
+
+  @override
+  String ng_bots_lead(String member) {
+    return '主導 $member';
+  }
+
+  @override
+  String get ng_bots_viewer_you_control => '你正在控制此螢幕。機器人會等待你交還控制權。';
+
+  @override
+  String get ng_bots_viewer_handed_back => '控制權已交還給機器人。';
+
+  @override
+  String get ng_bots_viewer_background => '應用程式已離開前景，控制權已交還給機器人。';
+
+  @override
+  String get ng_bots_viewer_taken => '其他人接管了此螢幕。';
+
+  @override
+  String get ng_bots_viewer_lost => '即時畫面已中斷，控制權已交還給機器人。';
+
+  @override
+  String ng_bots_viewer_title(String bot) {
+    return 'Bot Desktop · $bot';
+  }
+
+  @override
+  String get ng_bots_viewer_type_hint => '在機器人的螢幕上輸入';
+
+  @override
+  String get ng_bots_viewer_type => '鍵入';
+
+  @override
+  String get ng_bots_viewer_enter => 'Enter 鍵';
+
+  @override
+  String get ng_bots_viewer_backspace => '退格鍵';
+
+  @override
+  String get ng_more_kanban => '看板';
+
+  @override
+  String get ng_more_kanban_subtitle => '看板、任務相依性、工作者指派和記錄';
+
+  @override
+  String get ng_more_bots => '機器人';
+
+  @override
+  String get ng_more_bots_subtitle => '名單、群組、例行工作和 Bot Desktop';
+
+  @override
+  String get ng_slash_kanban => '開啟看板';
+
+  @override
+  String get ng_slash_bots => '開啟你的機器人';
+
+  @override
+  String ng_board_card_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 張卡片',
+      one: '1 張卡片',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_board_event_toast(String task, String event) {
+    return '看板 $task：$event';
+  }
+
+  @override
+  String get ng_board_task => '任務';
+
+  @override
+  String ng_board_refused_http(String status) {
+    return '操作遭拒（HTTP $status）。';
+  }
+
+  @override
+  String get ng_board_err_unsupported => '此閘道未啟用看板外掛程式。';
+
+  @override
+  String get ng_board_err_denied => '此閘道需要登入或相應權限。';
+
+  @override
+  String get ng_board_err_stale => '閘道擁有者已變更。請重新整理後再繼續。';
+
+  @override
+  String get ng_board_err_insecure => '看板工作區操作需要 HTTPS（或回送位址）。';
+
+  @override
+  String get ng_board_err_unreachable => '無法連線到此閘道上的看板服務。';
+
+  @override
+  String get ng_board_err_failed => '操作失敗。請重新整理後重試。';
+
+  @override
+  String ng_board_block_title(String task) {
+    return '將 $task 標記為受阻';
+  }
+
+  @override
+  String get ng_board_block_reason => '受阻原因';
+
+  @override
+  String get ng_board_block_hint => '這張卡片因何受阻？';
+
+  @override
+  String ng_board_review_title(String task) {
+    return '為 $task 要求審查';
+  }
+
+  @override
+  String get ng_board_review_summary => '審查摘要';
+
+  @override
+  String get ng_board_review_hint => '實作並驗證了哪些內容？';
+
+  @override
+  String ng_board_move_title(String cards, String column) {
+    return '要將 $cards 移至 $column 嗎？';
+  }
+
+  @override
+  String ng_board_move_body(String board) {
+    return '$board 上所有選取的卡片都會變更欄。執行中的卡片將停止執行。';
+  }
+
+  @override
+  String get ng_board_move => '移動';
+
+  @override
+  String ng_board_moved(String column) {
+    return '已將卡片移至 $column';
+  }
+
+  @override
+  String ng_board_unassign_title(String cards) {
+    return '要取消指派 $cards 嗎？';
+  }
+
+  @override
+  String ng_board_assign_title(String cards, String profile) {
+    return '要將 $cards 指派給 @$profile 嗎？';
+  }
+
+  @override
+  String get ng_board_assign_body => '執行中的卡片會先被收回：其工作者將停止。';
+
+  @override
+  String get ng_board_unassign => '取消指派';
+
+  @override
+  String get ng_board_assign => '指派';
+
+  @override
+  String get ng_board_unassigned_done => '已取消指派所選卡片';
+
+  @override
+  String ng_board_assigned_done(String profile) {
+    return '已指派給 @$profile';
+  }
+
+  @override
+  String ng_board_archive_title(String cards) {
+    return '要封存 $cards 嗎？';
+  }
+
+  @override
+  String ng_board_archive_body(String board) {
+    return '已封存的卡片會從 $board 移除。開啟「已封存」即可再次查看。';
+  }
+
+  @override
+  String get ng_board_archived_done => '已封存所選卡片';
+
+  @override
+  String ng_board_delete_title(String cards) {
+    return '要刪除 $cards 嗎？';
+  }
+
+  @override
+  String ng_board_delete_body(String board) {
+    return '這會從 $board 永久刪除所選卡片。';
+  }
+
+  @override
+  String ng_board_deleted(String cards) {
+    return '已刪除 $cards。';
+  }
+
+  @override
+  String ng_board_partial_failure(String failed, String total, String reason) {
+    return '$total 項中有 $failed 項失敗：$reason';
+  }
+
+  @override
+  String get ng_board_refused => '遭拒';
+
+  @override
+  String ng_board_dispatched(
+    String spawned,
+    String promoted,
+    String reclaimed,
+  ) {
+    return '已派發：啟動 $spawned 個、推進 $promoted 個、收回 $reclaimed 個。';
+  }
+
+  @override
+  String ng_board_board_archived(String board) {
+    return '已封存看板 $board';
+  }
+
+  @override
+  String ng_board_board_archived_to(String path) {
+    return '已封存至 $path';
+  }
+
+  @override
+  String ng_board_exported(String board, String archive) {
+    return '已將 $board 匯出至 $archive';
+  }
+
+  @override
+  String ng_board_imported(String board, String warnings) {
+    return '已匯入看板 $board$warnings';
+  }
+
+  @override
+  String ng_board_created(String task) {
+    return '已建立 $task';
+  }
+
+  @override
+  String get ng_board_orchestration_saved => '已儲存看板編排';
+
+  @override
+  String get ng_board_auto_describe_unavailable => '無法使用自動描述';
+
+  @override
+  String ng_board_description_updated(String profile) {
+    return '已更新 @$profile 的描述';
+  }
+
+  @override
+  String ng_board_title(String board) {
+    return '看板 · $board';
+  }
+
+  @override
+  String ng_board_active(String count) {
+    return '$count 個進行中';
+  }
+
+  @override
+  String get ng_board_dispatch => '立即派發就緒任務';
+
+  @override
+  String get ng_board_orchestration => '編排與工作者';
+
+  @override
+  String get ng_board_new_task => '新增任務';
+
+  @override
+  String get ng_board_enable_plugin =>
+      '請在此閘道的「功能 → 外掛程式」中啟用內建的「kanban」外掛程式，以啟動其看板路由。';
+
+  @override
+  String get ng_board_filter => '篩選任務…';
+
+  @override
+  String get ng_board_all_assignees => '所有負責人';
+
+  @override
+  String get ng_board_unassigned => '未指派';
+
+  @override
+  String get ng_board_running_by_profile => '各設定檔執行中';
+
+  @override
+  String get ng_board_select => '選取';
+
+  @override
+  String ng_board_selected_chip(String count) {
+    return '已選取（$count）';
+  }
+
+  @override
+  String get ng_board_locked_column => '受管理的欄 — 已停用拖放';
+
+  @override
+  String ng_board_add_to(String column) {
+    return '新增至 $column';
+  }
+
+  @override
+  String ng_board_collapse(String column) {
+    return '收合 $column';
+  }
+
+  @override
+  String ng_board_column_empty(String column) {
+    return '$column 中沒有任務';
+  }
+
+  @override
+  String get ng_board_drop_here => '拖放至此或 + 任務';
+
+  @override
+  String get ng_board_card_actions => '卡片動作';
+
+  @override
+  String get ng_board_open_details => '開啟詳細資料';
+
+  @override
+  String get ng_board_select_card => '選取卡片';
+
+  @override
+  String ng_board_move_to(String column) {
+    return '移至 $column';
+  }
+
+  @override
+  String get ng_board_parked => '擱置';
+
+  @override
+  String ng_board_blocked_by(String count) {
+    return '受 $count 項阻擋';
+  }
+
+  @override
+  String get ng_board_goal_loop => '目標迴圈';
+
+  @override
+  String ng_board_selected(String count) {
+    return '已選取 $count 項';
+  }
+
+  @override
+  String get ng_board_move_menu => '移動…';
+
+  @override
+  String get ng_board_assign_menu => '指派…';
+
+  @override
+  String get ng_board_new_board_title => '新增看板';
+
+  @override
+  String get ng_board_slug => '簡短識別碼（小寫，例如 release-v5）';
+
+  @override
+  String get ng_board_display_name => '顯示名稱';
+
+  @override
+  String get ng_board_linked_project => '連結的專案（選填）';
+
+  @override
+  String get ng_board_none => '無';
+
+  @override
+  String get ng_board_default_workdir => '主機上的預設工作目錄（選填）';
+
+  @override
+  String get ng_board_import_title => '匯入看板封存檔';
+
+  @override
+  String get ng_board_import_path => '主機上的 .tar.gz 封存檔路徑';
+
+  @override
+  String get ng_board_import => '匯入';
+
+  @override
+  String ng_board_edit_board(String board) {
+    return '編輯 $board';
+  }
+
+  @override
+  String get ng_board_name => '名稱';
+
+  @override
+  String get ng_board_description => '描述';
+
+  @override
+  String get ng_board_workdir_clear => '預設工作目錄（留白即清除）';
+
+  @override
+  String get ng_board_boards => '看板清單';
+
+  @override
+  String get ng_board_new_board => '新增看板';
+
+  @override
+  String get ng_board_search_boards => '搜尋看板…';
+
+  @override
+  String get ng_board_unpin => '取消釘選分頁';
+
+  @override
+  String get ng_board_pin => '釘選分頁';
+
+  @override
+  String ng_board_archive_board_title(String board) {
+    return '要封存看板 $board 嗎？';
+  }
+
+  @override
+  String ng_board_archive_board_body(String cards) {
+    return '此看板及其 $cards 將從看板清單中移除。閘道會在其主機上保留封存檔。';
+  }
+
+  @override
+  String get ng_board_edit_metadata => '編輯中繼資料';
+
+  @override
+  String get ng_board_export => '在主機上匯出 .tar.gz';
+
+  @override
+  String get ng_board_move_pin_left => '將釘選分頁左移';
+
+  @override
+  String get ng_board_archive_board => '封存看板';
+
+  @override
+  String get ng_board_new_task_title => '新增看板任務';
+
+  @override
+  String get ng_board_title_required => '標題 *';
+
+  @override
+  String get ng_board_spec => '規格與驗收標準';
+
+  @override
+  String get ng_board_estimate => '估算';
+
+  @override
+  String ng_board_estimate_draft(String complexity, String tokens) {
+    return '複雜度 $complexity（~$tokens 令牌 — 僅為令牌估算，並非美元成本）';
+  }
+
+  @override
+  String get ng_board_estimate_unavailable => '無法估算';
+
+  @override
+  String get ng_board_initial_column => '初始欄';
+
+  @override
+  String get ng_board_worker_assignee => '負責的工作者';
+
+  @override
+  String get ng_board_parked_unassigned => '擱置（未指派）';
+
+  @override
+  String get ng_board_priority => '優先順序';
+
+  @override
+  String get ng_board_workspace => '工作區';
+
+  @override
+  String get ng_board_scratch => '暫存目錄';
+
+  @override
+  String get ng_board_worktree => 'Git 工作樹';
+
+  @override
+  String get ng_board_shared_dir => '共用目錄';
+
+  @override
+  String get ng_board_workspace_path => '主機工作區路徑';
+
+  @override
+  String get ng_board_parent => '父任務相依性（選填）';
+
+  @override
+  String get ng_board_skills => '固定技能（以逗號分隔，選填）';
+
+  @override
+  String get ng_board_provider_override => '供應商覆寫';
+
+  @override
+  String get ng_board_model_override => '模型覆寫';
+
+  @override
+  String get ng_board_reasoning => '推理強度';
+
+  @override
+  String get ng_board_profile_default => '設定檔預設值';
+
+  @override
+  String get ng_board_xhigh => '極高';
+
+  @override
+  String get ng_board_goal_mode => '目標迴圈模式';
+
+  @override
+  String get ng_board_goal_turns => '目標最大輪數（留白 = 預設）';
+
+  @override
+  String get ng_board_create_task => '建立任務';
+
+  @override
+  String get ng_board_orchestration_title => '編排與工作者設定檔';
+
+  @override
+  String ng_board_orchestrator(String profile) {
+    return '編排器設定檔（解析結果：$profile）';
+  }
+
+  @override
+  String get ng_board_inherit_default => '沿用目前的預設值';
+
+  @override
+  String ng_board_default_assignee(String profile) {
+    return '預設負責人（解析結果：$profile）';
+  }
+
+  @override
+  String get ng_board_auto_decompose => '自動拆解待分類卡片';
+
+  @override
+  String get ng_board_auto_decompose_help =>
+      '對待分類任務使用已設定的 kanban_decomposer 模型';
+
+  @override
+  String get ng_board_save_orchestration => '儲存編排';
+
+  @override
+  String get ng_board_worker_descriptions => '工作者專長描述';
+
+  @override
+  String ng_board_worker_label(String profile, String model, String skills) {
+    return '@$profile（$model · $skills）';
+  }
+
+  @override
+  String get ng_board_default_model => '預設模型';
+
+  @override
+  String get ng_board_save_description => '儲存描述';
+
+  @override
+  String get ng_board_auto_describe => '根據技能與角色設定自動描述';
+
+  @override
+  String get ng_board_manual_block => '操作員手動標記受阻';
+
+  @override
+  String get ng_board_requested_review => '已要求審查';
+
+  @override
+  String ng_board_requeue_title(String task) {
+    return '要將 $task 重新排入佇列嗎？';
+  }
+
+  @override
+  String get ng_board_requeue_body => '正在執行此卡片的工作者會停止，卡片會回到佇列。';
+
+  @override
+  String get ng_board_requeue => '重新排入佇列';
+
+  @override
+  String ng_board_reassign_title(String task, String profile) {
+    return '要將 $task 重新指派給 @$profile 嗎？';
+  }
+
+  @override
+  String get ng_board_reassign_body => '此卡片正在執行：會先停止其工作者。';
+
+  @override
+  String get ng_board_reassign => '重新指派';
+
+  @override
+  String ng_board_saved_task(String task) {
+    return '已儲存任務 $task';
+  }
+
+  @override
+  String get ng_board_commented_requeued => '已發布留言並將任務重新排入佇列';
+
+  @override
+  String get ng_board_commented => '已發布留言';
+
+  @override
+  String ng_board_requeued(String task) {
+    return '已將 $task 重新排入佇列';
+  }
+
+  @override
+  String get ng_board_decompose_failed => '拆解失敗。';
+
+  @override
+  String ng_board_decompose_failed_reason(String reason) {
+    return '拆解失敗：$reason';
+  }
+
+  @override
+  String ng_board_decomposed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已拆解為 $count 個子任務',
+      one: '已拆解為 1 個子任務',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_board_no_children => '未建立任何子任務。';
+
+  @override
+  String ng_board_no_children_reason(String reason) {
+    return '未建立任何子任務：$reason';
+  }
+
+  @override
+  String ng_board_uploaded(String file) {
+    return '已上傳 $file';
+  }
+
+  @override
+  String ng_board_linked_parent(String task) {
+    return '已連結父任務 $task';
+  }
+
+  @override
+  String ng_board_unlinked_parent(String task) {
+    return '已移除父任務連結 $task';
+  }
+
+  @override
+  String get ng_board_task_load_failed => '無法載入任務';
+
+  @override
+  String get ng_board_refresh_task => '重新整理任務';
+
+  @override
+  String get ng_board_tab_overview => '總覽';
+
+  @override
+  String get ng_board_tab_comments => '留言與連結';
+
+  @override
+  String get ng_board_tab_runs => '執行與記錄';
+
+  @override
+  String get ng_board_tab_events => '事件';
+
+  @override
+  String get ng_board_decompose => '拆解';
+
+  @override
+  String get ng_board_attach => '附加檔案';
+
+  @override
+  String ng_board_estimate_task(
+    String complexity,
+    String tokens,
+    String rationale,
+  ) {
+    return '估算：$complexity · ~$tokens 令牌（$rationale）— 並非美元成本。';
+  }
+
+  @override
+  String get ng_board_no_rationale => '無理由說明';
+
+  @override
+  String get ng_board_status => '狀態';
+
+  @override
+  String get ng_board_assignee => '負責人';
+
+  @override
+  String get ng_board_title_label => '標題';
+
+  @override
+  String get ng_board_body => '內文 / 規格說明';
+
+  @override
+  String get ng_board_save_changes => '儲存變更';
+
+  @override
+  String get ng_board_clear_model => '清除模型覆寫';
+
+  @override
+  String ng_board_blocked_reason(String reason) {
+    return '受阻原因：$reason';
+  }
+
+  @override
+  String ng_board_result(String result) {
+    return '結果：$result';
+  }
+
+  @override
+  String ng_board_parents(String count) {
+    return '受阻於（父任務 · $count）';
+  }
+
+  @override
+  String get ng_board_add_parent => '+ 新增父任務';
+
+  @override
+  String ng_board_children(String count) {
+    return '阻擋對象（子任務 · $count）';
+  }
+
+  @override
+  String ng_board_attachments(String count) {
+    return '附件（$count）';
+  }
+
+  @override
+  String get ng_board_worker => '工作者';
+
+  @override
+  String ng_board_comments(String count) {
+    return '留言（$count）';
+  }
+
+  @override
+  String get ng_board_comment_hint => '新增留言 / 工作者指引';
+
+  @override
+  String get ng_board_post_comment => '發布留言';
+
+  @override
+  String get ng_board_comment_requeue => '留言並重新排入佇列';
+
+  @override
+  String ng_board_runs(String count) {
+    return '執行記錄（$count）';
+  }
+
+  @override
+  String get ng_board_no_runs => '尚無工作者執行記錄。';
+
+  @override
+  String ng_board_run_error(String error) {
+    return '錯誤：$error';
+  }
+
+  @override
+  String ng_board_log_tail_truncated(String bytes) {
+    return '工作者記錄結尾（$bytes B，已截斷）';
+  }
+
+  @override
+  String ng_board_log_tail(String bytes) {
+    return '工作者記錄結尾（$bytes B）';
+  }
+
+  @override
+  String get ng_board_refresh_log => '重新整理記錄';
+
+  @override
+  String get ng_board_no_log => '沒有工作者記錄輸出。';
+
+  @override
+  String get ng_board_no_events => '未記錄任何事件。';
+
+  @override
+  String get ng_bots_room_unknown => '未知';
+
+  @override
+  String get ng_bots_room_blocked => '受阻';
+
+  @override
+  String get ng_bots_room_working => '工作中';
+
+  @override
+  String get ng_bots_room_running => '執行中';
+
+  @override
+  String get ng_bots_room_idle => '閒置';
+
+  @override
+  String ng_board_run_title(String id, String profile, String outcome) {
+    return '執行 #$id · @$profile · $outcome';
+  }
+
+  @override
+  String get ng_bots_new_bot => '新增機器人';
+
+  @override
+  String get ng_bots_new_bot_hint => '一個有名字的隊友，擁有自己的記憶、技能和聊天，可以傳訊息給你的其他智慧體。';
+
+  @override
+  String get ng_bots_field_name => '名稱';
+
+  @override
+  String get ng_bots_field_title => '標題';
+
+  @override
+  String get ng_bots_field_description => '描述';
+
+  @override
+  String get ng_bots_description_hint => '這個機器人應該幫忙做什麼？';
+
+  @override
+  String get ng_bots_name_invalid => '使用小寫字母、數字、連字號或底線，並以字母或數字開頭（最多 64 個字元）。';
+
+  @override
+  String ng_bots_name_taken(String name) {
+    return '名為「$name」的智慧體已存在。';
+  }
+
+  @override
+  String ng_bots_profile_id(String id) {
+    return '設定檔 ID：$id';
+  }
+
+  @override
+  String get ng_bots_advanced => '進階 — 模型、技能、工具集、SOUL.md';
+
+  @override
+  String get ng_bots_clone_from => '從設定檔複製';
+
+  @override
+  String get ng_bots_clone_main => '主設定檔（default）';
+
+  @override
+  String get ng_bots_fresh_profile => '全新設定檔（內建技能）';
+
+  @override
+  String get ng_bots_create_empty => '建立空白設定（略過內建技能）';
+
+  @override
+  String get ng_bots_share_keys => '與主設定檔共用金鑰和帳戶';
+
+  @override
+  String get ng_bots_provider => '供應商';
+
+  @override
+  String get ng_bots_model => '模型';
+
+  @override
+  String get ng_bots_model_pair => '請同時輸入供應商和模型。';
+
+  @override
+  String get ng_bots_soul => 'SOUL.md（選填 — 取代產生的人設）';
+
+  @override
+  String get ng_bots_soul_edit => 'SOUL.md';
+
+  @override
+  String get ng_bots_creating => '正在建立…';
+
+  @override
+  String get ng_bots_create_bot => '建立機器人';
+
+  @override
+  String ng_bots_created(String name) {
+    return '已建立機器人「$name」';
+  }
+
+  @override
+  String get ng_bots_look_failed => '外觀未儲存到閘道；請在「編輯設定檔」中設定。';
+
+  @override
+  String ng_bots_request_failed(String reason) {
+    return '閘道未接受（$reason）。';
+  }
+
+  @override
+  String get ng_bots_avatar_shape => '形狀';
+
+  @override
+  String ng_bots_avatar_shape_n(int n) {
+    return '形狀 $n';
+  }
+
+  @override
+  String get ng_bots_avatar_colour => '顏色';
+
+  @override
+  String ng_bots_avatar_colour_n(int n) {
+    return '顏色 $n';
+  }
+
+  @override
+  String get ng_bots_avatar_match_name => '依名稱';
+
+  @override
+  String get ng_bots_avatar_upload => '選擇圖片…';
+
+  @override
+  String get ng_bots_avatar_remove => '移除圖片 — 使用形狀';
+
+  @override
+  String get ng_bots_avatar_too_large => '圖片過大（最大 15 MB）。';
+
+  @override
+  String get ng_bots_avatar_unreadable => '無法讀取該圖片。';
+
+  @override
+  String get ng_bots_edit_profile => '編輯設定檔';
+
+  @override
+  String ng_bots_edit_description(String name, String profile) {
+    return '$name（$profile）的外觀和角色。';
+  }
+
+  @override
+  String ng_bots_advanced_failed(String reason) {
+    return '無法載入設定檔設定（$reason）。';
+  }
+
+  @override
+  String get ng_bots_skills => '技能';
+
+  @override
+  String get ng_bots_toolsets => '工具集';
+
+  @override
+  String get ng_bots_toolsets_hint => '全部（或都不）勾選時維持預設工具集行為。';
+
+  @override
+  String get ng_bots_mcp_servers => 'MCP 伺服器';
+
+  @override
+  String get ng_bots_saving => '正在儲存…';
+
+  @override
+  String get ng_bots_confirm_changes_title => '儲存這些變更？';
+
+  @override
+  String get ng_bots_change_remove_image => '移除機器人的圖片';
+
+  @override
+  String get ng_bots_change_soul => '取代其 SOUL.md';
+
+  @override
+  String ng_bots_change_turn_off(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '關閉 $count 個技能、工具集或 MCP 伺服器',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_bots_updated(String name) {
+    return '已更新 $name';
+  }
+
+  @override
+  String ng_bots_sections_failed(String sections) {
+    return '部分內容失敗：$sections';
+  }
+
+  @override
+  String get ng_bots_model_confirm_title => '切換模型？';
+
+  @override
+  String get ng_bots_model_confirm_ok => '切換';
+
+  @override
+  String get ng_bots_model_not_switched => '未切換模型。';
+
+  @override
+  String get ng_bots_section_new => '新增分組';
+
+  @override
+  String get ng_bots_section_new_ellipsis => '新增分組…';
+
+  @override
+  String get ng_bots_section_name => '分組名稱';
+
+  @override
+  String get ng_bots_section_name_hint => '例如：客戶';
+
+  @override
+  String get ng_bots_section_create => '建立';
+
+  @override
+  String get ng_bots_section_rename => '重新命名分組';
+
+  @override
+  String get ng_bots_section_delete => '刪除分組';
+
+  @override
+  String get ng_bots_section_move_up => '上移';
+
+  @override
+  String get ng_bots_section_move_down => '下移';
+
+  @override
+  String get ng_bots_section_unassigned => '未分組';
+
+  @override
+  String ng_bots_section_options(String name) {
+    return '分組「$name」的選項';
+  }
+
+  @override
+  String get ng_bots_section_empty => '這裡還沒有機器人。請對機器人使用「移到分組」。';
+
+  @override
+  String get ng_bots_section_move_to => '移到分組';
+
+  @override
+  String get ng_bots_section_remove => '移出分組';
+
+  @override
+  String ng_bots_section_deleted(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已刪除「$name」— $count 個機器人移到未分組',
+      zero: '已刪除「$name」',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_undo => '復原';
+
+  @override
+  String ng_bots_section_move_failed(String reason) {
+    return '無法移動機器人（$reason）。';
+  }
+
+  @override
+  String ng_bots_bot_actions(String name) {
+    return '$name 的操作';
+  }
+
+  @override
+  String ng_bots_section_toggle(String name) {
+    return '顯示或隱藏「$name」';
+  }
+
+  @override
+  String
+  get release_core_transcript_reader_this_passage_is_no_longer_in_the_loaded =>
+      '這段內容已不在目前載入的範圍內。';
+
+  @override
+  String get release_core_transcript_reader_loaded_prompts => '已載入的提示詞';
+
+  @override
+  String get release_core_transcript_reader_jump_to_latest => '跳至最新內容';
+
+  @override
+  String get release_core_transcript_reader_no_prompts_loaded => '未載入提示詞';
+
+  @override
+  String get release_core_transcript_reader_find_in_loaded_messages =>
+      '在已載入的訊息中尋找';
+
+  @override
+  String get release_core_transcript_reader_previous_match => '上一個符合項目';
+
+  @override
+  String get release_core_transcript_reader_next_match => '下一個符合項目';
+
+  @override
+  String get release_core_transcript_reader_prompt_timeline => '提示詞時間軸';
+
+  @override
+  String get release_core_transcript_reader_close_find => '關閉尋找';
+
+  @override
+  String get release_core_session_organisation_organise_chats => '整理聊天';
+
+  @override
+  String get release_core_session_organisation_show_model_and_usage =>
+      '顯示模型和用量';
+
+  @override
+  String
+  get release_core_session_files_view_connection_changed_reopen_files_on_the_new_connection =>
+      '連線已變更。請透過新連線重新開啟檔案。';
+
+  @override
+  String
+  get release_core_session_files_view_the_connection_or_session_changed_reopen_this_pane =>
+      '連線或工作階段已變更。請重新開啟此窗格。';
+
+  @override
+  String
+  get release_core_session_files_view_no_verified_host_working_directory_for_this_session =>
+      '此工作階段沒有經驗證的主機工作目錄。';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_denied_this_operation =>
+      '閘道拒絕了此操作。';
+
+  @override
+  String
+  get release_core_session_files_view_this_gateway_does_not_support_this_operation =>
+      '此閘道不支援此操作。';
+
+  @override
+  String
+  get release_core_session_files_view_the_file_owner_or_working_directory_changed_reload =>
+      '檔案、擁有者或工作目錄已變更。請重新載入並檢查。';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_returned_an_unsafe_path_or_invalid =>
+      '閘道傳回了不安全的路徑或無效的檔案回應。';
+
+  @override
+  String
+  get release_core_session_files_view_workspace_access_requires_a_secure_gateway_connection =>
+      '存取工作區需要安全的閘道連線。';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_unavailable_refresh_to_check_the_current_state =>
+      '閘道無法使用。請重新整理以查看目前狀態。';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_operation_could_not_be_confirmed =>
+      '無法確認閘道操作。';
+
+  @override
+  String get release_core_session_files_view_git_status_unavailable =>
+      '無法取得 Git 狀態。';
+
+  @override
+  String
+  get release_core_session_files_view_change_this_chat_s_working_directory =>
+      '變更此聊天的工作目錄？';
+
+  @override
+  String get release_core_session_files_view_absolute_gateway_directory =>
+      '閘道目錄的絕對路徑';
+
+  @override
+  String get release_core_session_files_view_change_directory => '變更目錄';
+
+  @override
+  String get release_core_session_files_view_replace_gateway_file =>
+      '取代閘道上的檔案？';
+
+  @override
+  String
+  release_core_session_files_view_only_if_the_file_still_matches_the_version(
+    String path,
+  ) {
+    return '$path\n\n僅當檔案仍與已檢查的版本一致時才會取代。相容的主機會保留被取代的檔案，以便還原。';
+  }
+
+  @override
+  String get release_core_session_files_view_save_changes => '儲存變更';
+
+  @override
+  String
+  get release_core_session_files_view_saved_and_verified_on_the_gateway =>
+      '已在閘道上儲存並驗證。';
+
+  @override
+  String
+  get release_core_session_files_view_guarded_saving_is_unavailable_on_this_gateway_your =>
+      '此閘道不提供受保護的儲存功能。你的草稿仍在。';
+
+  @override
+  String
+  release_core_session_files_view_save_was_not_confirmed_your_draft_is_still(
+    String reason,
+  ) {
+    return '$reason 儲存未獲確認。你的草稿仍在。';
+  }
+
+  @override
+  String get release_core_session_files_view_review_current_gateway_version =>
+      '檢查閘道上的目前版本';
+
+  @override
+  String get release_core_session_files_view_discard_draft_and_reload =>
+      '捨棄草稿並重新載入';
+
+  @override
+  String get release_core_session_files_view_keep_draft_against_this_version =>
+      '以此版本為基準保留草稿';
+
+  @override
+  String get release_core_session_files_view_discard_unsaved_edits =>
+      '捨棄未儲存的編輯？';
+
+  @override
+  String get release_core_session_files_view_keep_editing => '繼續編輯';
+
+  @override
+  String get release_core_session_files_view_discard_edits => '捨棄編輯';
+
+  @override
+  String get release_core_session_files_view_remote_working_directory =>
+      '遠端工作目錄';
+
+  @override
+  String get release_core_session_files_view_change_working_directory =>
+      '變更工作目錄';
+
+  @override
+  String get release_core_session_files_view_show_ignored_files => '顯示已忽略的檔案';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_does_not_report_ignored_status =>
+      '閘道未回報忽略狀態。';
+
+  @override
+  String get release_core_session_files_view_no_visible_entries => '無可見項目';
+
+  @override
+  String get release_core_session_files_view_changed => '已變更';
+
+  @override
+  String get release_core_session_files_view_ignored => '已忽略';
+
+  @override
+  String release_core_session_files_view_actions_for(String name) {
+    return '$name 的操作';
+  }
+
+  @override
+  String get release_core_session_files_view_copy_relative_path => '複製相對路徑';
+
+  @override
+  String get release_core_session_files_view_copy_gateway_path => '複製閘道路徑';
+
+  @override
+  String get release_core_session_files_view_attach_folder_reference =>
+      '附加資料夾參照';
+
+  @override
+  String get release_core_session_files_view_attach_file_reference => '附加檔案參照';
+
+  @override
+  String
+  get release_core_session_files_view_preview_truncated_editing_disabled =>
+      '預覽已截斷，編輯已停用。';
+
+  @override
+  String get release_core_session_files_view_select_lines => '選取行';
+
+  @override
+  String get release_core_session_files_view_review_gateway_version =>
+      '檢查閘道上的版本';
+
+  @override
+  String get release_core_session_files_view_attach_selected_lines => '附加所選行';
+
+  @override
+  String get release_core_session_files_view_binary_file_no_text_preview =>
+      '二進位檔案，無文字預覽。';
+
+  @override
+  String get release_core_session_files_view_file_source => '檔案來源';
+
+  @override
+  String get release_core_session_files_view_close_session_files => '關閉工作階段檔案';
+
+  @override
+  String get release_core_session_files_view_back_to_tree => '返回檔案樹';
+
+  @override
+  String get release_core_session_files_view_session_files => '工作階段檔案';
+
+  @override
+  String get release_core_session_files_view_git_review => 'Git 檢閱';
+
+  @override
+  String get release_core_session_files_view_refresh_tree => '重新整理檔案樹';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_this_connection_changed_reopen_its_chat =>
+      '此連線已變更。請重新開啟對應的聊天。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_disconnected_reconnect_the_chat_then_refresh =>
+      '連線已中斷。請重新連線聊天，然後重新整理。';
+
+  @override
+  String release_core_gateway_queue_screen_gateway_queue_unavailable(
+    String reason,
+  ) {
+    return '閘道佇列無法使用：$reason。';
+  }
+
+  @override
+  String release_core_gateway_queue_screen_not_confirmed_nothing_was_resent(
+    String reason,
+  ) {
+    return '未獲確認（$reason）。未重新傳送任何內容。';
+  }
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_confirmed_admission =>
+      '閘道已確認接收。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_edited_entry_admitted_at_the_end_of_the =>
+      '編輯後的項目已被接收並加入佇列尾端。';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_unknown_outcome =>
+      '捨棄結果未知的項目？';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_this_entry => '移除此項目？';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_the_lost_turn_will_not_be_retried_waiting =>
+      '不會重試遺失的輪次。等待中的輪次現在可以執行。';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_if_the_gateway_has_just_started_this_entry =>
+      '如果閘道剛開始處理此項目，移除它可能會停止該輪次。';
+
+  @override
+  String get release_core_gateway_queue_screen_keep => '保留';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_and_resume => '捨棄並繼續';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_entry => '移除項目';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_lost_admission_resolved_it_was_not_resent =>
+      '接收確認遺失的問題已解決；未重新傳送。';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_acknowledged_removal =>
+      '閘道已確認移除。';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_queue => '閘道佇列';
+
+  @override
+  String get release_core_gateway_queue_screen_refresh_queue => '重新整理佇列';
+
+  @override
+  String get release_core_gateway_queue_screen_queue_paused_unknown_outcome =>
+      '佇列已暫停：結果未知';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_review_the_lost_admission_before_resuming_nothing_is =>
+      '請先檢查缺失的接收確認，再繼續佇列。不會重新傳送任何內容。';
+
+  @override
+  String get release_core_gateway_queue_screen_no_pending_admissions =>
+      '無待接收項目';
+
+  @override
+  String get release_core_gateway_queue_screen_discard => '捨棄…';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_gateway_acknowledged_the_steering_request =>
+      '閘道已確認引導要求。';
+
+  @override
+  String get release_core_gateway_queue_screen_steer_running_turn =>
+      '引導正在執行的輪次';
+
+  @override
+  String get release_core_gateway_queue_screen_remove => '移除…';
+
+  @override
+  String get release_core_gateway_queue_screen_next_prompt => '下一則提示詞';
+
+  @override
+  String get release_core_gateway_queue_screen_edit_queued_prompt =>
+      '編輯佇列中的提示詞';
+
+  @override
+  String get release_core_gateway_queue_screen_submit_to_gateway_queue =>
+      '提交至閘道佇列';
+
+  @override
+  String get release_core_gateway_queue_screen_save_at_queue_end => '儲存至佇列尾端';
+
+  @override
+  String get release_core_gateway_queue_screen_cancel_edit => '取消編輯';
+
+  @override
+  String get release_core_git_review_pane_the_git_operation_did_not_complete =>
+      'Git 操作未完成。';
+
+  @override
+  String get release_core_git_review_pane_close_git_review => '關閉 Git 檢閱';
+
+  @override
+  String get release_core_git_review_pane_pin_lane => '釘選泳道';
+
+  @override
+  String get release_core_git_review_pane_refresh_git_review => '重新整理 Git 檢閱';
+
+  @override
+  String get release_core_git_review_pane_uncommitted => '未提交';
+
+  @override
+  String get release_core_git_review_pane_last_turn => '上一輪';
+
+  @override
+  String
+  get release_core_git_review_pane_branch_and_last_turn_views_are_read_only =>
+      '分支和上一輪檢視均為唯讀。';
+
+  @override
+  String get release_core_git_review_pane_mark_head_as_the_turn_baseline =>
+      '將 HEAD 標記為輪次基準';
+
+  @override
+  String get release_core_git_review_pane_stage_all => '暫存全部';
+
+  @override
+  String get release_core_git_review_pane_discard_every_uncommitted_change =>
+      '捨棄所有未提交的變更？';
+
+  @override
+  String
+  get release_core_git_review_pane_tracked_files_return_to_head_and_untracked_files =>
+      '已追蹤檔案將還原至 HEAD，此工作階段目錄中未追蹤的檔案將被移除。';
+
+  @override
+  String get release_core_git_review_pane_discard => '捨棄';
+
+  @override
+  String get release_core_git_review_pane_discard_all => '全部捨棄';
+
+  @override
+  String get release_core_git_review_pane_unstage => '取消暫存';
+
+  @override
+  String get release_core_git_review_pane_stage => '暫存';
+
+  @override
+  String get release_core_git_review_pane_discard_file => '捨棄檔案';
+
+  @override
+  String release_core_git_review_pane_discard_2(String path) {
+    return '捨棄 $path？';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_this_restores_the_committed_copy_or_removes_the =>
+      '這會還原已提交的副本，或移除未追蹤的檔案。';
+
+  @override
+  String get release_core_git_review_pane_commit_message => '提交訊息';
+
+  @override
+  String get release_core_git_review_pane_nothing_in_the_diff_to_summarise =>
+      '差異中沒有可供摘要的內容。';
+
+  @override
+  String get release_core_git_review_pane_generate_message => '產生提交訊息';
+
+  @override
+  String get release_core_git_review_pane_commit => '提交';
+
+  @override
+  String get release_core_git_review_pane_commit_and_push => '提交並推送';
+
+  @override
+  String get release_core_git_review_pane_push => '推送';
+
+  @override
+  String get release_core_git_review_pane_create_pull_request => '建立提取要求';
+
+  @override
+  String get release_core_git_review_pane_pull_request_ready => '提取要求已就緒';
+
+  @override
+  String get release_core_git_review_pane_ask_hermes_to_ship => '請 Hermes 完成發布';
+
+  @override
+  String get release_core_git_review_pane_gh_is_authenticated_on_this_gateway =>
+      'gh 已在此閘道上通過身分驗證。';
+
+  @override
+  String
+  get release_core_git_review_pane_install_the_github_cli_gh_and_sign_in =>
+      '安裝 GitHub CLI（gh）並登入，即可建立提取要求';
+
+  @override
+  String get release_core_git_review_pane_worktrees => '工作樹';
+
+  @override
+  String get release_core_git_review_pane_main => '主工作樹';
+
+  @override
+  String release_core_git_review_pane_follow(String branch) {
+    return '跟隨 $branch？';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_working_directory_becomes_this_worktree_unless =>
+      '除非泳道已釘選，否則工作階段的工作目錄將切換為此工作樹。';
+
+  @override
+  String get release_core_git_review_pane_follow_2 => '跟隨';
+
+  @override
+  String release_core_git_review_pane_remove(String branch) {
+    return '移除 $branch？';
+  }
+
+  @override
+  String get release_core_git_review_pane_the_worktree_directory_is_removed =>
+      '工作樹目錄將被移除。';
+
+  @override
+  String get release_core_git_review_pane_remove_2 => '移除';
+
+  @override
+  String get release_core_git_review_pane_new_worktree_name => '新工作樹名稱';
+
+  @override
+  String get release_core_git_review_pane_new_branch => '新分支';
+
+  @override
+  String get release_core_git_review_pane_base_branch => '基礎分支';
+
+  @override
+  String get release_core_git_review_pane_create_worktree => '建立工作樹';
+
+  @override
+  String get release_core_git_review_pane_existing_branch => '現有分支';
+
+  @override
+  String get release_core_git_review_pane_convert_branch_to_worktree =>
+      '將分支轉換為工作樹';
+
+  @override
+  String get release_core_git_review_pane_switch_branch => '切換分支';
+
+  @override
+  String
+  get release_core_git_review_pane_this_gateway_does_not_support_that_git_operation =>
+      '此閘道不支援該 Git 操作。';
+
+  @override
+  String
+  get release_core_git_review_pane_git_needs_the_session_directory_on_the_local =>
+      'Git 需要工作階段目錄位於本機終端機後端。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_refused_the_git_operation =>
+      '閘道拒絕了 Git 操作。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_changed_refresh_and_try_again =>
+      '工作階段已變更。請重新整理後重試。';
+
+  @override
+  String
+  get release_core_git_review_pane_this_review_is_no_longer_the_selected_session =>
+      '此檢閱已不再對應目前選取的工作階段。';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_returned_an_unexpected_git_result =>
+      '閘道傳回了非預期的 Git 結果。';
+
+  @override
+  String
+  get release_core_git_review_pane_git_review_requires_the_gateway_transport =>
+      'Git 檢閱需要透過閘道傳輸。';
+
+  @override
+  String get release_core_client_held_queue_bar_resume => '繼續';
+
+  @override
+  String get release_core_client_held_queue_bar_send_queued_prompt =>
+      '傳送佇列中的提示詞';
+
+  @override
+  String get release_core_client_held_queue_bar_edit_unsent_prompt =>
+      '編輯未傳送的提示詞';
+
+  @override
+  String get release_core_client_held_queue_bar_remove_unsent_prompt =>
+      '移除未傳送的提示詞';
+
+  @override
+  String get release_core_workspace_discovery_view_repository_discovery =>
+      '儲存庫探索';
+
+  @override
+  String get release_core_workspace_discovery_view_refresh_results => '重新整理結果';
+
+  @override
+  String release_core_workspace_discovery_view_hide(String path) {
+    return '隱藏 $path';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_invalid_path_or_discovery_data_use_absolute_server =>
+      '路徑或探索資料無效。請使用不含 . 或 .. 路徑區段的伺服器絕對路徑。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_does_not_support_repository_discovery =>
+      '此閘道不支援儲存庫探索。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_denied_access_to_repository_discovery =>
+      '閘道拒絕存取儲存庫探索功能。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_connection_changed_reopen_discovery_on_the_current =>
+      '連線已變更。請在目前閘道上重新開啟儲存庫探索。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_displayed_settings_have_changed_refresh_before_trying =>
+      '顯示的設定已變更。請重新整理後重試。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_could_not_load_or_verify_discovery_settings_refresh =>
+      '無法載入或驗證探索設定。請重新整理以重試。';
+
+  @override
+  String release_core_workspace_discovery_view_repositories_shown_of(
+    int visible,
+    int total,
+  ) {
+    return '已顯示儲存庫：$visible / $total';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_returned_no_repositories =>
+      '閘道未傳回任何儲存庫。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_no_repositories_match_your_device_filters =>
+      '沒有儲存庫符合此裝置上的篩選條件。';
+
+  @override
+  String get release_core_workspace_discovery_view_gateway_scan_policy =>
+      '閘道掃描原則';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_did_not_report_a_scan_policy =>
+      '此閘道未回報掃描原則。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_to_scan_folders_configure_repository_scanning_in_the =>
+      '若要掃描資料夾，請在閘道設定檔的桌面設定中設定儲存庫掃描。';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_results_can_include_cached_repositories_and_repositories_with =>
+      '結果可能包含已快取的儲存庫及有關聯工作階段的儲存庫。掃描並不保證已遍歷每個資料夾。';
+
+  @override
+  String get release_core_workspace_discovery_view_scan_gateway_roots =>
+      '掃描閘道根目錄';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_filter_results_on_this_device =>
+      '在此裝置上篩選結果';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_only_this_discovery_list_changes_not_the_gateway =>
+      '僅變更此探索清單，不影響閘道掃描。';
+
+  @override
+  String get release_core_workspace_discovery_view_include_subtrees_empty_all =>
+      '包含的子目錄樹（留空表示全部）';
+
+  @override
+  String get release_core_workspace_discovery_view_exclude_subtrees =>
+      '排除的子目錄樹';
+
+  @override
+  String get release_core_workspace_discovery_view_apply_filters => '套用篩選條件';
+
+  @override
+  String release_core_workspace_discovery_view_hidden_repositories(int count) {
+    return '隱藏的儲存庫（$count）';
+  }
+
+  @override
+  String get release_core_workspace_discovery_view_undo_hide => '復原隱藏';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_one_absolute_server_path_per_line =>
+      '每行一個伺服器絕對路徑';
+
+  @override
+  String get release_core_project_settings_view_project_settings => '專案設定';
+
+  @override
+  String
+  get release_core_project_settings_view_the_gateway_did_not_confirm_the_selected_project =>
+      '閘道未確認所選專案或變更。請檢查設定後重試。';
+
+  @override
+  String
+  get release_core_project_settings_view_could_not_verify_these_settings_use_one_absolute =>
+      '無法驗證這些設定。請每行填寫一個伺服器資料夾的絕對路徑，且不含 . 或 .. 路徑區段。';
+
+  @override
+  String get release_core_project_settings_view_set_active => '設為使用中的專案';
+
+  @override
+  String get release_core_project_settings_view_icon => '圖示';
+
+  @override
+  String get release_core_project_settings_view_folder => '資料夾';
+
+  @override
+  String get release_core_project_settings_view_repository => '儲存庫';
+
+  @override
+  String get release_core_project_settings_view_rocket => '火箭';
+
+  @override
+  String get release_core_project_settings_view_star => '星星';
+
+  @override
+  String get release_core_project_settings_view_book => '書籍';
+
+  @override
+  String get release_core_project_settings_view_terminal => '終端機';
+
+  @override
+  String get release_core_project_settings_view_colour => '色彩';
+
+  @override
+  String get release_core_project_settings_view_primary_folder => '主要資料夾';
+
+  @override
+  String get release_core_project_settings_view_server_folder_paths =>
+      '伺服器資料夾路徑';
+
+  @override
+  String
+  get release_core_project_settings_view_one_absolute_path_per_line_existing_folders_are =>
+      '每行一個絕對路徑。現有資料夾將保留。';
+
+  @override
+  String get release_core_project_settings_view_add_folders => '新增資料夾';
+
+  @override
+  String release_core_project_settings_view_choose(String label) {
+    return '選擇$label';
+  }
+
+  @override
+  String
+  get release_core_prepared_image_recovery_wait_for_an_empty_draft_before_restoring =>
+      '請等草稿為空後再還原。';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_no_unacknowledged_image_drafts_in_this_chat =>
+      '此聊天中沒有未獲接收確認的圖片草稿。';
+
+  @override
+  String get release_core_prepared_image_recovery_unacknowledged_image_drafts =>
+      '未獲接收確認的圖片草稿';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_the_gateway_may_already_have_received_these_restore =>
+      '閘道可能已收到這些內容。還原後可查看，不會傳送任何內容。';
+
+  @override
+  String get release_core_prepared_image_recovery_image_draft => '圖片草稿';
+
+  @override
+  String get release_core_prepared_image_recovery_discard_local_copy =>
+      '捨棄本機副本';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_discard_this_local_image_draft =>
+      '捨棄此本機圖片草稿？';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_image_draft_recovery_is_unavailable =>
+      '圖片草稿還原功能無法使用。';
+
+  @override
+  String get release_core_prepared_image_recovery_recover_image_draft =>
+      '還原圖片草稿…';
+
+  @override
+  String get release_core_session_search_mode_menu_could_not_save_search_mode =>
+      '無法儲存搜尋模式。';
+
+  @override
+  String get release_core_projects_pane_discover_repositories => '探索儲存庫';
+
+  @override
+  String
+  get release_core_projects_pane_project_created_but_the_gateway_did_not_confirm =>
+      '專案已建立，但閘道未確認專案構想。';
+
+  @override
+  String get release_core_projects_pane_project_idea_optional => '專案構想（選填）';
+
+  @override
+  String
+  get release_core_projects_pane_saved_in_the_project_description_not_a_file =>
+      '儲存在專案描述中，而非檔案中。';
+
+  @override
+  String get release_core_project_detail_screen_new_chat_in_this_lane =>
+      '在此泳道中新增聊天';
+
+  @override
+  String get release_core_project_detail_screen_review_git => '檢閱 Git 變更';
+
+  @override
+  String get release_core_more_pane_gateway_fleet => '閘道群組';
+
+  @override
+  String
+  get release_core_more_pane_connected_sessions_hermes_cloud_and_desktop_webapp =>
+      '已連線的工作階段、Hermes Cloud 和桌面網頁應用程式';
+
+  @override
+  String get release_core_more_pane_use_dashboard_sign_in_for_a_named_profile =>
+      '請透過儀表板登入指定的設定檔。此舊版 API 無法確認聊天記錄屬於哪個設定檔。';
+
+  @override
+  String get release_core_more_pane_capabilities => '功能';
+
+  @override
+  String
+  get release_core_more_pane_install_and_govern_skills_plugins_connectors_and_tool =>
+      '安裝和管理技能、外掛程式、連接器及工具後端';
+
+  @override
+  String get release_core_more_pane_browser_vault => '瀏覽器保險庫';
+
+  @override
+  String
+  get release_core_more_pane_site_logins_addresses_cards_and_credential_sources =>
+      '網站登入資訊、地址、付款卡和憑證來源';
+
+  @override
+  String get release_core_more_pane_agent_policy => '代理程式原則';
+
+  @override
+  String
+  get release_core_more_pane_approvals_checkpoints_browser_access_and_shared_metrics =>
+      '核准、檢查點、瀏覽器存取和共用指標';
+
+  @override
+  String get release_core_more_pane_remote_logs_health_maintenance_and_update =>
+      '遠端記錄、健康狀態、維護和更新';
+
+  @override
+  String get release_core_more_pane_schedules => '排程任務';
+
+  @override
+  String get release_core_more_pane_all_profiles_blueprints_catch_up_and_stop =>
+      '所有設定檔、藍圖、補執行和停止';
+
+  @override
+  String get release_core_more_pane_memory_graph => '記憶圖譜';
+
+  @override
+  String get release_core_more_pane_timeline_edits_and_memory_providers =>
+      '時間軸、編輯和記憶供應商';
+
+  @override
+  String get release_core_more_pane_providers_and_routes => '供應商和路由';
+
+  @override
+  String get release_core_more_pane_keys_endpoints_delegation_and_mixtures =>
+      '金鑰、端點、委派和混合設定';
+
+  @override
+  String get release_core_more_pane_credits_and_plans => '額度和方案';
+
+  @override
+  String
+  get release_core_more_pane_consented_nous_billing_when_the_account_allows_it =>
+      '帳號允許且經你同意後使用 Nous 計費';
+
+  @override
+  String
+  get release_core_fleet_screen_this_gateway_does_not_offer_this_service =>
+      '此閘道不提供此服務。';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_or_permission_required_on_this_gateway =>
+      '需要在此閘道上登入或取得權限。';
+
+  @override
+  String get release_core_fleet_screen_a_secure_gateway_address_is_required =>
+      '需要安全的閘道位址。';
+
+  @override
+  String
+  get release_core_fleet_screen_the_owner_changed_refresh_before_continuing =>
+      '擁有者已變更。請重新整理後再繼續。';
+
+  @override
+  String
+  get release_core_fleet_screen_could_not_verify_the_operation_check_the_gateway =>
+      '無法驗證操作。請檢查閘道並重新整理。';
+
+  @override
+  String get release_core_fleet_screen_verified_ssh => '已驗證的 SSH';
+
+  @override
+  String
+  get release_core_fleet_screen_confirm_a_host_key_inspect_a_remote_service =>
+      '確認主機金鑰、檢查遠端服務或開啟其命令列';
+
+  @override
+  String get release_core_fleet_screen_cloud_and_desktop_webapp =>
+      '雲端和桌面網頁應用程式';
+
+  @override
+  String get release_core_fleet_screen_register_an_existing_gateway_or_webapp =>
+      '註冊現有閘道或網頁應用程式';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_to_its_address_nothing_is_hosted =>
+      '透過其位址登入。此裝置不會代管任何服務。';
+
+  @override
+  String get release_core_fleet_screen_fleet_updates => '閘道群組更新';
+
+  @override
+  String get release_core_fleet_screen_refresh_roster => '重新整理閘道清單';
+
+  @override
+  String release_core_fleet_screen_disconnect(String gateway) {
+    return '中斷 $gateway 的連線';
+  }
+
+  @override
+  String get release_core_fleet_screen_open_this_gateway_on_launch =>
+      '啟動時開啟此閘道';
+
+  @override
+  String
+  get release_core_fleet_screen_primary_for_ares_does_not_change_the_last =>
+      '設為 Ares 的主要閘道；不會變更上次使用的閘道。';
+
+  @override
+  String get release_core_fleet_screen_reconnect_in_fleet_on_launch =>
+      '啟動時在群組中重新連線';
+
+  @override
+  String get release_core_fleet_screen_no_sessions_for_this_profile =>
+      '此設定檔沒有工作階段。';
+
+  @override
+  String get release_core_fleet_screen_more_sessions => '更多工作階段';
+
+  @override
+  String get release_core_fleet_screen_this_gateway_was_disconnected =>
+      '此閘道已中斷連線。';
+
+  @override
+  String
+  get release_core_fleet_screen_some_conversation_data_could_not_be_loaded =>
+      '部分對話資料無法載入。';
+
+  @override
+  String get release_core_fleet_screen_message_this_session => '向此工作階段傳送訊息';
+
+  @override
+  String get release_core_fleet_screen_send_to_this_session => '傳送至此工作階段';
+
+  @override
+  String get release_core_fleet_updates_screen_update_these_remote_gateways =>
+      '更新這些遠端閘道？';
+
+  @override
+  String
+  release_core_fleet_updates_screen_this_can_restart_the_backend_and_interrupt_other(
+    String gateways,
+  ) {
+    return '這可能會重新啟動後端並中斷其他使用者的使用。不會更新 Ares。\n\n$gateways';
+  }
+
+  @override
+  String get release_core_fleet_updates_screen_update_listed_gateways =>
+      '更新列出的閘道';
+
+  @override
+  String
+  get release_core_fleet_updates_screen_checks_connected_gateways_cloud_is_platform_managed_entries =>
+      '檢查已連線的閘道。雲端由平台管理；沒有註冊來源記錄的項目不包含在內。';
+
+  @override
+  String get release_core_fleet_updates_screen_check_connected_gateways =>
+      '檢查已連線的閘道';
+
+  @override
+  String get release_core_fleet_updates_screen_read_update_receipt => '讀取更新回條';
+
+  @override
+  String get release_core_fleet_updates_screen_review_eligible_updates =>
+      '檢查符合條件的更新';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_account_changed_reopen_this_page =>
+      '帳號已變更。請重新開啟此頁面。';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_set_the_webapp_s_primary_gateway =>
+      '設定網頁應用程式的主要閘道？';
+
+  @override
+  String
+  release_core_fleet_webapp_screen_this_changes_the_shared_registry_not_the_last(
+    String webapp,
+    String gateway,
+    String id,
+  ) {
+    return '$webapp → $gateway ($id)\n這會變更共用登錄表，而非上次使用的閘道。';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_set_primary => '設為主要閘道';
+
+  @override
+  String get release_core_fleet_webapp_screen_serving_profile => '提供服務的設定檔';
+
+  @override
+  String get release_core_fleet_webapp_screen_hermes_cloud => 'Hermes Cloud';
+
+  @override
+  String get release_core_fleet_webapp_screen_discover_signed_in_agents =>
+      '探索已登入的代理程式';
+
+  @override
+  String release_core_fleet_webapp_screen_organisation(String organisation) {
+    return '組織：$organisation';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_no_agents_available =>
+      '沒有可用的代理程式。';
+
+  @override
+  String get release_core_fleet_webapp_screen_existing_desktop_webapp =>
+      '現有桌面網頁應用程式';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_check_gateway_and_web_access_status =>
+      '檢查閘道和網頁存取狀態';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_these_settings_belong_to_the_machine_serving_this =>
+      '這些設定屬於為此網頁應用程式提供服務的機器。發布和重新啟動不是遠端操作。';
+
+  @override
+  String get release_core_fleet_webapp_screen_read_webapp_gateway_registry =>
+      '讀取網頁應用程式的閘道登錄表';
+
+  @override
+  String get release_core_fleet_webapp_screen_last_used => '上次使用';
+
+  @override
+  String get release_core_fleet_webapp_screen_primary => '主要閘道';
+
+  @override
+  String release_core_fleet_webapp_screen_set_primary_2(String gateway) {
+    return '設為主要閘道：$gateway';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_read_shared_display_preferences =>
+      '讀取共用顯示偏好設定';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_chat_text_direction_on_this_webapp_and_desktop =>
+      '此網頁應用程式及桌面端的聊天文字方向';
+
+  @override
+  String release_core_schedule_desk_screen_created_on(
+    String job,
+    String profile,
+  ) {
+    return '已在 $profile 上建立 $job。';
+  }
+
+  @override
+  String
+  get release_core_schedule_desk_screen_the_list_covers_every_profile_on_this_gateway =>
+      '此清單涵蓋此閘道上的所有設定檔。停止、暫停、補執行、傳送和藍圖操作都會傳送至任務所屬的設定檔。';
+
+  @override
+  String get release_core_schedule_desk_screen_a_run_is_in_progress => '任務正在執行';
+
+  @override
+  String get release_core_schedule_desk_screen_no_current_run => '目前沒有執行中的任務';
+
+  @override
+  String release_core_schedule_desk_screen_stop_requested_for(String job) {
+    return '已要求停止 $job。';
+  }
+
+  @override
+  String release_core_schedule_desk_screen_no_run_was_in_flight_for(
+    String job,
+  ) {
+    return '$job 沒有正在執行的任務。';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_stop_current_run => '停止目前執行';
+
+  @override
+  String get release_core_schedule_desk_screen_pause_future_runs => '暫停後續執行';
+
+  @override
+  String get release_core_schedule_desk_screen_resume_future_runs => '恢復後續執行';
+
+  @override
+  String get release_core_schedule_desk_screen_catch_up_default => '預設補執行方式';
+
+  @override
+  String get release_core_schedule_desk_screen_run_one_missed => '補執行一次錯過的任務';
+
+  @override
+  String get release_core_schedule_desk_screen_skip_missed => '略過錯過的任務';
+
+  @override
+  String get release_core_schedule_desk_screen_blueprint_recipes => '藍圖範本';
+
+  @override
+  String get release_core_schedule_desk_screen_profile_for_the_new_job =>
+      '新任務使用的設定檔';
+
+  @override
+  String release_core_schedule_desk_screen_create(String blueprint) {
+    return '建立 $blueprint';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_loading_delivery_targets =>
+      '正在載入傳送目標';
+
+  @override
+  String release_core_schedule_desk_screen_no_home_channel(String target) {
+    return '$target（無預設頻道）';
+  }
+
+  @override
+  String release_core_memory_graph_screen_edit(String label) {
+    return '編輯$label';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_content => '內容';
+
+  @override
+  String get release_core_memory_graph_screen_archive_skill => '封存技能';
+
+  @override
+  String get release_core_memory_graph_screen_delete_memory => '刪除記憶';
+
+  @override
+  String release_core_memory_graph_screen_archive_on_it_can_be_restored_on_the(
+    String label,
+    String profile,
+  ) {
+    return '將 $profile 上的 $label 封存？可以在主機上使用 Curator 還原。';
+  }
+
+  @override
+  String release_core_memory_graph_screen_delete_from_this_removes_that_memory(
+    String label,
+    String profile,
+  ) {
+    return '從 $profile 中刪除 $label？這會移除該則記憶。';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_filter => '篩選';
+
+  @override
+  String get release_core_memory_graph_screen_timeline => '時間軸';
+
+  @override
+  String get release_core_memory_graph_screen_play_timeline => '播放時間軸';
+
+  @override
+  String get release_core_memory_graph_screen_layout_code => '版面配置代碼';
+
+  @override
+  String get release_core_memory_graph_screen_external_memory_providers =>
+      '外部記憶供應商';
+
+  @override
+  String
+  get release_core_memory_graph_screen_a_value_is_stored_leave_blank_to_keep =>
+      '已儲存一個值。留空即可保留。';
+
+  @override
+  String get release_core_memory_graph_screen_save_provider => '儲存供應商';
+
+  @override
+  String release_core_workspace_profiles_screen_applies_to(String profile) {
+    return '適用於：$profile';
+  }
+
+  @override
+  String get release_core_workspace_profiles_screen_choose_another_profile =>
+      '選擇其他設定檔';
+
+  @override
+  String
+  get release_core_workspace_profiles_screen_could_not_verify_the_selected_profile_on_this =>
+      '無法在此閘道上驗證所選設定檔。';
+
+  @override
+  String get release_core_workspace_profiles_screen_create_profile => '建立設定檔';
+
+  @override
+  String get release_core_workspace_profiles_screen_new_profile_id => '新設定檔 ID';
+
+  @override
+  String get release_core_assets_screen_links => '連結';
+
+  @override
+  String get release_core_workspace_picker_no_matching_items => '沒有符合的項目。';
+
+  @override
+  String get release_core_workspace_picker_save_layout => '儲存版面配置';
+
+  @override
+  String get release_core_workspace_picker_layout_name => '版面配置名稱';
+
+  @override
+  String
+  get release_core_workspace_popout_this_chat_already_has_a_pop_out_window =>
+      '此聊天已有一個獨立視窗。';
+
+  @override
+  String
+  get release_core_workspace_popout_could_not_open_this_saved_chat_check_the =>
+      '無法開啟此已儲存的聊天。請檢查連線後重試。';
+
+  @override
+  String
+  get release_core_popout_bootstrap_use_the_main_window_to_change_your_connection =>
+      '請在主視窗中變更連線。';
+
+  @override
+  String get release_core_guarded_save_refused => '閘道無法儲存此檔案';
+
+  @override
+  String get release_core_guarded_save_unavailable => '此閘道不提供受保護的儲存功能';
+
+  @override
+  String release_core_git_files_changed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '本輪變更了 $count 個檔案',
+      one: '本輪變更了 1 個檔案',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_git_entries_omitted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '因無法安全顯示，已省略 $count 個 Git 項目。',
+      one: '因無法安全顯示，已省略 1 個 Git 項目。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get release_core_git_staged => '已暫存';
+
+  @override
+  String get release_core_session_sort_recent => '最近活動';
+
+  @override
+  String get release_core_session_sort_created => '最新建立';
+
+  @override
+  String get release_core_session_sort_status => '執行中的優先';
+
+  @override
+  String get release_core_session_sort_tokens => '令牌最多';
+
+  @override
+  String get release_core_session_sort_cost => '費用最高';
+
+  @override
+  String get release_core_session_group_standard => '預設分組';
+
+  @override
+  String get release_core_session_group_status => '依狀態分組';
+
+  @override
+  String get release_core_session_group_project => '依專案分組';
+
+  @override
+  String release_core_session_tokens(int count) {
+    return '$count 個令牌';
+  }
+
+  @override
+  String release_core_search_gateway_mode(String mode) {
+    return '$mode（閘道）';
+  }
+
+  @override
+  String release_core_search_mode_tooltip(String label, String mode) {
+    return '$label：$mode';
+  }
+
+  @override
+  String get release_core_image_recovery_new_turn => '傳送會建立新的輪次';
+
+  @override
+  String release_core_image_recovery_metadata(int count, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 張圖片 · $date',
+      one: '1 張圖片 · $date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_discovery_scanning(String state) {
+    return '掃描：$state';
+  }
+
+  @override
+  String get release_core_discovery_enabled => '已啟用';
+
+  @override
+  String get release_core_discovery_disabled => '已停用';
+
+  @override
+  String get release_core_discovery_none => '無';
+
+  @override
+  String release_core_discovery_roots(String paths) {
+    return '掃描根目錄：$paths';
+  }
+
+  @override
+  String release_core_discovery_excluded(String paths) {
+    return '排除的子目錄樹：$paths';
+  }
+
+  @override
+  String release_core_discovery_repository_sessions(String path, int count) {
+    return '$path\n工作階段數：$count';
+  }
+
+  @override
+  String get release_core_projects_local_only =>
+      '此 Hermes 閘道版本較舊，不支援伺服器端專案，因此聊天分組僅保留在此裝置上。請更新 Hermes，以便在各裝置間共用相同的專案。';
+
+  @override
+  String get release_core_fleet_no_address => '尚無閘道位址';
+
+  @override
+  String release_core_fleet_diagnostics(String version, String access) {
+    return '閘道 $version · $access';
+  }
+
+  @override
+  String get release_core_schedule_builtin => '內建';
+
+  @override
+  String get release_core_memory_gateway_profile => '閘道';
+
+  @override
+  String release_core_memory_profile_summary(String profile, String gateway) {
+    return '$gateway 上的設定檔 $profile。分享代碼僅儲存縮放、時間和篩選條件。';
+  }
+
+  @override
+  String release_core_memory_layers_summary(
+    int memoryBytes,
+    int userBytes,
+    String provider,
+  ) {
+    return '內建記憶 $memoryBytes 位元組，使用者資訊 $userBytes 位元組。目前供應商為 $provider。';
+  }
+
+  @override
+  String get release_core_memory_kind_all => '全部';
+
+  @override
+  String get release_core_memory_kind_skill => '技能';
+
+  @override
+  String get release_core_memory_kind_memory => '記憶';
+
+  @override
+  String get release_core_workspace_failure_stale => '連線已變更';
+
+  @override
+  String get release_core_workspace_failure_unbound => '無經驗證的工作目錄';
+
+  @override
+  String get release_core_workspace_failure_denied => '權限遭拒';
+
+  @override
+  String get release_core_workspace_failure_ineligible => '不允許對此檔案執行該操作';
+
+  @override
+  String get release_core_workspace_failure_unsupported => '此閘道不支援';
+
+  @override
+  String get release_core_workspace_failure_mismatch => '遠端狀態已變更';
+
+  @override
+  String get release_core_workspace_failure_invalid => '閘道回應無效';
+
+  @override
+  String get release_core_workspace_failure_insecure => '需要安全連線';
+
+  @override
+  String get release_core_workspace_failure_unavailable => '閘道無法使用';
+
+  @override
+  String get release_core_queue_state_queued => '已排入佇列';
+
+  @override
+  String get release_core_queue_state_started => '已開始';
+
+  @override
+  String get release_core_queue_state_unknown => '結果未知';
+
+  @override
+  String get release_core_unknown_state => '未知';
+
+  @override
+  String get release_core_fleet_state_idle => '離線';
+
+  @override
+  String get release_core_fleet_state_connected => '已連線';
+
+  @override
+  String get release_core_fleet_state_reconnecting => '正在重新連線…';
+
+  @override
+  String get release_core_fleet_state_sessionExpired => '已登出';
+
+  @override
+  String get release_core_fleet_state_failed => '連線失敗';
+
+  @override
+  String release_core_workspace_operation_failed(String reason) {
+    return '無法確認閘道操作：$reason。';
+  }
+
+  @override
+  String get release_core_workspace_invalid_data => '無法驗證資料或輸入。請檢查後重試。';
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_changed_in_this_window_but_could_not =>
+      '此視窗中的版面配置已變更，但無法儲存。';
+
+  @override
+  String get release_core_parallel_workspace_first_pane => '第一個窗格';
+
+  @override
+  String get release_core_parallel_workspace_second_pane => '第二個窗格';
+
+  @override
+  String get release_core_parallel_workspace_unavailable_page => '頁面無法使用';
+
+  @override
+  String release_core_parallel_workspace_close_a_tab_first_maximum(
+    String maximum,
+  ) {
+    return '請先關閉一個分頁（最多 $maximum 個）。';
+  }
+
+  @override
+  String get release_core_parallel_workspace_dock_beside_current_pane =>
+      '停駐在目前窗格旁';
+
+  @override
+  String get release_core_parallel_workspace_add_chat => '新增聊天';
+
+  @override
+  String
+  get release_core_parallel_workspace_action_failed_check_the_connection_and_try_again =>
+      '操作失敗。請檢查連線後重試。';
+
+  @override
+  String
+  get release_core_parallel_workspace_close_a_tab_before_reopening_another =>
+      '請先關閉一個分頁，再重新開啟另一個。';
+
+  @override
+  String release_core_parallel_workspace_replace_layout(String name) {
+    return '取代版面配置「$name」？';
+  }
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_limit_reached_replace_an_existing_layout =>
+      '已達版面配置數量上限。請取代現有版面配置。';
+
+  @override
+  String get release_core_parallel_workspace_restore_layout => '還原版面配置';
+
+  @override
+  String get release_core_parallel_workspace_workspace_options => '工作區選項';
+
+  @override
+  String get release_core_parallel_workspace_dock_another_pane => '停駐另一個窗格';
+
+  @override
+  String get release_core_parallel_workspace_swap_panes => '交換窗格';
+
+  @override
+  String get release_core_parallel_workspace_undock_second_pane => '取消停駐第二個窗格';
+
+  @override
+  String get release_core_parallel_workspace_arrange_side_by_side => '左右排列';
+
+  @override
+  String get release_core_parallel_workspace_arrange_top_to_bottom => '上下排列';
+
+  @override
+  String release_core_parallel_workspace_change_split_size(String percent) {
+    return '調整分割比例（$percent%）';
+  }
+
+  @override
+  String get release_core_parallel_workspace_focus_pane_full_screen =>
+      '全螢幕聚焦窗格';
+
+  @override
+  String get release_core_parallel_workspace_open_chat_in_new_window =>
+      '在新視窗中開啟聊天';
+
+  @override
+  String get release_core_parallel_workspace_hide_pane_keep_running =>
+      '隱藏窗格（保持執行）';
+
+  @override
+  String get release_core_parallel_workspace_previous_tab => '上一個分頁';
+
+  @override
+  String get release_core_parallel_workspace_next_tab => '下一個分頁';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_left => '向左移動分頁';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_right => '向右移動分頁';
+
+  @override
+  String get release_core_parallel_workspace_reload_current_tab => '重新載入目前分頁';
+
+  @override
+  String get release_core_parallel_workspace_close_tab => '關閉分頁';
+
+  @override
+  String get release_core_parallel_workspace_close_other_tabs => '關閉其他分頁';
+
+  @override
+  String get release_core_parallel_workspace_close_tabs_to_the_right =>
+      '關閉右側分頁';
+
+  @override
+  String get release_core_parallel_workspace_close_all_tabs => '關閉所有分頁';
+
+  @override
+  String get release_core_parallel_workspace_reopen_closed_tab => '重新開啟已關閉的分頁';
+
+  @override
+  String get release_core_parallel_workspace_save_named_layout => '儲存具名版面配置';
+
+  @override
+  String get release_core_parallel_workspace_restore_named_layout => '還原具名版面配置';
+
+  @override
+  String get release_core_parallel_workspace_refresh_chat_list => '重新整理聊天清單';
+
+  @override
+  String get release_core_parallel_workspace_workspace_tools => '工作區工具';
+
+  @override
+  String get release_core_parallel_workspace_choose_a_chat_for_this_pane =>
+      '為此窗格選擇聊天';
+
+  @override
+  String release_core_parallel_workspace_choose_chat_for(String pane) {
+    return '為$pane選擇聊天';
+  }
+
+  @override
+  String get release_core_parallel_workspace_add_a_chat_to_start_a_workspace =>
+      '新增聊天以開始使用工作區。';
+
+  @override
+  String get release_core_parallel_workspace_select_a_tab_to_show_its_pane =>
+      '選擇一個分頁以顯示對應的窗格。';
+
+  @override
+  String get release_core_parallel_workspace_parallel_workspace => '並行工作區';
+
+  @override
+  String get release_core_parallel_workspace_show_workspace => '顯示工作區';
+
+  @override
+  String get release_core_parallel_workspace_could_not_load_chats_retry =>
+      '無法載入聊天。重試';
+
+  @override
+  String release_core_parallel_workspace_close(String pane) {
+    return '關閉$pane';
+  }
+
+  @override
+  String release_core_parallel_workspace_switch_pane(String pane) {
+    return '切換窗格：$pane';
+  }
+
+  @override
+  String get release_core_workspace_registry_session_id_copied => '已複製工作階段 ID。';
+
+  @override
+  String get release_core_workspace_registry_chat_details => '聊天詳細資訊';
+
+  @override
+  String get release_core_workspace_registry_server_default => '伺服器預設值';
+
+  @override
+  String get release_core_workspace_registry_session_id => '工作階段 ID';
+
+  @override
+  String get release_core_workspace_registry_title => '標題';
+
+  @override
+  String get release_core_workspace_label_terminals => '終端機';
+
+  @override
+  String get release_core_workspace_label_copy_id => '複製工作階段 ID';
+
+  @override
+  String get release_core_workspace_label_contributions => '擴充內容';
+
+  @override
+  String get release_core_workspace_owner_inactive => '此工作區的擁有者已不再處於作用中狀態。';
+
+  @override
+  String get release_core_workspace_select_chat => '請先選擇聊天。';
+
+  @override
+  String get release_core_workspace_chat_unavailable => '此連線無法使用該聊天。';
+
+  @override
+  String get release_core_workspace_page_unavailable => '此連線無法使用該頁面。';
+
+  @override
+  String release_core_client_queue_count(int count) {
+    return '$count 則已排入佇列';
+  }
+
+  @override
+  String release_core_client_queue_paused_count(int count) {
+    return '$count 則已排入佇列，已暫停';
+  }
+
+  @override
+  String release_core_git_diff_truncated(String diff) {
+    return '$diff\n…已截斷';
+  }
+
+  @override
+  String get release_core_search_no_models => 'Hermes 未傳回任何已設定的可選模型。';
+
+  @override
+  String get release_core_chat_archive_unavailable => '聊天封存操作無法使用。';
+
+  @override
+  String get release_core_chat_pin_unconfirmed => '置頂狀態未獲確認。';
+
+  @override
+  String get release_core_chat_archive_unconfirmed => '封存狀態未獲確認。';
+
+  @override
+  String get release_core_chat_archive_history_unavailable => '已封存的歷史記錄無法使用';
+
+  @override
+  String get release_core_quick_chat_history_unavailable => '快速聊天的歷史記錄無法使用';
+
+  @override
+  String get release_core_chat_project_ownership_unavailable => '無法確認專案歸屬';
+
+  @override
+  String get release_core_chat_unknown_project => '未知專案';
+
+  @override
+  String get release_core_chat_local_search_fallback => '訊息搜尋無法使用。正在顯示本機符合結果。';
+
+  @override
+  String release_core_fleet_update_eligible(String version) {
+    return '符合條件 · $version';
+  }
+
+  @override
+  String get release_core_fleet_update_state_1 => '已略過：同一安裝執行個體';
+
+  @override
+  String get release_core_fleet_update_state_2 => '尚未檢查';
+
+  @override
+  String get release_core_fleet_update_state_3 => '已略過：由雲端管理';
+
+  @override
+  String get release_core_fleet_update_state_4 => '已略過：未註冊為直連閘道';
+
+  @override
+  String get release_core_fleet_update_state_5 => '已略過：已中斷連線或忙碌中';
+
+  @override
+  String get release_core_fleet_update_state_6 => '沒有適用的更新';
+
+  @override
+  String get release_core_fleet_update_state_7 => '無法驗證更新資格';
+
+  @override
+  String get release_core_fleet_update_state_8 => '已略過：狀態已過期、忙碌中或已要求';
+
+  @override
+  String get release_core_fleet_update_state_9 => '正在提出要求';
+
+  @override
+  String get release_core_fleet_update_state_10 => '已接受；回條無法取得';
+
+  @override
+  String get release_core_fleet_update_state_11 => '已接受；正在等待回條';
+
+  @override
+  String get release_core_fleet_update_state_12 => '已略過：此安裝執行個體上有聊天正在執行';
+
+  @override
+  String get release_core_fleet_update_state_13 => '未獲確認；請勿自動重新傳送';
+
+  @override
+  String get release_core_fleet_update_state_14 => '重新連線以檢查回條';
+
+  @override
+  String get release_core_fleet_update_state_15 => '回條無法取得';
+
+  @override
+  String get release_core_fleet_update_state_16 => '正在等待相符的回條';
+
+  @override
+  String get release_core_fleet_update_state_17 => '已更新；需要後續處理';
+
+  @override
+  String get release_core_fleet_update_state_19 => '已部分更新';
+
+  @override
+  String get release_core_fleet_update_state_20 => '更新失敗';
+
+  @override
+  String get release_core_fleet_update_state_21 => '未獲確認';
+
+  @override
+  String get release_core_cloud_status_ready => '就緒';
+
+  @override
+  String get release_core_cloud_status_online => '上線';
+
+  @override
+  String get release_core_cloud_status_stopped => '已停止';
+
+  @override
+  String get release_core_cloud_status_error => '錯誤';
+
+  @override
+  String get ng_release_more_contributions_subtitle => '此連線中已審核的回覆卡片';
+
+  @override
+  String get ng_release_more_gateway_fleet => '閘道群組';
+
+  @override
+  String get ng_release_more_memory_graph => '記憶圖譜';
+
+  @override
+  String get ng_release_more_memory_graph_subtitle => '時間軸、編輯和記憶供應商';
+
+  @override
+  String get ng_release_more_capabilities_subtitle => '安裝和管理技能、外掛程式、連接器及工具後端';
+
+  @override
+  String get ng_release_more_browser_vault => '瀏覽器保險庫';
+
+  @override
+  String get ng_release_more_browser_vault_subtitle => '網站登入資訊、地址、付款卡和憑證來源';
+
+  @override
+  String get ng_release_more_agent_policy => '代理程式原則';
+
+  @override
+  String get ng_release_more_agent_policy_subtitle => '核准、檢查點、瀏覽器存取和共用指標';
+
+  @override
+  String get ng_release_more_schedules => '排程任務';
+
+  @override
+  String get ng_release_more_schedules_subtitle => '所有設定檔、藍圖、補執行和停止';
+
+  @override
+  String get ng_release_more_host_subtitle => '遠端記錄、健康狀態、維護和更新';
+
+  @override
+  String get ng_release_more_providers_routes => '供應商和路由';
+
+  @override
+  String get ng_release_more_providers_routes_subtitle => '金鑰、端點、委派和混合設定';
+
+  @override
+  String get ng_release_more_credits_plans => '額度和方案';
+
+  @override
+  String get ng_release_more_credits_plans_subtitle => '帳號允許且經你同意後使用 Nous 計費';
+
+  @override
+  String get ng_release_sign_in_or => '或';
+
+  @override
+  String ng_release_deployment_sign_in_hint(String message) {
+    return '$message 你仍可在下一步使用部署工作階段令牌登入。';
+  }
+
+  @override
+  String get ng_release_message_search_unavailable => '訊息搜尋無法使用。正在顯示本機符合結果。';
+
+  @override
+  String ng_release_insights_days(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days 天',
+      one: '$days 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_release_signed_in_you => '你';
+
+  @override
+  String get release_chat_unsent_prompt_gone => '該未傳送的提示詞已不在佇列中。';
+
+  @override
+  String ng_release_attachment_not_attached(String name) {
+    return '閘道未附加 $name。';
+  }
+
+  @override
+  String get ng_release_gateway_not_connected => '尚未連線至閘道。';
+
+  @override
+  String get ng_release_gateway_unreachable => '無法連線至閘道。';
+
+  @override
+  String get ng_release_projects_scope_changed => '專案所屬的連線或設定檔已不再選取';
+
+  @override
+  String get ng_release_missing_providers => '缺少供應商';
+
+  @override
+  String get ng_release_missing_tasks => '缺少任務';
+
+  @override
+  String ng_release_age_minutes(int count) {
+    return '$count分';
+  }
+
+  @override
+  String ng_release_age_hours(int count) {
+    return '$count小時';
+  }
+
+  @override
+  String ng_release_age_days(int count) {
+    return '$count天';
+  }
+
+  @override
+  String ng_release_age_weeks(int count) {
+    return '$count週';
+  }
+
+  @override
+  String ng_release_age_years(int count) {
+    return '$count年';
+  }
+
+  @override
+  String ng_release_compact_billions(String count) {
+    return '$count十億';
+  }
+
+  @override
+  String ng_release_compact_millions(String count) {
+    return '$count百萬';
+  }
+
+  @override
+  String ng_release_compact_thousands(String count) {
+    return '$count千';
+  }
+
+  @override
+  String ng_release_token_thousands(String count) {
+    return '$count千';
+  }
+
+  @override
+  String ng_release_elapsed_minutes_seconds(int minutes, int seconds) {
+    return '$minutes分 $seconds秒';
+  }
+
+  @override
+  String ng_release_elapsed_seconds(int seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get ng_release_notification_foreground => 'Ares 當時顯示在螢幕上';
+
+  @override
+  String get ng_release_notification_stopped => '該輪次已停止';
+
+  @override
+  String get ng_release_more_parallel_workspace => '並行工作區';
+
+  @override
+  String get ng_release_more_parallel_workspace_subtitle => '在分頁中或並排開啟多個聊天。';
+
+  @override
+  String get release_chat_unknown_model => '未知';
+
+  @override
+  String release_chat_profile_default(String model) {
+    return '設定檔預設值：$model';
+  }
+
+  @override
+  String release_chat_profile_default_provider(String model, String provider) {
+    return '設定檔預設值：$model • $provider';
+  }
+
+  @override
+  String get release_chat_choose_provider => '此模型可透過多個供應商使用。請選擇一個供應商以繼續。';
+
+  @override
+  String get release_chat_slash_needs_gateway => '斜線指令需要桌面閘道';
+
+  @override
+  String get release_chat_recovering_without_resending => '正在復原，不會重新傳送';
+
+  @override
+  String get release_chat_live_request_unreachable => '抱歉，無法連線至 Hermes 來處理該要求。';
+
+  @override
+  String release_chat_live_working(String tool) {
+    return 'Hermes 正在處理：$tool。尚未完成。';
+  }
+
+  @override
+  String get release_chat_live_finished_without_spoken_result =>
+      'Hermes 已完成該要求，但沒有語音回覆。';
+
+  @override
+  String get release_chat_reply_language_unavailable => '所選回覆語言無法使用';
+
+  @override
+  String get release_chat_reply_voice_unavailable => '所選回覆音色無法使用';
+
+  @override
+  String get release_chat_reply_voice_configuration_unavailable => '回覆語音設定無法使用';
+
+  @override
+  String get release_chat_notification_review_action => '開啟聊天以檢查要求的操作。';
+
+  @override
+  String get release_chat_notification_respond => '開啟聊天以回覆。';
+
+  @override
+  String get release_chat_start_new_main_window => '請在主視窗中開始新的聊天。';
+
+  @override
+  String get release_chat_no_desktop_gateway => '無桌面閘道';
+
+  @override
+  String get release_chat_attachment_preparation_cancelled => '附件準備已取消。';
+
+  @override
+  String get release_chat_approval_authority_revoked => '核准權限已被撤銷。';
+
+  @override
+  String get release_chat_gateway_session_disconnected => '桌面閘道工作階段已中斷連線';
+
+  @override
+  String get release_chat_stop_requested => '已要求停止。正在等待 Hermes 結束。';
+
+  @override
+  String release_chat_stop_request_failed(String error) {
+    return '無法要求停止：$error';
+  }
+
+  @override
+  String get release_chat_queued_prompt_not_sent => '佇列中的提示詞未傳送。';
+
+  @override
+  String get release_chat_running_turn_unreachable =>
+      '無法聯繫到正在執行的輪次。正在重新連線，不會重新傳送。';
+
+  @override
+  String get release_chat_wait_for_composer => '請等待訊息輸入框可用。';
+
+  @override
+  String get release_chat_find_in_transcript => '在對話記錄中尋找';
+
+  @override
+  String get release_chat_open_browser_preview => '開啟瀏覽器預覽';
+
+  @override
+  String get release_chat_more_tools => '更多聊天工具';
+
+  @override
+  String get release_chat_queue_until_finished => '排入佇列，等待本輪結束';
+
+  @override
+  String get release_chat_format_bold => '粗體';
+
+  @override
+  String get release_chat_format_italic => '斜體';
+
+  @override
+  String get ng_release_chat_gateway_queue_requirements =>
+      '閘道佇列需要已關聯的聊天和純文字提示詞。';
+
+  @override
+  String get ng_release_chat_start_new_main_screen => '請從聊天主畫面開始新的聊天。';
+
+  @override
+  String get ng_release_chat_image => '圖片';
+
+  @override
+  String ng_release_chat_tool_seconds(String seconds) {
+    return '$seconds秒';
+  }
+
+  @override
+  String get release_preview_chat_changed => '聊天已變更。請重新連線預覽以繼續。';
+
+  @override
+  String get release_preview_authenticating_chat => '正在驗證聊天身分…';
+
+  @override
+  String release_preview_unavailable_reason(String reason) {
+    return '預覽無法使用：$reason';
+  }
+
+  @override
+  String get release_preview_operation_failed => '預覽操作失敗。';
+
+  @override
+  String get release_preview_added_to_draft => '已新增至草稿。未傳送任何內容。';
+
+  @override
+  String get release_preview_open_site_title => '開啟此網站？';
+
+  @override
+  String release_preview_open_site_body(String origin) {
+    return '$origin\n\n閱讀模式僅載入此文件，不會與 Hermes 分享 Cookie、登入資訊或頁面。';
+  }
+
+  @override
+  String get release_preview_open_site => '開啟網站';
+
+  @override
+  String get release_preview_discard_pins_title => '捨棄尚未新增至草稿的標註？';
+
+  @override
+  String get release_preview_keep_pins => '保留標註';
+
+  @override
+  String get release_preview_share_page_title => '與此聊天分享此頁面？';
+
+  @override
+  String release_preview_share_page_body(String origin) {
+    return 'Hermes 可以讀取 $origin 中顯示的文字和元素清單，並捲動此窗格。導覽至其他頁面後將結束分享。不會分享表單和憑證。';
+  }
+
+  @override
+  String get release_preview_share_page => '分享頁面';
+
+  @override
+  String release_preview_comment_number(int number) {
+    return '評論 #$number';
+  }
+
+  @override
+  String get release_preview_note => '備註';
+
+  @override
+  String get release_preview_keep_pin => '保留標註';
+
+  @override
+  String get release_preview_title => '瀏覽器預覽';
+
+  @override
+  String get release_preview_hide => '隱藏預覽';
+
+  @override
+  String get release_preview_close_and_forget => '關閉並清除此頁面';
+
+  @override
+  String get release_preview_site_address => '網站位址';
+
+  @override
+  String get release_preview_go_to_address => '前往位址';
+
+  @override
+  String get release_preview_forward => '前進';
+
+  @override
+  String get release_preview_reload => '重新載入';
+
+  @override
+  String get release_preview_share_with_hermes => '與 Hermes 分享頁面';
+
+  @override
+  String get release_preview_stop_sharing => '停止分享頁面';
+
+  @override
+  String get release_preview_annotate => '標註元素或區域';
+
+  @override
+  String get release_preview_reader_console => '閱讀器主控台';
+
+  @override
+  String get release_preview_reconnect => '重新連線預覽';
+
+  @override
+  String get release_preview_reader_mode_help =>
+      '閱讀模式：僅 HTML 和文字。不執行指令碼、不載入內嵌資源，也不使用已登入的瀏覽器設定檔。';
+
+  @override
+  String release_preview_sharing_origin(String origin) {
+    return '正在與此聊天分享閱讀器：$origin';
+  }
+
+  @override
+  String get release_preview_annotation_help => '點選元素或拖曳選取區域以新增評論。';
+
+  @override
+  String get release_preview_reader_requests => '閱讀器要求（JavaScript 已關閉）';
+
+  @override
+  String release_preview_selected_requests(int count) {
+    return '已選取 $count 項 · JavaScript 已關閉';
+  }
+
+  @override
+  String get release_preview_copy_all => '全部複製';
+
+  @override
+  String get release_preview_copy_selected => '複製所選內容';
+
+  @override
+  String get release_preview_add_log_to_draft => '將記錄新增至草稿';
+
+  @override
+  String release_preview_requests_draft(String log) {
+    return '閱讀器要求：\n$log';
+  }
+
+  @override
+  String release_preview_add_pins_to_draft(int count) {
+    return '將 $count 個標註新增至草稿';
+  }
+
+  @override
+  String release_preview_request_loaded(String origin, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個閱讀器元素',
+      one: '$count 個閱讀器元素',
+    );
+    return 'HTTP 200 · $origin · $_temp0';
+  }
+
+  @override
+  String release_preview_annotation_intro(String origin) {
+    return '請檢查對 $origin 預覽的這些評論。附帶的裁切圖依相同順序編號。';
+  }
+
+  @override
+  String get release_preview_reader_region => '閱讀器區域';
+
+  @override
+  String get release_preview_capture_failed => '無法擷取這些像素。';
+
+  @override
+  String get release_preview_address_not_approved => '此位址不屬於已核准的預覽來源。';
+
+  @override
+  String get release_preview_page_limit => '頁面超出閱讀器限制。';
+
+  @override
+  String get release_preview_page_unreadable => '無法讀取此頁面。';
+
+  @override
+  String get release_preview_page_complex => '此頁面過於複雜，無法使用閱讀模式。';
+
+  @override
+  String release_preview_http_failed(int statusCode) {
+    return 'HTTP $statusCode。未跟隨任何重新導向，也未進行登入。';
+  }
+
+  @override
+  String get release_preview_unsupported_type => '閱讀模式只能開啟 HTML 和純文字。';
+
+  @override
+  String get release_preview_load_insecure => '無法安全載入此網站。';
+
+  @override
+  String get release_preview_crop_limit => '預覽裁切圖超出限制。';
+
+  @override
+  String get release_preview_image_unreadable => '所選圖片為空或無法讀取。';
+
+  @override
+  String get release_preview_image_budget => '所選圖片超出草稿的 64 MiB 大小限制。';
+
+  @override
+  String get release_preview_image_format => '不支援此圖片格式。請選擇 JPEG、PNG 或 WebP 圖片。';
+
+  @override
+  String get release_preview_image_decode => '無法安全解碼所選的 JPEG、PNG 或 WebP 圖片。';
+
+  @override
+  String get release_preview_image_sanitize =>
+      '無法安全清除此圖片的中繼資料。請選擇有效的 JPEG、PNG 或 WebP 圖片。';
+
+  @override
+  String get release_preview_draft_budget => '每份草稿的附件總大小不得超過 64 MiB。';
+
+  @override
+  String get release_preview_generic_file_limit => '一般檔案每個不得超過 16 MiB。';
+
+  @override
+  String get release_preview_image_not_sanitized => '遠端圖片必須先經過安全清理才能上傳。';
+
+  @override
+  String get release_preview_stage_failed => '無法將預覽證據新增至草稿。請重試。';
+
+  @override
+  String get release_misc_find_hermes_on_lan => '在區域網路中尋找 Hermes';
+
+  @override
+  String release_misc_discovery_failed(String error) {
+    return '探索失敗：$error';
+  }
+
+  @override
+  String get release_misc_no_lan_servers => '在區域網路中未找到 Hermes 伺服器。';
+
+  @override
+  String release_misc_api_key_rejected(String endpoint, int statusCode) {
+    return '$endpoint 拒絕了 API 金鑰（HTTP $statusCode）。';
+  }
+
+  @override
+  String get release_misc_api_key_required =>
+      '伺服器需要 API 金鑰。請輸入你的 API_SERVER_KEY。';
+
+  @override
+  String release_misc_gateway_not_found(String endpoint) {
+    return '閘道端點 $endpoint 傳回 HTTP 404。請檢查閘道路徑前置字串和反向代理路由。';
+  }
+
+  @override
+  String release_misc_gateway_http_error(String endpoint, int statusCode) {
+    return '閘道端點 $endpoint 傳回 HTTP $statusCode。';
+  }
+
+  @override
+  String release_misc_gateway_unreachable(String endpoint) {
+    return '無法連線至閘道端點 $endpoint。';
+  }
+
+  @override
+  String get release_core_schedule_invalid_delivery_target => '無效的傳送目標';
+
+  @override
+  String get release_core_file_save_direct_only => '只能儲存工作目錄直屬的檔案。';
+
+  @override
+  String get release_core_file_save_hidden => '閘道無法儲存隱藏檔案。';
+
+  @override
+  String get rel_admin_choose_provider => '請選擇供應商和模型。';
+
+  @override
+  String get rel_admin_known_effort => '請選擇已知的推理強度。';
+
+  @override
+  String get rel_admin_endpoint_name_required => '請輸入此端點的名稱。';
+
+  @override
+  String get rel_admin_endpoint_model_required => '請輸入此端點提供的模型。';
+
+  @override
+  String get rel_admin_known_api_mode => '請選擇自動或已知的 API 模式。';
+
+  @override
+  String get rel_admin_endpoint_id_invalid => '此端點識別碼無法使用。';
+
+  @override
+  String get rel_admin_endpoint_https => '遠端端點請使用 HTTPS，localhost 請使用 HTTP。';
+
+  @override
+  String get rel_admin_key_invalid => '無法儲存該 API 金鑰。';
+
+  @override
+  String get rel_admin_response_shape => '閘道回應與預期結構不符。';
+
+  @override
+  String get rel_admin_limits_required => '儲存前請輸入迭代次數、並行數和逾時限制。';
+
+  @override
+  String get rel_admin_route_required => '每條路由都需要名稱和模型才能儲存。';
+
+  @override
+  String get rel_admin_route_unique => '路由名稱必須唯一。';
+
+  @override
+  String get rel_admin_route_default_invalid => '預設路由必須是已儲存的路由之一。';
+
+  @override
+  String get rel_admin_policy_required => '請選擇有聲或靜默的參考模型降級策略。';
+
+  @override
+  String get rel_admin_mixture_missing => '閘道未傳回作用中的混合設定。';
+
+  @override
+  String get rel_admin_mixture_slots_required => '請為聚合器和每個參考模型指定供應商及模型。';
+
+  @override
+  String get rel_admin_chat_id_required => '請輸入要套用此變更的聊天 ID。';
+
+  @override
+  String rel_admin_http_error(String status) {
+    return '閘道傳回了 HTTP $status。';
+  }
+
+  @override
+  String get rel_admin_response_unreadable => '無法讀取閘道回應。';
+
+  @override
+  String get rel_admin_connect_before_change => '變更帳單或聊天前，請連接閘道即時工作階段。';
+
+  @override
+  String get rel_admin_operation_unavailable => '此閘道不支援該操作。';
+
+  @override
+  String get rel_admin_key_required => '請輸入要儲存的金鑰。';
+
+  @override
+  String get rel_admin_key_save_failed => '閘道未儲存該金鑰。';
+
+  @override
+  String get rel_admin_key_clear_required => '請選擇要清除的供應商金鑰。';
+
+  @override
+  String get rel_admin_key_clear_failed => '閘道未清除該金鑰。';
+
+  @override
+  String get rel_admin_endpoint_save_failed => '閘道未儲存該端點。';
+
+  @override
+  String get rel_admin_endpoint_activate_failed => '閘道未啟用該端點。';
+
+  @override
+  String get rel_admin_accounts_secure_required =>
+      '供應商帳戶需要經過驗證的 HTTPS 閘道或 localhost。';
+
+  @override
+  String get rel_admin_accounts_read_failed => '無法讀取供應商帳戶。';
+
+  @override
+  String get rel_admin_account_disconnect_failed => '閘道未中斷該帳戶連線。';
+
+  @override
+  String get rel_admin_account_not_disconnectable => '無法中斷該供應商帳戶連線。';
+
+  @override
+  String get rel_admin_backend_required => '請選擇一個可用的委派後端。';
+
+  @override
+  String get rel_admin_backend_save_failed => '閘道未選擇該後端。';
+
+  @override
+  String get rel_admin_routes_save_failed => '閘道未儲存這些路由。';
+
+  @override
+  String get rel_admin_profile_route_required => '每條設定檔路由都需要設定檔名稱。';
+
+  @override
+  String get rel_admin_profile_route_unique => '設定檔路由必須唯一。';
+
+  @override
+  String get rel_admin_profile_route_default_invalid => '預設設定檔路由必須是允許的設定檔之一。';
+
+  @override
+  String get rel_admin_profile_routes_save_failed => '閘道未儲存這些設定檔路由。';
+
+  @override
+  String get rel_admin_limits_save_failed => '閘道未儲存這些限制。';
+
+  @override
+  String get rel_admin_mixture_save_failed => '閘道未儲存該混合設定。';
+
+  @override
+  String get rel_admin_credit_amount_required => '請選擇一個提供的額度金額。';
+
+  @override
+  String get rel_admin_charge_check_failed => '無法檢查該筆扣款。';
+
+  @override
+  String get rel_admin_reload_amounts_missing => '未提供自動儲值金額，因此未作變更。';
+
+  @override
+  String get rel_admin_plan_required => '請先選擇方案。';
+
+  @override
+  String get rel_admin_plan_scheduled_only => '這裡只能確認已排程的方案變更。';
+
+  @override
+  String get rel_admin_billing_refused => '閘道拒絕了此帳單請求。';
+
+  @override
+  String get rel_admin_request_refused => '閘道拒絕了此請求。';
+
+  @override
+  String get rel_admin_endpoint_answered => '端點已回應。';
+
+  @override
+  String get rel_admin_endpoint_no_answer => '端點未回應。';
+
+  @override
+  String get rel_admin_charge_unknown => '扣款結果未知，仍可能結算。重試前請檢查入口網站。';
+
+  @override
+  String get rel_admin_connect_before_billing => '查看帳單前請連接閘道即時工作階段。此頁面不會扣款。';
+
+  @override
+  String get rel_admin_preset_required => '請先儲存預設再套用。';
+
+  @override
+  String get rel_admin_cancel => '取消';
+
+  @override
+  String get rel_admin_refresh => '重新整理';
+
+  @override
+  String get rel_admin_credits_and_plans => '額度和方案';
+
+  @override
+  String get rel_admin_saved => '已儲存';
+
+  @override
+  String get rel_admin_name => '名稱';
+
+  @override
+  String get rel_admin_base_url => '基礎 URL';
+
+  @override
+  String get rel_admin_model => '模型';
+
+  @override
+  String get rel_admin_signed_in => '已登入';
+
+  @override
+  String get rel_admin_not_signed_in => '未登入';
+
+  @override
+  String get rel_admin_provider => '供應商';
+
+  @override
+  String get rel_admin_apply_to_this_chat => '套用至此聊天';
+
+  @override
+  String get rel_admin_auto => '自動';
+
+  @override
+  String get rel_admin_chat_completions => '聊天補全';
+
+  @override
+  String get rel_admin_codex_responses => 'Codex 回應';
+
+  @override
+  String get rel_admin_anthropic_messages => 'Anthropic 訊息';
+
+  @override
+  String get rel_admin_could_not_complete_that_request => '無法完成該請求。';
+
+  @override
+  String get rel_admin_confirm => '確認';
+
+  @override
+  String get rel_admin_providers_and_billing => '供應商與帳單';
+
+  @override
+  String get rel_admin_api_keys => 'API 金鑰';
+
+  @override
+  String get rel_admin_custom_endpoints => '自訂端點';
+
+  @override
+  String get rel_admin_provider_accounts => '供應商帳戶';
+
+  @override
+  String get rel_admin_effort_and_speed_presets => '推理強度與速度預設';
+
+  @override
+  String get rel_admin_delegation => '委派';
+
+  @override
+  String get rel_admin_mixture_of_agents => '代理混合';
+
+  @override
+  String get rel_admin_no_provider_keys_were_reported_for_this_profile =>
+      '未回報此設定檔的供應商金鑰。';
+
+  @override
+  String get rel_admin_not_saved => '未儲存';
+
+  @override
+  String get rel_admin_new_key_value => '新金鑰值';
+
+  @override
+  String get rel_admin_provider_key_saved => '供應商金鑰已儲存。';
+
+  @override
+  String get rel_admin_save_key => '儲存金鑰';
+
+  @override
+  String get rel_admin_clear_provider_key => '清除供應商金鑰';
+
+  @override
+  String get rel_admin_provider_key_cleared => '供應商金鑰已清除。';
+
+  @override
+  String get rel_admin_clear_key => '清除金鑰';
+
+  @override
+  String get rel_admin_new_endpoint => '新端點';
+
+  @override
+  String get rel_admin_api_key => 'API 金鑰';
+
+  @override
+  String get rel_admin_leave_blank_to_keep_a_key_this_endpoint_already_has =>
+      '留空以保留此端點現有的金鑰。';
+
+  @override
+  String get rel_admin_reachable => '可存取';
+
+  @override
+  String get rel_admin_unreachable => '無法存取';
+
+  @override
+  String get rel_admin_test_endpoint => '測試端點';
+
+  @override
+  String get rel_admin_endpoint_saved => '端點已儲存。';
+
+  @override
+  String get rel_admin_save_endpoint => '儲存端點';
+
+  @override
+  String get rel_admin_use_this_endpoint => '使用此端點';
+
+  @override
+  String
+  get rel_admin_make_this_named_endpoint_the_current_model_for_this_profile =>
+      '將此具名端點設為此設定檔的目前模型？';
+
+  @override
+  String get rel_admin_endpoint_is_now_current => '端點現已設為目前端點。';
+
+  @override
+  String get rel_admin_use_endpoint => '使用端點';
+
+  @override
+  String get rel_admin_delete_endpoint => '刪除端點';
+
+  @override
+  String get rel_admin_delete_this_named_endpoint_from_the_profile =>
+      '從設定檔中刪除此具名端點？';
+
+  @override
+  String get rel_admin_endpoint_deleted => '端點已刪除。';
+
+  @override
+  String get rel_admin_signing_in_stays_on_the_provider_sign_in_screen =>
+      '登入仍在供應商登入畫面進行。僅當此閘道表示可以移除帳戶時才執行中斷連線。';
+
+  @override
+  String get rel_admin_disconnect_this_provider_account_on_the_gateway =>
+      '在閘道上中斷此供應商帳戶連線？';
+
+  @override
+  String get rel_admin_provider_account_disconnected => '供應商帳戶已中斷連線。';
+
+  @override
+  String get rel_admin_disconnect => '中斷連線';
+
+  @override
+  String get rel_admin_not_disconnectable => '無法中斷連線';
+
+  @override
+  String get rel_admin_fast => '快速';
+
+  @override
+  String get rel_admin_preset_saved_for_this_model => '已儲存此模型的預設。';
+
+  @override
+  String get rel_admin_save_preset => '儲存預設';
+
+  @override
+  String get rel_admin_chat_id => '聊天 ID';
+
+  @override
+  String get rel_admin_apply_preset => '套用預設';
+
+  @override
+  String get rel_admin_set_this_chat_s_effort_and_speed_from_the_saved_preset =>
+      '使用儲存的預設設定此聊天的推理強度和速度？';
+
+  @override
+  String get rel_admin_preset_applied_to_this_chat => '預設已套用至此聊天。';
+
+  @override
+  String get rel_admin_this_route_sends_the_picked_effort_unchanged =>
+      '此路由原樣傳送所選推理強度。';
+
+  @override
+  String get rel_admin_show_route_clamp => '顯示路由限制';
+
+  @override
+  String get rel_admin_delegation_backend => '委派後端';
+
+  @override
+  String get rel_admin_delegation_backend_saved => '委派後端已儲存。';
+
+  @override
+  String get rel_admin_save_backend => '儲存後端';
+
+  @override
+  String get rel_admin_max_iterations => '最大迭代次數';
+
+  @override
+  String get rel_admin_max_concurrent_children => '最大並行子代理數';
+
+  @override
+  String get rel_admin_child_timeout_seconds => '子代理逾時秒數';
+
+  @override
+  String get rel_admin_delegation_effort_leave_unchanged => '委派推理強度，保持不變';
+
+  @override
+  String get rel_admin_delegation_limits_saved => '委派限制已儲存。';
+
+  @override
+  String get rel_admin_save_limits => '儲存限制';
+
+  @override
+  String get rel_admin_remove_route => '移除路由';
+
+  @override
+  String get rel_admin_route_name => '路由名稱';
+
+  @override
+  String get rel_admin_route_provider => '路由供應商';
+
+  @override
+  String get rel_admin_route_model => '路由模型';
+
+  @override
+  String get rel_admin_route_effort_unchanged => '路由推理強度不變';
+
+  @override
+  String get rel_admin_add_route => '新增路由';
+
+  @override
+  String get rel_admin_default_route => '預設路由';
+
+  @override
+  String get rel_admin_delegation_routes_saved => '委派路由已儲存。';
+
+  @override
+  String get rel_admin_save_routes => '儲存路由';
+
+  @override
+  String get rel_admin_profile_routes_saved => '設定檔路由已儲存。';
+
+  @override
+  String get rel_admin_save_profile_routes => '儲存設定檔路由';
+
+  @override
+  String get rel_admin_no_mixture_is_loaded => '未載入混合設定。';
+
+  @override
+  String get rel_admin_mixture_enabled => '啟用混合';
+
+  @override
+  String get rel_admin_loud_degraded_references => '參考模型降級時提示';
+
+  @override
+  String get rel_admin_silent_degraded_references => '參考模型降級時靜默';
+
+  @override
+  String get rel_admin_aggregator => '聚合器';
+
+  @override
+  String get rel_admin_aggregator_provider => '聚合器供應商';
+
+  @override
+  String get rel_admin_aggregator_model => '聚合器模型';
+
+  @override
+  String get rel_admin_reference_provider => '參考模型供應商';
+
+  @override
+  String get rel_admin_reference_model => '參考模型';
+
+  @override
+  String get rel_admin_add_reference_model => '新增參考模型';
+
+  @override
+  String get rel_admin_mixture_saved => '混合設定已儲存。';
+
+  @override
+  String get rel_admin_save_mixture => '儲存混合設定';
+
+  @override
+  String get rel_admin_credit_purchase_submitted => '額度購買請求已提交。';
+
+  @override
+  String get rel_admin_credit_purchase_settled => '額度購買已結算。';
+
+  @override
+  String get rel_admin_credit_and_plan_changes_wait_for_confirmation_a_plan =>
+      '額度和方案變更需等待確認。會立即扣款的方案會顯示，但不會在此確認。';
+
+  @override
+  String get rel_admin_buy_credits => '購買額度';
+
+  @override
+  String get rel_admin_retry_same_charge => '重試同一筆扣款';
+
+  @override
+  String get rel_admin_retry_the_same_credit_charge_this_does_not_start =>
+      '重試同一筆額度扣款。這不會發起第二次購買。';
+
+  @override
+  String get rel_admin_credit_purchases_are_not_available_for_this_account =>
+      '此帳戶無法購買額度。';
+
+  @override
+  String get rel_admin_auto_reload => '自動儲值';
+
+  @override
+  String get rel_admin_read_only_until_this_account_can_charge => '此帳戶可扣款前為唯讀。';
+
+  @override
+  String get rel_admin_auto_reload_updated => '自動儲值已更新。';
+
+  @override
+  String get rel_admin_keep_going_on_credits => '使用額度繼續';
+
+  @override
+  String get rel_admin_continue_on_credits_when_the_plan_window_is_used_up =>
+      '方案週期額度用完後使用額度繼續？';
+
+  @override
+  String
+  get rel_admin_stop_continuing_on_credits_when_the_plan_window_is_used_up =>
+      '停止在方案週期額度用完後使用額度繼續？';
+
+  @override
+  String get rel_admin_credit_continuation_updated => '額度續用設定已更新。';
+
+  @override
+  String get rel_admin_this_plan_change_is_not_confirmed_from_ares =>
+      '此方案變更不會透過 Ares 確認。';
+
+  @override
+  String get rel_admin_this_change_is_scheduled_confirm_to_apply_it =>
+      '此變更已排程。請確認以套用。';
+
+  @override
+  String get rel_admin_preview_plan => '預覽方案';
+
+  @override
+  String get rel_admin_schedule_plan_change => '排程方案變更';
+
+  @override
+  String get rel_admin_plan_change_scheduled => '方案變更已排程。';
+
+  @override
+  String get rel_admin_confirm_scheduled_plan_change => '確認已排程的方案變更';
+
+  @override
+  String rel_admin_remove_key_confirm(String key) {
+    return '從此設定檔移除已儲存的 $key 值？';
+  }
+
+  @override
+  String rel_admin_current_endpoint(String name) {
+    return '$name · 目前';
+  }
+
+  @override
+  String rel_admin_endpoint_result(
+    String status,
+    String transport,
+    String count,
+    String message,
+  ) {
+    return '$status · $transport · $count 個模型。$message';
+  }
+
+  @override
+  String rel_admin_disconnect_account(String name) {
+    return '中斷 $name 連線';
+  }
+
+  @override
+  String rel_admin_delegation_blocked(String reason) {
+    return '委派已遭封鎖：$reason';
+  }
+
+  @override
+  String rel_admin_backend_unavailable(String name) {
+    return '$name · 無法使用';
+  }
+
+  @override
+  String rel_admin_reference_number(String number) {
+    return '參考模型 $number';
+  }
+
+  @override
+  String rel_admin_reload_enable_confirm(String amount, String threshold) {
+    return '開啟自動儲值，在餘額低於 $threshold 時扣款 $amount？';
+  }
+
+  @override
+  String rel_admin_reload_disable_confirm(String amount, String threshold) {
+    return '關閉自動儲值？目前餘額低於 $threshold 時會扣款 $amount。';
+  }
+
+  @override
+  String get rel_admin_this_plan => '此方案';
+
+  @override
+  String rel_admin_plan_confirm(String name) {
+    return '排程 $name。將在目前週期結束時生效。現在不會扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price(String name, String price) {
+    return '以 $price 排程 $name。將在目前週期結束時生效。現在不會扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_when(String name, String when) {
+    return '排程 $name。生效時間：$when。現在不會扣款。';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price_when(
+    String name,
+    String price,
+    String when,
+  ) {
+    return '以 $price 排程 $name。生效時間：$when。現在不會扣款。';
+  }
+
+  @override
+  String rel_admin_balance(String amount) {
+    return '餘額 $amount';
+  }
+
+  @override
+  String rel_admin_buy_confirm(String amount) {
+    return '向此 Nous 帳戶的付款方式收取 \$$amount。這會花費真實貨幣。';
+  }
+
+  @override
+  String rel_admin_reload_portal(String url) {
+    return '在入口網站變更自動儲值：$url';
+  }
+
+  @override
+  String rel_admin_team_portal(String url) {
+    return '團隊訂閱在入口網站變更：$url';
+  }
+
+  @override
+  String get rel_admin_effort_none => '無';
+
+  @override
+  String get rel_admin_effort_minimal => '最低';
+
+  @override
+  String get rel_admin_effort_low => '低';
+
+  @override
+  String get rel_admin_effort_medium => '中';
+
+  @override
+  String get rel_admin_effort_high => '高';
+
+  @override
+  String get rel_admin_effort_xhigh => '很高';
+
+  @override
+  String get rel_admin_effort_max => '最大';
+
+  @override
+  String get rel_admin_effort_ultra => '超高';
+
+  @override
+  String get rel_admin_auto_lower => '自動';
+
+  @override
+  String get rel_admin_create => '建立';
+
+  @override
+  String get rel_admin_prompt => '提示詞';
+
+  @override
+  String get rel_admin_new_profile_id => '新設定檔 ID';
+
+  @override
+  String get rel_admin_this_operation_is_unavailable_on_this_gateway =>
+      '此閘道不支援此操作。';
+
+  @override
+  String get rel_admin_access_denied_by_the_gateway => '閘道拒絕存取。';
+
+  @override
+  String get rel_admin_connection_changed_reopen_profiles => '連線已變更。請重新開啟設定檔。';
+
+  @override
+  String
+  get rel_admin_invalid_input_or_gateway_response_check_the_target_before =>
+      '輸入或閘道回應無效。重試前請檢查目標。';
+
+  @override
+  String get rel_admin_could_not_verify_the_result_refresh_the_target_before =>
+      '無法驗證結果。請重新整理目標後重試。';
+
+  @override
+  String get rel_admin_edit_soul_md => '編輯 SOUL.md';
+
+  @override
+  String get rel_admin_persona => '角色設定';
+
+  @override
+  String get rel_admin_persona_saved => '角色設定已儲存。';
+
+  @override
+  String get rel_admin_not_set => '未設定';
+
+  @override
+  String get rel_admin_enabled => '已啟用';
+
+  @override
+  String get rel_admin_keys_to_remove_comma_separated => '要移除的鍵（逗號分隔）';
+
+  @override
+  String get rel_admin_saved_and_applied_by_the_gateway => '閘道已儲存並套用。';
+
+  @override
+  String get rel_admin_saved_a_gateway_restart_may_be_required =>
+      '已儲存。可能需要重新啟動閘道。';
+
+  @override
+  String get rel_admin_create_signed_route => '建立簽署路由';
+
+  @override
+  String get rel_admin_route_id => '路由 ID';
+
+  @override
+  String get rel_admin_signature => '簽章';
+
+  @override
+  String get rel_admin_events_comma_separated => '事件（逗號分隔）';
+
+  @override
+  String get rel_admin_delivery_target => '傳遞目標';
+
+  @override
+  String get rel_admin_skills_comma_separated => '技能（逗號分隔）';
+
+  @override
+  String get rel_admin_delivery_mode => '傳遞模式';
+
+  @override
+  String get rel_admin_delivery_chat_id_optional => '傳遞聊天 ID（選填）';
+
+  @override
+  String get rel_admin_hide_signing_secret => '隱藏簽署密鑰';
+
+  @override
+  String get rel_admin_reveal_signing_secret => '顯示簽署密鑰';
+
+  @override
+  String get rel_admin_edit_persona => '編輯角色設定';
+
+  @override
+  String get rel_admin_portable_profile_bundle => '可攜式設定檔套件';
+
+  @override
+  String get rel_admin_clone_profile => '複製設定檔';
+
+  @override
+  String get rel_admin_rename_display_label => '重新命名顯示標籤';
+
+  @override
+  String get rel_admin_rename_profile => '重新命名設定檔';
+
+  @override
+  String get rel_admin_new_name => '新名稱';
+
+  @override
+  String get rel_admin_rename_verified => '重新命名已驗證。';
+
+  @override
+  String get rel_admin_delete_profile => '刪除設定檔';
+
+  @override
+  String get rel_admin_profile_id_to_delete => '要刪除的設定檔 ID';
+
+  @override
+  String get rel_admin_profile_deleted => '設定檔已刪除。';
+
+  @override
+  String
+  get rel_admin_profile_deleted_server_identity_cleanup_is_still_pending =>
+      '設定檔已刪除。伺服器身分清理仍待完成。';
+
+  @override
+  String get rel_admin_export_profile_archive => '匯出設定檔封存檔';
+
+  @override
+  String get rel_admin_import_profile_archive => '匯入設定檔封存檔';
+
+  @override
+  String get rel_admin_import_a_trusted_profile => '匯入可信任的設定檔';
+
+  @override
+  String get rel_admin_absolute_archive_path_on_gateway => '閘道上的封存檔絕對路徑';
+
+  @override
+  String get rel_admin_messaging_channels => '訊息管道';
+
+  @override
+  String get rel_admin_dm_pairing_requests => '私訊配對請求';
+
+  @override
+  String get rel_admin_no_pending_or_approved_users => '沒有待處理或已核准的使用者。';
+
+  @override
+  String get rel_admin_legacy_pairing_no_verifiable_request_id_ask_the_user =>
+      '舊版配對：沒有可驗證的請求 ID。請讓使用者重新配對。';
+
+  @override
+  String get rel_admin_pairing_change_verified => '配對變更已驗證。';
+
+  @override
+  String get rel_admin_create_telegram_bot_by_qr => '透過 QR 碼建立 Telegram 機器人';
+
+  @override
+  String get rel_admin_create_telegram_bot => '建立 Telegram 機器人';
+
+  @override
+  String get rel_admin_bot_name => '機器人名稱';
+
+  @override
+  String get rel_admin_telegram_bot_creation_qr_code => 'Telegram 機器人建立 QR 碼';
+
+  @override
+  String get rel_admin_check_telegram_pairing => '檢查 Telegram 配對';
+
+  @override
+  String get rel_admin_waiting_for_telegram => '正在等待 Telegram。';
+
+  @override
+  String get rel_admin_apply_telegram_bot => '套用 Telegram 機器人';
+
+  @override
+  String get rel_admin_allowed_numeric_user_ids => '允許的數字使用者 ID';
+
+  @override
+  String get rel_admin_saved_restart_still_required => '已儲存。仍需重新啟動。';
+
+  @override
+  String get rel_admin_saved_gateway_restart_requested => '已儲存；已請求重新啟動閘道。';
+
+  @override
+  String get rel_admin_cancel_telegram_setup => '取消 Telegram 設定';
+
+  @override
+  String get rel_admin_inbound_webhooks => '傳入 Webhook';
+
+  @override
+  String get rel_admin_enable_webhook_service => '啟用 Webhook 服務';
+
+  @override
+  String get rel_admin_enable_webhooks => '啟用 Webhook';
+
+  @override
+  String get rel_admin_enabled_restart_still_required => '已啟用。仍需重新啟動。';
+
+  @override
+  String get rel_admin_enabled_restart_requested => '已啟用；已請求重新啟動。';
+
+  @override
+  String get rel_admin_route_change_verified => '路由變更已驗證。';
+
+  @override
+  String get rel_admin_delete_route => '刪除路由';
+
+  @override
+  String get rel_admin_disable_route => '停用路由';
+
+  @override
+  String get rel_admin_enable_route => '啟用路由';
+
+  @override
+  String get rel_admin_back_up_entire_agent_home => '備份整個代理主目錄';
+
+  @override
+  String get rel_admin_transfer_to_a_cloud_agent => '傳輸至 Cloud 代理';
+
+  @override
+  String get rel_admin_check_backup_progress => '檢查備份進度';
+
+  @override
+  String get rel_admin_save_backup_to_this_device => '將備份儲存至此裝置';
+
+  @override
+  String get rel_admin_save_sensitive_full_home_archive => '儲存含敏感資訊的完整主目錄封存檔';
+
+  @override
+  String get rel_admin_save_cancelled => '已取消儲存。';
+
+  @override
+  String get rel_admin_backup_saved => '備份已儲存。';
+
+  @override
+  String get rel_admin_up_to_32_mib_larger_archives_remain_on_the_gateway =>
+      '最大 32 MiB。更大的封存檔保留在閘道上。';
+
+  @override
+  String rel_admin_persona_scope(String scope) {
+    return '儲存 $scope 的角色設定。';
+  }
+
+  @override
+  String rel_admin_configure_channel(String name) {
+    return '設定 $name';
+  }
+
+  @override
+  String rel_admin_channel_warning(String scope) {
+    return '套用至 $scope。留空保留現有值。要移除值，請在下方列出其鍵。';
+  }
+
+  @override
+  String rel_admin_hook_warning(String scope) {
+    return '套用至 $scope。請使用唯一名稱。閘道會建立簽署密鑰。如果其他操作員同時建立該名稱，主機可能取代該路由。';
+  }
+
+  @override
+  String rel_admin_hook_created(String url) {
+    return '已建立 $url。離開前請儲存簽署密鑰。';
+  }
+
+  @override
+  String rel_admin_clone_warning(String scope) {
+    return '從 $scope 複製設定、技能、角色設定，以及可能的供應商憑證。不請求訊息權杖。';
+  }
+
+  @override
+  String rel_admin_cloned(String source, String destination) {
+    return '已將 $source 複製至 $destination。';
+  }
+
+  @override
+  String rel_admin_rename_target(String name) {
+    return '重新命名 $name';
+  }
+
+  @override
+  String rel_admin_rename_label_warning(String scope) {
+    return '變更 $scope 的顯示標籤。其 ID 保持為 default。';
+  }
+
+  @override
+  String rel_admin_rename_warning(String scope) {
+    return '在伺服器上重新命名 $scope。正在執行的閘道可能停止。';
+  }
+
+  @override
+  String rel_admin_delete_target(String name) {
+    return '刪除 $name';
+  }
+
+  @override
+  String rel_admin_delete_profile_warning(String scope) {
+    return '永久刪除 $scope，包括工作階段和憑證。請輸入正確的設定檔 ID。';
+  }
+
+  @override
+  String rel_admin_export_target(String name) {
+    return '匯出 $name';
+  }
+
+  @override
+  String rel_admin_export_warning(String scope) {
+    return '在 $scope 上建立 .tar.gz。已知憑證儲存區會被排除，但可能仍含私人資料。分享前請檢查。';
+  }
+
+  @override
+  String rel_admin_archive_on(String gateway, String path) {
+    return '$gateway 上的封存檔：$path';
+  }
+
+  @override
+  String rel_admin_import_warning(String gateway) {
+    return '使用已在 $gateway 上且已檢查的 .tar.gz。它可能包含外掛、指令碼和排程。需要新的設定檔 ID。';
+  }
+
+  @override
+  String rel_admin_imported(String name) {
+    return '已匯入 $name。';
+  }
+
+  @override
+  String rel_admin_approve_user(String user) {
+    return '核准 $user';
+  }
+
+  @override
+  String rel_admin_revoke_user(String user) {
+    return '撤銷 $user';
+  }
+
+  @override
+  String rel_admin_allow_pair(String platform, String scope) {
+    return '$scope 上的 $platform：允許此使用者的訊息存取權。';
+  }
+
+  @override
+  String rel_admin_remove_pair(String platform, String scope) {
+    return '$scope 上的 $platform：移除此使用者的訊息存取權。';
+  }
+
+  @override
+  String rel_admin_telegram_start(String scope) {
+    return '使用閘道的設定服務在 $scope 上開始 Telegram 配對。';
+  }
+
+  @override
+  String rel_admin_expires(String time) {
+    return '到期時間：$time';
+  }
+
+  @override
+  String rel_admin_telegram_apply(String bot, String scope) {
+    return '在 $scope 上啟用 @$bot 並嘗試重新啟動閘道。只有列出的使用者可以向其傳送訊息。';
+  }
+
+  @override
+  String rel_admin_hooks_enable(String scope) {
+    return '在 $scope 上啟用傳入 Webhook 並嘗試重新啟動閘道。';
+  }
+
+  @override
+  String rel_admin_disable_target(String name) {
+    return '停用 $name';
+  }
+
+  @override
+  String rel_admin_enable_target(String name) {
+    return '啟用 $name';
+  }
+
+  @override
+  String rel_admin_hook_change(String name, String scope) {
+    return '僅變更 $scope 上的 $name。';
+  }
+
+  @override
+  String rel_admin_backup_warning(String gateway) {
+    return '這不是 Ares 設定備份。儲存 $gateway 上的所有設定檔、工作階段和憑證。此封存檔含有敏感資訊。';
+  }
+
+  @override
+  String rel_admin_backup_started(String gateway) {
+    return '已在 $gateway 上開始備份。';
+  }
+
+  @override
+  String rel_admin_backup_verified(String gateway, String path) {
+    return '已驗證 $gateway 上的備份：$path';
+  }
+
+  @override
+  String rel_admin_backup_running(String gateway) {
+    return '備份仍在 $gateway 上執行。';
+  }
+
+  @override
+  String get rel_admin_choice_yes => '是';
+
+  @override
+  String get rel_admin_choice_no => '否';
+
+  @override
+  String get rel_admin_choice_generic => '通用';
+
+  @override
+  String get rel_admin_choice_log => '記錄';
+
+  @override
+  String get rel_admin_choice_email => '電子郵件';
+
+  @override
+  String get rel_admin_choice_github_comment => 'GitHub 留言';
+
+  @override
+  String get rel_admin_choice_agent => '代理處理事件';
+
+  @override
+  String get rel_admin_choice_direct => '直接傳遞';
+
+  @override
+  String get rel_admin_configured => '已設定';
+
+  @override
+  String get rel_admin_state_pending_restart => '等待重新啟動';
+
+  @override
+  String get rel_admin_state_unknown => '未知';
+
+  @override
+  String get rel_admin_state_connected => '已連線';
+
+  @override
+  String get rel_admin_state_disconnected => '已中斷連線';
+
+  @override
+  String get rel_admin_state_disabled => '已停用';
+
+  @override
+  String get rel_admin_state_enabled => '已啟用';
+
+  @override
+  String get rel_admin_state_running => '執行中';
+
+  @override
+  String get rel_admin_state_stopped => '已停止';
+
+  @override
+  String get rel_admin_state_error => '錯誤';
+
+  @override
+  String get rel_admin_state_not_configured => '未設定';
+
+  @override
+  String get rel_admin_state_startup_failed => '啟動失敗';
+
+  @override
+  String get rel_admin_state_gateway_stopped => '閘道已停止';
+
+  @override
+  String get rel_admin_state_connecting => '連線中';
+
+  @override
+  String get rel_admin_state_retrying => '重試中';
+
+  @override
+  String get rel_admin_state_fatal => '嚴重錯誤';
+
+  @override
+  String get rel_admin_unsupported_or_oversized_profile_archive =>
+      '不支援的設定檔封存檔或封存檔過大。';
+
+  @override
+  String get rel_admin_current_layout => '目前配置';
+
+  @override
+  String get rel_admin_one_pane => '單一窗格';
+
+  @override
+  String get rel_admin_stacked => '上下堆疊';
+
+  @override
+  String get rel_admin_side_by_side => '並排';
+
+  @override
+  String get rel_admin_no_supported_appearance_in_this_profile =>
+      '此設定檔中沒有支援的外觀。';
+
+  @override
+  String get rel_admin_review_appearance_saved_with_this_profile =>
+      '檢視隨此設定檔儲存的外觀';
+
+  @override
+  String get rel_admin_applies_only_to_this_named_profile_on_this_device =>
+      '僅套用至此裝置上的此具名設定檔。匯入的配置從空窗格開始，請自行選擇聊天。';
+
+  @override
+  String get rel_admin_apply_to_this_profile_on_this_device => '套用至此裝置上的此設定檔';
+
+  @override
+  String get rel_admin_export_prepares_a_tar_gz_on_the_gateway_review =>
+      '匯出會在閘道上準備 .tar.gz。儲存副本到此處前，請檢視其中的可攜式檔案。匯入會開啟本機封存檔供檢視；僅開啟不會上傳任何內容。';
+
+  @override
+  String get rel_admin_prepare_profile_export => '準備匯出設定檔';
+
+  @override
+  String get rel_admin_open_tar_gz_from_this_device => '開啟此裝置上的 .tar.gz';
+
+  @override
+  String get rel_admin_only_selected_text_files_travel_review_for_secrets_and =>
+      '僅傳輸所選文字檔案。請檢查是否含有密鑰和私人資訊。設定、技能和排程可能改變新設定檔的行為。';
+
+  @override
+  String get rel_admin_include_this_reviewed_file => '包含此已檢視檔案';
+
+  @override
+  String get rel_admin_apply_appearance_to_the_new_profile_on_this_device =>
+      '將外觀套用至此裝置上的新設定檔';
+
+  @override
+  String
+  get rel_admin_imports_colours_and_pane_sizes_never_chats_tools_or_session_ids =>
+      '匯入色彩和窗格大小，絕不匯入聊天、工具或工作階段 ID。';
+
+  @override
+  String
+  get rel_admin_the_gateway_retains_a_private_staged_copy_import_creates =>
+      '閘道保留私人暫存副本。匯入會建立新設定檔，不會取代現有設定檔。';
+
+  @override
+  String get rel_admin_appearance_not_applied_the_gateway_did_not_confirm_the =>
+      ' 外觀未套用：閘道未確認已檢視的疊加設定。';
+
+  @override
+  String get rel_admin_appearance_applied_on_this_device => ' 外觀已套用至此裝置。';
+
+  @override
+  String get rel_admin_appearance_was_not_saved_on_this_device => ' 外觀未儲存至此裝置。';
+
+  @override
+  String get rel_admin_save_reviewed_profile_bundle => '儲存已檢視的設定檔套件';
+
+  @override
+  String get rel_admin_profile_bundle_saved => '設定檔套件已儲存。';
+
+  @override
+  String get rel_admin_import_selected_files => '匯入所選檔案';
+
+  @override
+  String get rel_admin_save_selected_files_to_device => '將所選檔案儲存至裝置';
+
+  @override
+  String rel_admin_layout_first_pane(String layout, String percent) {
+    return '$layout · 第一個窗格 $percent%';
+  }
+
+  @override
+  String rel_admin_appearance_summary(String skin, String mode, String layout) {
+    return '外觀：$skin · 模式：$mode · $layout';
+  }
+
+  @override
+  String rel_admin_appearance_applied(String gateway, String profile) {
+    return '外觀已套用至 $gateway / $profile。';
+  }
+
+  @override
+  String rel_admin_bundle_summary(
+    String profile,
+    String count,
+    String omitted,
+  ) {
+    return '套件：$profile · $count 個可檢視檔案 · 已省略 $omitted 個';
+  }
+
+  @override
+  String rel_admin_imported_on(String name, String gateway) {
+    return '已在 $gateway 上匯入 $name。';
+  }
+
+  @override
+  String get rel_admin_unchanged => '不變';
+
+  @override
+  String get rel_admin_mode_system => '系統';
+
+  @override
+  String get rel_admin_mode_light => '淺色';
+
+  @override
+  String get rel_admin_mode_dark => '深色';
+
+  @override
+  String get rel_admin_skin_classic => '經典';
+
+  @override
+  String get rel_admin_skin_midnight => '午夜';
+
+  @override
+  String get rel_admin_skin_ember => '餘燼';
+
+  @override
+  String get rel_admin_skin_mono => '單色';
+
+  @override
+  String get rel_admin_skin_cyberpunk => '賽博龐克';
+
+  @override
+  String get rel_admin_skin_slate => '石板';
+
+  @override
+  String get rel_admin_no_available_cloud_agents_in_this_account =>
+      '此帳戶中沒有可用的 Cloud 代理。';
+
+  @override
+  String get rel_admin_the_previous_undo_receipt_could_not_be_verified_no =>
+      '無法驗證先前的復原憑據。未作任何變更。';
+
+  @override
+  String get rel_admin_transfer_to_cloud => '傳輸至 Cloud';
+
+  @override
+  String
+  get rel_admin_connection_changed_leave_this_page_a_restore_already_submitted =>
+      '連線已變更。請離開此頁面。已提交的還原作業可能繼續。';
+
+  @override
+  String get rel_admin_find_my_cloud_agents => '尋找我的 Cloud 代理';
+
+  @override
+  String
+  get rel_admin_undo_replaces_the_destination_with_its_pre_transfer_backup =>
+      '復原會用傳輸前的備份取代目的地。';
+
+  @override
+  String get rel_admin_replace_this_cloud_agent_with_the_entire_source_home =>
+      '使用整個來源主目錄取代此 Cloud 代理，包括憑證、對話和檔案。來源不會被刪除。傳入訊息機器人將關閉。';
+
+  @override
+  String get rel_admin_type_destination_agent_id => '輸入目的地代理 ID';
+
+  @override
+  String
+  get rel_admin_could_not_retain_the_local_undo_receipt_keep_this_page_open =>
+      '無法保留本機復原憑據。請保持此頁面開啟。';
+
+  @override
+  String get rel_admin_undo_transfer => '復原傳輸';
+
+  @override
+  String get rel_admin_replace_cloud_agent => '取代 Cloud 代理';
+
+  @override
+  String
+  get rel_admin_local_undo_receipt_forgotten_no_remote_backup_was_removed =>
+      '本機復原憑據已忘記。未移除遠端備份。';
+
+  @override
+  String get rel_admin_forget_local_undo_receipt_only => '僅忘記本機復原憑據';
+
+  @override
+  String get rel_admin_stop_before_restore => '在還原前停止';
+
+  @override
+  String get rel_admin_do_not_close_this_page_restore_runs_on_the =>
+      '請勿關閉此頁面。還原在目的地執行，無法取消。';
+
+  @override
+  String get rel_admin_files_restored_destination_gateway_needs_attention =>
+      '檔案已還原；目的地閘道需要處理。';
+
+  @override
+  String rel_admin_transfer_sign_in(String origin) {
+    return '請登入且僅登入一個已儲存的 $origin Ares 連線，然後返回此處。';
+  }
+
+  @override
+  String rel_admin_transfer_source(String gateway, String profile) {
+    return '來源：$gateway / $profile';
+  }
+
+  @override
+  String rel_admin_transfer_destination(String name, String origin) {
+    return '目的地：$name · $origin / default';
+  }
+
+  @override
+  String rel_admin_agent_id(String id) {
+    return '代理 ID：$id';
+  }
+
+  @override
+  String rel_admin_transfer_status(String phase) {
+    return '狀態：$phase';
+  }
+
+  @override
+  String rel_admin_copied_percent(String percent) {
+    return '已複製 $percent%';
+  }
+
+  @override
+  String rel_admin_undo_point(String path) {
+    return '目的地上的復原點：$path';
+  }
+
+  @override
+  String rel_admin_messaging_disabled(String channels) {
+    return '訊息已停用：$channels';
+  }
+
+  @override
+  String get rel_admin_phase_prepared => '已準備';
+
+  @override
+  String get rel_admin_phase_backup => '備份';
+
+  @override
+  String get rel_admin_phase_upload => '上傳';
+
+  @override
+  String get rel_admin_phase_restore => '還原';
+
+  @override
+  String get rel_admin_phase_finished => '已完成';
+
+  @override
+  String get rel_admin_phase_failed => '失敗';
+
+  @override
+  String get rel_admin_phase_undo => '復原';
+
+  @override
+  String get rel_admin_phase_undone => '已復原';
+
+  @override
+  String rel_ops_cap_install_blocked(String verdict, String detail) {
+    return '安裝已遭封鎖（$verdict）：$detail';
+  }
+
+  @override
+  String rel_ops_cap_scan_confirm(String verdict, String requested) {
+    return '掃描結果：$verdict。安裝前請確認 $requested。';
+  }
+
+  @override
+  String rel_ops_cap_install_unconfirmed(String requested) {
+    return '閘道尚未確認 $requested 已安裝。';
+  }
+
+  @override
+  String rel_ops_cap_edit_skill(String name) {
+    return '編輯 $name';
+  }
+
+  @override
+  String rel_ops_cap_archive_skill(String name) {
+    return '封存 $name？';
+  }
+
+  @override
+  String rel_ops_cap_archive_explanation(String command) {
+    return '技能將被封存，可透過 $command 還原。';
+  }
+
+  @override
+  String rel_ops_cap_install_anyway(String name) {
+    return '仍要安裝 $name';
+  }
+
+  @override
+  String rel_ops_cap_install_despite_scan(String name) {
+    return '仍要安裝未通過掃描的 $name？';
+  }
+
+  @override
+  String rel_ops_cap_scan_warning(String name) {
+    return '安全掃描已封鎖 $name。此確認僅適用於 $name。';
+  }
+
+  @override
+  String rel_ops_cap_accept_scan_warning(String name) {
+    return '接受功能權限不會略過對 $name 的掃描。';
+  }
+
+  @override
+  String rel_ops_cap_review_scan(String name) {
+    return '檢視 $name 的掃描結果';
+  }
+
+  @override
+  String rel_ops_cap_desktop_grants(String description) {
+    return '$description\n資料夾和預覽指令碼的授權會保留在該電腦的 Desktop 應用程式中。在此移除外掛程式不會撤銷這些本機授權。';
+  }
+
+  @override
+  String rel_ops_cap_remove_plugin(String name) {
+    return '移除 $name？';
+  }
+
+  @override
+  String rel_ops_cap_probe_result(String name, String tools) {
+    return '探測 $name：$tools';
+  }
+
+  @override
+  String rel_ops_cap_save_tool_grants_for(String connector) {
+    return '儲存 $connector 的工具授權';
+  }
+
+  @override
+  String rel_ops_cap_backends_for(String name) {
+    return '$name 的後端';
+  }
+
+  @override
+  String rel_ops_cap_use_backend_confirmation(String name) {
+    return '使用 $name？';
+  }
+
+  @override
+  String rel_ops_cap_unlock_source(String name) {
+    return '解鎖 $name';
+  }
+
+  @override
+  String get rel_ops_cap_capabilities => '功能';
+
+  @override
+  String get rel_ops_cap_plugins => '外掛程式';
+
+  @override
+  String get rel_ops_cap_connectors => '連接器';
+
+  @override
+  String get rel_ops_cap_backends => '後端';
+
+  @override
+  String get rel_ops_cap_save_skill => '儲存技能';
+
+  @override
+  String get rel_ops_cap_archive => '封存';
+
+  @override
+  String get rel_ops_cap_hub_identifier => 'Hub 識別碼';
+
+  @override
+  String get rel_ops_cap_install => '安裝';
+
+  @override
+  String get rel_ops_cap_update_all => '全部更新';
+
+  @override
+  String get rel_ops_cap_unlock => '解鎖';
+
+  @override
+  String get rel_ops_cap_lock => '鎖定';
+
+  @override
+  String get rel_ops_cap_this_update_adds_capabilities_nothing_changed_yet =>
+      '此更新會新增功能。尚未進行任何變更。';
+
+  @override
+  String get rel_ops_cap_the_scan_blocked_this_plugin => '掃描已封鎖此外掛程式。';
+
+  @override
+  String get rel_ops_cap_the_plugin_was_not_changed => '外掛程式未變更。';
+
+  @override
+  String get rel_ops_cap_repository => '程式碼儲存庫';
+
+  @override
+  String get rel_ops_cap_install_plugin => '安裝外掛程式';
+
+  @override
+  String get rel_ops_cap_update_plugins => '更新外掛程式';
+
+  @override
+  String get rel_ops_cap_accept_capabilities => '接受功能權限';
+
+  @override
+  String get rel_ops_cap_update => '更新';
+
+  @override
+  String get rel_ops_cap_remove_desktop_half => '移除桌面端元件';
+
+  @override
+  String get rel_ops_cap_server_name => '伺服器名稱';
+
+  @override
+  String get rel_ops_cap_command => '命令';
+
+  @override
+  String get rel_ops_cap_http_url => 'HTTP URL';
+
+  @override
+  String get rel_ops_cap_add_server => '新增伺服器';
+
+  @override
+  String get rel_ops_cap_probe => '探測';
+
+  @override
+  String get rel_ops_cap_probe_failed => '探測失敗。';
+
+  @override
+  String get rel_ops_cap_logs => '記錄';
+
+  @override
+  String get rel_ops_cap_mcp_log => 'MCP 記錄';
+
+  @override
+  String get rel_ops_cap_connector => '連接器';
+
+  @override
+  String get rel_ops_cap_account_alias => '帳戶別名';
+
+  @override
+  String get rel_ops_cap_link_account => '連結帳戶';
+
+  @override
+  String get rel_ops_cap_remove_account => '移除帳戶';
+
+  @override
+  String get rel_ops_cap_tool_connector => '工具連接器';
+
+  @override
+  String get rel_ops_cap_load_tools => '載入工具';
+
+  @override
+  String get rel_ops_cap_save_tool_grants => '儲存工具授權';
+
+  @override
+  String
+  get rel_ops_cap_this_policy_has_no_member_revision_so_tool_grants_stay_unchanged =>
+      '此原則沒有成員修訂版本，因此工具授權維持不變。';
+
+  @override
+  String get rel_ops_cap_active => '使用中';
+
+  @override
+  String get rel_ops_cap_use => '使用';
+
+  @override
+  String get rel_ops_cap_run_setup => '執行設定';
+
+  @override
+  String get rel_ops_cap_terminal_backends => '終端機後端';
+
+  @override
+  String get rel_ops_cap_this_changes_the_terminal_backend_for_this_profile =>
+      '這會變更此設定檔的終端機後端。';
+
+  @override
+  String get rel_ops_cap_use_backend => '使用後端';
+
+  @override
+  String get rel_ops_cap_select => '選取';
+
+  @override
+  String get rel_ops_cap_browser_vault => '瀏覽器保險庫';
+
+  @override
+  String
+  get rel_ops_cap_saved_site_logins_addresses_and_cards_passwords_stay_in_the_secure_fields_and_are_not_listed_here =>
+      '已儲存的網站登入資訊、地址和付款卡。密碼會保留在安全欄位中，不會在此列出。';
+
+  @override
+  String get rel_ops_cap_remove_saved_item => '移除已儲存的項目';
+
+  @override
+  String get rel_ops_cap_delete_this_item => '刪除此項目？';
+
+  @override
+  String get rel_ops_cap_unlocked => '已解鎖';
+
+  @override
+  String get rel_ops_cap_locked => '已鎖定';
+
+  @override
+  String get rel_ops_cap_not_detected => '未偵測到';
+
+  @override
+  String get rel_ops_cap_master_password => '主密碼';
+
+  @override
+  String get rel_ops_cap_login => '登入資訊';
+
+  @override
+  String get rel_ops_cap_address => '地址';
+
+  @override
+  String get rel_ops_cap_card => '付款卡';
+
+  @override
+  String get rel_ops_cap_label => '標籤';
+
+  @override
+  String get rel_ops_cap_site_origin => '網站來源';
+
+  @override
+  String get rel_ops_cap_identifier => '識別碼';
+
+  @override
+  String get rel_ops_cap_password => '密碼';
+
+  @override
+  String get rel_ops_cap_authenticator_key => '驗證器金鑰';
+
+  @override
+  String get rel_ops_cap_street => '街道';
+
+  @override
+  String get rel_ops_cap_city => '城市';
+
+  @override
+  String get rel_ops_cap_postal_code => '郵遞區號';
+
+  @override
+  String get rel_ops_cap_country => '國家或地區';
+
+  @override
+  String get rel_ops_cap_name_on_card => '持卡人姓名';
+
+  @override
+  String get rel_ops_cap_card_number => '卡號';
+
+  @override
+  String get rel_ops_cap_expiry_month => '到期月份';
+
+  @override
+  String get rel_ops_cap_expiry_year => '到期年份';
+
+  @override
+  String get rel_ops_cap_security_code => '安全碼';
+
+  @override
+  String get rel_ops_cap_this_gateway_has_no_shared_metrics_consent_method =>
+      '此閘道沒有共用指標的同意授權方法。';
+
+  @override
+  String get rel_ops_cap_agent_policy => '代理程式原則';
+
+  @override
+  String get rel_ops_cap_loading_policy => '正在載入原則';
+
+  @override
+  String get rel_ops_cap_approval_timeout => '核准逾時';
+
+  @override
+  String get rel_ops_cap_confirm_mcp_reloads => '確認 MCP 重新載入';
+
+  @override
+  String get rel_ops_cap_command_allowlist => '命令允許清單';
+
+  @override
+  String get rel_ops_cap_file_checkpoints => '檔案檢查點';
+
+  @override
+  String get rel_ops_cap_checkpoint_limit => '檢查點上限';
+
+  @override
+  String get rel_ops_cap_browser_private_urls => '瀏覽器私人 URL';
+
+  @override
+  String get rel_ops_cap_use_my_real_browser_profile => '使用我的實際瀏覽器設定檔';
+
+  @override
+  String get rel_ops_cap_save_policy => '儲存原則';
+
+  @override
+  String get rel_ops_cap_shared_metrics_for_this_profile => '此設定檔的共用指標';
+
+  @override
+  String get rel_ops_cap_send_shared_metrics => '傳送共用指標';
+
+  @override
+  String get rel_ops_cap_error_enter_a_label => '請輸入標籤。';
+
+  @override
+  String get rel_ops_cap_error_enter_a_valid_url_like_https_example_com =>
+      '請輸入有效的 URL，例如 https://example.com。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_identifier_and_password =>
+      '請輸入識別碼和密碼。';
+
+  @override
+  String
+  get rel_ops_cap_error_enter_the_card_name_number_expiry_and_security_code =>
+      '請輸入持卡人姓名、卡號、有效期限和安全碼。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_street_city_postal_code_and_country =>
+      '請輸入街道、城市、郵遞區號和國家或地區。';
+
+  @override
+  String
+  get rel_ops_cap_error_the_gateway_returned_a_response_that_could_not_be_read =>
+      '閘道傳回了無法讀取的回應。';
+
+  @override
+  String rel_ops_cap_error_the_gateway_refused_the_request_status(
+    int statusCode,
+  ) {
+    return '閘道拒絕了要求（$statusCode）。';
+  }
+
+  @override
+  String
+  rel_ops_cap_error_this_connection_has_no_gateway_socket_so_method_is_unavailable(
+    String method,
+  ) {
+    return '此連線沒有閘道通訊端，因此無法使用 $method。';
+  }
+
+  @override
+  String get rel_ops_cap_error_choose_a_skill => '請選擇技能。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_text_was_not_returned => '未傳回技能文字。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_saved => '技能未儲存。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_archived => '技能未封存。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_installed => '技能未安裝。';
+
+  @override
+  String get rel_ops_cap_error_skill_updates_did_not_start => '技能更新未啟動。';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_removed => '技能未移除。';
+
+  @override
+  String get rel_ops_cap_error_enter_a_skill_or_plugin_identifier =>
+      '請輸入技能或外掛程式識別碼。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_plugin => '請選擇外掛程式。';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_removed => '外掛程式未移除。';
+
+  @override
+  String get rel_ops_cap_error_the_desktop_half_was_not_removed => '桌面端元件未移除。';
+
+  @override
+  String
+  get rel_ops_cap_error_this_gateway_did_not_give_the_plugin_a_stable_key =>
+      '此閘道未為外掛程式指派穩定的索引鍵。';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_changed => '外掛程式未變更。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_server => '請選擇伺服器。';
+
+  @override
+  String get rel_ops_cap_error_name_the_server => '請為伺服器命名。';
+
+  @override
+  String get rel_ops_cap_error_give_the_server_a_command_or_an_http_s_url =>
+      '請為伺服器提供命令或 http(s) URL。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_toolset => '請選擇工具組。';
+
+  @override
+  String get rel_ops_cap_error_tool_backend_status_was_not_returned =>
+      '未傳回工具後端狀態。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_provider => '請選擇供應商。';
+
+  @override
+  String get rel_ops_cap_error_this_provider_has_no_setup_action =>
+      '此供應商沒有設定動作。';
+
+  @override
+  String get rel_ops_cap_error_setup_did_not_start => '設定未啟動。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_terminal_backend => '請選擇終端機後端。';
+
+  @override
+  String get rel_ops_cap_error_name_the_connector => '請為連接器命名。';
+
+  @override
+  String get rel_ops_cap_error_choose_an_account => '請選擇帳戶。';
+
+  @override
+  String
+  get rel_ops_cap_error_reload_the_connector_policy_before_changing_tool_grants =>
+      '變更工具授權前，請重新載入連接器原則。';
+
+  @override
+  String get rel_ops_cap_error_choose_an_item => '請選擇項目。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_source => '請選擇來源。';
+
+  @override
+  String get rel_ops_cap_error_enter_the_master_password => '請輸入主密碼。';
+
+  @override
+  String get rel_ops_cap_error_gateway_config_was_not_returned => '未傳回閘道設定。';
+
+  @override
+  String get rel_ops_cap_error_choose_a_known_approval_mode => '請選擇已知的核准模式。';
+
+  @override
+  String get rel_ops_cap_error_use_a_positive_limit => '請使用大於零的上限。';
+
+  @override
+  String get rel_ops_cap_error_the_policy_was_not_saved => '原則未儲存。';
+
+  @override
+  String get rel_ops_cap_value_manual => '手動';
+
+  @override
+  String get rel_ops_cap_value_smart => '智慧';
+
+  @override
+  String get rel_ops_cap_value_off => '關閉';
+
+  @override
+  String get rel_ops_cap_value_safe => '安全';
+
+  @override
+  String get rel_ops_cap_value_caution => '謹慎';
+
+  @override
+  String get rel_ops_cap_value_dangerous => '危險';
+
+  @override
+  String get rel_ops_cap_value_blocked => '已封鎖';
+
+  @override
+  String get rel_ops_cap_value_clean => '無威脅';
+
+  @override
+  String get rel_ops_cap_value_ready => '就緒';
+
+  @override
+  String get rel_ops_cap_value_available => '可用';
+
+  @override
+  String get rel_ops_cap_value_unavailable => '無法使用';
+
+  @override
+  String get rel_ops_cap_value_enabled => '已啟用';
+
+  @override
+  String get rel_ops_cap_value_disabled => '已停用';
+
+  @override
+  String get rel_ops_cap_value_active => '使用中';
+
+  @override
+  String get rel_ops_cap_value_inactive => '未使用';
+
+  @override
+  String get rel_ops_cap_value_installed => '已安裝';
+
+  @override
+  String get rel_ops_cap_value_missing => '缺少';
+
+  @override
+  String get rel_ops_cap_value_configured => '已設定';
+
+  @override
+  String get rel_ops_cap_value_not_configured => '未設定';
+
+  @override
+  String get rel_ops_cap_value_error => '錯誤';
+
+  @override
+  String get rel_ops_cap_value_unknown => '未知';
+
+  @override
+  String get rel_ops_cap_value_login => '登入資訊';
+
+  @override
+  String get rel_ops_cap_value_address => '地址';
+
+  @override
+  String get rel_ops_cap_value_payment => '付款';
+
+  @override
+  String get rel_ops_term_connecting => '正在連線…';
+
+  @override
+  String get rel_ops_term_unbound => '沒有相符的作用中工作階段或主機工作目錄。請先開啟所屬聊天。';
+
+  @override
+  String get rel_ops_term_unsupported => '此閘道不提供這項終端機功能。未啟動本機命令殼層。';
+
+  @override
+  String get rel_ops_term_local_pty_unavailable => '此裝置無法使用隨附的本機虛擬終端機（PTY）。';
+
+  @override
+  String get rel_ops_term_operation_failed =>
+      '無法開啟或控制終端機。請檢查主機、認證資料及指紋。未啟動備用命令殼層。';
+
+  @override
+  String get rel_ops_term_input_refused => '輸入遭拒。請重新開啟原始聊天。';
+
+  @override
+  String get rel_ops_term_cancel => '取消';
+
+  @override
+  String get rel_ops_term_confirm => '確認';
+
+  @override
+  String get rel_ops_term_open_device_title => '在此裝置上開啟命令殼層？';
+
+  @override
+  String get rel_ops_term_ssh_shell => 'SSH 命令殼層';
+
+  @override
+  String get rel_ops_term_local_shell => '本機命令殼層';
+
+  @override
+  String get rel_ops_term_connection_lost => '連線已中斷';
+
+  @override
+  String get rel_ops_term_shell_ended => '命令殼層已結束';
+
+  @override
+  String get rel_ops_term_no_owner =>
+      '此聊天沒有經過身分驗證的閘道終端機擁有者。僅憑 URL 或雲端登入無法取得命令殼層的存取權。';
+
+  @override
+  String get rel_ops_term_open_gateway_title => '開啟閘道命令殼層？';
+
+  @override
+  String get rel_ops_term_shell_expired => '命令殼層已結束或已到期';
+
+  @override
+  String get rel_ops_term_disconnected => '已中斷連線';
+
+  @override
+  String get rel_ops_term_gateway_shell => '閘道命令殼層';
+
+  @override
+  String get rel_ops_term_close_body => '結束此命令殼層。如需保持執行，請改為隱藏面板。';
+
+  @override
+  String get rel_ops_term_closing => '正在關閉…';
+
+  @override
+  String get rel_ops_term_close_unconfirmed => '尚未確認關閉';
+
+  @override
+  String get rel_ops_term_processes_require_chat => '代理程式的處理程序需要經過身分驗證的所屬聊天。';
+
+  @override
+  String get rel_ops_term_watching_processes =>
+      '正在監看此聊天的代理程式處理程序。關閉鏡像檢視絕不會停止其處理程序。';
+
+  @override
+  String get rel_ops_term_paste_limit => '貼上大小限制為 16 KiB。';
+
+  @override
+  String get rel_ops_term_paste => '貼上';
+
+  @override
+  String get rel_ops_term_select_first => '請先選取終端機輸出。';
+
+  @override
+  String get rel_ops_term_open_chat_to_insert => '插入輸出前，請開啟原始聊天。';
+
+  @override
+  String get rel_ops_term_added_to_draft => '已新增至原始聊天草稿。未傳送任何內容。';
+
+  @override
+  String get rel_ops_term_close => '關閉';
+
+  @override
+  String get rel_ops_term_add_selection => '將所選內容新增至聊天草稿';
+
+  @override
+  String get rel_ops_term_new_terminal => '新增終端機';
+
+  @override
+  String get rel_ops_term_gateway_terminal => '閘道主機終端機';
+
+  @override
+  String get rel_ops_term_verified_ssh_terminal => '已驗證的 SSH 終端機';
+
+  @override
+  String get rel_ops_term_device_local_shell => '此裝置（本機命令殼層）';
+
+  @override
+  String get rel_ops_term_local_unavailable_mobile => '行動裝置無法使用本機命令殼層';
+
+  @override
+  String get rel_ops_term_watch_processes => '監看代理程式處理程序';
+
+  @override
+  String get rel_ops_term_select_output => '選取或複製輸出';
+
+  @override
+  String get rel_ops_term_add_selected_output => '將所選輸出新增至聊天草稿';
+
+  @override
+  String get rel_ops_term_review_paste => '檢查剪貼簿貼上內容';
+
+  @override
+  String get rel_ops_term_reconnect => '重新連線至同一命令殼層';
+
+  @override
+  String get rel_ops_term_close_mirror => '關閉鏡像檢視';
+
+  @override
+  String get rel_ops_term_close_shell => '關閉命令殼層';
+
+  @override
+  String get rel_ops_term_empty => '選取 + 以開啟終端機。不會自動啟動任何命令殼層。';
+
+  @override
+  String get rel_ops_term_reason_stale => '已失效';
+
+  @override
+  String get rel_ops_term_reason_mismatch => '不相符';
+
+  @override
+  String get rel_ops_term_reason_unbound => '未繫結';
+
+  @override
+  String get rel_ops_term_reason_unsupported => '不支援';
+
+  @override
+  String get rel_ops_term_reason_denied => '已拒絕';
+
+  @override
+  String get rel_ops_term_reason_ineligible => '不符合資格';
+
+  @override
+  String get rel_ops_term_reason_unavailable => '無法使用';
+
+  @override
+  String get rel_ops_term_reason_invalid => '無效';
+
+  @override
+  String get rel_ops_term_reason_insecure => '不安全';
+
+  @override
+  String rel_ops_term_refused(String reason) {
+    return '閘道拒絕了此終端機操作（$reason）。';
+  }
+
+  @override
+  String rel_ops_term_open_device_body(String connection) {
+    return '這是執行 Ares 的裝置，而非 $connection。命令殼層使用應用程式的權限，並在應用程式的儲存空間中啟動。';
+  }
+
+  @override
+  String rel_ops_term_open_gateway_body(String host) {
+    return '在 $host 上經過驗證的聊天工作目錄中啟動命令殼層。這不是裝置本機的命令殼層。';
+  }
+
+  @override
+  String rel_ops_term_close_tab_title(String label) {
+    return '關閉 $label？';
+  }
+
+  @override
+  String rel_ops_term_read_only_status(String status) {
+    return '唯讀 · $status';
+  }
+
+  @override
+  String rel_ops_term_paste_title(String label) {
+    return '貼上至 $label？';
+  }
+
+  @override
+  String rel_ops_term_output_title(String label) {
+    return '輸出 · $label';
+  }
+
+  @override
+  String rel_ops_term_mirror_status(String label) {
+    return '唯讀處理程序鏡像 · $label';
+  }
+
+  @override
+  String rel_ops_term_status_label(String status, String label) {
+    return '$status · $label';
+  }
+
+  @override
+  String rel_ops_term_ssh_tab(String user, String host, int port, int number) {
+    return 'SSH $user@$host:$port · $number';
+  }
+
+  @override
+  String rel_ops_term_device_tab(int number) {
+    return '此裝置 · $number';
+  }
+
+  @override
+  String rel_ops_term_gateway_tab(String host, int number) {
+    return '閘道 $host · $number';
+  }
+
+  @override
+  String get rel_ops_term_earlier_output_trimmed => '[較早的輸出已截斷]';
+
+  @override
+  String get rel_ops_term_ssh_dialog_title => '開啟已驗證的 SSH 終端機';
+
+  @override
+  String get rel_ops_term_ssh_dialog_body =>
+      '請使用透過獨立管道向主機管理員取得的指紋。此操作會開啟新的遠端登入工作階段，而非閘道或本機命令殼層。';
+
+  @override
+  String get rel_ops_term_ssh_host => 'SSH 主機';
+
+  @override
+  String get rel_ops_term_ssh_port => '連接埠';
+
+  @override
+  String get rel_ops_term_ssh_user => '使用者';
+
+  @override
+  String get rel_ops_term_ssh_fingerprint => '主機金鑰指紋（SHA256:…）';
+
+  @override
+  String get rel_ops_term_ssh_password => 'SSH 密碼（不儲存）';
+
+  @override
+  String get rel_ops_term_connect => '連線';
+
+  @override
+  String get rel_ops_ssh_invalid_destination => 'SSH 主機、連接埠或使用者無效。';
+
+  @override
+  String get rel_ops_ssh_public_key_required => '需要 OpenSSH Ed25519 格式的主機公開金鑰。';
+
+  @override
+  String get rel_ops_ssh_invalid_public_key => 'Ed25519 主機金鑰無效。';
+
+  @override
+  String get rel_ops_ssh_invalid_saved_key => '已儲存的主機金鑰無效。';
+
+  @override
+  String get rel_ops_ssh_enrollment_unverified => '無法驗證主機金鑰註冊。';
+
+  @override
+  String get rel_ops_ssh_different_key_pinned => '已固定另一把金鑰。請另行驗證此變更。';
+
+  @override
+  String get rel_ops_ssh_open_ssh_unavailable => '系統 OpenSSH 無法使用。';
+
+  @override
+  String get rel_ops_ssh_confirm_host_key => '請先確認主機金鑰再連線。';
+
+  @override
+  String get rel_ops_ssh_absolute_identity_required => '請選取使用絕對路徑的身分金鑰檔案。';
+
+  @override
+  String get rel_ops_ssh_invalid_remote_port => '遠端連接埠無效。';
+
+  @override
+  String get rel_ops_ssh_preview_too_large => '預覽超過 64 KiB 限制。';
+
+  @override
+  String get rel_ops_ssh_connection_refused => 'SSH 連線遭拒。請檢查已註冊的主機金鑰、身分憑證和服務。';
+
+  @override
+  String get rel_ops_ssh_http_not_ok => '遠端服務未傳回 HTTP 200。';
+
+  @override
+  String get rel_ops_ssh_encoded_response => '此預覽不支援經過編碼的回應。';
+
+  @override
+  String get rel_ops_ssh_preview_type_unsupported => '只能預覽文字和 HTML 原始碼。';
+
+  @override
+  String get rel_ops_ssh_health_unconfirmed => '服務未確認閘道運作正常。';
+
+  @override
+  String get rel_ops_ssh_enroll_host_key_first => '請先註冊主機的公開金鑰。';
+
+  @override
+  String get rel_ops_ssh_cancel => '取消';
+
+  @override
+  String get rel_ops_ssh_confirm => '確認';
+
+  @override
+  String get rel_ops_ssh_pin_title => '固定此 SSH 主機金鑰？';
+
+  @override
+  String rel_ops_ssh_pin_detail(String destination, String fingerprint) {
+    return '$destination\n$fingerprint\n請透過獨立管道與主機管理員核對此指紋。不會建立任何連線。';
+  }
+
+  @override
+  String get rel_ops_ssh_host_key_pinned => '主機金鑰已固定。';
+
+  @override
+  String get rel_ops_ssh_shell_detail => '開啟互動式登入 shell。';
+
+  @override
+  String rel_ops_ssh_read_detail(String path, int port) {
+    return '透過 SSH 通道讀取遠端 127.0.0.1:$port 上的 $path。';
+  }
+
+  @override
+  String rel_ops_ssh_connect_title(String destination) {
+    return '連線至 $destination？';
+  }
+
+  @override
+  String rel_ops_ssh_connect_detail(
+    String detail,
+    String fingerprint,
+    String authentication,
+  ) {
+    return '$detail\n$fingerprint\n$authentication';
+  }
+
+  @override
+  String get rel_ops_ssh_agent_auth => '使用你的 SSH 代理程式進行身分驗證。';
+
+  @override
+  String get rel_ops_ssh_identity_auth => '使用選取的身分金鑰檔案。';
+
+  @override
+  String rel_ops_ssh_gateway_responding(int port) {
+    return '閘道正在遠端回送連接埠 $port 上回應。';
+  }
+
+  @override
+  String get rel_ops_ssh_session_closed => 'SSH 工作階段已關閉。';
+
+  @override
+  String get rel_ops_ssh_session_unclean => 'SSH 工作階段未正常結束。';
+
+  @override
+  String get rel_ops_ssh_operation_failed => 'SSH 操作失敗。請檢查目的地和身分憑證。';
+
+  @override
+  String get rel_ops_ssh_title => '經驗證的 SSH';
+
+  @override
+  String get rel_ops_ssh_unsupported =>
+      '此裝置沒有受支援的系統 OpenSSH 傳輸方式。已固定閘道的中繼會自動接受新金鑰，因此無法用於經驗證的註冊。';
+
+  @override
+  String get rel_ops_ssh_host => 'SSH 主機';
+
+  @override
+  String get rel_ops_ssh_port => 'SSH 連接埠';
+
+  @override
+  String get rel_ops_ssh_user => 'SSH 使用者';
+
+  @override
+  String get rel_ops_ssh_identity => '身分金鑰檔案（選填；否則使用 SSH 代理程式）';
+
+  @override
+  String get rel_ops_ssh_public_key => '管理員提供的主機公開金鑰（ssh-ed25519）';
+
+  @override
+  String get rel_ops_ssh_review_key => '檢視主機金鑰';
+
+  @override
+  String get rel_ops_ssh_remote_port => '遠端回送服務連接埠';
+
+  @override
+  String get rel_ops_ssh_check_gateway => '透過 SSH 檢查閘道';
+
+  @override
+  String get rel_ops_ssh_preview_source => '透過 SSH 預覽原始碼';
+
+  @override
+  String get rel_ops_ssh_open_shell => '開啟 SSH shell';
+
+  @override
+  String get rel_ops_ssh_shell_line => '傳送至遠端 shell 的行';
+
+  @override
+  String get rel_ops_ssh_disconnect => '中斷 shell 連線';
+
+  @override
+  String get rel_ops_host_cancel => '取消';
+
+  @override
+  String get rel_ops_host_confirm => '確認';
+
+  @override
+  String get rel_ops_host_title => '主機';
+
+  @override
+  String get rel_ops_host_refresh => '重新整理';
+
+  @override
+  String get rel_ops_host_update => '更新遠端 Hermes';
+
+  @override
+  String rel_ops_host_update_confirmation(String profile) {
+    return '這將在閘道主機上為 $profile 執行就地更新，不會更新此裝置上的 Ares。更新是否成功以相符的更新回條為準，而不是以主機是否持續可存取為準。';
+  }
+
+  @override
+  String get rel_ops_host_update_awaiting => '正在等候相符的回條。更新仍在進行中。';
+
+  @override
+  String get rel_ops_host_receipt_success => '更新回條顯示成功。';
+
+  @override
+  String get rel_ops_host_receipt_partial => '更新已套用，但仍有後續步驟需要完成。';
+
+  @override
+  String get rel_ops_host_receipt_failed => '更新回條顯示失敗。';
+
+  @override
+  String get rel_ops_host_receipt_refused => '更新回條顯示已拒絕。';
+
+  @override
+  String get rel_ops_host_update_running => '更新仍在進行中。';
+
+  @override
+  String get rel_ops_host_update_unknown => '更新結果不明。閘道正常運作並不代表更新成功。';
+
+  @override
+  String get rel_ops_host_default_profile => '閘道預設設定檔';
+
+  @override
+  String get rel_ops_host_restart => '重新啟動遠端閘道';
+
+  @override
+  String rel_ops_host_restart_shared_confirmation(String profiles) {
+    return '這將重新啟動 $profiles 共用的閘道。此閘道上正在進行的回合會被中斷。請隨後重新連線。可以存取閘道並不能證明重新啟動已完成。';
+  }
+
+  @override
+  String rel_ops_host_restart_confirmation(String profile) {
+    return '這將重新啟動 $profile 的遠端閘道。此閘道上正在進行的回合會被中斷。請隨後重新連線。';
+  }
+
+  @override
+  String get rel_ops_host_restart_running => '重新啟動指令仍在執行。';
+
+  @override
+  String get rel_ops_host_restart_finished => '重新啟動指令已結束。請手動重新連線至主機。';
+
+  @override
+  String get rel_ops_host_restart_failed => '重新啟動指令失敗。';
+
+  @override
+  String rel_ops_host_maintenance_running(String name) {
+    return '$name 仍在執行';
+  }
+
+  @override
+  String rel_ops_host_maintenance_finished(String name) {
+    return '$name 已完成';
+  }
+
+  @override
+  String rel_ops_host_maintenance_failed(String name) {
+    return '$name 失敗';
+  }
+
+  @override
+  String get rel_ops_host_curator_paused_result => '技能維護已暫停。';
+
+  @override
+  String get rel_ops_host_curator_resumed_result => '技能維護已恢復。';
+
+  @override
+  String get rel_ops_host_reset => '重設遠端記憶檔案';
+
+  @override
+  String rel_ops_host_reset_confirmation(String targetName, String profile) {
+    return '刪除 $profile 上的 $targetName 記憶檔案？此操作無法透過 Ares 復原。';
+  }
+
+  @override
+  String rel_ops_host_reset_result(String targetName, int count) {
+    return '已重設 $targetName。已刪除 $count 個遠端檔案。';
+  }
+
+  @override
+  String get rel_ops_host_share_not_redacted => '主機未確認診斷套件已隱去敏感資訊，因此不顯示連結。';
+
+  @override
+  String rel_ops_host_scope(String connection, String profile) {
+    return '這些控制項操作的是 $profile 的遠端閘道 $connection，而不是此裝置，也不用於更新 Ares 用戶端。';
+  }
+
+  @override
+  String rel_ops_host_health_running(String version, int count) {
+    return '閘道程序正在執行 $version · $count 個工作階段';
+  }
+
+  @override
+  String rel_ops_host_health_stopped(String version, int count) {
+    return '閘道程序已停止 $version · $count 個工作階段';
+  }
+
+  @override
+  String rel_ops_host_heartbeat_stale(num seconds) {
+    return '主機心跳已過期（$seconds 秒）。';
+  }
+
+  @override
+  String get rel_ops_host_doctor => '執行 Doctor';
+
+  @override
+  String get rel_ops_host_security_audit => '安全性稽核';
+
+  @override
+  String get rel_ops_host_check_receipt => '檢查更新回條';
+
+  @override
+  String get rel_ops_host_logs => '遠端主機記錄';
+
+  @override
+  String get rel_ops_host_search_logs => '搜尋主機記錄';
+
+  @override
+  String get rel_ops_host_driver => '遠端主機驅動程式';
+
+  @override
+  String get rel_ops_host_driver_scope =>
+      '電腦操作功能的就緒狀態取決於閘道機器上的驅動程式和作業系統權限，而不是此裝置。';
+
+  @override
+  String rel_ops_host_computer_status(
+    String platform,
+    String installed,
+    String ready,
+  ) {
+    return '$platform · 已安裝 $installed · 已就緒 $ready';
+  }
+
+  @override
+  String get rel_ops_host_null => '無法使用';
+
+  @override
+  String get rel_ops_host_true => '是';
+
+  @override
+  String get rel_ops_host_false => '否';
+
+  @override
+  String get rel_ops_host_curator => '技能維護';
+
+  @override
+  String get rel_ops_host_curator_paused => '技能維護已暫停';
+
+  @override
+  String get rel_ops_host_curator_running => '技能維護正在執行';
+
+  @override
+  String get rel_ops_host_no_run => '尚無已完成的執行';
+
+  @override
+  String get rel_ops_host_run_curator => '立即執行技能維護';
+
+  @override
+  String get rel_ops_host_reset_memory => '重設記憶檔案';
+
+  @override
+  String get rel_ops_host_reset_user => '重設使用者檔案';
+
+  @override
+  String get rel_ops_host_reset_both => '重設兩個檔案';
+
+  @override
+  String get rel_ops_host_share_consent => '我同意從遠端主機上傳已隱去敏感資訊的診斷套件';
+
+  @override
+  String get rel_ops_host_share => '分享已隱去敏感資訊的診斷資料';
+
+  @override
+  String get rel_ops_host_update_unknown_installation => '無法識別此安裝，因此未傳送更新請求';
+
+  @override
+  String get rel_ops_host_update_busy_installation => '此安裝上有聊天正在執行';
+
+  @override
+  String get rel_ops_host_update_refused => '遠端更新遭拒';
+
+  @override
+  String get rel_ops_host_error_stale => '遠端工作區：已過期';
+
+  @override
+  String get rel_ops_host_error_mismatch => '遠端工作區：不相符';
+
+  @override
+  String get rel_ops_host_error_unbound => '遠端工作區：未綁定';
+
+  @override
+  String get rel_ops_host_error_unsupported => '遠端工作區：不支援';
+
+  @override
+  String get rel_ops_host_error_denied => '遠端工作區：存取遭拒';
+
+  @override
+  String get rel_ops_host_error_ineligible => '遠端工作區：不符合操作條件';
+
+  @override
+  String get rel_ops_host_error_unavailable => '遠端工作區：無法使用';
+
+  @override
+  String get rel_ops_host_error_invalid => '遠端工作區：無效';
+
+  @override
+  String get rel_ops_host_error_insecure => '遠端工作區：不安全';
+
+  @override
+  String get rel_ops_host_error_request => '無法完成該請求。';
+
+  @override
+  String get rel_svc_push_api_select_sessions =>
+      '請選擇 1–128 個持久工作階段 ID，每個 ID 包含 1–200 個 ASCII 字元，且只能使用字母、數字、_ . : @ 或 -。請移除空白 ID 和空格。';
+
+  @override
+  String get rel_svc_push_api_unavailable => '此伺服器無法使用行動推播。';
+
+  @override
+  String get rel_svc_push_api_invalid_vapid => '伺服器 VAPID 公開金鑰無效。';
+
+  @override
+  String get rel_svc_push_api_update_plugin =>
+      '此伺服器需要更新 mobile-push 外掛程式才能使用自動訂閱。';
+
+  @override
+  String get rel_svc_push_status_android_only => '僅限 Android';
+
+  @override
+  String get rel_svc_push_native_prefs_sync_failed => '無法同步原生通知偏好設定。';
+
+  @override
+  String get rel_svc_push_choose_android_connection => '請先在 Android 上選擇已儲存的連線。';
+
+  @override
+  String get rel_svc_push_status_checking_authorization => '正在檢查伺服器授權';
+
+  @override
+  String get rel_svc_push_revoke_persist_failed => '無法儲存撤銷狀態。請在離開應用程式前再次嘗試停用。';
+
+  @override
+  String get rel_svc_push_status_off_api_ready => '已關閉；伺服器 API 已就緒';
+
+  @override
+  String get rel_svc_push_status_off_revoke_pending => '已關閉；等待伺服器撤銷';
+
+  @override
+  String get rel_svc_push_status_off_connection_changed => '已關閉；已儲存的連線已變更';
+
+  @override
+  String get rel_svc_push_status_pending_endpoint => '正在等待散發器端點';
+
+  @override
+  String get rel_svc_push_status_registering => '正在註冊';
+
+  @override
+  String get rel_svc_push_status_pending_challenge => '加密驗證待處理（正在等待靜默伺服器驗證推播）';
+
+  @override
+  String get rel_svc_push_allow_android_notifications_retry =>
+      '請在系統設定中允許 Android 通知，然後重試。';
+
+  @override
+  String get rel_svc_push_plugin_invalid =>
+      '伺服器 mobile-push 外掛程式無法使用、版本過舊或傳回了無效的訂閱回應。請讓管理員更新該外掛程式，然後重試。';
+
+  @override
+  String get rel_svc_push_transport_unavailable =>
+      '沒有可用的推播傳輸方式。內建傳送需要正常運作的 Google Play 服務；也可安裝 UnifiedPush 散發器後重試。';
+
+  @override
+  String get rel_svc_push_transport_choice =>
+      '有多個 UnifiedPush 散發器可用。請在「進階傳輸」中選擇一個，然後重試。';
+
+  @override
+  String get rel_svc_push_transport_missing =>
+      '所選 UnifiedPush 散發器無法使用。請還原它，或在「進階傳輸」中選擇其他散發器。';
+
+  @override
+  String get rel_svc_push_companion_unavailable =>
+      '伺服器 mobile-push 配套元件無法使用。它可能未安裝、已停用，或此連線可能指向錯誤的控制面板。請在伺服器上安裝或啟用該元件，檢查控制面板連線，然後重新整理。請參閱上方的伺服器設定指南。';
+
+  @override
+  String get rel_svc_push_server_denied => '伺服器拒絕了行動推播。請讓管理員授權此主體和這些工作階段。';
+
+  @override
+  String get rel_svc_push_not_ready => '行動推播尚未就緒。請檢查伺服器外掛程式授權、散發器和網路，然後重試。';
+
+  @override
+  String get rel_svc_push_availability_read_failed =>
+      '無法讀取 Android 推播可用性。請在下方重試。';
+
+  @override
+  String get rel_svc_push_setup_failed =>
+      '推播設定失敗。請檢查 Android 權限、伺服器授權和傳輸方式，然後重試。';
+
+  @override
+  String rel_svc_push_status(String status) {
+    return '狀態：$status';
+  }
+
+  @override
+  String rel_svc_push_status_bound(
+    String bound,
+    String connection,
+    String status,
+  ) {
+    return '狀態：已繫結至 $bound（對 $connection 未啟用；交握：$status）';
+  }
+
+  @override
+  String get rel_svc_push_another_saved_connection => '另一個已儲存的連線';
+
+  @override
+  String get rel_svc_push_background_notifications => '背景通知';
+
+  @override
+  String rel_svc_push_bound_subtitle(String bound, String connection) {
+    return '已繫結至 $bound — 請先在下方撤銷該繫結，再為 $connection 啟用';
+  }
+
+  @override
+  String rel_svc_push_private_activity(String connection) {
+    return '$connection 的私人伺服器活動';
+  }
+
+  @override
+  String rel_svc_push_bound_warning_named(String bound) {
+    return '已繫結至另一個已儲存的連線（$bound）。請先停用並撤銷該繫結，再為此連線啟用。';
+  }
+
+  @override
+  String get rel_svc_push_bound_warning => '已繫結至另一個已儲存的連線。請先停用並撤銷該繫結，再為此連線啟用。';
+
+  @override
+  String get rel_svc_push_local_notifications_muted =>
+      '上方已關閉本機通知。背景通知授權不變，但在開啟「啟用通知」之前，一般背景活動提示會保持靜音。';
+
+  @override
+  String rel_svc_push_legacy_subscription(int count) {
+    return '舊版訂閱：僅限 $count 個已選工作階段。它不會自動擴展。請先關閉再開啟，以選擇加入伺服器授權的工作階段。';
+  }
+
+  @override
+  String get rel_svc_push_authorized_binding =>
+      '僅繫結至此已儲存的連線和設定檔。工作階段存取權限遵循目前伺服器授權。';
+
+  @override
+  String get rel_svc_push_revocation_pending =>
+      '伺服器撤銷待處理。本機傳送已關閉；請在原始已儲存登入仍可用時重試。';
+
+  @override
+  String get rel_svc_push_refresh_retry => '重新整理 / 重試';
+
+  @override
+  String rel_svc_push_disable_named(String bound) {
+    return '停用並撤銷 $bound';
+  }
+
+  @override
+  String get rel_svc_push_other_connection => '其他連線';
+
+  @override
+  String get rel_svc_push_disable => '停用並撤銷';
+
+  @override
+  String get rel_svc_push_refresh_explanation =>
+      '重新整理 / 重試會在伺服器設定後重新檢查可用性；它無法安裝配套元件。啟用通知仍是單獨的選擇。';
+
+  @override
+  String get rel_svc_push_companion_required =>
+      '背景通知需要另外安裝並啟用伺服器端 mobile-push 配套元件。Android 無法安裝它。僅更新 APK 不會完成伺服器設定。';
+
+  @override
+  String get rel_svc_push_server_setup_guide => '伺服器設定指南';
+
+  @override
+  String get rel_svc_push_enable_disclosure =>
+      '啟用後將要求 Android 通知權限，並與此伺服器分享本次安裝的端點和加密金鑰。加密的活動提示不包含聊天內容。僅包括伺服器登入授權的工作階段。';
+
+  @override
+  String get rel_svc_push_transport_disclosure =>
+      '內建傳送使用 Google 推播傳輸並需要 Google Play 服務，但不包含 Firebase SDK。也可改用選用的 UnifiedPush 散發器。傳送為盡力而為；請重新開啟 Hermes 進行協調。';
+
+  @override
+  String get rel_svc_push_advanced_transport => '進階傳輸';
+
+  @override
+  String get rel_svc_push_automatic_explanation =>
+      '自動模式會保留現有散發器選擇；否則在可用時使用內建 Google 傳送。變更傳輸方式前請先停用。';
+
+  @override
+  String get rel_svc_push_transport_label => '推播傳輸';
+
+  @override
+  String get rel_svc_push_automatic_recommended => '自動（建議）';
+
+  @override
+  String get rel_svc_push_selected_unavailable => '所選散發器（無法使用）';
+
+  @override
+  String get rel_svc_push_no_transport_detected =>
+      '未偵測到可用的傳輸方式。內建傳送需要 Google Play 服務；若沒有，請安裝並設定 UnifiedPush 散發器，然後重新整理。';
+
+  @override
+  String get rel_svc_push_channel_turns_name => 'Ares 輪次';
+
+  @override
+  String get rel_svc_push_channel_turns_description => '背景輪次完成通知';
+
+  @override
+  String get rel_svc_push_channel_attention_name => 'Ares 待處理';
+
+  @override
+  String get rel_svc_push_channel_attention_description => '需要您處理的核准和輸入要求';
+
+  @override
+  String get rel_svc_push_channel_background_name => 'Ares 背景';
+
+  @override
+  String get rel_svc_push_channel_background_description => '背景任務完成';
+
+  @override
+  String get rel_svc_push_channel_notices_name => 'Ares 通知';
+
+  @override
+  String get rel_svc_push_channel_notices_description => '額度和外掛程式通知';
+
+  @override
+  String get rel_svc_push_diag_not_initialised => '未初始化';
+
+  @override
+  String get rel_svc_push_diag_replies_off => '回覆通知已關閉';
+
+  @override
+  String get rel_svc_push_diag_conversation => '對話';
+
+  @override
+  String get rel_svc_push_diag_conversation_permission_denied => '對話；權限遭拒';
+
+  @override
+  String rel_svc_push_diag_conversation_error(String error) {
+    return '對話：$error';
+  }
+
+  @override
+  String get rel_svc_push_diag_failures_off => '失敗通知已關閉';
+
+  @override
+  String rel_svc_push_diag_kind_off(String kind) {
+    return '$kind 已關閉';
+  }
+
+  @override
+  String get rel_svc_push_diag_windows_setting_unknown => 'Windows 未回報其通知設定';
+
+  @override
+  String get rel_svc_backup_not_hermes_configuration_backup =>
+      '此檔案不是 Hermes 設定備份。';
+
+  @override
+  String get rel_svc_backup_newer_version_cannot_import =>
+      '此備份由較新版本的應用程式建立，無法匯入。';
+
+  @override
+  String get rel_svc_backup_missing_client_certificate =>
+      '此備份宣告某個連線使用用戶端憑證，但並未包含該憑證，因此無法完整還原。';
+
+  @override
+  String get rel_svc_backup_damaged_unreadable => '此備份檔案已損毀，無法讀取。';
+
+  @override
+  String get rel_svc_backup_unsupported_preference_type =>
+      '某項已儲存的偏好設定類型不受支援，無法匯出。';
+
+  @override
+  String get rel_svc_backup_choose_passphrase_api_keys =>
+      '請選擇複雜密碼 — 備份包含您的 API 金鑰。';
+
+  @override
+  String get rel_svc_backup_could_not_protect_safely => '無法安全保護備份。';
+
+  @override
+  String get rel_svc_backup_unsupported_encryption => '此備份使用不受支援的加密方式。';
+
+  @override
+  String get rel_svc_backup_wrong_passphrase_or_altered => '複雜密碼錯誤，或此備份檔案已遭修改。';
+
+  @override
+  String get rel_svc_backup_share_subject => 'Hermes 設定備份';
+
+  @override
+  String get rel_svc_backup_selected_file_unreadable => '無法讀取該檔案。';
+
+  @override
+  String rel_svc_backup_connections_added(int count) {
+    return '已新增 $count 個';
+  }
+
+  @override
+  String rel_svc_backup_connections_updated(int count) {
+    return '已更新 $count 個';
+  }
+
+  @override
+  String rel_svc_backup_connections_removed(int count) {
+    return '已移除 $count 個';
+  }
+
+  @override
+  String get rel_svc_backup_no_connection_changes => '連線未變更';
+
+  @override
+  String rel_svc_backup_connections_summary(String changes) {
+    return '連線：$changes';
+  }
+
+  @override
+  String rel_svc_backup_restore_summary(String connections, int count) {
+    return '$connections · 已還原 $count 項設定';
+  }
+
+  @override
+  String rel_svc_backup_certificate_not_included(String label, String error) {
+    return '無法將「$label」的用戶端憑證包含在此備份中：$error';
+  }
+
+  @override
+  String get rel_svc_backup_certificate_password_needed =>
+      '此憑證需要密碼。在下方輸入後，憑證將自動開啟。';
+
+  @override
+  String get rel_svc_backup_certificate_password_or_corrupt => '憑證密碼錯誤，或檔案已損毀。';
+
+  @override
+  String get rel_svc_backup_certificate_password_incorrect => '憑證密碼錯誤。';
+
+  @override
+  String get rel_svc_backup_certificate_unsupported_encryption =>
+      '此憑證使用應用程式無法讀取的加密方式。';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable_pkcs12 =>
+      '所選檔案不是可讀取的 PKCS#12（.p12/.pfx）憑證。';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable => '無法讀取所選憑證。';
+
+  @override
+  String get rel_svc_backup_not_certificate_file =>
+      '該檔案不是憑證：請選擇 .p12/.pfx 容器，或 PEM 憑證和金鑰檔案。';
+
+  @override
+  String get rel_svc_backup_not_pem_certificate => '所選憑證不是 PEM 憑證。';
+
+  @override
+  String get rel_svc_backup_not_pem_private_key => '所選私密金鑰不是 PEM 私密金鑰。';
+
+  @override
+  String get rel_svc_backup_certificate_pair_unloadable => '無法載入所選憑證和私密金鑰。';
+
+  @override
+  String get rel_svc_backup_saved_certificate_files_unreadable =>
+      '無法讀取已儲存的用戶端憑證檔案。';
+
+  @override
+  String get rel_svc_backup_client_certificate_storage_failed =>
+      '無法將用戶端憑證安全地儲存在此裝置上。';
+
+  @override
+  String get rel_svc_backup_certificate_storage_failed => '無法將憑證安全地儲存在此裝置上。';
+
+  @override
+  String get rel_svc_backup_client_certificate_label => '用戶端憑證';
+
+  @override
+  String rel_svc_backup_search_dashboard_unreachable(String error) {
+    return '無法連線至控制面板：$error';
+  }
+
+  @override
+  String get rel_svc_backup_search_credentials_rejected =>
+      '控制面板拒絕了已儲存的認證。請檢查此連線的控制面板使用者名稱和密碼。';
+
+  @override
+  String get rel_svc_backup_search_not_supported =>
+      '此控制面板未提供工作階段搜尋。請更新主機上的 Hermes，或切換回裝置端搜尋。';
+
+  @override
+  String rel_svc_backup_search_redirected(int statusCode) {
+    return '控制面板重新導向了工作階段搜尋（HTTP $statusCode）。Ares 不會攜帶已儲存的認證跟隨重新導向；請檢查連線位址。';
+  }
+
+  @override
+  String rel_svc_backup_search_http_failed(int statusCode) {
+    return '工作階段搜尋失敗，HTTP $statusCode。';
+  }
+
+  @override
+  String get rel_svc_backup_search_malformed_response => '控制面板傳回了格式錯誤的搜尋回應。';
+
+  @override
+  String get rel_svc_backup_search_unexpected_response => '控制面板傳回了非預期的搜尋回應。';
+
+  @override
+  String get rel_svc_backup_search_too_many_results => '控制面板傳回的搜尋結果多於要求數量。';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_response => '訊息搜尋回應異常。';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_result => '訊息搜尋結果異常。';
+
+  @override
+  String get rel_svc_backup_ai_search_api_key_rejected =>
+      'Hermes API 拒絕了已儲存的 API 金鑰。';
+
+  @override
+  String rel_svc_backup_ai_search_http_failed(int statusCode) {
+    return 'AI 查詢改寫失敗，HTTP $statusCode。';
+  }
+
+  @override
+  String get rel_svc_backup_ai_search_no_usable_query => '所選模型未傳回可用的搜尋查詢。';
+
+  @override
+  String get rel_svc_backup_ai_search_malformed_response =>
+      'Hermes 傳回了格式錯誤的 AI 改寫回應。';
+
+  @override
+  String get rel_svc_backup_space_name_already_exists => '已存在同名空間';
+
+  @override
+  String get rel_svc_backup_space_name_length_invalid => '空間名稱必須為 1–80 個字元';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_required =>
+      '輸入您的 Hermes 控制面板位址。';
+
+  @override
+  String ng_rel_svc_backup_gateway_address_scheme(String scheme) {
+    return '位址必須以 http:// 或 https:// 開頭（收到 $scheme）。';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_invalid => '該位址無效。';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_no_host => '位址中沒有主機名稱。';
+
+  @override
+  String get ng_rel_svc_backup_sign_in_main_window => '請在主視窗中登入。';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_failed => '閘道目前無法續訂登入。';
+
+  @override
+  String get rel_svc_backup_sign_in_provider_unreachable =>
+      '閘道無法續訂登入：登入提供者無法連線。';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_timed_out => '續訂登入逾時。';
+
+  @override
+  String get rel_svc_backup_sign_in_no_tokens => '閘道未傳回登入權杖。';
+
+  @override
+  String get ng_rel_svc_backup_probe_timed_out =>
+      '要求逾時。請檢查位址、VPN 或 Tailscale 連線。';
+
+  @override
+  String ng_rel_svc_backup_probe_tls_failed(String error) {
+    return 'TLS 交握失敗：$error';
+  }
+
+  @override
+  String ng_rel_svc_backup_gateway_answered_http(int statusCode) {
+    return '閘道傳回了 HTTP $statusCode。';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_answer_timed_out => '閘道回應時間過長。';
+
+  @override
+  String ng_rel_svc_backup_browser_callback_not_ready(String error) {
+    return '無法準備接收瀏覽器回呼：$error';
+  }
+
+  @override
+  String get ng_rel_svc_backup_browser_signed_in_body => '現在可以返回 Hermes。';
+
+  @override
+  String get ng_rel_svc_backup_browser_waiting_title => '正在等待登入';
+
+  @override
+  String get ng_rel_svc_backup_browser_not_current => '此頁面不屬於目前的登入流程。';
+
+  @override
+  String get ng_rel_svc_backup_browser_open_failed => '無法開啟瀏覽器進行登入。';
+
+  @override
+  String get ng_rel_svc_backup_browser_sign_in_timed_out => '登入時間過長。請再試一次。';
+
+  @override
+  String ng_rel_svc_backup_gateway_refused_sign_in(int statusCode) {
+    return '閘道拒絕了登入（HTTP $statusCode）。';
+  }
+
+  @override
+  String get rel_svc_misc_alert_caution => '注意';
+
+  @override
+  String get rel_svc_misc_alert_important => '重要';
+
+  @override
+  String get rel_svc_misc_alert_tip => '提示';
+
+  @override
+  String get rel_svc_misc_alert_warning => '警告';
+
+  @override
+  String get rel_svc_misc_allow_folder_session => '在工作階段結束前允許存取此資料夾。';
+
+  @override
+  String get rel_svc_misc_allow_website_session => '在工作階段結束前允許存取此網站。';
+
+  @override
+  String rel_svc_misc_approval_needed_title(String title) {
+    return '需要核准 — $title';
+  }
+
+  @override
+  String get rel_svc_misc_attach_file_reference => '附加檔案參照';
+
+  @override
+  String get rel_svc_misc_attach_folder_reference => '附加資料夾參照';
+
+  @override
+  String get rel_svc_misc_attach_git_context => '附加 git 內容';
+
+  @override
+  String get rel_svc_misc_attach_image_reference => '附加圖片參照';
+
+  @override
+  String get rel_svc_misc_attach_staged_diff => '附加已暫存的差異';
+
+  @override
+  String get rel_svc_misc_attach_tool_reference => '附加工具參照';
+
+  @override
+  String get rel_svc_misc_attach_unstaged_diff => '附加未暫存的差異';
+
+  @override
+  String get rel_svc_misc_attach_url_reference => '附加 URL 參照';
+
+  @override
+  String get rel_svc_misc_background_task_completed => '背景工作已完成';
+
+  @override
+  String rel_svc_misc_background_task_named_completed(String taskId) {
+    return '背景工作 $taskId 已完成';
+  }
+
+  @override
+  String get rel_svc_misc_chat => '聊天';
+
+  @override
+  String get rel_svc_misc_compacting_context => '正在壓縮對話內容…';
+
+  @override
+  String rel_svc_misc_completed_in(String duration) {
+    return '在 $duration 內完成';
+  }
+
+  @override
+  String get rel_svc_misc_context_compacted => '對話內容已壓縮';
+
+  @override
+  String get rel_svc_misc_cron_readback_mismatch => 'Cron 模型讀回結果不相符';
+
+  @override
+  String get rel_svc_misc_cron_update_rejected => 'Cron 更新遭拒';
+
+  @override
+  String get rel_svc_misc_deny_folder_grant => '不授予此資料夾的存取權限。';
+
+  @override
+  String get rel_svc_misc_deny_website_grant => '不授予此網站的存取權限。';
+
+  @override
+  String rel_svc_misc_failed_after(String duration) {
+    return '在 $duration 後失敗';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_folder_unnamed => '閘道未指定資料夾。';
+
+  @override
+  String get rel_svc_misc_gateway_idle_unconfirmed => '閘道處於閒置狀態。無法確認上一輪的結果。';
+
+  @override
+  String get rel_svc_misc_gateway_turn_failed => '閘道輪次失敗';
+
+  @override
+  String rel_svc_misc_gateway_turn_status(String status) {
+    return '閘道輪次：$status';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_website_unnamed => '閘道未指定網站。';
+
+  @override
+  String get rel_svc_misc_hermes_review => 'Hermes 審查';
+
+  @override
+  String get rel_svc_misc_hermes_turn_failed => 'Hermes 輪次失敗';
+
+  @override
+  String get rel_svc_misc_image_recovery_companion_gap =>
+      '搭配復原不支援圖片和文字復原。此連線無法復原未獲確認的圖片傳送，也不會自動重新傳送任何內容。';
+
+  @override
+  String get rel_svc_misc_image_recovery_rest_gap =>
+      'Classic REST/SSE 不支援圖片和文字復原。此連線無法復原未獲確認的圖片傳送，也不會自動重新傳送任何內容。';
+
+  @override
+  String rel_svc_misc_input_needed_title(String title) {
+    return '需要輸入 — $title';
+  }
+
+  @override
+  String get rel_svc_misc_parallel_workspace_connection_changed =>
+      '連線已變更。請重新開啟以使用工作區。';
+
+  @override
+  String get rel_svc_misc_preparing => '正在準備';
+
+  @override
+  String get rel_svc_misc_save_folder_grant => '儲存此資料夾授權以供後續要求使用。';
+
+  @override
+  String get rel_svc_misc_save_website_grant => '儲存此網站授權以供後續要求使用。';
+
+  @override
+  String get rel_svc_misc_stored_identity_turn_conflict =>
+      '在另一個輪次已獲准時，此聊天透過其儲存的身分開啟。未傳送的提示未被傳送；請在該輪次結束後明確重試。';
+
+  @override
+  String get rel_svc_misc_untitled => '未命名';
+
+  @override
+  String get rel_svc_misc_wake_capture_silent =>
+      '用戶端喚醒擷取只偵測到靜音 — 請檢查作業系統的麥克風存取權限，並重新切換喚醒詞。';
+
+  @override
+  String get rel_svc_misc_wake_capture_stalled => '用戶端喚醒擷取停滯：未收到麥克風音訊回呼。';
+
+  @override
+  String rel_svc_misc_wake_feed_refused(int count, String detail) {
+    return '喚醒詞音訊串流拒絕了連續 $count 個影格$detail — 請重新切換喚醒詞以重新啟用。';
+  }
+
+  @override
+  String rel_svc_misc_wake_microphone_failed(String error) {
+    return '用戶端喚醒麥克風串流失敗：$error';
+  }
+
+  @override
+  String get rel_svc_misc_wake_track_ended =>
+      '喚醒詞擷取期間麥克風軌道已結束 — 請重新切換喚醒詞以重新啟用。';
+
+  @override
+  String get rel_svc_misc_website => '網站';
+
+  @override
+  String get rel_svc_lan_timeout => '區域網路探索逾時';
+
+  @override
+  String get rel_svc_notification_permission_denied => '權限遭拒';
+
+  @override
+  String get rel_svc_notifications_off => '通知已關閉';
+
+  @override
+  String rel_chat_preview_pin_label(int number, String note) {
+    return '#$number $note';
+  }
+
+  @override
+  String rel_chat_preview_pin_number(int number) {
+    return '#$number';
+  }
+
+  @override
+  String ng_rel_chat_wake_status_notice(String status, String notice) {
+    return '$status — $notice';
+  }
+
+  @override
+  String ng_rel_chat_cost_amount(String amount) {
+    return '\$$amount';
+  }
+
+  @override
+  String ng_rel_chat_context_ratio(String used, String maximum) {
+    return '$used / $maximum';
+  }
+
+  @override
+  String ng_rel_chat_connection_reason(String status, String reason) {
+    return '$status $reason';
+  }
+
+  @override
+  String ng_rel_chat_notice_time(String message, String time) {
+    return '$message · $time';
+  }
+
+  @override
+  String ng_rel_chat_attachment_progress(String name, String progress) {
+    return '$name · $progress';
+  }
+
+  @override
+  String ng_rel_chat_tool_detail(String name, String detail) {
+    return '$name · $detail';
+  }
+
+  @override
+  String get fleet_managed_ssh_title => '閘道管理的 SSH';
+
+  @override
+  String get fleet_managed_ssh_intro =>
+      '從任何裝置管理已儲存在此閘道上的 SSH 主機。遠端主機上必須已安裝 Hermes。此操作會啟動或連接至此閘道所擁有的遠端服務，而非建立 Ares 聊天連線。受管理的更新與復原僅適用於原生桌面應用程式。';
+
+  @override
+  String get fleet_managed_ssh_read => '讀取已儲存的 SSH 主機';
+
+  @override
+  String get fleet_managed_ssh_trust =>
+      '首次連線時，閘道會信任並記住此主機的 SSH 金鑰。之後若金鑰發生變更，將會被標記並封鎖連線。閘道不提供金鑰指紋，因此 Ares 無法顯示或儲存指紋。只有在信任此次首次連線時才繼續。';
+
+  @override
+  String get fleet_managed_ssh_changed =>
+      '此主機的 SSH 金鑰已變更。連線已遭封鎖。有權存取閘道主機的人必須獨立驗證新金鑰的指紋，並在閘道主機上移除舊的受信任金鑰。只有在完成驗證與修復後才重試。Ares 不會取代受信任的金鑰。';
+
+  @override
+  String get fleet_managed_ssh_disconnect_warning =>
+      '中斷 SSH 通道並停止此閘道所擁有的遠端服務？這可能會中斷其他正在使用該服務的用戶端。';
+
+  @override
+  String get fleet_managed_ssh_verify => '改為自行驗證金鑰';
+
+  @override
+  String fleet_managed_ssh_pending(int seconds) {
+    return '正在等待閘道：$seconds 秒。離開此頁面不會取消初始化。如果請求失敗，請先檢查狀態再重試。';
+  }
+
+  @override
+  String fleet_managed_ssh_status(
+    String host,
+    int localPort,
+    int remotePort,
+    String version,
+    String reused,
+  ) {
+    return '主機：$host\n閘道回環連接埠：$localPort\n遠端回環連接埠：$remotePort\nHermes：$version\n已重用：$reused';
+  }
+
+  @override
+  String get fleet_managed_ssh_disconnect => '中斷連線';
+
+  @override
+  String get ng_slash_suggestions_loading => '正在載入指令…';
+
+  @override
+  String get ng_slash_suggestions_empty => '沒有相符的指令';
+
+  @override
+  String get ng_slash_suggestions_label => '指令建議';
+
+  @override
+  String get ng_slash_suggestions_skill => '技能';
+
+  @override
+  String get settings_classic_title => 'Classic 設定';
+
+  @override
+  String get settings_nextgen_title => 'NextGen 設定';
+
+  @override
+  String get settings_category_general => '一般與語言';
+
+  @override
+  String get settings_category_chat => '聊天與工作階段';
+
+  @override
+  String get settings_category_device => '裝置與快捷鍵';
+
+  @override
+  String get settings_category_connections => '連線與模型';
+
+  @override
+  String get settings_category_security => '隱私與備份';
+
+  @override
+  String get settings_category_about => '關於與說明';
+
+  @override
+  String get settings_reopen_chat => '返回閘道時還原上次聊天';
+
+  @override
+  String get settings_reopen_chat_hint => '冷啟動時開啟歡迎頁面。連結和通知會開啟指定的聊天。';
+
+  @override
+  String get settings_danger => '危險操作';
 }

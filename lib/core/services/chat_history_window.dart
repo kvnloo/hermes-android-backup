@@ -86,6 +86,12 @@ class ChatHistoryWindow {
   /// valid). The API returns each raw page in chronological order even with
   /// `order=latest`, so numeric row IDs restore order across sliding windows.
   void acceptRecent(ChatHistoryPageBatch batch) {
+    final cut = _cut;
+    if (cut != null && batch.rows.any((row) => _archived(row, cut))) {
+      // The server still lists a row the cut hid: the rewind did not take
+      // there, so the fresh page is the truth and the rows come back.
+      _cut = null;
+    }
     final previousMax = rows
         .map(_rowId)
         .whereType<int>()
@@ -125,16 +131,54 @@ class ChatHistoryWindow {
     rows = _merge(rows, latest);
   }
 
-  static List<Map<String, dynamic>> _merge(
+  /// The rows an accepted rewind archived: from its target row through the
+  /// newest row known when it was accepted. Rows saved after it have higher
+  /// ids and are never hidden.
+  ({int from, int through})? _cut;
+
+  static bool _archived(
+    Map<String, dynamic> row,
+    ({int from, int through}) cut,
+  ) {
+    final id = _rowId(row);
+    return id != null && id >= cut.from && id <= cut.through;
+  }
+
+  /// The gateway accepted a rewind at row [from]: that turn and everything
+  /// after it are archived, so they leave the window at once (Desktop's
+  /// `applyRewindOptimistic`) and a stale observation cannot bring them
+  /// back. [through] is the newest row the transcript had then. The next
+  /// fresh latest page reconciles ([acceptRecent]).
+  void applyRewind(int from, {int? through}) {
+    final newest = rows
+        .map(_rowId)
+        .whereType<int>()
+        .fold<int>(from, (maximum, id) => id > maximum ? id : maximum);
+    final cut = (
+      from: from,
+      through: through != null && through > newest ? through : newest,
+    );
+    final kept = [
+      for (final row in rows)
+        if (_rowId(row) != null && !_archived(row, cut)) row,
+    ];
+    final removed = rows.length - kept.length;
+    _cut = cut;
+    rows = kept;
+    _olderOffset = removed >= _olderOffset ? 0 : _olderOffset - removed;
+  }
+
+  List<Map<String, dynamic>> _merge(
     List<Map<String, dynamic>> older,
     List<Map<String, dynamic>> newer,
   ) {
+    final cut = _cut;
     final byId = <int, Map<String, dynamic>>{};
     // Without a durable key, old latest-window rows cannot be reconciled.
     final withoutId = newer.where((row) => _rowId(row) == null).toList();
     for (final row in [...older, ...newer]) {
       final id = _rowId(row);
-      if (id != null) {
+      if (id != null && (cut == null || !_archived(row, cut))) {
         byId[id] = row;
       }
     }

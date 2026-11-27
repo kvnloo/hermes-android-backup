@@ -5,10 +5,12 @@
 // which broke sending ("Not sent: invalid_params") and live updates
 // ("Live updates are unavailable") on v4.0.8.
 //
-// The wire fakes below enforce the real canonical contract:
-// CanonicalCreateParams.source is Literal['cli','tui','gui','acp','tool',
-// 'oneshot'] and CanonicalResumeParams has no inline_images field. Legacy
-// gateways (no session_authority in gateway.ready) keep the desktop hint and
+// The authority fakes below are the shared strict gateway
+// (test/support/strict_authority_gateway.dart): they refuse what the pinned
+// gateway's closed contracts refuse (CanonicalCreateParams.source is
+// Literal['cli','tui','gui','acp','tool','oneshot'], CanonicalResumeParams
+// has no inline_images field, and any other unknown key). Legacy gateways
+// (no session_authority in gateway.ready) keep the desktop hint and
 // inline_images.
 import 'dart:convert';
 import 'dart:io';
@@ -22,7 +24,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-const _canonicalSources = {'cli', 'tui', 'gui', 'acp', 'tool', 'oneshot'};
+import 'support/strict_authority_gateway.dart';
+import 'support/strict_nextgen_gateway.dart';
 
 SavedConnection _connection() => SavedConnection(
   id: 'c1',
@@ -37,8 +40,8 @@ SavedConnection _connection() => SavedConnection(
 );
 
 /// Loopback gateway that records session.create / session.resume params and,
-/// when [authority] is set, refuses the legacy-only shapes exactly like the
-/// canonical params models do.
+/// when [authority] is set, refuses every request the pinned gateway's
+/// contracts refuse.
 Future<HttpServer> _gatewayServer({
   required bool authority,
   required List<Map<String, dynamic>> recorded,
@@ -73,41 +76,15 @@ Future<HttpServer> _gatewayServer({
       final params = Map<String, dynamic>.from(frame['params'] as Map);
       recorded.add({'method': method, ...params});
       final id = frame['id'];
-      void refuse(String message) {
-        ws.add(
-          jsonEncode({
-            'jsonrpc': '2.0',
-            'id': id,
-            'error': {'code': 4000, 'message': 'Invalid params: $message'},
-          }),
-        );
+      if (authority) {
+        final refused = strictAuthorityReply(id, method as String, params);
+        if (refused != null) {
+          ws.add(jsonEncode(refused));
+          return;
+        }
       }
 
       if (method == 'session.create') {
-        if (authority && !_canonicalSources.contains(params['source'])) {
-          refuse(
-            "source: Input should be 'cli', 'tui', 'gui', 'acp', 'tool' or "
-            "'oneshot'",
-          );
-          return;
-        }
-        // Full extra=forbid parity for the keys the app may send.
-        const allowed = {
-          'source',
-          'cwd',
-          'model',
-          'provider',
-          'reasoning',
-          'profile',
-        };
-        if (authority) {
-          for (final key in params.keys) {
-            if (!allowed.contains(key)) {
-              refuse('$key: Extra inputs are not permitted');
-              return;
-            }
-          }
-        }
         ws.add(
           jsonEncode({
             'jsonrpc': '2.0',
@@ -120,10 +97,6 @@ Future<HttpServer> _gatewayServer({
             },
           }),
         );
-        return;
-      }
-      if (authority && params.containsKey('inline_images')) {
-        refuse('inline_images: Extra inputs are not permitted');
         return;
       }
       ws.add(
@@ -178,31 +151,33 @@ class _FakeGateway extends NextGenGateway {
     Duration timeout = const Duration(seconds: 20),
   }) async => liveSocket ?? _dummySocket;
 
+  Future<Map<String, dynamic>> _answer(
+    String method,
+    Map<String, dynamic> params,
+  ) {
+    calls.add(_RecordedCall(method, Map<String, dynamic>.from(params)));
+    return onCall(method, params);
+  }
+
+  /// On an authority gateway the call goes through the client's guard and
+  /// the strict contract check, as the real socket does; [calls] then holds
+  /// the frames as they would go on the wire.
   @override
   Future<Map<String, dynamic>> call(
     String method,
     Map<String, dynamic> params, {
     Duration timeout = const Duration(seconds: 30),
-  }) {
-    calls.add(_RecordedCall(method, Map<String, dynamic>.from(params)));
-    return onCall(method, params);
-  }
+  }) => sessionAuthority
+      ? strictCall(this, method, params, _answer)
+      : _answer(method, params);
 }
 
-/// NextGen fake that enforces the canonical contract on the recorded calls.
+/// What an authority gateway answers the calls these tests make with.
 Future<Map<String, dynamic>> _strictCall(
   String method,
   Map<String, dynamic> params,
 ) async {
   if (method == 'session.create') {
-    if (!_canonicalSources.contains(params['source'])) {
-      throw JsonRpcError(
-        'session.create',
-        "Invalid params: source: Input should be 'cli', 'tui', 'gui', 'acp', "
-            "'tool' or 'oneshot'",
-        code: 4000,
-      );
-    }
     return {
       'session_id': 'rt-new',
       'stored_session_id': 'stored-new',
@@ -212,13 +187,6 @@ Future<Map<String, dynamic>> _strictCall(
     };
   }
   if (method == 'session.resume') {
-    if (params.containsKey('inline_images')) {
-      throw JsonRpcError(
-        'session.resume',
-        'Invalid params: inline_images: Extra inputs are not permitted',
-        code: 4000,
-      );
-    }
     return {
       'session_id': 'rt-1',
       'revision': 4,

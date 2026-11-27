@@ -11,6 +11,7 @@ import 'package:hermes_android/core/services/desktop_gateway_client.dart';
 import 'package:hermes_android/core/services/gateway_turn_application_controller.dart';
 import 'package:hermes_android/core/services/gateway_turn_coordinator.dart';
 import 'package:hermes_android/core/services/normal_gateway_application_session.dart';
+import 'package:hermes_android/core/services/remote_workspace.dart';
 import 'package:hermes_android/core/services/turn_notification_service.dart';
 import 'package:hermes_android/core/services/ws_client.dart';
 import 'package:hermes_android/core/widgets/gateway_approval_dialog.dart';
@@ -346,6 +347,17 @@ class _NormalOwnerController extends GatewayTurnApplicationController {
 // A controlled in-memory approval transport, not a fake normal owner. No WS,
 // HTTP, device or notification-platform operations are performed by this fake.
 class _HeldApprovalClient implements DesktopGatewayClient {
+  /// ChatScreen reads the owner to offer Session files. This one never
+  /// connects; a dial would fail the test instead of reaching a network.
+  @override
+  late final RemoteWorkspaceOwner workspace = RemoteWorkspaceOwner(
+    connectionId: 'approval-fixture',
+    expectedBaseUrl: 'http://fixture.invalid:9119',
+    profile: null,
+    dashboard: DashboardClient(host: 'fixture.invalid'),
+    connect: () async => throw UnsupportedError('No workspace dial'),
+    ownsSocket: (_) => false,
+  );
   final response = Completer<void>();
   final answers = <({String sessionId, String? requestId, String choice})>[];
   bool _unresolved = true;
@@ -397,6 +409,11 @@ class _HeldApprovalClient implements DesktopGatewayClient {
 
   @override
   String? storedSessionKeyFor(String mobileSessionId) => mobileSessionId;
+
+  /// Local capability flag from the gateway greeting; this fake never
+  /// greets, so it reports a pre-authority gateway (no gateway queue tool).
+  @override
+  bool get sessionAuthority => false;
 
   @override
   Future<void> ensureSession(

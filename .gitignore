@@ -58,3 +58,5 @@ mutation-test-report/
 
 # Generated test artifacts
 review-evidence/
+# F17 test TMPDIR
+.tmp-tests/

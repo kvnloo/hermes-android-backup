@@ -26,9 +26,12 @@
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
+		B150A11A0000000000000002 /* ares_mail.wav in Resources */ = {isa = PBXBuildFile; fileRef = B150A11A0000000000000001 /* ares_mail.wav */; };
+		B150BEE00000000000000002 /* ares_reminder.wav in Resources */ = {isa = PBXBuildFile; fileRef = B150BEE00000000000000001 /* ares_reminder.wav */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
 		35582E8D784FA987E2461E13 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75661DD62D3581ED8762CE77 /* Pods_Runner.framework */; };
 		3A8C14F097C146EA00A1B2C3 /* AresApple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8C14EF97C146EA00A1B2C3 /* AresApple.swift */; };
+		3A8C14F297C146EA00A1B2C3 /* AresDesktopOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8C14F197C146EA00A1B2C3 /* AresDesktopOS.swift */; };
 		4B8D77EFE1C50A2BA6417BDB /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4AC8D93C2A466256EB6A047D /* Pods_RunnerTests.framework */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
 /* End PBXBuildFile section */
@@ -74,6 +77,8 @@
 		33CC10F22044A3C60003C045 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = Runner/Assets.xcassets; sourceTree = "<group>"; };
 		33CC10F52044A3C60003C045 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		33CC10F72044A3C60003C045 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = Runner/Info.plist; sourceTree = "<group>"; };
+		B150A11A0000000000000001 /* ares_mail.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ares_mail.wav; path = Runner/ares_mail.wav; sourceTree = "<group>"; };
+		B150BEE00000000000000001 /* ares_reminder.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = ares_reminder.wav; path = Runner/ares_reminder.wav; sourceTree = "<group>"; };
 		33CC11122044BFA00003C045 /* MainFlutterWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainFlutterWindow.swift; sourceTree = "<group>"; };
 		33CEB47222A05771004F2AC0 /* Flutter-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Flutter-Debug.xcconfig"; sourceTree = "<group>"; };
 		33CEB47422A05771004F2AC0 /* Flutter-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Flutter-Release.xcconfig"; sourceTree = "<group>"; };
@@ -82,6 +87,7 @@
 		33E51914231749380026EE4D /* Release.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Release.entitlements; sourceTree = "<group>"; };
 		33E5194F232828860026EE4D /* AppInfo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppInfo.xcconfig; sourceTree = "<group>"; };
 		3A8C14EF97C146EA00A1B2C3 /* AresApple.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AresApple.swift; path = ../../apple/AresApple.swift; sourceTree = "<group>"; };
+		3A8C14F197C146EA00A1B2C3 /* AresDesktopOS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AresDesktopOS.swift; sourceTree = "<group>"; };
 		41676457A27C525337732AE7 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		47CB7DC01A5FCB89BFB7E0FA /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		4AC8D93C2A466256EB6A047D /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -175,6 +181,8 @@
 				33CC10F22044A3C60003C045 /* Assets.xcassets */,
 				33CC10F42044A3C60003C045 /* MainMenu.xib */,
 				33CC10F72044A3C60003C045 /* Info.plist */,
+				B150A11A0000000000000001 /* ares_mail.wav */,
+				B150BEE00000000000000001 /* ares_reminder.wav */,
 			);
 			name = Resources;
 			path = ..;
@@ -198,6 +206,7 @@
 				33CC10F02044A3C60003C045 /* AppDelegate.swift */,
 				33CC11122044BFA00003C045 /* MainFlutterWindow.swift */,
 				3A8C14EF97C146EA00A1B2C3 /* AresApple.swift */,
+				3A8C14F197C146EA00A1B2C3 /* AresDesktopOS.swift */,
 				33E51913231747F40026EE4D /* DebugProfile.entitlements */,
 				33E51914231749380026EE4D /* Release.entitlements */,
 				33CC11242044D66E0003C045 /* Resources */,
@@ -330,6 +339,8 @@
 			files = (
 				33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */,
 				33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */,
+				B150A11A0000000000000002 /* ares_mail.wav in Resources */,
+				B150BEE00000000000000002 /* ares_reminder.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -374,7 +385,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"$PRODUCT_NAME.app\" > \"$PROJECT_DIR\"/Flutter/ephemeral/.app_filename && \"$FLUTTER_ROOT\"/packages/flutter_tools/bin/macos_assemble.sh embed\n";
+			shellScript = "set -e\necho \"$PRODUCT_NAME.app\" > \"$PROJECT_DIR\"/Flutter/ephemeral/.app_filename\n\"$FLUTTER_ROOT\"/packages/flutter_tools/bin/macos_assemble.sh embed\n/bin/sh \"$PROJECT_DIR/build-terminal-helper.sh\"\n";
 		};
 		33CC111E2044C6BF0003C045 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -453,6 +464,7 @@
 				33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */,
 				33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */,
 				3A8C14F097C146EA00A1B2C3 /* AresApple.swift in Sources */,
+				3A8C14F297C146EA00A1B2C3 /* AresDesktopOS.swift in Sources */,
 				335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

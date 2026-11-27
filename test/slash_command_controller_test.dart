@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -169,8 +170,10 @@ ChatScreen _chatScreen({
   required String sessionId,
   http.Client? apiClient,
   TestDesktopConnectionHook? connectionHook,
+  Future<void> Function(Session session)? onOpenSession,
 }) {
   return ChatScreen(
+    onOpenSession: onOpenSession,
     connection: SavedConnection(
       id: 'slash-fixture',
       label: 'Slash fixture',
@@ -227,11 +230,14 @@ Future<void> _pumpChat(
   await pumpChatUpdates(tester);
 }
 
-/// Pumps the chat as a PUSHED route over a stand-in session list, so
-/// navigation away (the `/sessions` intercept) is observable.
+/// Pumps the chat as a PUSHED route over a stand-in session list that, like
+/// the real one, hands the chat its own open-chat path ([opened] records
+/// what `/resume` asked it to open).
 Future<void> _pushChat(
   WidgetTester tester, {
   required SlashCommandGateway slashGateway,
+  List<String>? opened,
+  http.Client? apiClient,
 }) async {
   final id = 'slash-session-${_pumpedSessions++}';
   await tester.pumpWidget(
@@ -245,7 +251,12 @@ Future<void> _pushChat(
   Navigator.of(context).push(
     MaterialPageRoute(
       settings: const RouteSettings(name: '/classic-session-chat'),
-      builder: (_) => _chatScreen(slashGateway: slashGateway, sessionId: id),
+      builder: (_) => _chatScreen(
+        slashGateway: slashGateway,
+        sessionId: id,
+        apiClient: apiClient,
+        onOpenSession: (session) async => opened?.add(session.id),
+      ),
     ),
   );
   await pumpChatUpdates(tester);
@@ -1378,30 +1389,66 @@ void main() {
       await expectModelPicker(tester, '/MODEL');
     });
 
-    testWidgets('/sessions pops back to the session list', (tester) async {
+    testWidgets('/sessions opens the resume picker over the listed chats', (
+      tester,
+    ) async {
       final gateway = _FakeSlashGateway();
-      await _pushChat(tester, slashGateway: gateway);
+      final opened = <String>[];
+      Map<String, Object?> row(String id, String source) => {
+        'id': id,
+        'title': 'Chat $id',
+        'model': 'm',
+        'message_count': 1,
+        'started_at': 1,
+        'source': source,
+      };
+      await _pushChat(
+        tester,
+        slashGateway: gateway,
+        opened: opened,
+        apiClient: MockClient(
+          (request) async => http.Response(
+            jsonEncode({
+              'data': [
+                row('human', 'cli'),
+                row('nightly', 'cron'),
+                row('batch', 'kanban'),
+              ],
+            }),
+            200,
+          ),
+        ),
+      );
 
       await tester.enterText(find.byKey(_composerKey), '/sessions');
       await tester.pump();
       await _send(tester);
 
       expect(gateway.commands, isEmpty);
-      expect(find.byKey(_composerKey), findsNothing);
-      expect(find.byKey(Key('session-list-page')), findsOneWidget);
+      expect(find.text('Resume a chat'), findsOneWidget);
+      expect(find.text('Chat human'), findsOneWidget);
+      expect(find.text('Chat nightly'), findsNothing, reason: 'cron');
+      expect(find.text('Chat batch'), findsNothing, reason: 'kanban');
+      await tester.tap(find.text('Chat human'));
+      await pumpChatUpdates(tester);
+      expect(opened, ['human'], reason: "through the host's open path");
     });
 
-    testWidgets('/resume pops back to the session list too', (tester) async {
+    testWidgets('/resume opens the resume picker too, and cancelling gives '
+        'the line back', (tester) async {
       final gateway = _FakeSlashGateway();
-      await _pushChat(tester, slashGateway: gateway);
+      await _pushChat(tester, slashGateway: gateway, opened: []);
 
-      await tester.enterText(find.byKey(_composerKey), '/resume');
+      await tester.enterText(find.byKey(_composerKey), '/resume old');
       await tester.pump();
       await _send(tester);
 
       expect(gateway.commands, isEmpty);
-      expect(find.byKey(_composerKey), findsNothing);
-      expect(find.byKey(Key('session-list-page')), findsOneWidget);
+      expect(find.text('Resume a chat'), findsOneWidget);
+      await tester.tapAt(const Offset(5, 5));
+      await pumpChatUpdates(tester);
+      expect(find.text('Resume a chat'), findsNothing);
+      expect(_composerText(tester), '/resume old');
     });
 
     testWidgets('/sessions in an embedded chat answers with a notice', (

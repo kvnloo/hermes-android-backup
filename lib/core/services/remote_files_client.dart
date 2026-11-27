@@ -136,6 +136,8 @@ class RemoteFilesClient
         password: connection.dashboardPassword,
         gatewayProfile: connection.gatewayProfile,
         clientCertificate: connection.clientCertificate,
+        deploymentToken: connection.deploymentToken,
+        customHeaders: connection.customHeaders,
         httpClient: httpClient,
       ),
       profile: connection.gatewayProfile,
@@ -201,15 +203,27 @@ class RemoteFilesClient
   }
 
   @override
-  Future<RemoteFileDownload> download(String path) async {
+  Future<RemoteFileDownload> download(String path) =>
+      _download(path, maxDownloadBytes);
+
+  /// A browser owns this client; previewing must not close it or inherit an
+  /// unbounded Save budget. Enforce the preview limit on the HTTP stream.
+  Future<RemoteFileDownload> downloadPreview(String path) => _download(
+    path,
+    maxDownloadBytes != null && maxDownloadBytes! < maxAttachmentDownloadBytes
+        ? maxDownloadBytes
+        : maxAttachmentDownloadBytes,
+  );
+
+  Future<RemoteFileDownload> _download(String path, int? maxBytes) async {
     if (_closed) throw StateError('Remote files client is closed');
     if (RegExp(r'^https?://', caseSensitive: false).hasMatch(path)) {
-      return _downloadUrl(Uri.parse(path));
+      return _downloadUrl(Uri.parse(path), maxBytes: maxBytes);
     }
     final response = await dashboard.apiGetBytes(
       'fs/download',
       queryParameters: _scopedQuery({'path': path}, includeSession: true),
-      maxBytes: maxDownloadBytes,
+      maxBytes: maxBytes,
     );
     final disposition = response.headers['content-disposition'] ?? '';
     final match = RegExp(
@@ -262,8 +276,8 @@ class RemoteFilesClient
   /// URL-only image-generation results are not filesystem paths. Fetch them
   /// only after an explicit tap, on a separate client with no dashboard auth,
   /// cookies or client certificate. Validate every redirect before sending it.
-  Future<RemoteFileDownload> _downloadUrl(Uri initial) async {
-    final limit = maxDownloadBytes ?? maxAttachmentDownloadBytes;
+  Future<RemoteFileDownload> _downloadUrl(Uri initial, {int? maxBytes}) async {
+    final limit = maxBytes ?? maxDownloadBytes ?? maxAttachmentDownloadBytes;
     if (limit <= 0) throw ArgumentError.value(limit, 'maxDownloadBytes');
     final client = _urlHttpClient ??= http.Client();
     var uri = initial;

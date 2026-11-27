@@ -14,6 +14,7 @@ import '../../core/services/projects_root_resolver.dart';
 import '../../core/services/remote_files_client.dart';
 import '../../core/services/ws_client.dart';
 import 'nextgen_gateway.dart';
+import '../nextgen_l10n.dart';
 
 class NgProjects {
   NgProjects(this.gateway, SharedPreferences preferences) {
@@ -29,6 +30,14 @@ class NgProjects {
           connection.apiKey,
           connection.dashboardPassword,
           connection.clientCertificate?.privateKeyPassword,
+          if (connection.deploymentToken != null ||
+              connection.customHeaders.isNotEmpty) ...[
+            connection.deploymentToken,
+            {
+              for (final k in connection.customHeaders.keys.toList()..sort())
+                k: connection.customHeaders[k],
+            },
+          ],
         ]),
       ),
     );
@@ -74,9 +83,9 @@ class NgProjects {
     String method,
     Map<String, dynamic> params,
   ) async {
-    if (_closed) throw StateError('Projects scope is no longer selected');
+    if (_closed) throw StateError(ngL.ng_release_projects_scope_changed);
     await gateway.connected();
-    if (_closed) throw StateError('Projects scope is no longer selected');
+    if (_closed) throw StateError(ngL.ng_release_projects_scope_changed);
     try {
       return {'result': await gateway.call(method, params)};
     } on JsonRpcError catch (error) {

@@ -3,17 +3,20 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb, TargetPlatform;
+    show defaultTargetPlatform, kIsWeb, TargetPlatform, ValueListenable;
 import 'package:flutter/material.dart';
 import 'package:hermes_android/core/l10n/l10n.dart';
 
+import '../render/render_scope.dart';
 import '../parked_automotive.dart';
 import '../services/attachment_controller.dart';
 import '../services/attachment_pdf_service.dart';
 import '../utils/attachment_types.dart';
 import 'attachment_document_preview.dart';
 import 'attachment_video_preview.dart';
+import 'attachment_audio_preview.dart';
 import 'hermes_system_ui.dart';
+import 'markdown_file_preview.dart';
 
 export '../utils/attachment_types.dart' show attachmentIsImage;
 
@@ -54,7 +57,7 @@ bool attachmentIsText(String extension) => const {
   'rb',
 }.contains(extension.toLowerCase());
 
-/// Inert, bounded UTF-8, never Markdown/HTML/SVG execution or network loading.
+/// Bounded UTF-8 detection before choosing the plain or Markdown viewer.
 class AttachmentTextContent {
   static const maxBytes = 64 * 1024;
   final String? text;
@@ -167,19 +170,39 @@ class AttachmentActions extends StatelessWidget {
 
 /// Return the exact route to its owner so reference replacement can remove
 /// only this popup, never a different route (e.g. a native picker above it).
+/// The preview route for [controller]. The chat the card sits in (its
+/// [RenderScope]) is read here, before the route leaves that subtree, so a
+/// video remembers its position and speed for that chat only.
 DialogRoute<void> attachmentPreviewRoute({
   required BuildContext context,
   required AttachmentController controller,
-}) => DialogRoute<void>(
-  context: context,
-  builder: (_) => controller.active
-      ? AttachmentPreviewDialog(controller: controller)
-      : const SizedBox.shrink(),
-);
+  ValueListenable<bool>? ownerValidity,
+}) {
+  final chat = RenderScope.maybeOf(context)?.chatKey;
+  return DialogRoute<void>(
+    context: context,
+    builder: (_) => controller.active
+        ? AttachmentPreviewDialog(
+            controller: controller,
+            playbackScope: chat,
+            ownerValidity: ownerValidity,
+          )
+        : const SizedBox.shrink(),
+  );
+}
 
 class AttachmentPreviewDialog extends StatelessWidget {
-  const AttachmentPreviewDialog({super.key, required this.controller});
+  const AttachmentPreviewDialog({
+    super.key,
+    required this.controller,
+    this.playbackScope,
+    this.ownerValidity,
+  });
   final AttachmentController controller;
+  final ValueListenable<bool>? ownerValidity;
+
+  /// The chat a video remembers its position and speed for, if any.
+  final String? playbackScope;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -284,11 +307,26 @@ class AttachmentPreviewDialog extends StatelessWidget {
         child: Center(child: attachmentImage(context, bytes)),
       );
     }
+    if (attachmentIsAudio(extension)) {
+      return Center(
+        child: SingleChildScrollView(
+          child: AttachmentAudioPreview(
+            key: ObjectKey(controller),
+            sourceIdentity: controller,
+            extension: extension,
+            loadBytes: controller.ensureBytes,
+            ownerValidity: ownerValidity,
+          ),
+        ),
+      );
+    }
     if (!isParkedAutomotive && attachmentIsVideo(extension)) {
       return AttachmentVideoPreview(
         key: ObjectKey(controller),
         bytes: bytes,
         extension: extension,
+        playbackScope: playbackScope,
+        playbackSource: controller.ref.path,
       );
     }
     if (attachmentIsDocument(extension)) {
@@ -322,16 +360,24 @@ class AttachmentPreviewDialog extends StatelessWidget {
               child: Text(context.l10n.attachment_text_truncated),
             ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: SelectableText(
-                content.text!,
-                key: const Key('attachment-text-preview'),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
-              ),
-            ),
+            child: isMarkdownFilename(controller.ref.filename)
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: MarkdownFilePreview(
+                      key: ObjectKey(controller),
+                      text: content.text!,
+                    ),
+                  )
+                : SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: SelectableText(
+                      content.text!,
+                      key: const Key('attachment-text-preview'),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(fontFamily: 'monospace'),
+                    ),
+                  ),
           ),
         ],
       );

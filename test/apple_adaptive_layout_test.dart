@@ -259,6 +259,11 @@ void main() {
       // No modal drawer at the expanded breakpoint; the sidebar is inline.
       expect(find.byType(Drawer), findsNothing);
       expect(find.byKey(const Key('ng-session-search')), findsOneWidget);
+      // Preserve the 5.0 cold-launch brand landing before opening the chat.
+      expect(find.byKey(const Key('ng-brand-new-chat')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('ng-brand-new-chat')));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byKey(const Key('ng-session-search')), findsOneWidget);
       expect(find.byKey(const ValueKey('ng-sidebar-button')), findsOneWidget);
       await unmount(tester);
     });

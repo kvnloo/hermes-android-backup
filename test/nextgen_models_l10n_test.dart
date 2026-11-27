@@ -71,6 +71,7 @@ const markers = {
 // these languages write the others the same way.
 const sameAsEnglish = {
   'ng_aux_mcp': {
+    'ar',
     'de',
     'es',
     'fr',
@@ -82,6 +83,7 @@ const sameAsEnglish = {
     'uk',
     'zh',
     'zh_Hans',
+    'zh_Hant',
   },
   'ng_models_token_count': {'es', 'fr', 'pt', 'pt_BR'},
   'ng_models_vision': {'fr'},

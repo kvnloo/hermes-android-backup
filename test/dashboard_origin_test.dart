@@ -92,8 +92,7 @@ void main() {
       final selected = connection().copyWith(dashboardProxied: true);
       final preferences = await SessionSearchPreferences.open();
       await preferences.saveMode(
-        connectionIdentity:
-            '${selected.baseUrl}|${selected.gatewayPrefix}|${selected.desktopGatewayUrl}',
+        connectionIdentity: sessionSearchIdentity(selected),
         mode: SessionSearchMode.server,
       );
       final requests = <http.Request>[];

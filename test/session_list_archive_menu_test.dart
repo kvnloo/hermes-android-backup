@@ -164,7 +164,7 @@ Future<void> _mount(
     dashboardProxied: true,
   );
   final preferences = await SessionSearchPreferences.open();
-  final identity = '${connection.baseUrl}|/mobile|';
+  final identity = sessionSearchIdentity(connection);
   await preferences.saveMode(connectionIdentity: identity, mode: mode);
   await preferences.saveAiModel(
     connectionIdentity: identity,

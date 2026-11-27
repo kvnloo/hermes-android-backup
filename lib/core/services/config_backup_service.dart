@@ -2,6 +2,7 @@
 
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../l10n/service_strings.dart';
 import 'chat_density_preference.dart';
 import 'client_certificate_service.dart';
 import 'config_backup.dart';
@@ -36,13 +37,28 @@ class ConfigImportResult {
 
   String get summary {
     final parts = <String>[];
-    if (connectionsAdded > 0) parts.add('$connectionsAdded added');
-    if (connectionsUpdated > 0) parts.add('$connectionsUpdated updated');
-    if (connectionsRemoved > 0) parts.add('$connectionsRemoved removed');
+    if (connectionsAdded > 0) {
+      parts.add(
+        serviceStrings.rel_svc_backup_connections_added(connectionsAdded),
+      );
+    }
+    if (connectionsUpdated > 0) {
+      parts.add(
+        serviceStrings.rel_svc_backup_connections_updated(connectionsUpdated),
+      );
+    }
+    if (connectionsRemoved > 0) {
+      parts.add(
+        serviceStrings.rel_svc_backup_connections_removed(connectionsRemoved),
+      );
+    }
     final connections = parts.isEmpty
-        ? 'No connection changes'
-        : 'Connections: ${parts.join(', ')}';
-    return '$connections · $preferencesApplied settings restored';
+        ? serviceStrings.rel_svc_backup_no_connection_changes
+        : serviceStrings.rel_svc_backup_connections_summary(parts.join(', '));
+    return serviceStrings.rel_svc_backup_restore_summary(
+      connections,
+      preferencesApplied,
+    );
   }
 }
 
@@ -112,8 +128,10 @@ class ConfigBackupService {
         // mTLS identity: the user would only discover the loss on the new
         // device, with no way to authenticate.
         throw ConfigBackupException(
-          'The client certificate for "${connection.label}" could not be '
-          'included in this backup: ${error.message}',
+          serviceStrings.rel_svc_backup_certificate_not_included(
+            connection.label,
+            error.message,
+          ),
         );
       }
     }

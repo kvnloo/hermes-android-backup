@@ -184,10 +184,13 @@ void main() {
     },
   );
 
-  test('returns empty when the payload carries no results list', () async {
+  test('rejects a success payload with no results list', () async {
     final client = clientReturning((_) => jsonOk({'ok': true}));
 
-    expect(await client.search('anything'), isEmpty);
+    await expectLater(
+      client.search('anything'),
+      throwsA(isA<SessionSearchException>()),
+    );
   });
 }
 

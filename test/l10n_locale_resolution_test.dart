@@ -1,8 +1,8 @@
 // Covers the app-level locale resolution added for the follow-up review:
 // English is the fallback for unsupported device languages (instead of the
-// alphabetically first locale), and untranslated variants — Traditional
-// Chinese and Portuguese outside Brazil — are never served another variant's
-// catalogue.
+// alphabetically first locale). Arabic uses its own catalogue. Traditional
+// Chinese uses the Traditional catalogue, never Simplified Chinese.
+// Portuguese outside Brazil is never served the Brazilian catalogue.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,8 +23,8 @@ void main() {
 
   group('resolvePreferredLocale', () {
     test('falls back to English for an unsupported language', () {
-      expect(_resolve(const [Locale('ar')]), const Locale('en'));
-      expect(_resolve(const [Locale('ar', 'SA')]), const Locale('en'));
+      expect(_resolve(const [Locale('sv')]), const Locale('en'));
+      expect(_resolve(const [Locale('sv', 'SE')]), const Locale('en'));
     });
 
     test('resolves supported languages and their regional variants', () {
@@ -33,29 +33,28 @@ void main() {
       expect(_resolve(const [Locale('de', 'AT')]), const Locale('de'));
       expect(_resolve(const [Locale('en', 'GB')]), const Locale('en'));
       expect(_resolve(const [Locale('ru', 'RU')]), const Locale('ru'));
+      expect(_resolve(const [Locale('ar')]), const Locale('ar'));
+      expect(_resolve(const [Locale('ar', 'SA')]), const Locale('ar'));
     });
 
-    test('serves Simplified Chinese only to Hans locales', () {
+    test('serves each Chinese script its own catalogue', () {
       const hans = Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans');
+      const hant = Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant');
       expect(_resolve(const [hans]), hans);
       expect(
         _resolve(const [
           Locale.fromSubtags(
-              languageCode: 'zh', scriptCode: 'Hans', countryCode: 'CN'),
+            languageCode: 'zh',
+            scriptCode: 'Hans',
+            countryCode: 'CN',
+          ),
         ]),
         hans,
       );
-      // Traditional Chinese has no catalogue: English is used instead of
-      // serving the Simplified one.
-      expect(
-        _resolve(const [
-          Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
-        ]),
-        const Locale('en'),
-      );
-      expect(_resolve(const [Locale('zh', 'TW')]), const Locale('en'));
-      expect(_resolve(const [Locale('zh', 'HK')]), const Locale('en'));
-      expect(_resolve(const [Locale('zh', 'MO')]), const Locale('en'));
+      expect(_resolve(const [hant]), hant);
+      expect(_resolve(const [Locale('zh', 'TW')]), hant);
+      expect(_resolve(const [Locale('zh', 'HK')]), hant);
+      expect(_resolve(const [Locale('zh', 'MO')]), hant);
     });
 
     test('serves Brazilian Portuguese only to BR locales', () {
@@ -65,20 +64,17 @@ void main() {
 
     test('falls through to the next preferred locale before English', () {
       expect(
-        _resolve(const [Locale('zh', 'TW'), Locale('ja')]),
+        _resolve(const [Locale('pt', 'PT'), Locale('ja')]),
         const Locale('ja'),
       );
-      expect(
-        _resolve(const [Locale('ar'), Locale('de')]),
-        const Locale('de'),
-      );
+      expect(_resolve(const [Locale('sv'), Locale('de')]), const Locale('de'));
     });
   });
 
   testWidgets('an unsupported device locale renders English', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
-        locale: const Locale('ar'),
+        locale: const Locale('sv'),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: preferredSupportedLocales(),
         localeListResolutionCallback: resolvePreferredLocale,
@@ -92,8 +88,30 @@ void main() {
     expect(find.text('en'), findsOneWidget);
   });
 
-  testWidgets('a Traditional Chinese device locale renders English, not Hans',
-      (tester) async {
+  testWidgets('an Arabic device locale stays Arabic and right to left', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('ar', 'SA'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: preferredSupportedLocales(),
+        localeListResolutionCallback: resolvePreferredLocale,
+        home: Builder(
+          builder: (context) => Text(
+            '${Localizations.localeOf(context).languageCode}_'
+            '${Directionality.of(context).name}',
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('ar_rtl'), findsOneWidget);
+  });
+
+  testWidgets('a Traditional Chinese device locale renders Hant, not Hans', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         locale: const Locale('zh', 'TW'),
@@ -109,6 +127,6 @@ void main() {
       ),
     );
 
-    expect(find.text('en_null'), findsOneWidget);
+    expect(find.text('zh_Hant'), findsOneWidget);
   });
 }

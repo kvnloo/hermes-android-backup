@@ -38,7 +38,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Ares uses the camera when you take a photo to attach to a chat message.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Ares uses the microphone for voice dictation and recorded voice messages.</string>
+	<string>Ares uses the microphone for voice dictation, recorded voice messages and live voice conversations with your agent.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Ares accesses your photo library when you choose images to attach to a chat message.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
@@ -86,5 +86,20 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.hermesagent.ares.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>hermes</string>
+			</array>
+		</dict>
+	</array>
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 </dict>
 </plist>

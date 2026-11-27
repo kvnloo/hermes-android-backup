@@ -1,0 +1,1 @@
+Chat model pickers now list only the LLMs from providers you actually configured on the gateway, instead of the whole catalog. Pinned or local/runtime/MoA rows stay visible, and the picker falls back to the full list if your gateway sends no flags or the filter would leave it empty. The cron picker and model management screens are unchanged.

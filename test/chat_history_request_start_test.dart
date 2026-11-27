@@ -449,9 +449,11 @@ void main() {
           );
           // Widened callback seam: ordinary UI hides this menu while streaming.
           // Retain the production callback, not a second route or a live-user claim.
+          // The Chat actions menu by its key: the composer's Status menu is
+          // another PopupMenuButton<String> on this screen.
           final refresh = tester
               .widget<PopupMenuButton<String>>(
-                find.byType(PopupMenuButton<String>),
+                find.byKey(const ValueKey('chat-actions-menu')),
               )
               .onSelected!;
           await tester.enterText(find.byType(TextField), 'REST prompt');

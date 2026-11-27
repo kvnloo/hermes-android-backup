@@ -1,0 +1,78 @@
+Integrated Linux arm64 proof (selected tool output; synthetic data only)
+
+git get-tar-commit-id: 918aa506c8bb39bcb4cdfcbfdc1240e8b12b8cc7
+fecaf16fc0ace0a7e824ef7874e7c8c8b233e3ec16c20a136e8a71d0f2a4ffaf  source.tar
+container_image=sha256:e67eeead736ff7bbe258ef088bff683635c561b1fcfefad0806c1df4ab49ce0e mounts=[] published_ports={} networks={}
+uid=1000(fixture) gid=1000(fixture) groups=1000(fixture)
+interfaces: lo
+Debian: 12.15
+Linux aarch64
+Debian clang version 14.0.6
+cmake version 3.25.1
+GTK: 3.24.38
+SDK: 559ffa3f75e7402d65a8def9c28389a9b2e6fe42
+Flutter 3.44.0 • channel [user-branch] • unknown source
+Tools • Dart 3.12.0 • DevTools 2.57.0
+
+flutter pub get --enforce-lockfile; sha256sum -c /home/fixture/lock.sha:
+pubspec.lock: OK
+flutter build linux --release --no-pub:
+✓ Built build/linux/arm64/release/bundle/ares
+pubspec.lock: OK
+d2efee6b24d08b4dc9a8dcb263d0ddf5eeb640a21261eefcff98f47412a0ebcb  app/pubspec.lock
+
+Packaged bundle, extracted to a new directory, diff -qr and SDK license cmp:
+all extracted bundle files match original bundle
+engine license matches SDK; NOTICES.Z present
+release.tgz bytes=15986231
+882ebf6c0bf21fb515ab172aecbc0f9215186b43de65597986dbe1b688f386e0  release.tgz
+36484dea240b3eb2f811fe348d83a90aef6230d45564c406e14b34fb8c175523  ares
+f3c21f243b69be3090cebd5f89b00d9839573d04a6885fc1e33e7fa551f9346b  lib/libapp.so
+f98d93697188c2d84aee25cd327a43f1bb956fceebedacb2e4aac34a76919d72  lib/libflutter_linux_gtk.so
+82a5f93f918f99ff82af18c8be176c709dc812cb3f5e1e1cd93847bdeb0f9369  data/licenses/flutter-engine.txt
+ares: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=441036a18fcdb1167a884d7e9b4129b99132186c, for GNU/Linux 3.7.0, not stripped
+ 0x000000000000001d (RUNPATH)            Library runpath: [$ORIGIN/lib]
+ldd ok: ares
+ldd ok: lib/libapp.so
+ldd ok: lib/libaudioplayers_linux_plugin.so
+ldd ok: lib/libfile_selector_linux_plugin.so
+ldd ok: lib/libflutter_linux_gtk.so
+ldd ok: lib/libflutter_secure_storage_linux_plugin.so
+ldd ok: lib/librecord_linux_plugin.so
+ldd ok: lib/liburl_launcher_linux_plugin.so
+
+Launch smoke on extracted bundle (both the archived driver and final driver exited 0):
+classic: GTK window, fixture-copy resume and visible transcript verified
+nextgen: GTK window, fixture-copy resume and visible transcript verified
+
+Final Python verification drivers, separately staged after build (SHA-256):
+e6dc34e2a049cfc960b030dabc3939d7cf0ee566dfa8ce2a80701c790e71f398  probe/scripts/linux_fixture_smoke.py
+d8a66dac8c0459d7a5c3f47773d25af165306dbbc440a05266cbd01ce537f63a  probe/scripts/linux_workspace_ui.py
+
+--workspace on the same extracted ELF; subprocess exit 0:
+classic: clicked More
+classic: clicked Parallel workspace
+classic: clicked Add chat; saw Filter
+classic: clicked verification
+classic: clicked Workspace options; saw Dock another pane
+classic: clicked Dock another pane
+classic: clicked Companion chat
+classic: fixture-copy + fixture-split transcripts side by side, x=(480, 1411); both resumed
+classic: clicked Workspace options; saw Open chat in new window
+classic: clicked Open chat in new window
+classic: GTK parent=0x200003/pid=1614, child=0x600003/pid=1780, same extracted ELF; child-only OCR + fixture-copy resume on child-owned socket
+classic: parent termination retired child; zero Ares windows
+nextgen: clicked More
+nextgen: clicked Parallel workspace
+nextgen: clicked Add chat; saw Filter
+nextgen: clicked verification
+nextgen: clicked Workspace options; saw Dock another pane
+nextgen: clicked Dock another pane
+nextgen: clicked Companion chat
+nextgen: fixture-copy + fixture-split transcripts side by side, x=(78, 845); both resumed
+nextgen: clicked Workspace options; saw Open chat in new window
+nextgen: clicked Open chat in new window
+nextgen: GTK parent=0x200003/pid=1848, child=0x600003/pid=2001, same extracted ELF; child-only OCR + fixture-copy resume on child-owned socket
+nextgen: parent termination retired child; zero Ares windows
+
+Scope: one Xvfb virtual display, Mesa software GL. Not physical monitor placement, Wayland, hardware GPU, x64, installer, real gateway/credential, voice or model turn. Child stderr is drained privately by the app; child verification is via process/window/socket and transcript, not a child-log audit.

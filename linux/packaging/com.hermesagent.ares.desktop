@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Ares
+Comment=Client for Hermes Agent
+Exec=ares %u
+Icon=com.hermesagent.ares
+Terminal=false
+Categories=Network;Chat;
+StartupWMClass=com.hermesagent.ares
+MimeType=x-scheme-handler/hermes;

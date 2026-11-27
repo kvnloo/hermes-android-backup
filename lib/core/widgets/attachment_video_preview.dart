@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hermes_android/core/l10n/l10n.dart';
 import 'package:video_player/video_player.dart';
 
+import '../render/video_playback_memory.dart';
 import '../services/attachment_video_service.dart';
 
 /// Plays only the bytes already fetched by an explicit attachment tap. This
@@ -15,10 +16,18 @@ class AttachmentVideoPreview extends StatefulWidget {
     required this.bytes,
     required this.extension,
     this.fileStore = const AttachmentVideoFileStore(),
+    this.playbackScope,
+    this.playbackSource,
   });
 
   final Uint8List bytes;
   final String extension;
+
+  /// The chat the video belongs to ([RenderScope.chatKey]) and the source
+  /// within it. With both, the position and speed are remembered for that
+  /// chat and restored when the player opens again; without, nothing is.
+  final String? playbackScope;
+  final String? playbackSource;
 
   /// Per-instance staging seam; widget tests never need real filesystem I/O.
   final AttachmentVideoFileStore fileStore;
@@ -123,6 +132,8 @@ class _AttachmentVideoPreviewState extends State<AttachmentVideoPreview>
       }
       if (!ready) return;
       final controller = session.controller!;
+      await _restorePlayback(session);
+      if (!_current(session, generation)) return;
       _listening = controller;
       controller.addListener(_videoChanged);
       setState(() => _loading = false);
@@ -130,6 +141,55 @@ class _AttachmentVideoPreviewState extends State<AttachmentVideoPreview>
     } catch (_) {
       _fail(session, generation);
     }
+  }
+
+  String? get _memoryChat {
+    final scope = widget.playbackScope;
+    final source = widget.playbackSource;
+    return scope == null || scope.isEmpty || source == null || source.isEmpty
+        ? null
+        : scope;
+  }
+
+  /// The speed this player runs at; restored from the chat's memory.
+  var _speed = 1.0;
+
+  /// Puts the player back where this chat last left this source, at its
+  /// speed. Playback itself still needs Play.
+  Future<void> _restorePlayback(AttachmentVideoSession session) async {
+    final chat = _memoryChat;
+    if (chat == null) return;
+    final source = widget.playbackSource!;
+    final remembered = VideoPlaybackMemory.recall(chat, source);
+    _speed = VideoPlaybackMemory.startSpeed(chat, source);
+    if (_speed != 1) await session.setPlaybackSpeed(_speed);
+    final duration = session.controller?.value.duration ?? Duration.zero;
+    final position = remembered?.position ?? Duration.zero;
+    if (position > Duration.zero && position < duration) {
+      await session.seekTo(position);
+    }
+  }
+
+  void _rememberPlayback(VideoPlayerController? controller) {
+    final chat = _memoryChat;
+    if (chat == null || controller == null) return;
+    final value = controller.value;
+    if (!value.isInitialized) return;
+    VideoPlaybackMemory.remember(
+      chat,
+      widget.playbackSource!,
+      position: value.position,
+      speed: _speed,
+    );
+  }
+
+  void _setSpeed(AttachmentVideoSession session, double speed) {
+    if (!isVideoPlaybackSpeed(speed)) return;
+    setState(() => _speed = speed);
+    final chat = _memoryChat;
+    if (chat != null) VideoPlaybackMemory.rememberSpeed(chat, speed);
+    _rememberPlayback(session.controller);
+    unawaited(_command(session, () => session.setPlaybackSpeed(speed)));
   }
 
   void _videoChanged() {
@@ -141,6 +201,7 @@ class _AttachmentVideoPreviewState extends State<AttachmentVideoPreview>
       _fail(session, _generation);
       return;
     }
+    _rememberPlayback(controller);
     setState(() {});
   }
 
@@ -188,6 +249,7 @@ class _AttachmentVideoPreviewState extends State<AttachmentVideoPreview>
   }
 
   void _retire() {
+    _rememberPlayback(_session?.controller);
     _generation++;
     _stopListening();
     final session = _session;
@@ -343,6 +405,22 @@ class _AttachmentVideoPreviewState extends State<AttachmentVideoPreview>
                               : null,
                         ),
                       ),
+                      Semantics(
+                        label: l10n.attachment_video_speed,
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          spacing: 6,
+                          children: [
+                            for (final speed in videoPlaybackSpeeds)
+                              ChoiceChip(
+                                key: Key('attachment-video-speed-$speed'),
+                                label: Text('${_speedLabel(speed)}×'),
+                                selected: _speed == speed,
+                                onSelected: (_) => _setSpeed(session, speed),
+                              ),
+                          ],
+                        ),
+                      ),
                       Text(
                         '${_timestamp(value.position)} / '
                         '${_timestamp(value.duration)}',
@@ -362,6 +440,9 @@ class _AttachmentVideoPreviewState extends State<AttachmentVideoPreview>
       },
     );
   }
+
+  static String _speedLabel(double speed) =>
+      speed == speed.roundToDouble() ? speed.toStringAsFixed(0) : '$speed';
 
   static String _timestamp(Duration duration) {
     final seconds = duration.inSeconds < 0 ? 0 : duration.inSeconds;

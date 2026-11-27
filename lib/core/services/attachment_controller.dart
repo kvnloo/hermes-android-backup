@@ -50,6 +50,7 @@ class AttachmentController extends ChangeNotifier {
   AttachmentController({
     required this.ref,
     required this.filesClient,
+    this.isOwnerCurrent,
     AttachmentShareHandler? shareHandler,
     AttachmentFileShareHandler? fileShareHandler,
     AttachmentFileSaveHandler? fileSaveHandler,
@@ -59,6 +60,7 @@ class AttachmentController extends ChangeNotifier {
 
   final MediaTagRef ref;
   final RemoteFilesDataSource Function() filesClient;
+  final bool Function()? isOwnerCurrent;
   final AttachmentShareHandler _shareHandler;
   final AttachmentFileShareHandler _fileShareHandler;
   final AttachmentFileSaveHandler _fileSaveHandler;
@@ -79,7 +81,7 @@ class AttachmentController extends ChangeNotifier {
   Object? lastError;
 
   Uint8List? get bytes => _bytes;
-  bool get active => _active;
+  bool get active => _active && (isOwnerCurrent?.call() ?? true);
   bool get loading => _download != null;
   bool get acting => _acting;
   AttachmentFeedback? get feedback => _feedback;
@@ -95,10 +97,10 @@ class AttachmentController extends ChangeNotifier {
   /// Bytes received so far by a large delivery, for an unknown-length label.
   int? get largeReceived => _largeDownload == null ? null : _largeReceived;
   bool get streamingLarge => _largeDownload != null;
-  bool _current(int generation) => _active && generation == _generation;
+  bool _current(int generation) => active && generation == _generation;
 
   Future<Uint8List?> ensureBytes() {
-    if (!_active) return Future.value();
+    if (!active) return Future.value();
     if (_bytes case final bytes?) return Future.value(bytes);
     if (_download case final download?) return download.future;
     final download = Completer<Uint8List?>();

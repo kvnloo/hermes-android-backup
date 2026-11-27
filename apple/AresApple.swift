@@ -481,3 +481,61 @@ final class AresAppleChannels {
     }
   }
 }
+
+// MARK: - hermes:// deep links
+
+/// Primary-window inbox for `hermes://` links on `com.hermesagent.ares/deeplink`
+/// (iOS SceneDelegate, macOS AppDelegate). The runner never interprets a link:
+/// it only bounds it and hands the whole string to Dart's validated router
+/// (`lib/core/services/hermes_deeplink.dart`), which can navigate and prefill
+/// but never sends, approves or installs anything. A link that arrives before
+/// Dart asks for the initial one waits (the latest wins).
+final class AresDeepLinkInbox {
+  static let maxBytes = 16 * 1024
+
+  private var channel: FlutterMethodChannel?
+  private var pending: String?
+  private var dartReady = false
+
+  /// Accepts a link from the OS, cold or warm. Returns whether it was one.
+  @discardableResult
+  func receive(_ url: URL) -> Bool {
+    guard url.scheme?.lowercased() == "hermes" else { return false }
+    let link = url.absoluteString
+    guard link.utf8.count <= AresDeepLinkInbox.maxBytes,
+          !link.unicodeScalars.contains(where: { $0.value < 0x20 || $0.value == 0x7f })
+    else { return false }
+    if let channel = channel, dartReady {
+      channel.invokeMethod("onDeepLink", arguments: link)
+    } else {
+      pending = link
+    }
+    return true
+  }
+
+  func attach(messenger: FlutterBinaryMessenger) {
+    guard channel == nil else { return }
+    let channel = FlutterMethodChannel(
+      name: "com.hermesagent.ares/deeplink",
+      binaryMessenger: messenger
+    )
+    channel.setMethodCallHandler { [weak self] call, result in
+      guard call.method == "getInitialLink" else {
+        result(FlutterMethodNotImplemented)
+        return
+      }
+      // Dart listens from here on: later links go straight to it.
+      self?.dartReady = true
+      let link = self?.pending
+      self?.pending = nil
+      result(link)
+    }
+    self.channel = channel
+  }
+
+  func detach() {
+    channel?.setMethodCallHandler(nil)
+    channel = nil
+    dartReady = false
+  }
+}

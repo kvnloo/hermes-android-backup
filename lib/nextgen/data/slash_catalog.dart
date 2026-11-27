@@ -93,7 +93,8 @@ class NgSlashCatalog extends ChangeNotifier {
 
   /// Highlights exactly what a send would run as a command, now:
   ///
-  /// * NextGen's own `/new`, `/reset`, `/stop` and `/model` always;
+  /// * NextGen's own `/new`, `/reset`, `/stop` and `/model` always, and
+  ///   `/kanban` and `/bots`, which open a screen;
   /// * with a loaded catalogue, the names it knows (aliases via `canon`,
   ///   skills, plugin commands);
   /// * before it loads, or when it cannot, Classic's reviewed
@@ -104,6 +105,14 @@ class NgSlashCatalog extends ChangeNotifier {
     final known = lookup?.resolve(name);
     if (kNgLocalSlashCommands.contains(bare)) {
       return known ?? SlashCommandTokenInfo(typed: name, canonical: bare);
+    }
+    if (kNgScreenSlashCommands[bare] case final description?) {
+      return known ??
+          SlashCommandTokenInfo(
+            typed: name,
+            canonical: bare,
+            description: description,
+          );
     }
     if (_execUnsupported) return null;
     if (lookup != null) return known;

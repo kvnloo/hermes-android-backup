@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../l10n/service_strings.dart';
 import '../models/session.dart';
 
 class ChatSpace {
@@ -180,7 +181,9 @@ class ChatSpaceStore {
     if (state.spaces.any(
       (space) => space.name.toLowerCase() == normalized.toLowerCase(),
     )) {
-      throw const FormatException('A space with this name already exists');
+      throw FormatException(
+        serviceStrings.rel_svc_backup_space_name_already_exists,
+      );
     }
     final space = ChatSpace(
       id: _uuid.v4(),
@@ -208,7 +211,9 @@ class ChatSpaceStore {
           space.id != spaceId &&
           space.name.toLowerCase() == normalized.toLowerCase(),
     )) {
-      throw const FormatException('A space with this name already exists');
+      throw FormatException(
+        serviceStrings.rel_svc_backup_space_name_already_exists,
+      );
     }
     final spaces = List<ChatSpace>.from(state.spaces);
     final existing = spaces[index];
@@ -246,7 +251,9 @@ class ChatSpaceStore {
         normalized.length > 80 ||
         normalized.contains('\u0000') ||
         RegExp(r'[\r\n]').hasMatch(normalized)) {
-      throw const FormatException('Space name must be 1–80 characters');
+      throw FormatException(
+        serviceStrings.rel_svc_backup_space_name_length_invalid,
+      );
     }
     return normalized;
   }

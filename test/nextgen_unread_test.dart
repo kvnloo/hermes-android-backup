@@ -62,6 +62,7 @@ class _ControlledSessionsApi extends DashboardApiClient {
     int offset = 0,
     String? title,
     String? excludeSources,
+    bool Function()? maySendSearch,
     Duration timeout = ApiClient.requestTimeout,
   }) {
     calls.add((offset: offset, title: title));
@@ -177,6 +178,7 @@ void main() {
           gateway.dispose();
         });
 
+        await model.searchAccess.setServer(true);
         final first = model.refresh();
         model.query = 'latest';
         final second = model.refresh();

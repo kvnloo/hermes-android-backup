@@ -71,7 +71,7 @@ void main() {
           dashboardPrefix: '/dashboard',
           dashboardProxied: true,
         );
-        final identity = '${connection.baseUrl}|/mobile|';
+        final identity = sessionSearchIdentity(connection);
         final preferences = await SessionSearchPreferences.open();
         await preferences.saveMode(connectionIdentity: identity, mode: mode);
         await preferences.saveAiModel(

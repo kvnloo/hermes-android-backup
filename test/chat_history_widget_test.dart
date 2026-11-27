@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/l10n/l10n.dart';
 import 'package:hermes_android/core/screens/chat_screen.dart';
@@ -139,6 +140,69 @@ void main() {
   setUp(mockChatImageRecovery);
   setUp(() => SharedPreferences.setMockInitialValues({'verbose_mode': true}));
 
+  for (final width in [390.0, 1050.0]) {
+    testWidgets('Classic mounted transcript find and prompt jump at $width', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(Size(width, 780));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final client = _HistoryHttpClient([
+        for (int i = 0; i < 22; i++) ...[
+          {
+            'id': i * 2 + 1,
+            'role': 'user',
+            'content': i == 0
+                ? 'Target first Target'
+                : i == 21
+                ? 'Target last'
+                : 'Prompt $i',
+          },
+          {'id': i * 2 + 2, 'role': 'assistant', 'content': 'Reply $i'},
+        ],
+      ]);
+      await tester.pumpWidget(_chat(client));
+      await pumpChatUpdates(tester);
+      if (width > 1000) {
+        await tester.tap(find.byType(TextField).last);
+        await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+        await tester.sendKeyEvent(LogicalKeyboardKey.keyF);
+        await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+      } else {
+        await tester.tap(find.byTooltip('Find in transcript'));
+      }
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('transcript-query')),
+        'Target',
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('1/3'), findsOneWidget);
+      expect(find.text('Target first Target').hitTestable(), findsOneWidget);
+      await tester.tap(find.byTooltip('Next match'));
+      await tester.pumpAndSettle();
+      expect(find.text('2/3'), findsOneWidget);
+      await tester.tap(find.byTooltip('Next match'));
+      await tester.pumpAndSettle();
+      expect(find.text('3/3'), findsOneWidget);
+      expect(find.text('Target last').hitTestable(), findsOneWidget);
+      await tester.tap(find.byTooltip('Previous match'));
+      await tester.pumpAndSettle();
+      expect(find.text('Target first Target').hitTestable(), findsOneWidget);
+      await tester.tap(find.byTooltip('Prompt timeline'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ListTile, 'Prompt 2'));
+      await tester.pumpAndSettle();
+      expect(find.text('Prompt 2').hitTestable(), findsOneWidget);
+      await tester.tap(find.byTooltip('Close find'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('transcript-query')), findsNothing);
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpWidget(_chat(client));
+      await pumpChatUpdates(tester);
+      expect(find.text('Prompt 2').hitTestable(), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
   for (final verbose in [false, true]) {
     testWidgets('persisted times survive refresh and reopen verbose=$verbose', (
       tester,

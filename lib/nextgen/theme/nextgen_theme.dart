@@ -34,13 +34,35 @@ _AccentColors _accentColors(NgAccent accent, Brightness brightness) {
             _heraldBlue.withValues(alpha: 0.10),
           );
   }
-  final (light, darkColor) = switch (accent) {
-    NgAccent.violet => (const Color(0xFF7C3AED), const Color(0xFFA78BFA)),
-    NgAccent.green => (const Color(0xFF137538), const Color(0xFF3FB950)),
-    NgAccent.orange => (const Color(0xFFB04700), const Color(0xFFF0883E)),
-    NgAccent.pink => (const Color(0xFFB0327E), const Color(0xFFF778BA)),
-    NgAccent.teal => (const Color(0xFF0C6A84), const Color(0xFF22D3EE)),
-    NgAccent.blue => (_heraldBlue, _heraldBlue),
+  // Light mode's link and label ink is a shade darker than the fill, so it
+  // still clears 4.5:1 on its own 10% wash over the raised surfaces.
+  final (light, lightText, darkColor) = switch (accent) {
+    NgAccent.violet => (
+      const Color(0xFF7C3AED),
+      const Color(0xFF7436DE),
+      const Color(0xFFA78BFA),
+    ),
+    NgAccent.green => (
+      const Color(0xFF137538),
+      const Color(0xFF126F35),
+      const Color(0xFF3FB950),
+    ),
+    NgAccent.orange => (
+      const Color(0xFFB04700),
+      const Color(0xFFA44200),
+      const Color(0xFFF0883E),
+    ),
+    NgAccent.pink => (
+      const Color(0xFFB0327E),
+      const Color(0xFFA62F77),
+      const Color(0xFFF778BA),
+    ),
+    NgAccent.teal => (
+      const Color(0xFF0C6A84),
+      const Color(0xFF0C6882),
+      const Color(0xFF22D3EE),
+    ),
+    NgAccent.blue => (_heraldBlue, _heraldBlue, _heraldBlue),
   };
   return dark
       ? _AccentColors(
@@ -52,7 +74,7 @@ _AccentColors _accentColors(NgAccent accent, Brightness brightness) {
       : _AccentColors(
           light,
           Colors.white,
-          light,
+          lightText,
           light.withValues(alpha: 0.10),
         );
 }
@@ -139,10 +161,14 @@ class NgColors extends ThemeExtension<NgColors> {
     bool glow,
   ) {
     final a = _accentColors(accent, brightness);
+    // Every ink clears 4.5:1 where it is drawn, for every accent: secondary
+    // and muted text (hints, times, details) on every surface and on the
+    // accent and status washes that tint rows; status inks on their own
+    // badge wash. Muted text stays a step lighter than secondary text.
     if (brightness == Brightness.light) {
-      const danger = Color(0xFFCF222E);
-      const success = Color(0xFF1A7F37);
-      const warning = Color(0xFFB76E00);
+      const danger = Color(0xFFBA1F29);
+      const success = Color(0xFF176F30);
+      const warning = Color(0xFF8B5300);
       final line = const Color(0xFF0A0A1E);
       return NgColors(
         background: const Color(0xFFF7F7F9),
@@ -158,8 +184,8 @@ class NgColors extends ThemeExtension<NgColors> {
         onUserBubble: a.onAccent,
         text: const Color(0xFF0A0A0C),
         text2: const Color(0xFF27272A),
-        text3: const Color(0xFF6B6B75),
-        textMuted: const Color(0xFF8E8E98),
+        text3: const Color(0xFF5F5F68),
+        textMuted: const Color(0xFF686870),
         accent: a.accent,
         onAccent: a.onAccent,
         accentText: a.text,
@@ -177,7 +203,7 @@ class NgColors extends ThemeExtension<NgColors> {
         glow: glow,
       );
     }
-    const danger = Color(0xFFF85149);
+    const danger = Color(0xFFF96F68);
     const success = Color(0xFF3FB950);
     const warning = Color(0xFFF5A524);
     final bg = pureBlack ? Colors.black : const Color(0xFF0A0A0C);
@@ -198,8 +224,8 @@ class NgColors extends ThemeExtension<NgColors> {
       onUserBubble: a.onAccent,
       text: const Color(0xFFF4F4F6),
       text2: const Color(0xFFD4D4D8),
-      text3: const Color(0xFF8A8A94),
-      textMuted: const Color(0xFF6B6B75),
+      text3: const Color(0xFFA1A1A9),
+      textMuted: const Color(0xFF898991),
       accent: a.accent,
       onAccent: a.onAccent,
       accentText: a.text,
@@ -335,10 +361,58 @@ abstract final class NgType {
 
 /// Builds the NextGen [ThemeData] for [brightness]. It keeps the classic
 /// [HermesTokens] extension (re-tinted to NextGen's palette) so every classic
-/// screen opened from NextGen still renders correctly.
-ThemeData nextGenTheme(Brightness brightness, NextGenLook look) {
-  final c = NgColors.build(brightness, look.accent, look.pureBlack, look.glow);
-  final base = hermesTheme(brightness);
+/// screen opened from NextGen still renders correctly. [colors], when given,
+/// is a complete NextGen palette (an imported theme) and every component is
+/// derived from it instead of from [look] or [profileScheme].
+ThemeData nextGenTheme(
+  Brightness brightness,
+  NextGenLook look, {
+  ColorScheme? profileScheme,
+  NgColors? colors,
+}) {
+  final base = hermesTheme(brightness, profileScheme: profileScheme);
+  final hermesThemeStatus = base.extension<HermesTokens>()!;
+  final s = profileScheme;
+  final fromLook = s == null
+      ? NgColors.build(brightness, look.accent, look.pureBlack, look.glow)
+      : NgColors(
+          background: s.surface,
+          surface: s.surfaceContainerLow,
+          surface2: s.surfaceContainer,
+          surface3: s.surfaceContainerHigh,
+          well: s.surfaceContainerLowest,
+          thumb: s.surfaceContainerHighest,
+          sheet: s.surfaceContainerLow,
+          input: s.surfaceContainerLow,
+          sidebar: s.surfaceContainerLow,
+          userBubble: s.primary,
+          onUserBubble: s.onPrimary,
+          text: s.onSurface,
+          text2: s.onSurface,
+          text3: s.onSurfaceVariant,
+          textMuted: s.onSurfaceVariant,
+          accent: s.primary,
+          onAccent: s.onPrimary,
+          accentText: s.primary,
+          accentSoft: s.primaryContainer,
+          inverse: s.inverseSurface,
+          onInverse: s.onInverseSurface,
+          stroke: s.outlineVariant,
+          strokeStrong: s.outline,
+          danger: s.error,
+          success: hermesThemeStatus.success,
+          warning: hermesThemeStatus.warning,
+          dangerSoft: s.errorContainer,
+          successSoft: hermesThemeStatus.success.withValues(alpha: 0.13),
+          warningSoft: hermesThemeStatus.warning.withValues(alpha: 0.13),
+          glow: look.glow,
+        );
+  final c = colors ?? fromLook;
+  // An imported palette has its muted ink corrected against every surface,
+  // so disabled text uses it instead of Material's 38% wash, which falls
+  // below 4.5:1 on a theme's own fills. Built-in looks keep the default.
+  final disabledInk = colors?.text3;
+
   final scheme = base.colorScheme.copyWith(
     brightness: brightness,
     primary: c.accent,
@@ -365,6 +439,10 @@ ThemeData nextGenTheme(Brightness brightness, NextGenLook look) {
     inverseSurface: c.inverse,
     onInverseSurface: c.onInverse,
   );
+  // Shared settings controls (radio sheets, sliders, segmented selectors and
+  // legacy HermesTokens readers) must inherit this experience's scheme too.
+  // Rebuild the Material defaults after resolving NextGen/imported colours.
+  final material = hermesTheme(brightness, profileScheme: scheme);
   // Complete (inherit: false) styles, so Material's animated text styles can
   // lerp between theme values without an inherit mismatch.
   final fullBase = base.textTheme.bodyMedium!;
@@ -389,13 +467,14 @@ ThemeData nextGenTheme(Brightness brightness, NextGenLook look) {
     borderRadius: BorderRadius.circular(NgRadii.full),
   );
   final List<ThemeExtension<dynamic>> extensions = [
-    ...base.extensions.values.where((e) => e is! NgColors),
+    ...material.extensions.values.where((e) => e is! NgColors),
     c,
   ];
-  return base.copyWith(
+  return material.copyWith(
     colorScheme: scheme,
     scaffoldBackgroundColor: c.background,
     canvasColor: c.background,
+    disabledColor: disabledInk ?? material.disabledColor,
     cardColor: c.surface,
     dividerColor: c.stroke,
     textTheme: textTheme,
@@ -452,6 +531,8 @@ ThemeData nextGenTheme(Brightness brightness, NextGenLook look) {
       style: FilledButton.styleFrom(
         backgroundColor: c.accent,
         foregroundColor: c.onAccent,
+        disabledBackgroundColor: disabledInk == null ? null : c.surface2,
+        disabledForegroundColor: disabledInk,
         shape: pill,
         minimumSize: const Size(0, 48),
         textStyle: t(NgType.label.copyWith(fontSize: 15)),
@@ -460,6 +541,7 @@ ThemeData nextGenTheme(Brightness brightness, NextGenLook look) {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: c.text,
+        disabledForegroundColor: disabledInk,
         side: BorderSide(color: c.strokeStrong),
         shape: pill,
         minimumSize: const Size(0, 44),
@@ -469,6 +551,7 @@ ThemeData nextGenTheme(Brightness brightness, NextGenLook look) {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: c.accentText,
+        disabledForegroundColor: disabledInk,
         shape: pill,
         textStyle: t(NgType.label),
       ),
@@ -514,6 +597,14 @@ ThemeData nextGenTheme(Brightness brightness, NextGenLook look) {
         side: BorderSide(color: c.stroke),
       ),
       textStyle: t(NgType.bodySmall),
+      labelTextStyle: disabledInk == null
+          ? null
+          : WidgetStateProperty.resolveWith(
+              (states) => t(
+                NgType.label,
+                states.contains(WidgetState.disabled) ? disabledInk : c.text,
+              ),
+            ),
     ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: c.inverse,

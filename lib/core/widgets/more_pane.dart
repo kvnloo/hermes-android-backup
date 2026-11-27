@@ -17,6 +17,7 @@ library;
 import 'package:flutter/material.dart';
 
 import '../theme/hermes_theme.dart';
+import '../screens/parallel_workspace_entry.dart';
 import 'hermes_components.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
@@ -90,7 +91,9 @@ class MoreSection {
 /// Usage stays discoverable regardless of empty, partial or alias-only catalogs.
 List<MoreSection> buildMoreSections({
   required bool dashboardReachable,
+  bool workspaceAvailable = false,
   required AppLocalizations l10n,
+  bool profileScopedHistory = true,
   Set<String> providerIds = const {},
 }) {
   MoreEntryAvailability dashboardBacked() => dashboardReachable
@@ -104,6 +107,13 @@ List<MoreSection> buildMoreSections({
     MoreSection(
       title: l10n.workspace,
       entries: [
+        MoreEntry(
+          id: 'gateway-fleet',
+          title: l10n.release_core_more_pane_gateway_fleet,
+          subtitle: l10n
+              .release_core_more_pane_connected_sessions_hermes_cloud_and_desktop_webapp,
+          icon: Icons.hub_outlined,
+        ),
         MoreEntry(
           id: 'unassigned',
           title: l10n.unassigned_chats,
@@ -134,11 +144,71 @@ List<MoreSection> buildMoreSections({
           availability: dashboardBacked(),
           unavailableReason: dashboardReason(),
         ),
+        MoreEntry(
+          id: 'parallel-workspace',
+          title: parallelWorkspaceEntryTitle,
+          subtitle: parallelWorkspaceEntrySubtitle,
+          icon: Icons.view_week_outlined,
+          availability: profileScopedHistory
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: profileScopedHistory
+              ? null
+              : l10n.release_core_more_pane_use_dashboard_sign_in_for_a_named_profile,
+        ),
       ],
     ),
     MoreSection(
       title: l10n.agent,
       entries: [
+        MoreEntry(
+          id: 'workspace-profiles',
+          title: l10n.ng_profiles,
+          subtitle: l10n.ng_agent_gateway,
+          icon: Icons.people_outline,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
+        ),
+        MoreEntry(
+          id: 'workspace-workers',
+          title: l10n.workspace_workers,
+          subtitle: l10n.ng_show_subagents,
+          icon: Icons.account_tree_outlined,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
+        ),
+        MoreEntry(
+          id: 'kanban',
+          title: l10n.ng_more_kanban,
+          subtitle: l10n.ng_more_kanban_subtitle,
+          icon: Icons.view_kanban_outlined,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
+        ),
+        MoreEntry(
+          id: 'bots',
+          title: l10n.ng_more_bots,
+          subtitle: l10n.ng_more_bots_subtitle,
+          icon: Icons.pets_outlined,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
+        ),
         MoreEntry(
           id: 'model',
           title: l10n.model,
@@ -164,12 +234,82 @@ List<MoreSection> buildMoreSections({
           unavailableReason: dashboardReason(),
         ),
         MoreEntry(
+          id: 'capability-admin',
+          title: l10n.release_core_more_pane_capabilities,
+          subtitle: l10n
+              .release_core_more_pane_install_and_govern_skills_plugins_connectors_and_tool,
+          icon: Icons.extension_outlined,
+          availability: dashboardBacked(),
+          unavailableReason: dashboardReason(),
+        ),
+        MoreEntry(
+          id: 'browser-vault',
+          title: l10n.release_core_more_pane_browser_vault,
+          subtitle: l10n
+              .release_core_more_pane_site_logins_addresses_cards_and_credential_sources,
+          icon: Icons.vpn_key_outlined,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
+        ),
+        MoreEntry(
+          id: 'agent-policy',
+          title: l10n.release_core_more_pane_agent_policy,
+          subtitle: l10n
+              .release_core_more_pane_approvals_checkpoints_browser_access_and_shared_metrics,
+          icon: Icons.admin_panel_settings_outlined,
+          availability: dashboardBacked(),
+          unavailableReason: dashboardReason(),
+        ),
+        MoreEntry(
           id: 'memory',
           title: l10n.memory,
           subtitle: l10n.durable_facts_hermes_keeps_about_you,
           icon: Icons.psychology_outlined,
           availability: dashboardBacked(),
           unavailableReason: dashboardReason(),
+        ),
+        MoreEntry(
+          id: 'host-operations',
+          title: l10n.host,
+          subtitle: l10n
+              .release_core_more_pane_remote_logs_health_maintenance_and_update,
+          icon: Icons.monitor_heart_outlined,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
+        ),
+        MoreEntry(
+          id: 'schedule-desk',
+          title: l10n.release_core_more_pane_schedules,
+          subtitle: l10n
+              .release_core_more_pane_all_profiles_blueprints_catch_up_and_stop,
+          icon: Icons.event_note_outlined,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
+        ),
+        MoreEntry(
+          id: 'memory-graph',
+          title: l10n.release_core_more_pane_memory_graph,
+          subtitle:
+              l10n.release_core_more_pane_timeline_edits_and_memory_providers,
+          icon: Icons.hub_outlined,
+          availability: workspaceAvailable
+              ? MoreEntryAvailability.available
+              : MoreEntryAvailability.unavailable,
+          unavailableReason: workspaceAvailable
+              ? null
+              : l10n.desktop_gateway_is_not_configured_for_this_connection,
         ),
       ],
     ),
@@ -189,6 +329,24 @@ List<MoreSection> buildMoreSections({
           title: l10n.nous_portal,
           subtitle: l10n.portal_menu_subtitle,
           icon: Icons.public,
+          availability: dashboardBacked(),
+          unavailableReason: dashboardReason(),
+        ),
+        MoreEntry(
+          id: 'provider-admin',
+          title: l10n.release_core_more_pane_providers_and_routes,
+          subtitle: l10n
+              .release_core_more_pane_keys_endpoints_delegation_and_mixtures,
+          icon: Icons.key_outlined,
+          availability: dashboardBacked(),
+          unavailableReason: dashboardReason(),
+        ),
+        MoreEntry(
+          id: 'nous-billing',
+          title: l10n.release_core_more_pane_credits_and_plans,
+          subtitle: l10n
+              .release_core_more_pane_consented_nous_billing_when_the_account_allows_it,
+          icon: Icons.account_balance_wallet_outlined,
           availability: dashboardBacked(),
           unavailableReason: dashboardReason(),
         ),

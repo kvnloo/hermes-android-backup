@@ -193,7 +193,11 @@ class _PrincipalGateway {
       ticketCookies.add(request.headers.value('cookie'));
       request.response.write('{"ticket":"fixture-ticket"}');
     } else if (path == '/api/ws') {
-      expect(request.uri.queryParameters['ticket'], 'fixture-ticket');
+      expect(request.uri.hasQuery, isFalse);
+      expect(
+        request.headers.value('sec-websocket-protocol'),
+        contains('hermes-gateway-ticket.fixture-ticket'),
+      );
       final socket = await WebSocketTransformer.upgrade(request);
       sockets.add(socket);
       socket.add(

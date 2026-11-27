@@ -68,6 +68,21 @@ class SavedConnection {
   /// `none` (an open dashboard). Null for classic connections.
   final String? signInMethod;
 
+  /// Explicit enrollment provenance. Older/imported unknown entries may be
+  /// used for chat but are never implicitly eligible for a fleet update.
+  final String? fleetKind;
+  final bool fleetReconnect;
+
+  /// Operator-supplied, per-connection HTTP headers passed through to the
+  /// gateway after validation. These never cross the plaintext
+  /// [toMap] boundary; they are held in the platform secure store.
+  final Map<String, String> customHeaders;
+
+  /// Deployment session token (HERMES_DASHBOARD_SESSION_TOKEN) — used for the
+  /// REST/WS transport of this gateway when set. Never crosses the plaintext
+  /// [toMap] boundary; it is held in the platform secure store.
+  final String? deploymentToken;
+
   SavedConnection({
     required this.id,
     required this.label,
@@ -86,6 +101,10 @@ class SavedConnection {
     this.clientCertificate,
     this.singleLogin = false,
     this.signInMethod,
+    this.fleetKind,
+    this.fleetReconnect = false,
+    this.customHeaders = const <String, String>{},
+    this.deploymentToken,
   });
 
   /// The dashboard address of a [singleLogin] connection.
@@ -100,6 +119,7 @@ class SavedConnection {
   bool get hasDashboardAuth =>
       dashboardProxied ||
       singleLogin ||
+      deploymentToken?.trim().isNotEmpty == true ||
       (dashboardUsername?.trim().isNotEmpty == true &&
           dashboardPassword?.trim().isNotEmpty == true);
 
@@ -209,8 +229,10 @@ class SavedConnection {
     }
     if (singleLogin) {
       m['single_login'] = true;
+      if (fleetKind != null) m['fleet_kind'] = fleetKind;
       if (signInMethod != null) m['sign_in_method'] = signInMethod;
     }
+    if (fleetReconnect) m['fleet_reconnect'] = true;
     return m;
   }
 
@@ -245,6 +267,8 @@ class SavedConnection {
       },
       singleLogin: (map['single_login'] as bool?) ?? false,
       signInMethod: nonEmpty(map['sign_in_method']),
+      fleetKind: nonEmpty(map['fleet_kind']),
+      fleetReconnect: map['fleet_reconnect'] == true,
     );
   }
 
@@ -252,6 +276,7 @@ class SavedConnection {
   /// flags to explicitly null out optional fields (since null args can't
   /// distinguish "leave unchanged" from "clear").
   SavedConnection copyWith({
+    bool? fleetReconnect,
     String? label,
     String? host,
     int? port,
@@ -276,6 +301,10 @@ class SavedConnection {
     bool clearDesktopGatewayUrl = false,
     bool clearGatewayProfile = false,
     bool clearClientCertificate = false,
+    bool clearDeploymentToken = false,
+    bool clearCustomHeaders = false,
+    Map<String, String>? customHeaders,
+    String? deploymentToken,
   }) {
     return SavedConnection(
       id: id,
@@ -311,6 +340,14 @@ class SavedConnection {
           : (clientCertificate ?? this.clientCertificate),
       singleLogin: singleLogin ?? this.singleLogin,
       signInMethod: signInMethod ?? this.signInMethod,
+      fleetKind: fleetKind,
+      fleetReconnect: fleetReconnect ?? this.fleetReconnect,
+      customHeaders: clearCustomHeaders
+          ? const <String, String>{}
+          : (customHeaders ?? this.customHeaders),
+      deploymentToken: clearDeploymentToken
+          ? null
+          : (deploymentToken ?? this.deploymentToken),
     );
   }
 }

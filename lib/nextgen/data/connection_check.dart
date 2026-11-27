@@ -82,6 +82,7 @@ Future<ConnectionReport> runConnectionCheck(
   final probe = await GatewayProbe().probe(
     url,
     certificate: connection.clientCertificate,
+    customHeaders: connection.customHeaders,
   );
   switch (probe) {
     case ProbeReachable(:final status):
@@ -156,7 +157,7 @@ Future<ConnectionReport> runConnectionCheck(
         final me = jsonDecode(res.body);
         final who = me is Map<String, dynamic>
             ? AuthUser.fromJson(me).label
-            : 'you';
+            : ngL.ng_release_signed_in_you;
         record(
           CheckStage.signIn,
           StageResult(CheckOutcome.passed, ngL.ng_signed_in_as(who)),
@@ -170,6 +171,36 @@ Future<ConnectionReport> runConnectionCheck(
             ngL.ng_this_dashboard_doesn_t_need_a,
           ),
         );
+      } else if (res.statusCode == 404 &&
+          connection.deploymentToken?.trim().isNotEmpty == true) {
+        final modelRes = await dashboard.apiRequest('GET', 'model/info');
+        if (modelRes.statusCode >= 200 && modelRes.statusCode < 300) {
+          record(
+            CheckStage.signIn,
+            StageResult(
+              CheckOutcome.passed,
+              ngL.ng_signed_in_with_deployment_token,
+            ),
+          );
+        } else if (modelRes.statusCode == 401 || modelRes.statusCode == 403) {
+          record(
+            CheckStage.signIn,
+            StageResult(
+              CheckOutcome.failed,
+              ngL.ng_the_saved_sign_in_has_expired,
+              ngL.ng_sign_in_again,
+            ),
+          );
+        } else {
+          record(
+            CheckStage.signIn,
+            StageResult(
+              CheckOutcome.failed,
+              ngL.ng_the_gateway_answered(dashboardErrorMessage(modelRes)),
+              ngL.ng_sign_in_again_or_update_hermes,
+            ),
+          );
+        }
       } else if (res.statusCode == 401) {
         record(
           CheckStage.signIn,
@@ -224,28 +255,42 @@ Future<ConnectionReport> runConnectionCheck(
     );
     WsClient? client;
     try {
-      final ticketRes = await dashboard.apiRequest('POST', 'auth/ws-ticket');
-      if (ticketRes.statusCode != 200) {
-        record(
-          CheckStage.live,
-          StageResult(
-            CheckOutcome.failed,
-            ngL.ng_the_gateway_wouldn_t_issue_a(
-              dashboardErrorMessage(ticketRes),
-            ),
-            ngL.ng_sign_in_again_or_update_hermes,
-          ),
+      // Same transport as the live chat: `?token=` for a deployment token
+      // (as Hermes Desktop), otherwise a single-use ticket.
+      final deploymentToken = dashboard.deploymentToken;
+      if (deploymentToken != null) {
+        client = WsClient(
+          dashboard.baseUrl,
+          token: deploymentToken,
+          profile: connection.gatewayProfile,
+          clientCertificate: connection.clientCertificate,
+          customHeaders: connection.customHeaders,
         );
-        return ConnectionReport(results);
+      } else {
+        final ticketRes = await dashboard.apiRequest('POST', 'auth/ws-ticket');
+        if (ticketRes.statusCode != 200) {
+          record(
+            CheckStage.live,
+            StageResult(
+              CheckOutcome.failed,
+              ngL.ng_the_gateway_wouldn_t_issue_a(
+                dashboardErrorMessage(ticketRes),
+              ),
+              ngL.ng_sign_in_again_or_update_hermes,
+            ),
+          );
+          return ConnectionReport(results);
+        }
+        final ticket = (jsonDecode(ticketRes.body) as Map)['ticket'] as String;
+        client = WsClient(
+          dashboard.baseUrl,
+          ticket: ticket,
+          profile: connection.gatewayProfile,
+          clientCertificate: connection.clientCertificate,
+          customHeaders: connection.customHeaders,
+          ticketInSubprotocol: true,
+        );
       }
-      final ticket = (jsonDecode(ticketRes.body) as Map)['ticket'] as String;
-      client = WsClient(
-        dashboard.baseUrl,
-        ticket: ticket,
-        profile: connection.gatewayProfile,
-        clientCertificate: connection.clientCertificate,
-        ticketInSubprotocol: true,
-      );
       await client.connect();
       await client.waitForGatewayReady();
       record(

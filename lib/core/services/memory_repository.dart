@@ -30,6 +30,8 @@ class MemoryRepository {
         username: connection.dashboardUsername,
         password: connection.dashboardPassword,
         clientCertificate: connection.clientCertificate,
+        deploymentToken: connection.deploymentToken,
+        customHeaders: connection.customHeaders,
         httpClient: httpClient,
       ),
       profile == null || profile.isEmpty ? null : profile,

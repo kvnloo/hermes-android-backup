@@ -14,6 +14,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/strict_authority_gateway.dart';
+
 SavedConnection _connection() => SavedConnection(
   id: 'c1',
   label: 'Home',
@@ -55,6 +57,11 @@ Future<HttpServer> _server(List<Map<String, dynamic>> resumes) async {
       final frame = jsonDecode(raw as String) as Map<String, dynamic>;
       final method = frame['method'];
       final id = frame['id'];
+      final refused = strictAuthorityFrame(frame);
+      if (refused != null) {
+        ws.add(refused);
+        return;
+      }
       if (method == 'session.resume') {
         final result =
             resumes[resumed < resumes.length ? resumed : resumes.length - 1];

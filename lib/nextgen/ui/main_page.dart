@@ -5,38 +5,83 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../core/services/android_share_intent_service.dart';
+import '../../core/services/android_launch_intent_service.dart';
 import '../../core/models/hermes_project.dart';
 import '../../core/models/session.dart';
 import '../../core/services/notification_prefs.dart';
 import '../../core/services/connection_mutation_barrier.dart';
 import '../../core/services/turn_notification_service.dart';
 import '../../core/utils/adaptive_layout.dart';
+import '../../core/utils/platform_capabilities.dart';
 import '../../core/widgets/desktop_shortcuts.dart';
+import '../../core/widgets/command_palette.dart';
+import '../../core/services/hermes_deeplink.dart';
 import '../data/nextgen_gateway.dart';
 import '../data/chat_controller.dart';
 import '../nextgen_preferences.dart';
 import '../theme/nextgen_theme.dart';
 import 'capabilities_page.dart';
+import 'brand.dart';
 import 'chat_view.dart';
 import 'insights_page.dart';
 import 'more_page.dart';
 import 'nextgen_scope.dart';
 import 'scheduled_page.dart';
 import 'sessions_sidebar.dart';
+import 'widgets.dart';
 import 'settings_page.dart';
+import '../../core/settings/settings_browser.dart';
 import 'slash_suggestions.dart';
 import '../nextgen_l10n.dart';
+import '../../core/desktop/desktop_integration.dart';
+import '../../core/desktop/quick_entry.dart';
 
-class NgMainPage extends StatelessWidget {
-  const NgMainPage({super.key});
+class NgMainPage extends StatefulWidget {
+  const NgMainPage({
+    super.key,
+    this.shareIntents,
+    this.launchIntents,
+    this.coldStart = true,
+  });
+
+  final AndroidShareIntentService? shareIntents;
+  final AndroidLaunchIntentService? launchIntents;
+  final bool coldStart;
 
   @override
-  Widget build(BuildContext context) =>
-      _NgMainContent(key: ObjectKey(NgScope.of(context).gateway));
+  State<NgMainPage> createState() => _NgMainPageVisitState();
+}
+
+class _NgMainPageVisitState extends State<NgMainPage> {
+  bool _coldStart = true;
+
+  bool _takeColdStart() {
+    final cold = _coldStart;
+    _coldStart = false;
+    return cold && widget.coldStart;
+  }
+
+  @override
+  Widget build(BuildContext context) => _NgMainContent(
+    key: ObjectKey(NgScope.of(context).gateway),
+    takeColdStart: _takeColdStart,
+    shareIntents: widget.shareIntents,
+    launchIntents: widget.launchIntents,
+  );
 }
 
 class _NgMainContent extends StatefulWidget {
-  const _NgMainContent({super.key});
+  const _NgMainContent({
+    super.key,
+    required this.takeColdStart,
+    this.shareIntents,
+    this.launchIntents,
+  });
+
+  final AndroidShareIntentService? shareIntents;
+  final AndroidLaunchIntentService? launchIntents;
+  final bool Function() takeColdStart;
 
   @override
   State<_NgMainContent> createState() => _NgMainPageState();
@@ -49,7 +94,8 @@ class _NgMainPageState extends State<_NgMainContent>
   /// Keeps the sidebar's search/filter/scroll state alive when it moves
   /// between the modal drawer (compact) and the docked pane (wide) as the
   /// window crosses the expanded breakpoint.
-  final _sidebarKey = GlobalKey();
+  final _sidebarKey = GlobalKey<NgSessionsSidebarState>();
+  bool _focusDrawerSearch = false;
 
   /// Whether the user collapsed the docked sidebar on a wide window. Reset
   /// implicitly when the window leaves the expanded class.
@@ -57,9 +103,16 @@ class _NgMainPageState extends State<_NgMainContent>
 
   /// Desktop keyboard shortcut subscription (no-op on touch platforms).
   StreamSubscription<DesktopShortcut>? _desktopShortcutSub;
+  VoidCallback? _deepLinkListener;
+  VoidCallback? _quickEntryTargets;
 
   NgSessionsModel? _sessions;
   NgChatController? _chat;
+
+  /// The launch landing is dismissed permanently for this main-page visit
+  /// when a chat is opened, started, or an external action is handled.
+  AndroidSharePayload? _sharedPayload;
+  bool _landing = false;
   bool _foreground = true;
   NextGenGateway? _notificationGateway;
   Object? _notificationMutation;
@@ -73,15 +126,35 @@ class _NgMainPageState extends State<_NgMainContent>
   @override
   void initState() {
     super.initState();
+    widget.shareIntents?.pendingShare.addListener(_onExternalAction);
+    widget.launchIntents?.pendingQuickChat.addListener(_onExternalAction);
     WidgetsBinding.instance.addObserver(this);
     _desktopShortcutSub = desktopShortcutBus.stream.listen(_onDesktopShortcut);
+    _quickEntryTargets = QuickEntryTargets.register(
+      _quickEntryChats,
+      owner: _quickEntryOwner,
+    );
+    _deepLinkListener = _onPendingDeepLink;
+    HermesDeepLinkService.shared.pendingLink.addListener(_deepLinkListener!);
+    if (HermesDeepLinkService.shared.pendingLink.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onPendingDeepLink();
+      });
+    }
     nextGenOpenRequest.addListener(_onOpenRequest);
     nextGenNotificationAnswer.addListener(_onNotificationAnswer);
   }
 
   @override
   void dispose() {
+    widget.shareIntents?.pendingShare.removeListener(_onExternalAction);
+    widget.launchIntents?.pendingQuickChat.removeListener(_onExternalAction);
     _desktopShortcutSub?.cancel();
+    _quickEntryTargets?.call();
+    final deepLinkListener = _deepLinkListener;
+    if (deepLinkListener != null) {
+      HermesDeepLinkService.shared.pendingLink.removeListener(deepLinkListener);
+    }
     nextGenOpenRequest.removeListener(_onOpenRequest);
     nextGenNotificationAnswer.removeListener(_onNotificationAnswer);
     _requestSub?.cancel();
@@ -97,8 +170,19 @@ class _NgMainPageState extends State<_NgMainContent>
       if (!identical(c, _chat)) c.dispose();
     }
     _cache.clear();
+    _sessions?.removeListener(_onSessionsChanged);
     _sessions?.dispose();
     super.dispose();
+  }
+
+  void _onExternalAction() {
+    if (!mounted || _sessions == null) return;
+    final share = widget.shareIntents?.takePendingShare();
+    final quick = widget.launchIntents?.takePendingQuickChat() ?? false;
+    if (share == null && !quick) return;
+    _scaffold.currentState?.closeDrawer();
+    _openId(null, '', initialText: share?.text);
+    _sharedPayload = share;
   }
 
   /// The chat a notification tap asked for, when it belongs to this
@@ -106,7 +190,21 @@ class _NgMainPageState extends State<_NgMainContent>
   String? _takeOpenRequest(String connectionId) {
     final request = nextGenOpenRequest.value;
     if (request == null || request.connectionId != connectionId) return null;
+    final target = pendingWindowsToastTarget;
+    pendingWindowsToastTarget = null;
     nextGenOpenRequest.value = null;
+    if (target != null) {
+      final scope = NgScope.of(context);
+      if (!target.matches(scope.connection) ||
+          !target.matches(
+            scope.connManager
+                .getConnections()
+                .where((c) => c.id == connectionId)
+                .firstOrNull,
+          )) {
+        return null;
+      }
+    }
     return request.sessionId;
   }
 
@@ -132,13 +230,44 @@ class _NgMainPageState extends State<_NgMainContent>
     }
     final sessions = _sessions;
     if (sessions == null) {
-      _sessions = NgSessionsModel(scope);
-      unawaited(_sessions!.refresh());
-      final last =
-          _takeOpenRequest(scope.connection.id) ??
-          NextGenPreferences.lastSession(scope.prefs, scope.connection.id);
-      _openId(last, '', initial: true);
+      _sessions = NgSessionsModel(scope)..addListener(_onSessionsChanged);
+      final requested = _takeOpenRequest(scope.connection.id);
+      final link = HermesDeepLinkService.shared.pendingLink.value;
+      final action =
+          link != null &&
+          !link.isIgnored &&
+          link.isFor(scope.connection.id, scope.connection.gatewayProfile);
+      final external =
+          widget.shareIntents?.pendingShare.value != null ||
+          (widget.launchIntents?.pendingQuickChat.value ?? false);
+      final answer = nextGenNotificationAnswer.value;
+      final answering = answer?.connectionId == scope.connection.id;
+      final coldStart = widget.takeColdStart();
+      if (coldStart &&
+          requested == null &&
+          !action &&
+          !external &&
+          !answering) {
+        _landing = true;
+      } else {
+        // Explicit activations never restore an unrelated last chat while
+        // waiting for the link's session list or action destination.
+        final id = !coldStart && !action && !external && !answering
+            ? NextGenPreferences.launchSession(
+                scope.prefs,
+                scope.connection.id,
+                requested: requested,
+              )
+            : requested ?? (answering ? answer?.sessionId : null);
+        _openId(id, '', initial: true);
+      }
       _listenForRequests(scope);
+      unawaited(_sessions!.refresh());
+      if (external) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => _onExternalAction(),
+        );
+      }
     } else {
       sessions.scope = scope;
     }
@@ -150,7 +279,7 @@ class _NgMainPageState extends State<_NgMainContent>
     // In sight while resumed or only covered (the notification shade).
     _foreground =
         state == AppLifecycleState.resumed ||
-        state == AppLifecycleState.inactive;
+        (!isWindowsPlatform && state == AppLifecycleState.inactive);
     final chat = _chat;
     if (!_foreground && wasForeground && chat != null) {
       // Out of sight: what arrives from now on is news when the user is back.
@@ -185,9 +314,11 @@ class _NgMainPageState extends State<_NgMainContent>
     String title, {
     bool initial = false,
     String? workingDirectory,
+    String? initialText,
   }) {
     final scope = NgScope.of(context);
     final old = _chat;
+    if (initialText == null) _sharedPayload = null;
 
     // Try the LRU cache first: reuse the parsed transcript, just resync.
     NgChatController? cached;
@@ -200,12 +331,16 @@ class _NgMainPageState extends State<_NgMainContent>
       chat = cached;
       // Update the title in case it changed while parked.
       if (title.isNotEmpty) chat.title = title;
+      // A parked chat keeps its draft; a link's prefill is appended to it
+      // when the view mounts.
+      if (initialText != null) chat.offerInitialText(initialText);
     } else {
       chat = NgChatController(
         scope.gateway,
         sessionId: id,
         title: title,
         workingDirectory: workingDirectory,
+        initialText: initialText,
         onCreated: (stored) {
           unawaited(
             NextGenPreferences.setLastSession(
@@ -235,7 +370,10 @@ class _NgMainPageState extends State<_NgMainContent>
     if (initial) {
       _chat = chat;
     } else {
-      setState(() => _chat = chat);
+      setState(() {
+        _chat = chat;
+        _landing = false;
+      });
     }
 
     // Park the old controller in the LRU cache instead of disposing it.
@@ -279,7 +417,10 @@ class _NgMainPageState extends State<_NgMainContent>
   NextGenGateway? _watchedGateway;
 
   /// Requests posted, by request id: what to cancel once each is gone.
-  final Map<String, ({HermesNotificationKind kind, String? sessionId})>
+  final Map<
+    String,
+    ({HermesNotificationKind kind, String? sessionId, String connectionId})
+  >
   _postedRequests = {};
 
   /// Every request already notified (most recent last). Each one alerts at
@@ -337,18 +478,37 @@ class _NgMainPageState extends State<_NgMainContent>
     while (_notifiedRequests.length > _maxNotifiedRequests) {
       _notifiedRequests.remove(_notifiedRequests.first);
     }
-    final stored = _storedFor(scope, raw.sessionId);
+    // A missing session or unmapped runtime is not proof of the visible chat.
+    // Keep the native alert, but make its activation focus-only in that case.
+    final runtime = raw.sessionId;
+    final stored = isWindowsPlatform
+        ? (runtime == null ? null : scope.gateway.storedIdFor(runtime))
+        : _storedFor(scope, runtime);
+    final turn = _lifecycleTurn;
+    bool stillNeeded() =>
+        mounted &&
+        !_foreground &&
+        turn == _lifecycleTurn &&
+        identical(_watchedGateway, scope.gateway) &&
+        (!isWindowsPlatform ||
+            ConnectionMutationBarrier.isCurrent(
+              scope.connection.id,
+              _notificationMutation,
+            )) &&
+        scope.gateway.awaitsAnswer(raw.id);
     final approval = input.kind == NgRequestKind.approval;
     final kind = approval
         ? HermesNotificationKind.approval
         : HermesNotificationKind.input;
     final posted = await TurnNotificationService.shared.showKind(
+      origin: scope.connection,
       kind: kind,
       title: input.title,
       body: input.body.isNotEmpty
           ? input.body
           : (input.command ?? ngL.ng_hermes_is_waiting_for_you),
       eventId: raw.id,
+      windowsStillNeeded: isWindowsPlatform ? stillNeeded : null,
       sessionId: stored,
       connectionId: scope.connection.id,
       actions: approval
@@ -364,11 +524,22 @@ class _NgMainPageState extends State<_NgMainContent>
       }),
     );
     if (!posted) return;
-    _postedRequests[raw.id] = (kind: kind, sessionId: stored);
-    // Settled while the notification was being posted.
-    if (!mounted || !scope.gateway.awaitsAnswer(raw.id)) {
-      _cancelRequest(raw.id);
+    // Re-check after the last await. Cancel on the issuing connection, not a
+    // replacement scope, even if the route has already been disposed.
+    if (!stillNeeded()) {
+      await TurnNotificationService.shared.cancelKind(
+        kind: kind,
+        eventId: raw.id,
+        sessionId: stored,
+        connectionId: scope.connection.id,
+      );
+      return;
     }
+    _postedRequests[raw.id] = (
+      kind: kind,
+      sessionId: stored,
+      connectionId: scope.connection.id,
+    );
   }
 
   /// A request redelivered after a reconnect may be the one an approval
@@ -383,7 +554,7 @@ class _NgMainPageState extends State<_NgMainContent>
         kind: posted.kind,
         eventId: id,
         sessionId: posted.sessionId,
-        connectionId: NgScope.of(context).connection.id,
+        connectionId: posted.connectionId,
       ),
     );
   }
@@ -464,7 +635,7 @@ class _NgMainPageState extends State<_NgMainContent>
         'reply',
         label,
         'skipped',
-        'Ares was on screen',
+        detail: 'Ares was on screen',
       );
       return;
     }
@@ -473,7 +644,7 @@ class _NgMainPageState extends State<_NgMainContent>
         'reply',
         label,
         'skipped',
-        'the turn was stopped',
+        detail: 'the turn was stopped',
       );
       return;
     }
@@ -507,6 +678,7 @@ class _NgMainPageState extends State<_NgMainContent>
     unawaited(
       failed
           ? notifications.showTurnFailed(
+              origin: chat.gateway.connection,
               title: title,
               turnSummary: body,
               turnId: _replyTurnId,
@@ -514,6 +686,7 @@ class _NgMainPageState extends State<_NgMainContent>
               connectionId: connectionId,
             )
           : notifications.showTurnCompleted(
+              origin: chat.gateway.connection,
               title: title,
               turnSummary: body,
               turnId: _replyTurnId,
@@ -529,10 +702,22 @@ class _NgMainPageState extends State<_NgMainContent>
   void _onDesktopShortcut(DesktopShortcut shortcut) {
     if (!mounted) return;
     switch (shortcut) {
+      case DesktopShortcut.commandPalette:
+        _openCommandPalette();
       case DesktopShortcut.newChat:
         _newChat();
       case DesktopShortcut.search:
-        if (!isExpandedWindow(context)) _scaffold.currentState?.openDrawer();
+        if (isExpandedWindow(context)) {
+          setState(() => _dockedSidebarCollapsed = false);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _sidebarKey.currentState?.focusSearch();
+          });
+        } else if (_scaffold.currentState?.isDrawerOpen ?? false) {
+          _sidebarKey.currentState?.focusSearch();
+        } else {
+          _focusDrawerSearch = true;
+          _scaffold.currentState?.openDrawer();
+        }
       case DesktopShortcut.settings:
         _go(NgDestination.settings);
       case DesktopShortcut.tab1:
@@ -543,6 +728,252 @@ class _NgMainPageState extends State<_NgMainContent>
         _go(NgDestination.insights);
       case DesktopShortcut.tab4:
         _go(NgDestination.capabilities);
+    }
+  }
+
+  void _onSessionsChanged() {
+    if (!mounted) return;
+    if (HermesDeepLinkService.shared.pendingLink.value != null) {
+      _onPendingDeepLink();
+    }
+  }
+
+  /// The connection and profile whose chats quick entry offers.
+  HermesLinkOwner? _quickEntryOwner() {
+    final connection = _notificationGateway?.connection;
+    if (!mounted || connection == null) return null;
+    return HermesLinkOwner(
+      connectionId: connection.id,
+      profile: connection.gatewayProfile,
+    );
+  }
+
+  /// Recent chats offered to the desktop quick-entry window.
+  List<QuickEntryChat> _quickEntryChats() => [
+    for (final session in _sessions?.sessions ?? const <Session>[])
+      QuickEntryChat(id: session.id, title: ngSessionTitle(session)),
+  ];
+
+  Future<void> _openQuickEntry() async {
+    final desktop = DesktopIntegration.current;
+    if (desktop == null) return;
+    final opened = await desktop.openQuickEntry();
+    if (opened || !mounted) return;
+    ngToast(context, ngL.quick_entry_unavailable);
+  }
+
+  /// Opens the shared app-wide command palette (same widget as Classic).
+  void _openCommandPalette() {
+    final sessions = _sessions?.sessions ?? const <Session>[];
+    showAppCommandPalette(
+      context,
+      actions: [
+        PaletteAction(
+          id: 'new-chat',
+          label: ngL.ng_new_chat,
+          icon: Icons.add_comment_outlined,
+          keywords: const ['compose', 'start', 'new', 'chat'],
+        ),
+        PaletteAction(
+          id: 'search',
+          label: ngL.palette_search_sessions,
+          icon: Icons.search,
+          keywords: const ['find', 'sessions', 'chats', 'search'],
+        ),
+        if (DesktopIntegration.current != null)
+          PaletteAction(
+            id: 'quick-entry',
+            label: ngL.quick_entry_title,
+            icon: Icons.edit_note_outlined,
+            keywords: const ['hud', 'quick', 'prompt', 'entry', 'hotkey'],
+          ),
+        PaletteAction(
+          id: 'nav-scheduled',
+          label: ngL.ng_scheduled,
+          icon: Icons.schedule,
+          keywords: const ['cron', 'scheduled', 'jobs'],
+        ),
+        PaletteAction(
+          id: 'nav-insights',
+          label: ngL.palette_insights_usage,
+          icon: Icons.insights_outlined,
+          keywords: const ['usage', 'analytics', 'stats'],
+        ),
+        PaletteAction(
+          id: 'nav-capabilities',
+          label: ngL.ng_capabilities,
+          icon: Icons.extension_outlined,
+          keywords: const ['skills', 'plugins', 'mcp', 'tools'],
+        ),
+        PaletteAction(
+          id: 'nav-archived',
+          label: ngL.ng_archived_chats,
+          icon: Icons.archive_outlined,
+          keywords: const ['archive', 'archived'],
+        ),
+        PaletteAction(
+          id: 'nav-more',
+          label: ngL.palette_more_projects,
+          icon: Icons.more_horiz,
+          keywords: const ['projects', 'files', 'memory', 'models'],
+        ),
+        PaletteAction(
+          id: 'settings',
+          label: ngL.ng_settings,
+          icon: Icons.settings,
+          keywords: const [
+            'preferences',
+            'options',
+            'shortcuts',
+            'keep awake',
+            'appearance',
+            'notifications',
+          ],
+        ),
+        for (final session in sessions)
+          PaletteAction(
+            id: 'session:${session.id}',
+            label: ngSessionTitle(session),
+            hint: session.id,
+            icon: Icons.forum_outlined,
+            keywords: [session.id, if (session.model.isNotEmpty) session.model],
+          ),
+      ],
+      onSelected: (action) {
+        if (!mounted) return;
+        if (action.id.startsWith('session:')) {
+          final id = action.id.substring('session:'.length);
+          final match = _sessions?.sessions
+              .where((s) => s.id == id)
+              .firstOrNull;
+          if (match != null) {
+            _open(match);
+          }
+          return;
+        }
+        switch (action.id) {
+          case 'new-chat':
+            _newChat();
+          case 'search':
+            if (isExpandedWindow(context)) {
+              setState(() => _dockedSidebarCollapsed = false);
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _sidebarKey.currentState?.focusSearch();
+              });
+            } else {
+              _focusDrawerSearch = true;
+              _scaffold.currentState?.openDrawer();
+            }
+          case 'quick-entry':
+            unawaited(_openQuickEntry());
+          case 'nav-scheduled':
+            _go(NgDestination.scheduled);
+          case 'nav-insights':
+            _go(NgDestination.insights);
+          case 'nav-capabilities':
+            _go(NgDestination.capabilities);
+          case 'nav-archived':
+            _go(NgDestination.archived);
+          case 'nav-more':
+            _go(NgDestination.more);
+          case 'settings':
+            _go(NgDestination.settings);
+        }
+      },
+    );
+  }
+
+  /// Consumes a validated `hermes://` link. Never sends, never executes.
+  void _onPendingDeepLink() {
+    final peek = HermesDeepLinkService.shared.pendingLink.value;
+    if (peek == null || !mounted) return;
+    // A link that belongs to another connection or profile (a quick-entry
+    // hand-back) waits until NextGen shows that connection.
+    final shown = NgScope.of(context).connection;
+    if (!peek.isFor(shown.id, shown.gatewayProfile)) return;
+    if (peek.kind == HermesDeepLinkKind.session) {
+      final id = peek.sessionId;
+      final sessions = _sessions;
+      if (id != null &&
+          (sessions == null ||
+              (sessions.loading &&
+                  !sessions.sessions.any((s) => s.id == id)))) {
+        // Wait for the initial session list load before deciding whether this
+        // session exists on the connected gateway.
+        return;
+      }
+    }
+    final link = HermesDeepLinkService.shared.takePendingLink();
+    if (link == null || !mounted || link.isIgnored) return;
+    if (_landing) _openId(null, '');
+    switch (link.kind) {
+      case HermesDeepLinkKind.launch:
+        return; // focus-only; no route, no prefill
+      case HermesDeepLinkKind.settings:
+        _go(
+          NgDestination.settings,
+          settingsCategory: SettingsCategory.fromPath(link.path),
+        );
+        return;
+      case HermesDeepLinkKind.install:
+        // Navigation-only: open Capabilities for explicit user review, never
+        // auto-installing a skill, plugin or MCP server on link open.
+        _go(NgDestination.capabilities);
+        return;
+      case HermesDeepLinkKind.open:
+        final path = link.path ?? '';
+        if (path.startsWith('/settings')) {
+          _go(
+            NgDestination.settings,
+            settingsCategory: SettingsCategory.fromPath(path),
+          );
+        } else if (path == '/scheduled' ||
+            path == '/crons' ||
+            path == '/cron') {
+          _go(NgDestination.scheduled);
+        } else if (path == '/insights' || path == '/activity') {
+          _go(NgDestination.insights);
+        } else if (path == '/capabilities' ||
+            path == '/skills' ||
+            path == '/plugins' ||
+            path == '/mcp') {
+          _go(NgDestination.capabilities);
+        } else if (path == '/archived') {
+          _go(NgDestination.archived);
+        } else if (path == '/more' || path == '/projects') {
+          _go(NgDestination.more);
+        } else if (path == '/chat' || path == '/chats') {
+          if (link.prefill != null) {
+            _scaffold.currentState?.closeDrawer();
+            _openId(null, '', initialText: link.prefill);
+          }
+        }
+        return;
+      case HermesDeepLinkKind.session:
+        final id = link.sessionId;
+        if (id == null) return;
+        final sessions = _sessions;
+        final match = sessions?.sessions.where((s) => s.id == id).firstOrNull;
+        if (match == null) {
+          // A validated but unknown id must not create a chat — it would
+          // either silently open an empty chat or pretend the session
+          // exists. Surface honesty instead.
+          ngToast(context, ngL.deeplink_chat_not_found);
+          unawaited(sessions?.refresh());
+          return;
+        }
+        _scaffold.currentState?.closeDrawer();
+        final open = _chat;
+        final prefill = link.prefill;
+        if (open != null && open.storedId == id) {
+          // Already open: the view appends the prefill to its draft.
+          if (prefill != null) open.offerInitialText(prefill);
+          return;
+        }
+        _openId(id, ngSessionTitle(match), initialText: prefill);
+        return;
+      case HermesDeepLinkKind.ignore:
+        return;
     }
   }
 
@@ -562,12 +993,16 @@ class _NgMainPageState extends State<_NgMainContent>
 
   void _open(Session s) {
     _scaffold.currentState?.closeDrawer();
-    if (s.id == _chat?.storedId) return;
+    if (s.id == _chat?.storedId) {
+      if (_landing) setState(() => _landing = false);
+      return;
+    }
     _openId(s.id, ngSessionTitle(s));
   }
 
   void _newChat() {
     _scaffold.currentState?.closeDrawer();
+    if (_landing) setState(() => _landing = false);
     if (_chat?.isNew == true &&
         _chat!.items.isEmpty &&
         _chat!.workingDirectory == null) {
@@ -584,7 +1019,7 @@ class _NgMainPageState extends State<_NgMainContent>
     _openId(null, '', workingDirectory: cwd);
   }
 
-  void _go(NgDestination d) {
+  void _go(NgDestination d, {SettingsCategory? settingsCategory}) {
     _scaffold.currentState?.closeDrawer();
     final Widget page = switch (d) {
       NgDestination.scheduled => NgScheduledPage(onOpenSession: _open),
@@ -595,7 +1030,9 @@ class _NgMainPageState extends State<_NgMainContent>
         onOpenSession: _open,
         onNewProjectChat: _newProjectChat,
       ),
-      NgDestination.settings => const NgSettingsPage(),
+      NgDestination.settings => NgSettingsPage(
+        initialCategory: settingsCategory,
+      ),
     };
     Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
   }
@@ -629,15 +1066,32 @@ class _NgMainPageState extends State<_NgMainContent>
       }
     }
 
-    final chatView = chat == null
+    final view = _landing
+        ? NgBrandLanding(
+            sessions: _sessions!,
+            docked: docked,
+            onNewChat: _newChat,
+            onOpen: _open,
+            onOpenChats: toggleSidebar,
+          )
+        : chat == null
         ? const SizedBox.shrink()
         : NgChatView(
             key: ObjectKey(chat),
             chat: chat,
+            initialSharedPayload: _sharedPayload,
             onOpenSidebar: toggleSidebar,
             sessions: _sessions,
             onNewChat: _newChat,
+            onOpenSessionId: (id, {title}) {
+              unawaited(_sessions?.refresh());
+              _openId(id, title ?? '');
+            },
+            onResume: (id, title) => _openId(id, title),
+            onOpenCommandPalette: _openCommandPalette,
           );
+
+    final chatView = view;
 
     // Back opens the sidebar; back again with the sidebar open closes it.
     // Pushed pages (settings, scheduled...) still pop normally first.
@@ -649,7 +1103,11 @@ class _NgMainPageState extends State<_NgMainContent>
         drawerEdgeDragWidth: 48,
         onDrawerChanged: (open) {
           _sessions?.drawerOpen = open || docked;
-          if (open) unawaited(_sessions?.refresh());
+          if (open) {
+            if (_focusDrawerSearch) _sidebarKey.currentState?.focusSearch();
+            _focusDrawerSearch = false;
+            unawaited(_sessions?.refresh());
+          }
         },
         drawer: docked ? null : sidebar,
         body: docked

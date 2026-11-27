@@ -230,10 +230,17 @@ Future<void> _checkNextGen(
           '${platform.name} ${window.label} x$textScale '
           '${model ?? 'default'} ${state.name}';
       final gateway = NextGenGateway(_ngConnection());
-      final chat = NgChatController(gateway, sessionId: 'stored')
-        ..model = model
-        ..reasoningEffort = model == _longModel ? 'high' : null
-        ..running = state == _NgState.running || state == _NgState.runningDraft;
+      // One stored chat per case: composer drafts are durable per chat, so
+      // a shared id would restore the previous case's typed draft.
+      final chat =
+          NgChatController(
+              gateway,
+              sessionId: 'stored-${model ?? 'default'}-${state.name}',
+            )
+            ..model = model
+            ..reasoningEffort = model == _longModel ? 'high' : null
+            ..running =
+                state == _NgState.running || state == _NgState.runningDraft;
       await tester.pumpWidget(
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

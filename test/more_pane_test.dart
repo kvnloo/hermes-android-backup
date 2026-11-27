@@ -11,7 +11,7 @@ Future<void> _pumpPane(
   ValueChanged<MoreEntry>? onSelect,
   // Tall by default so assertions are about content, not scroll position; the
   // narrow-phone tests below set a real phone height explicitly.
-  Size size = const Size(360, 1600),
+  Size size = const Size(360, 2800),
   double textScale = 1.0,
   Brightness brightness = Brightness.dark,
 }) async {
@@ -83,16 +83,30 @@ void main() {
       expect(
         ids,
         unorderedEquals(<String>[
+          'gateway-fleet',
           'files',
           'projects-root',
           'assets',
           'unassigned',
+          'parallel-workspace',
+          'workspace-profiles',
+          'workspace-workers',
+          'kanban',
+          'bots',
           'model',
           'cron',
           'skills',
+          'capability-admin',
+          'browser-vault',
+          'agent-policy',
           'memory',
+          'host-operations',
+          'schedule-desk',
+          'memory-graph',
           'provider-sign-in',
           'nous-portal',
+          'provider-admin',
+          'nous-billing',
           'openrouter',
           'openai',
           'anthropic',
@@ -126,6 +140,8 @@ void main() {
           expect(usage.entries.map((e) => e.id), [
             'provider-sign-in',
             'nous-portal',
+            'provider-admin',
+            'nous-billing',
             'openrouter',
             'openai',
             'anthropic',
@@ -134,6 +150,8 @@ void main() {
           expect(usage.entries.map((e) => e.title), [
             'Provider sign-in',
             'Nous Portal',
+            'Providers and routes',
+            'Credits and plans',
             'OpenRouter',
             'OpenAI',
             'Claude (Anthropic)',
@@ -155,6 +173,7 @@ void main() {
 
     test('Usage heading is localized in every supported locale', () async {
       const titles = {
+        'ar': 'الاستخدام',
         'de': 'Nutzung',
         'en': 'Usage',
         'es': 'Uso',
@@ -167,6 +186,7 @@ void main() {
         'uk': 'Використання',
         'zh': '用量',
         'zh_Hans': '用量',
+        'zh_Hant': '用量',
       };
       expect(
         titles.keys,
@@ -184,6 +204,21 @@ void main() {
               (section) => section.entries.any((e) => e.id == 'openai'),
             );
         expect(usage.title, titles[locale.toString()], reason: '$locale');
+      }
+    });
+
+    test('parallel workspace refuses profile-unqualified legacy history', () {
+      for (final dashboardReachable in [true, false]) {
+        final entry =
+            buildMoreSections(
+                  dashboardReachable: dashboardReachable,
+                  l10n: l10n,
+                  profileScopedHistory: false,
+                )
+                .expand((section) => section.entries)
+                .singleWhere((e) => e.id == 'parallel-workspace');
+        expect(entry.isSelectable, isFalse);
+        expect(entry.unavailableReason, contains('named profile'));
       }
     });
 
@@ -310,6 +345,7 @@ void main() {
       'groups Cron, Skills and Memory under Agent in every locale',
       () async {
         const titles = {
+          'ar': 'الوكيل',
           'de': 'Agent',
           'en': 'Agent',
           'es': 'Agente',
@@ -322,6 +358,7 @@ void main() {
           'uk': 'Агент',
           'zh': '智能体',
           'zh_Hans': '智能体',
+          'zh_Hant': '代理程式',
         };
         expect(
           titles.keys,
@@ -342,10 +379,20 @@ void main() {
 
           expect(agent.title, titles[locale.toString()], reason: '$locale');
           expect(agent.entries.map((entry) => entry.id), [
+            'workspace-profiles',
+            'workspace-workers',
+            'kanban',
+            'bots',
             'model',
             'cron',
             'skills',
+            'capability-admin',
+            'browser-vault',
+            'agent-policy',
             'memory',
+            'host-operations',
+            'schedule-desk',
+            'memory-graph',
           ]);
         }
       },
@@ -395,7 +442,7 @@ void main() {
 
     testWidgets('renders every section title and entry', (tester) async {
       final built = sections();
-      await _pumpPane(tester, sections: built);
+      await _pumpPane(tester, sections: built, size: const Size(360, 4000));
 
       for (final section in built) {
         await tester.scrollUntilVisible(
@@ -405,9 +452,11 @@ void main() {
         );
         expect(find.text(section.title), findsOneWidget);
       }
+      // Section titles were walked top to bottom, so Cron is now above
+      // the viewport. Search upward; a downward drag cannot rebuild it.
       await tester.scrollUntilVisible(
         find.text('Cron'),
-        160,
+        -160,
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('Cron'), findsOneWidget);
@@ -525,7 +574,14 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      expect(picked, ['model', 'cron', 'skills', 'memory']);
+      expect(picked, [
+        'model',
+        'cron',
+        'skills',
+        'capability-admin',
+        'agent-policy',
+        'memory',
+      ]);
     });
 
     testWidgets('selecting an available entry reports it once', (tester) async {

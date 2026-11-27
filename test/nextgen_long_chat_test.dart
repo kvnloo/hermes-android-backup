@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/services/connection_manager.dart';
@@ -90,6 +91,7 @@ class _CapturingDashboard extends DashboardClient {
     Map<String, String>? queryParameters,
     Duration timeout = ApiClient.requestTimeout,
     bool retried = false,
+    bool Function()? maySend,
   }) async {
     lastQuery = queryParameters;
     return http.Response('{"messages": []}', 200);
@@ -156,6 +158,87 @@ Future<void> _settle() async {
 }
 
 void main() {
+  testWidgets(
+    'NextGen find should seek the matching reply, not the attached tool label',
+    (t) async {
+      SharedPreferences.setMockInitialValues({});
+      final p = await SharedPreferences.getInstance();
+      final g = NextGenGateway(_conn());
+      final chat = NgChatController(g, sessionId: 'id', title: 'Testing');
+      addTearDown(g.dispose);
+      addTearDown(chat.dispose);
+      chat.debugApplyHistory([
+        {'id': 'p', 'role': 'user', 'content': 'Prompt'},
+        {
+          'id': 'a0',
+          'role': 'assistant',
+          'content': '',
+          'tool_calls': [
+            {
+              'id': 't',
+              'function': {'name': 'terminal', 'arguments': '{}'},
+            },
+          ],
+        },
+        {'id': 't1', 'role': 'tool', 'tool_call_id': 't', 'content': 'ran'},
+        {
+          'id': 'a',
+          'role': 'assistant',
+          'content': [
+            ...List.filled(45, 'Ordinary paragraph.'),
+            'The terminal result.',
+          ].join('\n\n'),
+        },
+      ]);
+      expect(
+        chat.items.whereType<NgAssistantItem>().single.tools.single.name,
+        'terminal',
+      );
+      await t.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: nextGenTheme(Brightness.light, NextGenLook.instance),
+          home: NgScope(
+            connManager: ConnectionManager(p),
+            gateway: g,
+            connections: [g.connection],
+            switchTo: (_) async {},
+            addGateway: () async {},
+            signOut: (_) async {},
+            reload: () async {},
+            signInAgain: () async {},
+            child: NgChatView(
+              chat: chat,
+              onOpenSidebar: () {},
+              onNewChat: () {},
+            ),
+          ),
+        ),
+      );
+      await t.pumpAndSettle();
+      await t.tap(find.byTooltip('Find in transcript'));
+      await t.pumpAndSettle();
+      await t.enterText(find.byKey(const Key('transcript-query')), 'terminal');
+      await t.pumpAndSettle();
+      expect(find.text('1/1'), findsOneWidget);
+      final label = find.textContaining('terminal', findRichText: true);
+      final a = find.text('The terminal result.', findRichText: true);
+      final visible = label
+          .hitTestable()
+          .evaluate()
+          .map((e) => e.widget.toString())
+          .toList();
+      final at = t.getCenter(a.first);
+      final region = t.getRect(find.byKey(const ValueKey('ng-transcript')));
+      expect(
+        region.contains(at),
+        isTrue,
+        reason: 'body centre $at, viewport $region; visible labels: $visible',
+      );
+    },
+  );
+
   group('Markdown chunks', () {
     test('short text stays whole', () {
       expect(ngMarkdownChunks('one\n\ntwo'), ['one\n\ntwo']);
@@ -363,6 +446,102 @@ void main() {
       expect(tool.output!.length, lessThanOrEqualTo(ngStoredToolChars + 1));
     });
 
+    for (final width in [390.0, 1050.0]) {
+      testWidgets('NextGen mounted transcript find and prompt jump at $width', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(Size(width, 780));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+        chat.debugApplyHistory([
+          for (int i = 0; i < 22; i++) ...[
+            {
+              'id': i * 2 + 1,
+              'role': 'user',
+              'content': i == 0
+                  ? 'Target first Target'
+                  : i == 21
+                  ? 'Target last'
+                  : 'Prompt $i',
+            },
+            {'id': i * 2 + 2, 'role': 'assistant', 'content': 'Reply $i'},
+          ],
+        ]);
+        final view = MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: nextGenTheme(Brightness.light, NextGenLook.instance),
+          home: NgScope(
+            connManager: ConnectionManager(prefs),
+            gateway: gateway,
+            connections: [gateway.connection],
+            switchTo: (_) async {},
+            addGateway: () async {},
+            signOut: (_) async {},
+            reload: () async {},
+            signInAgain: () async {},
+            child: NgChatView(
+              chat: chat,
+              onOpenSidebar: () {},
+              onNewChat: () {},
+            ),
+          ),
+        );
+        await tester.pumpWidget(view);
+        await tester.pumpAndSettle();
+        if (width > 1000) {
+          await tester.tap(find.byType(TextField).last);
+          await tester.sendKeyDownEvent(LogicalKeyboardKey.controlLeft);
+          await tester.sendKeyEvent(LogicalKeyboardKey.keyF);
+          await tester.sendKeyUpEvent(LogicalKeyboardKey.controlLeft);
+        } else {
+          await tester.tap(find.byTooltip('Find in transcript'));
+        }
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('transcript-query')),
+          'Target',
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('1/3'), findsOneWidget);
+        expect(find.text('Target first Target').hitTestable(), findsOneWidget);
+        await tester.tap(find.byTooltip('Next match'));
+        await tester.pumpAndSettle();
+        expect(find.text('2/3'), findsOneWidget);
+        await tester.tap(find.byTooltip('Next match'));
+        await tester.pumpAndSettle();
+        expect(find.text('3/3'), findsOneWidget);
+        expect(find.text('Target last').hitTestable(), findsOneWidget);
+        await tester.tap(find.byTooltip('Previous match'));
+        await tester.pumpAndSettle();
+        expect(find.text('Target first Target').hitTestable(), findsOneWidget);
+        await tester.tap(find.byTooltip('Prompt timeline'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(ListTile, 'Prompt 2'));
+        await tester.pumpAndSettle();
+        expect(find.text('Prompt 2').hitTestable(), findsOneWidget);
+        await tester.tap(find.byTooltip('Close find'));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('transcript-query')), findsNothing);
+        final scroll = tester
+            .widget<ListView>(find.byKey(const ValueKey('ng-transcript')))
+            .controller!;
+        final previous = scroll.offset;
+        expect(previous, greaterThan(0));
+        await tester.pumpWidget(const SizedBox());
+        await tester.pumpWidget(view);
+        await tester.pumpAndSettle();
+        expect(
+          tester
+              .widget<ListView>(find.byKey(const ValueKey('ng-transcript')))
+              .controller!
+              .offset,
+          closeTo(previous, 1),
+        );
+        await tester.pumpWidget(const SizedBox());
+      });
+    }
     testWidgets('scrolling to the top of a long chat loads the page before', (
       tester,
     ) async {

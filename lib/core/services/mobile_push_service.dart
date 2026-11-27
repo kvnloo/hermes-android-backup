@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../l10n/service_strings.dart';
 import '../parked_automotive.dart';
 import 'connection_manager.dart';
 import 'connection_mutation_barrier.dart';
@@ -42,16 +44,22 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
     MethodChannel? channel,
     DashboardClient Function(SavedConnection)? clientFactory,
     bool? supported,
+    AppLocalizations? strings,
   }) : _channel = channel ?? const MethodChannel(channelName),
        _clientFactory = clientFactory ?? _dashboard,
+       _providedStrings = strings,
        supported =
            !isParkedAutomotive &&
            (supported ??
-               (!kIsWeb && defaultTargetPlatform == TargetPlatform.android));
+               (!kIsWeb && defaultTargetPlatform == TargetPlatform.android)) {
+    status = _strings.off;
+  }
   static const channelName = 'com.hermesagent.hermes_android/mobile_push';
   static final shared = MobilePushService();
   final MethodChannel _channel;
   final DashboardClient Function(SavedConnection) _clientFactory;
+  final AppLocalizations? _providedStrings;
+  AppLocalizations get _strings => _providedStrings ?? serviceStrings;
   final bool supported;
   ConnectionManager? _manager;
   Future<void>? _initialization;
@@ -64,7 +72,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
   String? _enablingConnection;
   bool get enabling => _enablingConnection != null;
   String get pendingConnectionId => _enablingConnection ?? '';
-  String status = 'Off';
+  late String status;
   String? error;
   List<Map<String, dynamic>> events = [];
   String get connectionId => _state['connection'] as String? ?? '';
@@ -118,7 +126,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
 
   Future<void> _initialize() async {
     if (!supported) {
-      status = 'Android only';
+      status = _strings.rel_svc_push_status_android_only;
       return;
     }
     // Do not briefly overwrite a persisted disabled native preference with
@@ -157,7 +165,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
         ],
       });
     } catch (_) {
-      error = 'Native notification preferences could not be synchronized.';
+      error = _strings.rel_svc_push_native_prefs_sync_failed;
     }
   }
 
@@ -196,7 +204,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
   ) async {
     final List<String> ids;
     try {
-      ids = MobilePushApi.validateSessionIds(sessions);
+      ids = MobilePushApi.validateSessionIds(sessions, localizations: _strings);
     } on StateError catch (e) {
       // The settings surface reads this safe, local validation message rather
       // than exposing platform/server exception bodies that may contain secrets.
@@ -214,7 +222,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
     String scope,
   ) async {
     if (!supported || _manager == null) {
-      throw StateError('Choose a saved connection on Android first.');
+      throw StateError(_strings.rel_svc_push_choose_android_connection);
     }
     final epoch = ++_epoch;
     final mutationEpoch = ConnectionMutationBarrier.capture(connection.id);
@@ -234,7 +242,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
     _enablingConnection = connection.id;
     final client = _clientFactory(connection);
     error = null;
-    status = 'Checking server authorization';
+    status = _strings.rel_svc_push_status_checking_authorization;
     notifyListeners();
     try {
       if (!await _refreshCredentialCache(connection.id) || !current()) return;
@@ -251,6 +259,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
       if (!current()) return;
       final caps = await MobilePushApi(
         client,
+        localizations: _strings,
       ).capabilities(authorized: scope == 'authorized');
       if (!current()) return;
       final permission =
@@ -297,8 +306,8 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
         }
       }
       if (current()) {
-        status = 'Error';
-        error = _message(e);
+        status = _strings.release_core_cloud_status_error;
+        error = _message(e, _strings);
         notifyListeners();
       }
       rethrow;
@@ -319,15 +328,14 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
     _enablingConnection = null;
     _tap = null;
     events = [];
-    status = 'Off';
+    status = _strings.off;
     error = null;
     notifyListeners();
     if (!supported || _closed) return;
     try {
       _state = await _call('disable');
     } catch (_) {
-      error =
-          'Could not persist revocation. Retry disabling before leaving the app.';
+      error = _strings.rel_svc_push_revoke_persist_failed;
       notifyListeners();
       rethrow;
     }
@@ -357,12 +365,23 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
       if (!await _refreshCredentialCache(connection.id) || !current()) {
         return null;
       }
-      await MobilePushApi(client).capabilities(authorized: true);
+      await MobilePushApi(
+        client,
+        localizations: _strings,
+      ).capabilities(authorized: true);
       return current()
-          ? const MobilePushAvailability._('Off; server API ready', null)
+          ? MobilePushAvailability._(
+              _strings.rel_svc_push_status_off_api_ready,
+              null,
+            )
           : null;
     } catch (e) {
-      return current() ? MobilePushAvailability._('Error', _message(e)) : null;
+      return current()
+          ? MobilePushAvailability._(
+              _strings.release_core_cloud_status_error,
+              _message(e, _strings),
+            )
+          : null;
     } finally {
       client.close();
     }
@@ -378,8 +397,8 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
       await refresh();
     } catch (e) {
       if (!_closed && epoch == _epoch) {
-        error = _message(e);
-        status = 'Error';
+        error = _message(e, _strings);
+        status = _strings.release_core_cloud_status_error;
         notifyListeners();
       }
       rethrow;
@@ -430,8 +449,8 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
         }
         _dirty = false;
         if (!_closed && epoch == _epoch) {
-          error = _message(e);
-          status = 'Error';
+          error = _message(e, _strings);
+          status = _strings.release_core_cloud_status_error;
           notifyListeners();
         }
       }
@@ -504,8 +523,8 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
     }
     if (!enabled) {
       status = pendingRevocations > 0
-          ? 'Off; server revocation pending'
-          : 'Off';
+          ? _strings.rel_svc_push_status_off_revoke_pending
+          : _strings.off;
       notifyListeners();
       return;
     }
@@ -521,18 +540,18 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
       ++_epoch;
       _tap = null;
       _state = await _call('disable');
-      status = 'Off; saved connection changed';
+      status = _strings.rel_svc_push_status_off_connection_changed;
       notifyListeners();
       return;
     }
     final client = _clientFactory(connection);
-    final api = MobilePushApi(client);
+    final api = MobilePushApi(client, localizations: _strings);
     var state = snapshot;
     try {
       MobilePushApi.sessionScope(state);
       if (state['error'] != null) throw StateError(state['error'] as String);
       if (state['endpoint'] == null) {
-        status = 'Pending distributor endpoint';
+        status = _strings.rel_svc_push_status_pending_endpoint;
         notifyListeners();
         return;
       }
@@ -547,7 +566,7 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
         events = [];
       }
       if (state['generation'] == 0) {
-        status = 'Registering';
+        status = _strings.rel_svc_push_status_registering;
         notifyListeners();
         if (!await _current(state, epoch)) return;
         // The durable native revision travels in this PUT. The server compares
@@ -604,8 +623,8 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
         }
       }
       status = state['active'] == true
-          ? 'Active'
-          : 'Pending encrypted challenge (waiting for silent server verification push)';
+          ? _strings.active
+          : _strings.rel_svc_push_status_pending_challenge;
       error = null;
       if (state['active'] == true) {
         // Discard old routable data before fetching; a bad later page must not
@@ -774,36 +793,36 @@ class MobilePushService extends ChangeNotifier with WidgetsBindingObserver {
             DateTime.now().millisecondsSinceEpoch / 1000;
   }
 
-  static String _message(Object error) {
+  static String _message(Object error, AppLocalizations strings) {
     if (error is StateError &&
         error.message ==
             'Allow Android notifications before enabling mobile push.') {
-      return 'Allow Android notifications in system settings, then retry.';
+      return strings.rel_svc_push_allow_android_notifications_retry;
     }
     if (error is FormatException) {
-      return 'The server mobile-push plugin is unavailable, outdated, or returned an invalid subscription response. Ask the operator to update it, then retry.';
+      return strings.rel_svc_push_plugin_invalid;
     }
     if (error is PlatformException) {
       if (error.code == 'push_transport_unavailable') {
-        return 'No push transport is available. Built-in delivery needs working Google Play Services; alternatively install a UnifiedPush distributor and retry.';
+        return strings.rel_svc_push_transport_unavailable;
       }
       if (error.code == 'push_transport_choice') {
-        return 'Several UnifiedPush distributors are available. Choose one in Advanced transport, then retry.';
+        return strings.rel_svc_push_transport_choice;
       }
       if (error.code == 'push_transport_missing') {
-        return 'The selected UnifiedPush distributor is unavailable. Restore it or choose another in Advanced transport.';
+        return strings.rel_svc_push_transport_missing;
       }
     }
     if (error is DashboardHttpException) {
       if (error.statusCode == 404) {
-        return 'The server mobile-push companion is unavailable. It may be missing or disabled, or this connection may point to the wrong dashboard. Install or enable the companion on the server, check the dashboard connection, then refresh. See Server setup guide above.';
+        return strings.rel_svc_push_companion_unavailable;
       }
       if (error.statusCode == 401 || error.statusCode == 403) {
-        return 'Server denied mobile push. Ask the operator to authorize this principal and these sessions.';
+        return strings.rel_svc_push_server_denied;
       }
     }
     // Never surface server/platform exception bodies (endpoint/auth secrets).
-    return 'Mobile push is not ready. Check server plugin authorization, distributor and network, then retry.';
+    return strings.rel_svc_push_not_ready;
   }
 
   @override

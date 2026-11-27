@@ -1,0 +1,526 @@
+diff --git a/hermes_cli/confirmed_text.py b/hermes_cli/confirmed_text.py
+new file mode 100644
+--- /dev/null
++++ b/hermes_cli/confirmed_text.py
+@@ -0,0 +1,296 @@
++"""Confirmed local text replacement. No shell and no overwrite-on-rename fallback."""
++from __future__ import annotations
++
++import ctypes
++import errno
++import hashlib
++import logging
++import os
++import secrets
++import stat
++import struct
++import sys
++from contextlib import ExitStack
++from pathlib import Path
++
++from fastapi import HTTPException
++
++LOG = logging.getLogger(__name__)
++PREFIX = '.ares-replace-v1-'
++
++
++def conflict():
++    return HTTPException(409, 'File or workspace changed; reopen before saving')
++
++
++def refused():
++    return HTTPException(403, 'File or workspace is not eligible for confirmed editing')
++
++
++def unsupported():
++    return HTTPException(501, 'Confirmed editing requires a supported local APFS workspace')
++
++
++def require_host():
++    if sys.platform != 'darwin' or not hasattr(os, 'O_NOFOLLOW_ANY') or os.geteuid() == 0:
++        raise unsupported()
++
++
++def digest(data):
++    return hashlib.sha256(data).hexdigest()
++
++
++class Darwin:
++    """Darwin SDK ABI. Never substitute plain rename if any primitive is absent."""
++
++    def __init__(self):
++        require_host()
++        self.lib = ctypes.CDLL(None, use_errno=True)
++        I, P, S, U = ctypes.c_int, ctypes.c_void_p, ctypes.c_char_p, ctypes.c_uint
++        try:
++            for name, args, result in (
++                ('renameatx_np', [I, S, I, S, U], I), ('fstatfs64', [I, P], I),
++                ('fsgetpath', [P, ctypes.c_size_t, P, ctypes.c_uint64], ctypes.c_ssize_t),
++                ('acl_get_fd_np', [I, I], P), ('acl_free', [P], I),
++                ('flistxattr', [I, P, ctypes.c_size_t, I], ctypes.c_ssize_t),
++            ):
++                fn = getattr(self.lib, name)
++                fn.argtypes, fn.restype = args, result
++        except AttributeError as exc:
++            raise unsupported() from exc
++
++    def local_apfs(self, fd):
++        # Darwin statfs64: fsid at byte 48, flags at 64, filesystem name at 72.
++        buf = ctypes.create_string_buffer(4096)
++        if self.lib.fstatfs64(fd, buf) != 0:
++            raise unsupported()
++        flags, fstype = struct.unpack_from('=I4x16s', buf, 64)
++        if not flags & 0x1000 or fstype.rstrip(b'\0') != b'apfs':  # MNT_LOCAL
++            raise unsupported()
++        return buf
++
++    def check_spelling(self, volume, inode, expected):
++        # APFS may match a differently cased/normalized name. Query the actual
++        # inode name without opening (and closing a raw fd on) a potential DB.
++        path = ctypes.create_string_buffer(1024)
++        if self.lib.fsgetpath(path, len(path), ctypes.byref(volume, 48), inode) <= 0:
++            raise conflict()
++        if os.fsdecode(path.value) != str(expected):
++            raise refused()
++
++    def no_acl(self, fd):
++        acl = self.lib.acl_get_fd_np(fd, 0x100)  # ACL_TYPE_EXTENDED
++        if acl:
++            self.lib.acl_free(acl)
++            raise refused()
++        if ctypes.get_errno() != errno.ENOENT:
++            raise refused()
++
++    def plain_file(self, fd):
++        self.no_acl(fd)
++        if self.lib.flistxattr(fd, None, 0, 0) != 0:
++            raise refused()  # never strip a security label, quarantine, or resource fork
++
++    def move(self, srcfd, src, dstfd, dst):
++        # RENAME_EXCL | RENAME_NOFOLLOW_ANY | RENAME_RESOLVE_BENEATH.
++        # Both paths are relative to already pinned directories, including on restore.
++        if self.lib.renameatx_np(srcfd, os.fsencode(src), dstfd, os.fsencode(dst), 0x34):
++            code = ctypes.get_errno()
++            raise OSError(code, os.strerror(code))
++
++
++def fd_path(fd):
++    import fcntl
++    return Path(os.fsdecode(fcntl.fcntl(fd, fcntl.F_GETPATH, bytes(1024)).split(b'\0', 1)[0]))
++
++
++def owned_fd(stack, path, flags, *, parent=None, mode=0o600):
++    fd = os.open(path, flags | os.O_NOFOLLOW_ANY | os.O_NONBLOCK, mode, dir_fd=parent)
++    stack.callback(os.close, fd)
++    return fd
++
++
++def writable_directory(native, fd, path):
++    st = os.fstat(fd)
++    if st.st_uid != os.geteuid() or stat.S_IMODE(st.st_mode) != 0o700 or fd_path(fd) != path:
++        raise refused()
++    native.no_acl(fd)
++
++
++def original_ok(st, limit):
++    if (not stat.S_ISREG(st.st_mode) or st.st_nlink != 1 or st.st_uid != os.geteuid()
++            or st.st_flags or st.st_mode & 0o7000 or st.st_mode & 0o600 != 0o600):
++        raise refused()
++    if st.st_size > limit:
++        raise HTTPException(413, 'Text exceeds the preview limit')
++
++
++def read_original(fd, limit):
++    # Ignore a stale st_size: stop after limit + 1 actual bytes, even for a growing file.
++    data = bytearray()
++    while len(data) <= limit:
++        chunk = os.pread(fd, min(65536, limit + 1 - len(data)), len(data))
++        if not chunk:
++            return bytes(data)
++        data.extend(chunk)
++    raise HTTPException(413, 'Text exceeds the preview limit')
++
++
++def _signature(st):
++    return (st.st_dev, st.st_ino, st.st_nlink, st.st_size, st.st_mtime_ns, st.st_ctime_ns,
++            st.st_mode, st.st_uid, st.st_gid, st.st_flags)
++
++
++def _sync_dirs(*fds):
++    for fd in fds:
++        os.fsync(fd)
++
++
++def _clean_unused(root, private, scratch, location):
++    # Never unlink an original. After a successful restore only our scratch files remain.
++    try:
++        if fd_path(private) != location or not os.path.samestat(
++                os.fstat(private), os.stat(scratch, dir_fd=root, follow_symlinks=False)):
++            return
++        try:
++            os.stat('original', dir_fd=private, follow_symlinks=False)
++        except FileNotFoundError:
++            for name in ('new', 'target', '.gitignore'):
++                try:
++                    os.unlink(name, dir_fd=private)
++                except FileNotFoundError:
++                    pass
++            os.rmdir(scratch, dir_fd=root)
++    except OSError:
++        LOG.warning('Confirmed edit: inspect remaining scratch directory %s', location)
++
++
++def replace(cwd, target, expected, data, limit, looks_binary, authorize):
++    """authorize(scratch_path) verifies the pinned request authority, never a new owner.
++
++    The pinned cwd names the workspace object. Every public name is an immediate child.
++    """
++    native = Darwin()
++    rel = target.relative_to(cwd)
++    # v1 supports immediate children only. A pinned nested parent can move out
++    # of cwd; a re-walk from cwd can instead select a replacement real parent.
++    # Neither is enough to make a save to the originally admitted parent safe.
++    if len(rel.parts) != 1 or rel.name.startswith('.'):
++        raise refused()
++    if rel.name.casefold().endswith(('.db', '.sqlite', '.sqlite3', '-journal', '-wal', '-shm')):
++        raise refused()
++    scratch = PREFIX + secrets.token_hex(16)
++    authorize(cwd / scratch)
++    try:
++        with ExitStack() as stack:
++            filesystem = owned_fd(stack, '/', os.O_DIRECTORY)
++            root = owned_fd(stack, cwd, os.O_DIRECTORY)
++            volume = native.local_apfs(root)
++            writable_directory(native, root, cwd)
++            initial = os.stat(rel.name, dir_fd=root, follow_symlinks=False)
++            original_ok(initial, limit)
++            if initial.st_dev != os.fstat(root).st_dev:
++                raise refused()
++            native.check_spelling(volume, initial.st_ino, target)
++            os.mkdir(scratch, 0o700, dir_fd=root)
++            private = owned_fd(stack, scratch, os.O_DIRECTORY, parent=root)
++            writable_directory(native, private, cwd / scratch)
++            stack.callback(_clean_unused, root, private, scratch, cwd / scratch)
++            # The unpredictable private name is also a namespace witness. Each
++            # rename requires it at the approved absolute spelling AND addresses
++            # the public leaf via the original pinned directory. A replacement
++            # cwd cannot receive the edit; a moved one loses the private source.
++            witness = (cwd / scratch).relative_to('/')
++            # Do not offer a prior revision to an ordinary `git add .`.
++            for name, body in (('.gitignore', b'*\n'), ('target', os.fsencode(rel))):
++                with os.fdopen(os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL,
++                                       0o600, dir_fd=private), 'wb') as meta:
++                    meta.write(body)
++                    meta.flush()
++                    os.fsync(meta.fileno())
++            stage = owned_fd(stack, 'new', os.O_CREAT | os.O_EXCL | os.O_RDWR, parent=private)
++            native.plain_file(stage)
++            if os.fstat(stage).st_gid != initial.st_gid:
++                raise refused()
++            with os.fdopen(stage, 'wb', closefd=False) as out:
++                out.write(data)
++                out.flush()
++            os.fchmod(stage, stat.S_IMODE(initial.st_mode))
++            os.fsync(stage)
++            _sync_dirs(private, root)
++
++            def check_dirs():
++                if fd_path(root) != cwd or fd_path(private) != cwd / scratch:
++                    raise conflict()
++                writable_directory(native, root, cwd)
++                writable_directory(native, private, cwd / scratch)
++
++            check_dirs()
++            native.move(root, rel, filesystem, witness / 'original')
++            published = False
++            try:
++                _sync_dirs(private, root)
++                captured = os.stat('original', dir_fd=private, follow_symlinks=False)
++                if (not os.path.samestat(initial, captured) or initial.st_mode != captured.st_mode
++                        or initial.st_gid != captured.st_gid or initial.st_mtime_ns != captured.st_mtime_ns):
++                    raise conflict()
++                original_ok(captured, limit)
++                # Only open the captured, single-link, verified regular file in our private dir.
++                # O_RDWR checks effective write permission without truncating or writing the inode.
++                old = owned_fd(stack, 'original', os.O_RDWR, parent=private)
++                native.plain_file(old)
++                stamp = _signature(os.fstat(old))
++                if stamp != _signature(captured):
++                    raise conflict()
++                old_bytes = read_original(old, limit)
++                if digest(old_bytes) != expected:
++                    raise conflict()
++                try:
++                    old_bytes.decode('utf-8', 'strict')
++                except UnicodeDecodeError as exc:
++                    raise HTTPException(415, 'Original is not UTF-8') from exc
++                if b'\0' in old_bytes or looks_binary(old_bytes[:4096]):
++                    raise HTTPException(415, 'Original is not text')
++                os.fsync(old)
++                try:
++                    os.stat(rel.name, dir_fd=root, follow_symlinks=False)
++                except FileNotFoundError:
++                    pass
++                else:
++                    raise conflict()  # including a newly occupied sensitive symlink
++                authorize(cwd / scratch)
++                check_dirs()
++                if _signature(os.fstat(old)) != stamp:
++                    raise conflict()
++                native.move(filesystem, witness / 'new', root, rel)  # never replaces a name
++                published = True
++                _sync_dirs(root, private)
++                check_dirs()
++                stage_stamp = _signature(os.fstat(stage))
++                try:
++                    published_data = read_original(stage, limit)
++                except HTTPException as exc:  # staged length was admitted; it grew after publication
++                    raise conflict() from exc
++                if (fd_path(stage) != target or published_data != data
++                        or _signature(os.stat(rel.name, dir_fd=root, follow_symlinks=False)) != stage_stamp
++                        or _signature(os.fstat(old)) != stamp):
++                    raise conflict()
++            except BaseException:
++                if not published:
++                    try:
++                        check_dirs()
++                        native.move(filesystem, witness / 'original', root, rel)
++                        _sync_dirs(root, private)
++                    except (HTTPException, OSError):
++                        LOG.warning('Confirmed edit: recover displaced entry in %s', cwd / scratch)
++                raise
++            LOG.info('Confirmed edit: previous inode retained in %s', cwd / scratch)
++    except PermissionError as exc:
++        raise refused() from exc
++    except OSError as exc:
++        if exc.errno in (errno.EEXIST, errno.ENOENT, errno.ENOTDIR, errno.ELOOP, errno.EXDEV):
++            raise conflict() from exc
++        if exc.errno in (errno.ENOTSUP, errno.EINVAL, errno.ENOSYS):
++            raise unsupported() from exc
++        raise HTTPException(503, 'Edit not confirmed; inspect workspace recovery before retry') from exc
++    return {'ok': True, 'path': str(target), 'sha256': digest(data)}
+diff --git a/hermes_cli/dashboard_auth/native_http.py b/hermes_cli/dashboard_auth/native_http.py
+--- a/hermes_cli/dashboard_auth/native_http.py
++++ b/hermes_cli/dashboard_auth/native_http.py
+@@ -67,9 +67,12 @@
+                                    '/api/fs/download', '/api/fs/read-data-url'))
+     for value in request.query_params.getlist('profile'):
+         _own_profile(value, profile_id, current=current)
++    # Only the (already checked) query selects a confirmed edit's owner. Its
++    # bounded parser rejects extra fields, including profile; do not buffer it here.
++    query_only = path == '/api/fs/replace-text-v1' and request.method == 'POST'
+     content_type = request.headers.get('content-type', '').split(';', 1)[0].strip().lower()
+-    if not content_type or content_type == 'application/json' or (
+-            content_type.startswith('application/') and content_type.endswith('+json')):
++    if not query_only and (not content_type or content_type == 'application/json' or (
++            content_type.startswith('application/') and content_type.endswith('+json'))):
+         try:
+             body = await request.json()
+         except (ValueError, UnicodeError):
+diff --git a/hermes_cli/web_confirmed_text.py b/hermes_cli/web_confirmed_text.py
+new file mode 100644
+--- /dev/null
++++ b/hermes_cli/web_confirmed_text.py
+@@ -0,0 +1,171 @@
++"""Request and policy boundary for POST /api/fs/replace-text-v1."""
++from __future__ import annotations
++
++import asyncio
++import json
++import os
++import re
++from pathlib import Path
++
++from fastapi import HTTPException
++
++import hermes_cli.confirmed_text as edit
++
++
++def _unique_object(items):
++    value = dict(items)
++    if len(items) != len(value):
++        raise ValueError('duplicate key')
++    return value
++
++
++def _absolute(raw):
++    path = Path(raw)
++    if (not raw.startswith('/') or raw.startswith('//') or '\\' in raw or '%' in raw
++            or raw.strip() != raw or str(path) != raw or '..' in path.parts
++            or any(ord(c) < 32 or ord(c) == 127 for c in raw)):
++        raise HTTPException(400, 'Expected a literal canonical absolute path')
++    return path
++
++
++async def handle(request, profile):
++    from hermes_cli.web_routers import files
++    files._require_token(request)
++    edit.require_host()
++    if (not profile or profile != profile.strip() or profile.casefold() == 'current'
++            or list(request.query_params.multi_items()) != [('profile', profile)]):
++        raise HTTPException(400, 'Exactly one explicit profile is required')
++    if request.headers.get('content-type', '').split(';', 1)[0].strip().lower() != 'application/json':
++        raise HTTPException(415, 'Expected application/json')
++    limit = files._FS_TEXT_PREVIEW_MAX_BYTES
++    raw = bytearray()
++    async for chunk in request.stream():
++        if len(raw) + len(chunk) > 6 * limit + 16384:
++            raise HTTPException(413, 'Request too large')
++        raw.extend(chunk)
++    try:
++        body = json.loads(raw.decode('utf-8'), object_pairs_hook=_unique_object)
++        if (type(body) is not dict or set(body) != {'session_id', 'cwd', 'path', 'expected_sha256', 'content'}
++                or not all(type(v) is str for v in body.values())):
++            raise ValueError()
++        for field in ('session_id', 'cwd', 'path', 'expected_sha256'):
++            if not body[field] or len(body[field].encode('utf-8')) > 4096:
++                raise ValueError()
++        if (not re.fullmatch('[0-9a-f]{64}', body['expected_sha256'])
++                or body['session_id'].strip() != body['session_id']):
++            raise ValueError()
++        data = body['content'].encode('utf-8')
++    except (ValueError, RecursionError) as exc:
++        raise HTTPException(400, 'Invalid confirmed-edit request') from exc
++    if len(data) > limit:
++        raise HTTPException(413, 'Text exceeds the preview limit')
++    if b'\0' in data or files._fs_looks_binary(data[:4096]):
++        raise HTTPException(415, 'Replacement is not text')
++    cwd, target = _absolute(body['cwd']), _absolute(body['path'])
++    if cwd.parent == cwd or cwd not in target.parents:
++        raise edit.refused()
++    return await asyncio.to_thread(_save, profile, body['session_id'], cwd, target,
++                                   body['expected_sha256'], data, limit)
++
++
++def _session(profile, session_id, cwd):
++    from gateway.session_policy import restore_policy
++    from hermes_constants import get_hermes_home
++    from hermes_cli.web_routers.sessions import _with_db
++    from persistence.core.errors import AuthorityRefusal
++
++    def exact(store):
++        # get_session_detail accepts prefixes. This write never resolves an alias/prefix.
++        row = store.sessions.get(session_id)
++
++        if (row is None or str(row.session_id) != session_id or row.cwd != str(cwd)
++                or row.profile_name not in (None, profile) or not row.chat_id):
++            raise edit.conflict()
++        try:
++            receipt = store.bindings.receipt(row.chat_id)
++            if (receipt.profile_id != str(get_hermes_home()) or receipt.session_id != row.chat_id
++                    or receipt.principal_id != row.user_id or receipt.route != row.session_key
++                    or receipt.current_target != session_id or store.bindings.validate_lineage(receipt) != session_id):
++                raise edit.conflict()
++            policy = restore_policy(receipt.policy)
++        except AuthorityRefusal as exc:
++            raise edit.refused() from exc
++        terminal = json.loads(policy.terminal_json)
++        if (policy.source not in ('gui', 'cli', 'tui') or policy.cwd != str(cwd)
++                or policy.safe_mode or policy.ignore_user_config or 'file' not in policy.toolsets
++                or terminal.get('TERMINAL_ENV') != 'local' or terminal.get('TERMINAL_CWD') != str(cwd)):
++            raise edit.refused()
++        return (receipt.session_id, row.started_at, row.runtime_generation, row.git_metadata_generation,
++                row.runtime_revision, receipt.principal_id, policy)
++
++    return _with_db(profile, exact, read_only=True)
++
++
++def _local_policy(home):
++    from hermes_constants import get_hermes_home, get_process_hermes_home
++    from tools.terminal_scope import build_profile_terminal_scope, enforce_no_refusal, get_terminal_scope
++    from tui_gateway.launch_profile_policy import _launch_env
++
++    if get_hermes_home().resolve(strict=True) != home:
++        raise edit.refused()
++    enforce_no_refusal()
++    bound = get_terminal_scope()
++    launch = home == get_process_hermes_home().resolve(strict=True)
++    overlay = _launch_env() if launch else None
++    live = build_profile_terminal_scope(home, env_overlay=overlay)
++    if (live.get('TERMINAL_ENV') != 'local' or (bound is not None and bound.get('TERMINAL_ENV') != 'local')
++            or (overlay is not None and overlay.get('TERMINAL_ENV', 'local') != 'local')):
++        raise edit.refused()
++
++
++def _task_local(session_id, cwd):
++    from tools.environments.local import LocalEnvironment
++    from tools.environments.sandbox_scope import hosted_scope
++    from tools.terminal_tool import resolve_task_overrides
++    from tools.terminal_tool_lifecycle import get_active_env
++
++    overrides = resolve_task_overrides(session_id)
++    active = get_active_env(session_id)  # lookup only; never construct/dial an environment
++    if (hosted_scope() is not None or (active is not None and type(active) is not LocalEnvironment)
++            or set(overrides) - {'cwd', 'cwd_source', 'workspace_key', 'env_type'}
++            or overrides.get('cwd', str(cwd)) != str(cwd) or overrides.get('env_type', 'local') != 'local'):
++        raise edit.refused()
++
++
++def _save(profile, session_id, cwd, target, expected, data, limit):
++    from agent.file_safety import get_read_block_error, get_write_denied_error, is_write_approval_required
++    from hermes_cli.web_routers import files
++    from hermes_cli.web_server_cron import _cron_profile_home
++    from tui_gateway.launch_profile_policy import profile_config_scope
++
++    canonical, home = _cron_profile_home(profile)  # includes the run-elsewhere refusal
++    if canonical != profile or home != home.resolve(strict=True):
++        raise edit.refused()
++    with profile_config_scope(home):
++        owner = _session(profile, session_id, cwd)
++        home_id = home.stat()
++
++        def authorize(scratch):
++            if (_cron_profile_home(profile) != (profile, home) or not os.path.samestat(home_id, home.stat())
++                    or _session(profile, session_id, cwd) != owner):
++                raise edit.conflict()
++            _local_policy(home)
++            _task_local(session_id, cwd)
++            logical_id = owner[0]
++            if logical_id != session_id:
++                _task_local(logical_id, cwd)
++            # Require the global hosted/locked-root policy AND the profile-specific guards.
++            # No staged-upload, container-mount, SSH, file: URL or decoding exceptions.
++            for path in (cwd, target):
++                if path.resolve(strict=False) != path:
++                    raise edit.refused()
++                files._hosted_fs_read_guard(path)
++                files._refuse_sensitive_write(path, str(path), cwd)
++            for path in (cwd, target, scratch):
++                if (get_read_block_error(str(path)) or get_write_denied_error(str(path), entry=True)
++                        or is_write_approval_required(str(path))):
++                    raise edit.refused()
++
++        # offline_file_access's lifecycle lock is held on this worker through *all* raw fd closes.
++        with files._serve_offline(target):
++            return edit.replace(cwd, target, expected, data, limit, files._fs_looks_binary, authorize)
+diff --git a/hermes_cli/web_routers/files.py b/hermes_cli/web_routers/files.py
+--- a/hermes_cli/web_routers/files.py
++++ b/hermes_cli/web_routers/files.py
+@@ -136,6 +136,8 @@
+     insensitive) is a credential directory. Guards reads (list/read/download,
+     #57505) and, via :func:`_refuse_sensitive_write`, writes (#85387).
+     """
++    if any(part.casefold().startswith('.ares-replace-v1-') for part in path.parts):
++        return True  # private recovery inodes are never file-browser content
+     if _is_sensitive_filename(path.name):
+         return True
+     parts = tuple(part.lower() for part in path.parts)
+@@ -1244,6 +1246,18 @@
+     }
+ 
+ 
++@router.post("/api/fs/replace-text-v1/", include_in_schema=False)
++def fs_replace_text_v1_noncanonical():
++    # Do not emit Starlette's method/body-preserving slash redirect for a save.
++    raise HTTPException(status_code=404, detail="Not Found")
++
++
++@router.post("/api/fs/replace-text-v1")
++async def fs_replace_text_v1(request: Request, profile: str):
++    from hermes_cli.web_confirmed_text import handle
++    return await handle(request, profile)
++
++
+ @router.post("/api/fs/write-text")
+ async def fs_write_text(payload: FsWriteText, profile: Optional[str] = None):
+     """Overwrite (or create) a UTF-8 text file for the in-app spot editor.

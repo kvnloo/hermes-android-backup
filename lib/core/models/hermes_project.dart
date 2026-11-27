@@ -91,6 +91,10 @@ class HermesProject {
     );
   }
 
+  /// Ephemeral selection for a new chat, never a project-record update.
+  HermesProject inLane(String path) =>
+      HermesProject(id: id, slug: slug, name: name, primaryPath: path);
+
   /// The folder Hermes treats as this project's working directory, when known.
   String? get workingDirectory {
     if (primaryPath != null) return primaryPath;

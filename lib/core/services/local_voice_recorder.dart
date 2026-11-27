@@ -6,10 +6,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:crypto/crypto.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 
 import '../parked_automotive.dart';
+import 'windows_voice_tools.dart';
 
 /// Platform boundary shared by recording, private draft storage and preview.
 abstract class VoiceRecorder {
@@ -125,6 +128,21 @@ class LocalVoiceRecorder implements VoiceRecorder {
   @override
   Future<Duration> get duration async {
     if (!await File(await path).exists()) return Duration.zero;
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      try {
+        final support = await _supportDirectory();
+        return Duration(
+          milliseconds: await WindowsVoiceTools().durationMs(
+            await path,
+            Directory('${support.path}/voice_drafts'),
+          ),
+        );
+      } on StateError {
+        // No bundled ffprobe, or it could not read the draft: report no
+        // duration, as a platform without the native channel does.
+        return Duration.zero;
+      }
+    }
     try {
       return Duration(
         milliseconds:
@@ -180,10 +198,18 @@ class LocalVoiceRecorder implements VoiceRecorder {
     }
     final output = '$base.${const Uuid().v4()}.joined.m4a';
     try {
-      final ok = await _media.invokeMethod<bool>('join', {
-        'paths': [base, next.path],
-        'output': output,
-      });
+      final ok = defaultTargetPlatform == TargetPlatform.windows
+          ? await WindowsVoiceTools().join(
+              paths: [base, next.path],
+              output: output,
+              voiceDraftsRoot: Directory(
+                '${(await _supportDirectory()).path}/voice_drafts',
+              ),
+            )
+          : await _media.invokeMethod<bool>('join', {
+              'paths': [base, next.path],
+              'output': output,
+            });
       final joined = File(output);
       if (ok != true || !await joined.exists() || await joined.length() == 0) {
         throw StateError(

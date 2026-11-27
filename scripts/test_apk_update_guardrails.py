@@ -5,6 +5,7 @@ it to the Android installer. Updates now come only from the store or site the
 app was installed from, so no build may regain that path by accident.
 """
 
+import json
 import unittest
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -53,13 +54,40 @@ class ApkUpdateGuardrailsTest(unittest.TestCase):
     def test_no_release_check_or_installer_remains(self):
         for path in REMOVED_SOURCES:
             self.assertFalse((ROOT / path).exists(), path)
-        sources = list((ROOT / "lib").rglob("*.dart"))
-        sources += list((ROOT / "android/app/src/main/kotlin").rglob("*.kt"))
+        sources = []
+        for directory in ("lib", "android/app/src/main/kotlin", "ios", "macos", "windows", "linux", "apple"):
+            sources.extend(
+                path for path in (ROOT / directory).rglob("*")
+                if path.suffix in {".dart", ".kt", ".swift", ".m", ".mm", ".cpp", ".h"}
+            )
         self.assertTrue(sources)
         for source in sources:
             text = source.read_text(encoding="utf-8")
-            for marker in ("api.github.com", "application/vnd.android.package-archive", "ACTION_INSTALL_PACKAGE", "PackageInstaller"):
+            for marker in ("api.github.com", "application/vnd.android.package-archive", "ACTION_INSTALL_PACKAGE", "PackageInstaller", "AppUpdateService", "ApkUpdateInstaller", "supportsApkSelfUpdate", "update_available_dialog", "checkForUpdate"):
                 self.assertNotIn(marker, text, f"{marker} in {source.relative_to(ROOT)}")
+
+    def test_retired_update_strings_are_absent_in_every_locale(self):
+        removed_keys = {
+            "update_now", "you_re_on_the_latest_version",
+            "a_newer_hermes_android_build_is_available_on_github",
+            "check_for_updates", "update_allow_install", "check_for_updates_on_launch",
+            "skip_this_version", "couldn_t_check_for_updates", "update_downloading",
+            "update_failed", "update_install", "view_release", "update_available",
+            "later", "release_notes",
+        }
+        catalogues = list((ROOT / "lib/l10n").glob("*.arb"))
+        self.assertEqual(len(catalogues), 14)  # English plus 13 translated locales.
+        for catalogue in catalogues:
+            keys = {key.removeprefix("@") for key in json.loads(catalogue.read_text())}
+            self.assertFalse(keys & removed_keys, catalogue.name)
+
+    def test_both_ci_workflows_run_the_removal_guard(self):
+        for workflow in ("release.yml", "pr-quality.yml"):
+            self.assertIn(
+                "scripts.test_apk_update_guardrails",
+                (ROOT / ".github/workflows" / workflow).read_text(),
+                workflow,
+            )
 
     def test_network_config_keeps_only_the_gateway_trust_rules(self):
         root = ET.parse(ROOT / "android/app/src/main/res/xml/network_security_config.xml").getroot()

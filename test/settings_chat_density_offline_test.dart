@@ -1,3 +1,4 @@
+import 'support/settings_navigation.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -35,18 +36,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    await openSettingsCategory(tester, 'chat');
     expect(find.text('Failed to load settings'), findsNothing);
-    await tester.scrollUntilVisible(
-      find.text('Appearance'),
-      -250,
-      scrollable: find
-          .descendant(
-            of: find.byType(SettingsScreen),
-            matching: find.byType(Scrollable),
-          )
-          .first,
-    );
-    expect(find.text('Appearance'), findsOneWidget);
     await tester.scrollUntilVisible(
       find.text('Chat density'),
       250,

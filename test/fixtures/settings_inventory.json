@@ -1,0 +1,884 @@
+[
+  {
+    "id": "interface.mode",
+    "category": "general",
+    "scope": "shared",
+    "target": "interface.mode"
+  },
+  {
+    "id": "language",
+    "category": "general",
+    "scope": "shared",
+    "target": "language"
+  },
+  {
+    "id": "classic.theme.mode",
+    "category": "appearance",
+    "scope": "classic",
+    "target": "classic.theme"
+  },
+  {
+    "id": "classic.theme.palette",
+    "category": "appearance",
+    "scope": "classic",
+    "target": "classic.theme"
+  },
+  {
+    "id": "ng.theme.mode",
+    "category": "appearance",
+    "scope": "nextgen",
+    "target": "ng.theme"
+  },
+  {
+    "id": "ng.theme.accent",
+    "category": "appearance",
+    "scope": "nextgen",
+    "target": "ng.theme"
+  },
+  {
+    "id": "ng.theme.black",
+    "category": "appearance",
+    "scope": "nextgen",
+    "target": "ng.theme"
+  },
+  {
+    "id": "ng.theme.glow",
+    "category": "appearance",
+    "scope": "nextgen",
+    "target": "ng.theme"
+  },
+  {
+    "id": "presentation.theme.import",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.theme.select",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.theme.remove",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.theme.limit-dialog",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.font.chat",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.font.terminal",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.direction",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.bubble",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.embeds",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.embeds.reset",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.reactions",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.hearts",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.enabled",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.choose",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.import",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.remove",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.roam",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.popout",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.enabled",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.station",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.volume",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.pin",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.popout",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.search",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.tour",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.tips.dismiss",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.tips.restore",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.window.unavailable",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "text-size",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "text-size"
+  },
+  {
+    "id": "text-size.picker",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "text-size"
+  },
+  {
+    "id": "classic.chat.density",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.chat.density"
+  },
+  {
+    "id": "classic.chat.verbose",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.chat.verbose"
+  },
+  {
+    "id": "classic.session.sources",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.acp",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.api_server",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.cli",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.cron",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.desktop",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.discord",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.gateway",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.mobile",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.signal",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.slack",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.telegram",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.tool",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.tui",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "classic.session.source.whatsapp",
+    "category": "chat",
+    "scope": "classic",
+    "target": "classic.session.sources"
+  },
+  {
+    "id": "voice.reply",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.reply"
+  },
+  {
+    "id": "voice.reply.picker",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.reply"
+  },
+  {
+    "id": "classic.voice.handsfree",
+    "category": "voice",
+    "scope": "classic",
+    "target": "classic.voice.handsfree"
+  },
+  {
+    "id": "voice.auto-read",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.auto-read"
+  },
+  {
+    "id": "voice.barge-in",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.barge-in"
+  },
+  {
+    "id": "voice.engine",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.gateway"
+  },
+  {
+    "id": "voice.wake.enabled",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.gateway"
+  },
+  {
+    "id": "voice.wake.capture",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.gateway"
+  },
+  {
+    "id": "voice.wake.device",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.gateway"
+  },
+  {
+    "id": "voice.wake.rearm",
+    "category": "voice",
+    "scope": "shared",
+    "target": "voice.gateway"
+  },
+  {
+    "id": "notifications.enabled",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.approval",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.input",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.turnDone",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.turnError",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.backgroundDone",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.credits",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.plugin",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.activity",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.sound",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.sound.picker",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.mute",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.test",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.recent",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.ng-replies",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.ng-requests",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications"
+  },
+  {
+    "id": "notifications.push",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications.push"
+  },
+  {
+    "id": "notifications.push.transport",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications.push"
+  },
+  {
+    "id": "notifications.push.retry",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications.push"
+  },
+  {
+    "id": "notifications.push.revoke",
+    "category": "notifications",
+    "scope": "shared",
+    "target": "notifications.push"
+  },
+  {
+    "id": "background.enabled",
+    "category": "device",
+    "scope": "shared",
+    "target": "background"
+  },
+  {
+    "id": "background.battery",
+    "category": "device",
+    "scope": "shared",
+    "target": "background"
+  },
+  {
+    "id": "device.keep-awake",
+    "category": "device",
+    "scope": "shared",
+    "target": "device.keep-awake"
+  },
+  {
+    "id": "device.keep-awake.picker",
+    "category": "device",
+    "scope": "shared",
+    "target": "device.keep-awake"
+  },
+  {
+    "id": "desktop.tray",
+    "category": "device",
+    "scope": "shared",
+    "target": "desktop"
+  },
+  {
+    "id": "desktop.close-to-tray",
+    "category": "device",
+    "scope": "shared",
+    "target": "desktop"
+  },
+  {
+    "id": "desktop.hotkey",
+    "category": "device",
+    "scope": "shared",
+    "target": "desktop"
+  },
+  {
+    "id": "desktop.hotkey.edit",
+    "category": "device",
+    "scope": "shared",
+    "target": "desktop"
+  },
+  {
+    "id": "desktop.hotkey.reset",
+    "category": "device",
+    "scope": "shared",
+    "target": "desktop"
+  },
+  {
+    "id": "shortcuts.rebind",
+    "category": "device",
+    "scope": "shared",
+    "target": "shortcuts"
+  },
+  {
+    "id": "shortcuts.reset",
+    "category": "device",
+    "scope": "shared",
+    "target": "shortcuts"
+  },
+  {
+    "id": "shortcuts.reset-all",
+    "category": "device",
+    "scope": "shared",
+    "target": "shortcuts"
+  },
+  {
+    "id": "shortcuts.editor.modifiers",
+    "category": "device",
+    "scope": "shared",
+    "target": "shortcuts"
+  },
+  {
+    "id": "shortcuts.editor.key",
+    "category": "device",
+    "scope": "shared",
+    "target": "shortcuts"
+  },
+  {
+    "id": "shortcuts.editor.save",
+    "category": "device",
+    "scope": "shared",
+    "target": "shortcuts"
+  },
+  {
+    "id": "connection.info",
+    "category": "connections",
+    "scope": "shared",
+    "target": "connection.info"
+  },
+  {
+    "id": "ng.connection.check",
+    "category": "connections",
+    "scope": "nextgen",
+    "target": "ng.connection"
+  },
+  {
+    "id": "ng.connection.sign-in",
+    "category": "connections",
+    "scope": "nextgen",
+    "target": "ng.connection"
+  },
+  {
+    "id": "ng.connection.saved",
+    "category": "connections",
+    "scope": "nextgen",
+    "target": "ng.connection"
+  },
+  {
+    "id": "ng.connection.add",
+    "category": "connections",
+    "scope": "nextgen",
+    "target": "ng.connection"
+  },
+  {
+    "id": "ng.connection.sign-out",
+    "category": "security",
+    "scope": "nextgen",
+    "target": "ng.connection.sign-out"
+  },
+  {
+    "id": "ng.connection.sign-out.confirm",
+    "category": "security",
+    "scope": "nextgen",
+    "target": "ng.connection.sign-out"
+  },
+  {
+    "id": "models.default",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.default.confirm",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.fallback.add",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.fallback.change",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.fallback.order",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.fallback.remove",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.fallback.save",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.fallback.discard",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.auxiliary",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.providers",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.refresh",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.provider-sign-in",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "models.nous-portal",
+    "category": "connections",
+    "scope": "shared",
+    "target": "models"
+  },
+  {
+    "id": "provider.oauth",
+    "category": "connections",
+    "scope": "shared",
+    "target": "provider.oauth"
+  },
+  {
+    "id": "provider.oauth.start",
+    "category": "connections",
+    "scope": "shared",
+    "target": "provider.oauth"
+  },
+  {
+    "id": "provider.oauth.finish",
+    "category": "connections",
+    "scope": "shared",
+    "target": "provider.oauth"
+  },
+  {
+    "id": "provider.oauth.cancel",
+    "category": "connections",
+    "scope": "shared",
+    "target": "provider.oauth"
+  },
+  {
+    "id": "provider.oauth.disconnect",
+    "category": "connections",
+    "scope": "shared",
+    "target": "provider.oauth"
+  },
+  {
+    "id": "backup.export",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.export.passphrase",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.export.confirm",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.export.deliver",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.import",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.import.passphrase",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.import.merge",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.import.replace",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "backup.import.confirm",
+    "category": "security",
+    "scope": "shared",
+    "target": "backup"
+  },
+  {
+    "id": "about.version",
+    "category": "about",
+    "scope": "shared",
+    "target": "about"
+  },
+  {
+    "id": "about.privacy",
+    "category": "about",
+    "scope": "shared",
+    "target": "about.privacy"
+  },
+  {
+    "id": "about.licenses",
+    "category": "about",
+    "scope": "shared",
+    "target": "about"
+  },
+  {
+    "id": "about.license-detail",
+    "category": "about",
+    "scope": "shared",
+    "target": "about"
+  },
+  {
+    "id": "ng.chat.reopen",
+    "category": "chat",
+    "scope": "nextgen",
+    "target": "ng.chat.reopen"
+  },
+  {
+    "id": "presentation.pet.size",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.hatch-preview",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.hatch-confirm",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.pet.hatch-cancel",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.play-pause",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.next",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.sheet",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  },
+  {
+    "id": "presentation.radio.search",
+    "category": "appearance",
+    "scope": "shared",
+    "target": "presentation"
+  }
+]

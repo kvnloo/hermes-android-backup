@@ -58,6 +58,10 @@ void main() {
       ),
     );
     await tester.pump(const Duration(milliseconds: 300));
+    // Landing first, then explicitly open the notification fixture's chat.
+    expect(find.byKey(const Key('ng-brand-new-chat')), findsOneWidget);
+    nextGenOpenRequest.value = (connectionId: 'c1', sessionId: 's1');
+    await tester.pump(const Duration(milliseconds: 300));
   }
 
   Future<void> unmount(WidgetTester tester) async {
@@ -126,9 +130,7 @@ void main() {
     await tester.pump();
     expect(sink.shown, isEmpty);
     expect(
-      TurnNotificationService.recentAttempts.value
-          .take(2)
-          .map((a) => a.detail),
+      TurnNotificationService.recentAttempts.value.take(2).map((a) => a.detail),
       ['the turn was stopped', 'Ares was on screen'],
     );
     await unmount(tester);

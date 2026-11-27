@@ -14,6 +14,8 @@ import 'package:hermes_android/nextgen/data/nextgen_gateway.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
+import 'strict_nextgen_gateway.dart';
+
 Map<String, dynamic>? _cached;
 
 /// The captured contract (decoded once per test isolate).
@@ -179,12 +181,22 @@ class FixtureGateway extends NextGenGateway {
     Duration timeout = const Duration(seconds: 20),
   }) async => liveSocket;
 
+  /// On an authority ready frame the call goes through the client's guard
+  /// and the strict contract check, as the real socket does; [calls] then
+  /// holds the frames as they would go on the wire.
   @override
   Future<Map<String, dynamic>> call(
     String method,
     Map<String, dynamic> params, {
     Duration timeout = const Duration(seconds: 30),
-  }) async {
+  }) => sessionAuthority
+      ? strictCall(this, method, params, _answer)
+      : _answer(method, params);
+
+  Future<Map<String, dynamic>> _answer(
+    String method,
+    Map<String, dynamic> params,
+  ) async {
     calls.add((method: method, params: Map<String, dynamic>.from(params)));
     final handler = handlers[method];
     if (handler == null) return <String, dynamic>{};

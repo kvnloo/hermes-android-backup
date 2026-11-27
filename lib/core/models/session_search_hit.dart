@@ -34,7 +34,7 @@ class SessionSearchHit {
         'started_at': started,
         // The search endpoint identifies the conversation with `session_id`;
         // the session list model expects `id`.
-        'id': json['id'] ?? json['session_id'] ?? '',
+        'id': json['session_id'] ?? json['id'] ?? '',
       }),
       snippet: (json['snippet'] as String?)?.trim() ?? '',
       role: (json['role'] as String?)?.trim().isEmpty == false

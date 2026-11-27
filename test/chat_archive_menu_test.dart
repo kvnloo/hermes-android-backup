@@ -159,8 +159,12 @@ Future<void> _mount(
   await tester.pumpAndSettle();
 }
 
-PopupMenuButton<String> _menu(WidgetTester tester) => tester
-    .widget<PopupMenuButton<String>>(find.byType(PopupMenuButton<String>));
+// The Chat actions menu by its key: the composer's Status menu is another
+// PopupMenuButton<String> on this screen.
+PopupMenuButton<String> _menu(WidgetTester tester) =>
+    tester.widget<PopupMenuButton<String>>(
+      find.byKey(const ValueKey('chat-actions-menu')),
+    );
 
 Future<void> _openMenu(WidgetTester tester, {bool busy = false}) async {
   await tester.tap(find.byTooltip('Chat actions'));

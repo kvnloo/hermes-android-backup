@@ -39,7 +39,8 @@ const List<String> kMediaDeliveryExts = [
 // Longest-first so the alternation never matches a shorter ext as a prefix
 // of a longer one.
 final String _extAlternation = (() {
-  final sorted = [...kMediaDeliveryExts]
+  // Accept the long Markdown suffix too, including unquoted paths with spaces.
+  final sorted = [...kMediaDeliveryExts, 'markdown']
     ..sort((a, b) => b.length.compareTo(a.length));
   return sorted.join('|');
 })();

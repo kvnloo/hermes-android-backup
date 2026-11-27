@@ -310,11 +310,16 @@ void main() {
     expect(find.byKey(_infoKey), findsNothing);
     await tester.pump();
     await tester.pump();
-    final exec = gateway.calls.singleWhere((c) => c.method == 'slash.exec');
-    expect(exec.params, {
+    // /bg runs the way Desktop runs it, through its own method
+    // (prompt.background), not slash.exec or a prompt.
+    final background = gateway.calls.singleWhere(
+      (c) => c.method == 'prompt.background',
+    );
+    expect(background.params, {
       'session_id': 'rt-new',
-      'command': 'bg run all tests',
+      'text': 'run all tests',
     });
+    expect(gateway.calls.where((c) => c.method == 'slash.exec'), isEmpty);
     expect(gateway.calls.where((c) => c.method == 'prompt.submit'), isEmpty);
   });
 

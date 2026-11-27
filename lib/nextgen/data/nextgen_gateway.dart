@@ -12,9 +12,17 @@ import '../../core/services/connection_manager.dart';
 import '../../core/services/dashboard_api_client.dart';
 import '../../core/services/desktop_gateway_client.dart';
 import '../../core/services/hermes_sign_in.dart';
+import '../../core/services/remote_files_client.dart';
+import '../../core/services/remote_workspace.dart';
+import '../../core/services/chat_presentation_state.dart';
+import '../../core/services/connection_mutation_barrier.dart';
+import '../../core/services/gateway_wake_word.dart';
+import '../../core/services/gpt_live_conversation.dart';
+import '../../core/services/voice_live_mode.dart';
 import '../../core/services/ws_client.dart';
 import '../nextgen_l10n.dart';
 import 'nextgen_projects.dart';
+import '../../core/services/system_sleep_gate.dart';
 
 enum NgConnectionPhase {
   idle,
@@ -72,13 +80,90 @@ class NextGenGateway extends ChangeNotifier {
     // NextGen reads chats from the dashboard for every connection, so stored
     // ids always match the ones its `/api/ws` socket resumes.
     api = DashboardApiClient.withDashboard(this.dashboard, profile: profile);
+    _draftAccount = ConnectionMutationBarrier.capture(connection.id);
     writes = DashboardSessionWrites(this.dashboard, profile: profile);
+    workspace = RemoteWorkspaceOwner(
+      connectionId: connection.id,
+      expectedBaseUrl: DesktopGatewayClient.normalizedGatewayBaseUrl(
+        connection,
+      ),
+      profile: profile,
+      dashboard: this.dashboard,
+      connect: connected,
+      ownsSocket: (ws) => !_disposed && identical(ws, _ws) && ws.isConnected,
+    );
+    SystemSleepGate.instance.addListener(_onSystemSleep);
   }
 
+  /// The socket was stopped because the computer slept or the session
+  /// locked; it restarts when [SystemSleepGate] clears. Open chats resume
+  /// through [reconnected]; nothing is sent again.
+  bool _pausedForSleep = false;
+
+  void _onSystemSleep() {
+    if (_disposed) return;
+    if (SystemSleepGate.instance.value) {
+      if (!_running) return;
+      stop();
+      _pausedForSleep = true;
+      return;
+    }
+    if (!_pausedForSleep) return;
+    _pausedForSleep = false;
+    _attempt = 0;
+    start();
+  }
+
+  late final RemoteWorkspaceOwner workspace;
+  late final draftPresentation = ChatPresentationRegistry.forConnection(
+    connection,
+  );
+  late final Object? _draftAccount;
+  bool get draftAccountCurrent =>
+      !_disposed &&
+      ConnectionMutationBarrier.isCurrent(connection.id, _draftAccount);
+
+  /// Browsers and attachment cards close their own clients, never the live gateway.
+  RemoteFilesClient createFilesClient({
+    String? sessionId,
+    int? maxDownloadBytes,
+  }) => RemoteFilesClient.fromConnection(
+    connection,
+    sessionId: sessionId,
+    maxDownloadBytes: maxDownloadBytes,
+  );
+
   NgProjects? _projects;
+  GatewayWakeWordController? _wakeWord;
+  VoiceLiveModeController? _voiceLiveMode;
 
   NgProjects projects(SharedPreferences preferences) =>
       _projects ??= NgProjects(this, preferences);
+
+  /// Gateway-backed wake-word controller scoped to this connection/profile.
+  GatewayWakeWordController get wakeWord =>
+      _wakeWord ??= GatewayWakeWordController(
+        transport: GatewayWakeTransport.fromNextGen(this),
+      );
+
+  @visibleForTesting
+  set debugWakeWord(GatewayWakeWordController? controller) {
+    _wakeWord?.dispose();
+    _wakeWord = controller;
+  }
+
+  /// Gateway-backed GPT-Live / Chained mode controller for this profile.
+  VoiceLiveModeController get voiceLiveMode =>
+      _voiceLiveMode ??= VoiceLiveModeController.fromNextGen(this);
+
+  @visibleForTesting
+  set debugVoiceLiveMode(VoiceLiveModeController? controller) {
+    _voiceLiveMode?.dispose();
+    _voiceLiveMode = controller;
+  }
+
+  GptLiveTransport createGptLiveTransport() =>
+      GptLiveGatewayTransport.fromDashboard(dashboard, profile: profile);
 
   final SavedConnection connection;
   final GatewayUrl url;
@@ -341,6 +426,7 @@ class NextGenGateway extends ChangeNotifier {
   static const _backoff = [1, 2, 4, 8, 16, 30];
   static const answerableMethods = {
     'approval',
+    'setup_beat',
     'clarify',
     'sudo',
     'secret',
@@ -355,9 +441,14 @@ class NextGenGateway extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Starts keeping the socket alive. Safe to call repeatedly.
+  /// Starts keeping the socket alive. Safe to call repeatedly. While the
+  /// computer sleeps or the session is locked it waits for the wake.
   void start() {
     if (_running || _disposed) return;
+    if (SystemSleepGate.instance.value) {
+      _pausedForSleep = true;
+      return;
+    }
     _running = true;
     unawaited(_loop());
   }
@@ -403,25 +494,42 @@ class NextGenGateway extends ChangeNotifier {
       _set(NgConnectionState(NgConnectionPhase.connecting, attempt: _attempt));
       WsClient? client;
       try {
+        // A deployment-token connection authenticates the upgrade with
+        // `?token=` exactly as Hermes Desktop does; loopback gateways cannot
+        // mint `POST /api/auth/ws-ticket` tickets. Everything else spends a
+        // single-use ticket in the subprotocol.
+        final deploymentToken = dashboard.deploymentToken;
         String? ticket;
-        try {
-          ticket = await _mintTicket();
-        } on DashboardHttpException catch (e) {
-          if (e.statusCode == 401) {
-            _set(const NgConnectionState(NgConnectionPhase.sessionExpired));
-            _running = false;
-            return;
+        if (deploymentToken == null) {
+          try {
+            ticket = await _mintTicket();
+          } on DashboardHttpException catch (e) {
+            if (e.statusCode == 401) {
+              _set(const NgConnectionState(NgConnectionPhase.sessionExpired));
+              _running = false;
+              return;
+            }
+            rethrow;
           }
-          rethrow;
+          if (ticket == null) return;
         }
-        if (ticket == null || !_running || _disposed) return;
-        client = WsClient(
-          dashboard.baseUrl,
-          ticket: ticket,
-          profile: profile,
-          clientCertificate: connection.clientCertificate,
-          ticketInSubprotocol: true,
-        );
+        if (!_running || _disposed) return;
+        client = deploymentToken != null
+            ? WsClient(
+                dashboard.baseUrl,
+                token: deploymentToken,
+                profile: profile,
+                clientCertificate: connection.clientCertificate,
+                customHeaders: connection.customHeaders,
+              )
+            : WsClient(
+                dashboard.baseUrl,
+                ticket: ticket,
+                profile: profile,
+                clientCertificate: connection.clientCertificate,
+                customHeaders: connection.customHeaders,
+                ticketInSubprotocol: true,
+              );
         final closed = Completer<void>();
         client.onStreamEvent = _onSocketEvent;
         client.onServerRequest = acceptServerRequest;
@@ -530,7 +638,7 @@ class NextGenGateway extends ChangeNotifier {
   }) async {
     final ws = _ws;
     if (ws == null || !ws.isConnected) {
-      throw StateError('Not connected to the gateway yet.');
+      throw StateError(ngL.ng_release_gateway_not_connected);
     }
     final response = await ws.send(method, params, timeout: timeout);
     final error = response['error'];
@@ -578,7 +686,7 @@ class NextGenGateway extends ChangeNotifier {
     try {
       return await done.future.timeout(timeout);
     } on TimeoutException {
-      throw StateError(_state.reason ?? "Couldn't reach the gateway.");
+      throw StateError(_state.reason ?? ngL.ng_release_gateway_unreachable);
     } finally {
       _connectionWaits.remove(done);
       removeListener(check);
@@ -615,6 +723,8 @@ class NextGenGateway extends ChangeNotifier {
   }
 
   void stop() {
+    // An explicit stop also cancels a wake-up restart.
+    _pausedForSleep = false;
     _running = false;
     for (final pending in _connectionWaits.toList()) {
       if (!pending.isCompleted) {
@@ -632,6 +742,13 @@ class NextGenGateway extends ChangeNotifier {
 
   @override
   void dispose() {
+    _wakeWord?.dispose();
+    _wakeWord = null;
+    _voiceLiveMode?.dispose();
+    _voiceLiveMode = null;
+    SystemSleepGate.instance.removeListener(_onSystemSleep);
+    workspace.close();
+    draftPresentation.close();
     _projects?.close();
     stop();
     _disposed = true;

@@ -19,7 +19,19 @@ const _noticeAssets = <String>[
   'third_party/licenses/flutter-BSD-3-Clause.txt',
   'third_party/licenses/Apache-2.0.txt',
   'third_party/licenses/gradle-NOTICE.txt',
+  'third_party/webrtc/NOTICE.md',
+  'third_party/licenses/webrtc-BSD-3-Clause.txt',
+  'third_party/licenses/webrtc-PATENTS.txt',
+  'third_party/licenses/webrtc-third-party-licenses.txt',
+  'third_party/licenses/audioswitch-Apache-2.0.txt',
+  'third_party/licenses/flutter_webrtc-NOTICE.txt',
+  'third_party/licenses/unorm_dart-MIT.txt',
+  'third_party/licenses/Unicode-3.0.txt',
 ];
+
+const _webrtc =
+    'WebRTC (webrtc-sdk 150.7871.04 Android, iOS, macOS; '
+    'libwebrtc m150.7871.07 Windows, Linux)';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +92,14 @@ void main() {
       'Flutter iOS scaffold (source material)',
       'Gradle wrapper (Library build material)',
       'Gradle wrapper (Library build material)',
+      _webrtc,
+      _webrtc,
+      _webrtc,
+      _webrtc,
+      'audioswitch (com.github.davidliu, Android)',
+      'flutter_webrtc (1.6.3) NOTICE',
+      'unorm_dart (0.3.3)',
+      'Unicode Character Database (unorm_dart 0.3.3 normalisation data)',
     ]);
     for (var index = 0; index < _noticeAssets.length; index++) {
       final entry = entries[index + 1] as LicenseEntryWithLineBreaks;

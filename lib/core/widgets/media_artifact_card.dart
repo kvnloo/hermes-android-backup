@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:hermes_android/core/l10n/l10n.dart';
 
 import '../services/attachment_controller.dart';
@@ -8,6 +9,7 @@ import '../services/remote_files_client.dart';
 import '../utils/attachment_types.dart';
 import '../utils/media_tags.dart';
 import 'attachment_preview_dialog.dart';
+import 'attachment_audio_preview.dart';
 
 /// Compatibility API for callers that explicitly request the share sheet.
 /// New inline links should use [openMediaFilePreview] instead.
@@ -167,12 +169,16 @@ class MediaArtifactCard extends StatefulWidget {
   /// callers recreate their factory closure on ordinary parent rebuilds.
   /// Without one, replacing the factory is conservatively a new source.
   final Object? sourceIdentity;
+  final ValueListenable<bool>? ownerValidity;
+  final bool Function()? isOwnerCurrent;
 
   const MediaArtifactCard({
     super.key,
     required this.ref,
     required this.filesClient,
     this.sourceIdentity,
+    this.ownerValidity,
+    this.isOwnerCurrent,
   });
 
   @override
@@ -190,11 +196,21 @@ class _MediaArtifactCardState extends State<MediaArtifactCard> {
     _createController();
   }
 
+  void _authorityChanged() {
+    if (!(widget.ownerValidity?.value ?? true)) _releaseController();
+    if (mounted) setState(() {});
+  }
+
   void _createController() {
+    final validity = widget.ownerValidity;
+    final check = widget.isOwnerCurrent;
     _controller = AttachmentController(
       ref: widget.ref,
       filesClient: widget.filesClient,
+      isOwnerCurrent: () =>
+          (validity?.value ?? true) && (check?.call() ?? true),
     );
+    validity?.addListener(_authorityChanged);
     _controller.addListener(_changed);
   }
 
@@ -228,7 +244,9 @@ class _MediaArtifactCardState extends State<MediaArtifactCard> {
         : oldWidget.filesClient != widget.filesClient;
     if (oldWidget.ref.path != widget.ref.path ||
         oldWidget.ref.filename != widget.ref.filename ||
-        sourceChanged) {
+        sourceChanged ||
+        oldWidget.ownerValidity != widget.ownerValidity) {
+      oldWidget.ownerValidity?.removeListener(_authorityChanged);
       _releaseController();
       _openingPreview = false;
       _createController();
@@ -237,6 +255,7 @@ class _MediaArtifactCardState extends State<MediaArtifactCard> {
 
   @override
   void dispose() {
+    widget.ownerValidity?.removeListener(_authorityChanged);
     _releaseController();
     super.dispose();
   }
@@ -257,6 +276,7 @@ class _MediaArtifactCardState extends State<MediaArtifactCard> {
       final route = attachmentPreviewRoute(
         context: context,
         controller: controller,
+        ownerValidity: widget.ownerValidity,
       );
       _previewRoute = route;
       await navigator.push(route);
@@ -323,6 +343,13 @@ class _MediaArtifactCardState extends State<MediaArtifactCard> {
                   height: 208,
                   child: attachmentImage(context, bytes, thumbnail: true),
                 ),
+              ),
+            if (attachmentIsAudio(widget.ref.extension))
+              AttachmentAudioPreview(
+                sourceIdentity: _controller,
+                extension: widget.ref.extension,
+                loadBytes: _controller.ensureBytes,
+                ownerValidity: widget.ownerValidity,
               ),
             // The ListTile ink needs its own transparent Material even when
             // the card is inside an opaque chat-bubble decoration.
