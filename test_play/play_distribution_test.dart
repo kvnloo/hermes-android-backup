@@ -43,19 +43,15 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      await openSettingsCategory(tester, 'about');
-      await tester.scrollUntilVisible(
-        find.text('Privacy policy'),
-        300,
-        scrollable: find
-            .descendant(
-              of: find.byType(SettingsScreen),
-              matching: find.byType(Scrollable),
-            )
-            .first,
+      await openSettingsCategory(tester, 'security');
+      await tester.ensureVisible(
+        find.byKey(const ValueKey('privacy-policy-link')),
       );
       await tester.pumpAndSettle();
       expect(find.text('Privacy policy'), findsOneWidget);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      await openSettingsCategory(tester, 'about');
       expect(find.text('Check for updates'), findsNothing);
       expect(find.text('Check for updates on launch'), findsNothing);
     },
