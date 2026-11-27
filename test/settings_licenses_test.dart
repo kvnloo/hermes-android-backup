@@ -1,3 +1,4 @@
+import 'support/settings_navigation.dart';
 import 'dart:async';
 import 'dart:io';
 
@@ -38,6 +39,7 @@ Future<SharedPreferences> _openOfflineSettings(WidgetTester tester) async {
     ),
   );
   await tester.pumpAndSettle();
+  await openSettingsCategory(tester, 'about');
   expect(find.text('Failed to load settings'), findsNothing);
   return prefs;
 }
@@ -190,6 +192,20 @@ void main() {
         'third_party/licenses/hermes-agent-MIT.txt',
       ],
       'Third-party source/build materials (scope)': ['third_party/NOTICE.md'],
+      // GPT-Live voice's native WebRTC stack, on every platform.
+      'WebRTC (webrtc-sdk 150.7871.04 Android, iOS, macOS; '
+          'libwebrtc m150.7871.07 Windows, Linux)': [
+        'third_party/webrtc/NOTICE.md',
+        'third_party/licenses/webrtc-BSD-3-Clause.txt',
+        'third_party/licenses/webrtc-PATENTS.txt',
+        'third_party/licenses/webrtc-third-party-licenses.txt',
+      ],
+      'audioswitch (com.github.davidliu, Android)': [
+        'third_party/licenses/audioswitch-Apache-2.0.txt',
+      ],
+      'flutter_webrtc (1.6.3) NOTICE': [
+        'third_party/licenses/flutter_webrtc-NOTICE.txt',
+      ],
     };
     for (final package in packages.entries) {
       tester

@@ -41,6 +41,8 @@ import 'support/inert_turn_application_session.dart';
 import 'support/l10n_test_utils.dart';
 import 'package:hermes_android/l10n/app_localizations.dart';
 
+import 'support/markdown_file_fixture.dart';
+
 Session _session({required String id, required String title}) {
   return Session(
     id: id,
@@ -1470,6 +1472,59 @@ void main() {
     expect(find.text('Unfiled chat'), findsOneWidget);
     expect(find.text('Filed chat'), findsNothing);
   });
+
+  for (final entry in ['More > Files', 'More > Assets', 'project folder']) {
+    testWidgets('Classic $entry opens a Markdown file', (tester) async {
+      final projectFolder = entry == 'project folder';
+      final assets = entry == 'More > Assets';
+      final backend = MarkdownDashboardFixture();
+      await _pump(
+        tester,
+        size: markdownViewport,
+        connection: _connection(
+          desktopGatewayUrl: 'https://fixture.invalid',
+        ).copyWith(dashboardProxied: true),
+        repository: await _repository([
+          _projectJson(
+            id: 'p1',
+            name: 'Field project',
+            primaryPath: MarkdownDashboardFixture.directory,
+          ),
+        ]),
+        sessions: const [],
+        dashboardHttpClient: MockClient(backend.respond),
+      );
+      await tester.pumpAndSettle();
+      if (projectFolder) {
+        await tester.tap(find.text('Projects').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Field project'));
+        await tester.pumpAndSettle();
+      } else {
+        await tester.tap(find.text(HermesDestination.more.label(l10n)).last);
+        await tester.pumpAndSettle();
+      }
+      await tester.tap(find.text(assets ? 'Assets' : 'Files'));
+      await tester.pumpAndSettle();
+      if (projectFolder) {
+        await tester.tap(find.text(MarkdownDashboardFixture.directory));
+        await tester.pumpAndSettle();
+      }
+      final file = find.text(MarkdownDashboardFixture.filename);
+      await tester.ensureVisible(file);
+      await tester.tap(file);
+      await tester.pump();
+      if (assets) await waitForMarkdownDownload(tester);
+      await tester.pumpAndSettle();
+      await verifyMarkdownPreview(tester);
+      expect(
+        backend.requests
+            .where((uri) => uri.path.endsWith('/fs/default-cwd'))
+            .length,
+        projectFolder || assets ? 0 : 1,
+      );
+    }, variant: markdownPlatforms);
+  }
 
   testWidgets('More opens the native Files screen', (tester) async {
     await _pump(

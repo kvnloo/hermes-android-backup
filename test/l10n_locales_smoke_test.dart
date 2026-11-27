@@ -1,5 +1,5 @@
-// Smoke coverage for the additional locale catalogs (zh_Hans/ko/es/fr/de/pt_BR/ru)
-// added on top of the en/ja baseline.
+// Smoke coverage for the additional locale catalogs
+// (zh_Hans/zh_Hant/ar/ko/es/fr/de/pt_BR/ru) added on top of the en/ja baseline.
 //
 // Each added locale must render a normal message (translated, non-empty, not
 // the English fallback) and a placeholder message whose values are substituted
@@ -11,7 +11,17 @@ import 'package:hermes_android/core/l10n/l10n.dart';
 
 import 'support/l10n_test_utils.dart';
 
-const _addedLocales = ['zh_Hans', 'ko', 'es', 'fr', 'de', 'pt_BR', 'ru'];
+const _addedLocales = [
+  'zh_Hans',
+  'zh_Hant',
+  'ar',
+  'ko',
+  'es',
+  'fr',
+  'de',
+  'pt_BR',
+  'ru',
+];
 
 /// Builds the [Locale] for a catalogue code (`zh_Hans` carries a script code,
 /// `pt_BR` a country code).
@@ -31,21 +41,22 @@ void main() {
     for (final code in _addedLocales) {
       final locale = _localeFor(code);
 
-      test('$code renders normal messages translated (non-empty, not English)',
-          () async {
-        final l10n = await loadTestL10n(locale);
-        final en = await loadTestL10n(const Locale('en'));
-
-        expect(l10n.cancel, isNotEmpty);
-        expect(l10n.cancel, isNot(en.cancel));
-        expect(l10n.delete, isNotEmpty);
-        expect(l10n.delete, isNot(en.delete));
-        expect(l10n.settings, isNotEmpty);
-        expect(l10n.settings, isNot(en.settings));
-      });
-
       test(
-          '$code renders placeholder messages with substituted values '
+        '$code renders normal messages translated (non-empty, not English)',
+        () async {
+          final l10n = await loadTestL10n(locale);
+          final en = await loadTestL10n(const Locale('en'));
+
+          expect(l10n.cancel, isNotEmpty);
+          expect(l10n.cancel, isNot(en.cancel));
+          expect(l10n.delete, isNotEmpty);
+          expect(l10n.delete, isNot(en.delete));
+          expect(l10n.settings, isNotEmpty);
+          expect(l10n.settings, isNot(en.settings));
+        },
+      );
+
+      test('$code renders placeholder messages with substituted values '
           'that differ from the en/ja fallbacks', () async {
         final l10n = await loadTestL10n(locale);
         final en = await loadTestL10n(const Locale('en'));
@@ -54,10 +65,14 @@ void main() {
         final rendered = l10n.connection_address_key('10.0.2.2:8642', '✓');
         expect(rendered, contains('10.0.2.2:8642'));
         expect(rendered, contains('✓'));
-        expect(rendered,
-            isNot(en.connection_address_key('10.0.2.2:8642', '✓')));
-        expect(rendered,
-            isNot(ja.connection_address_key('10.0.2.2:8642', '✓')));
+        expect(
+          rendered,
+          isNot(en.connection_address_key('10.0.2.2:8642', '✓')),
+        );
+        expect(
+          rendered,
+          isNot(ja.connection_address_key('10.0.2.2:8642', '✓')),
+        );
       });
     }
 
@@ -82,31 +97,35 @@ void main() {
       expect(ru.new_messages(5), '5 новых сообщений');
     });
 
-    testWidgets('pumps widgets under every added locale with the app delegates',
-        (tester) async {
-      for (final code in _addedLocales) {
-        final l10n = await loadTestL10n(_localeFor(code));
+    testWidgets(
+      'pumps widgets under every added locale with the app delegates',
+      (tester) async {
+        for (final code in _addedLocales) {
+          final l10n = await loadTestL10n(_localeFor(code));
 
-        await tester.pumpWidget(
-          testAppWithL10n(
-            Builder(
-              builder: (context) => Column(
-                children: [
-                  Text(context.l10n.cancel),
-                  Text(context.l10n.connection_address_key('10.0.2.2:8642', '✓')),
-                ],
+          await tester.pumpWidget(
+            testAppWithL10n(
+              Builder(
+                builder: (context) => Column(
+                  children: [
+                    Text(context.l10n.cancel),
+                    Text(
+                      context.l10n.connection_address_key('10.0.2.2:8642', '✓'),
+                    ),
+                  ],
+                ),
               ),
+              locale: _localeFor(code),
             ),
-            locale: _localeFor(code),
-          ),
-        );
+          );
 
-        expect(find.text(l10n.cancel), findsOneWidget);
-        expect(
-          find.text(l10n.connection_address_key('10.0.2.2:8642', '✓')),
-          findsOneWidget,
-        );
-      }
-    });
+          expect(find.text(l10n.cancel), findsOneWidget);
+          expect(
+            find.text(l10n.connection_address_key('10.0.2.2:8642', '✓')),
+            findsOneWidget,
+          );
+        }
+      },
+    );
   });
 }

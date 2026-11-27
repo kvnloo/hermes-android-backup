@@ -2,8 +2,11 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../l10n/service_strings.dart';
 import '../models/client_certificate.dart';
 import '../models/session_search_hit.dart';
+import 'connection_manager.dart';
+import 'hermes_sign_in.dart' show NoGatewayRedirects;
 import 'tls_client_factory.dart';
 
 /// Raised when a server-side session search cannot be completed.
@@ -36,10 +39,12 @@ class SessionSearchClient {
 
   final http.Client _http;
   final String _baseUrl;
+  final String? profile;
   final Future<Map<String, String>> Function() _authHeaders;
 
   SessionSearchClient({
     required String baseUrl,
+    this.profile,
     required Future<Map<String, String>> Function() headers,
     ClientCertificateConfig? clientCertificate,
     TlsClientFactory tlsClientFactory = const TlsClientFactory(),
@@ -53,8 +58,15 @@ class SessionSearchClient {
        // auth headers would send a cookie over a transport that cannot present
        // the client certificate, so a proxy enforcing mTLS would reject search
        // even though the session list loaded.
-       _http =
-           httpClient ?? tlsClientFactory.createRestClient(clientCertificate);
+       //
+       // The headers carry the deployment token (X-Hermes-Session-Token) and
+       // the connection's custom headers. dart:io strips only Authorization
+       // and Cookie when it follows a redirect, so a 3xx to another origin
+       // would hand those to a third party. Refuse every redirect, as the
+       // gateway's own clients do, and report the 3xx as a failure.
+       _http = NoGatewayRedirects(
+         httpClient ?? tlsClientFactory.createRestClient(clientCertificate),
+       );
 
   /// Runs a full-text search and returns the matching sessions.
   ///
@@ -68,56 +80,134 @@ class SessionSearchClient {
     if (trimmed.isEmpty) return const [];
 
     final safeLimit = limit.clamp(1, maxLimit);
-    final uri = Uri.parse(
-      '$_baseUrl/api/sessions/search',
-    ).replace(queryParameters: {'q': trimmed, 'limit': '$safeLimit'});
+    final uri = Uri.parse('$_baseUrl/api/sessions/search').replace(
+      queryParameters: {
+        'q': trimmed,
+        'limit': '$safeLimit',
+        'profile': ?profile,
+      },
+    );
 
     final http.Response response;
     try {
       response = await _http.get(uri, headers: await _authHeaders());
     } catch (error) {
-      throw SessionSearchException('Could not reach the dashboard: $error');
-    }
-
-    if (response.statusCode == 401 || response.statusCode == 403) {
-      throw const SessionSearchException(
-        'The dashboard rejected the saved credentials. Check the dashboard '
-        'username and password for this connection.',
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_search_dashboard_unreachable('$error'),
       );
     }
-    if (response.statusCode == 404) {
-      throw const SessionSearchException(
-        'This dashboard does not expose session search. Update Hermes on the '
-        'host, or switch back to on-device search.',
+
+    return _readResponse(response, trimmed, profile, safeLimit);
+  }
+
+  /// The active browsers borrow the selected dashboard's authenticated,
+  /// mTLS-aware transport rather than opening a second client.
+  static Future<List<SessionSearchHit>> searchDashboard(
+    DashboardClient dashboard,
+    String query, {
+    String? profile,
+    int limit = 60,
+    bool Function()? maySend,
+    Duration timeout = ApiClient.requestTimeout,
+  }) async {
+    final term = query.trim();
+    if (term.isEmpty) return const [];
+    final selected = profile ?? dashboard.gatewayProfile;
+    final safeLimit = limit.clamp(1, maxLimit);
+    final response = await dashboard.apiRequest(
+      'GET',
+      'sessions/search',
+      queryParameters: {'q': term, 'limit': '$safeLimit', 'profile': ?selected},
+      timeout: timeout,
+      maySend: maySend,
+    );
+    return _readResponse(response, term, selected, safeLimit);
+  }
+
+  static List<SessionSearchHit> _readResponse(
+    http.Response response,
+    String query,
+    String? profile,
+    int limit,
+  ) {
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_search_credentials_rejected,
+      );
+    }
+    if (response.statusCode == 404 ||
+        response.statusCode == 405 ||
+        response.statusCode == 501) {
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_search_not_supported,
+      );
+    }
+    if (response.statusCode >= 300 && response.statusCode < 400) {
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_search_redirected(response.statusCode),
       );
     }
     if (response.statusCode != 200) {
       throw SessionSearchException(
-        'Session search failed with HTTP ${response.statusCode}.',
+        serviceStrings.rel_svc_backup_search_http_failed(response.statusCode),
       );
     }
 
-    return _decodeHits(response.body);
+    return _decodeHits(response.body, query, profile, limit);
   }
 
-  List<SessionSearchHit> _decodeHits(String body) {
+  static List<SessionSearchHit> _decodeHits(
+    String body,
+    String query,
+    String? profile,
+    int limit,
+  ) {
     final Object? decoded;
     try {
       decoded = jsonDecode(body);
     } catch (_) {
-      throw const SessionSearchException(
-        'The dashboard returned a malformed search response.',
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_search_malformed_response,
       );
     }
 
     if (decoded is! Map<String, dynamic>) {
-      throw const SessionSearchException(
-        'The dashboard returned an unexpected search response.',
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_search_unexpected_response,
       );
     }
 
     final results = decoded['results'];
-    if (results is! List) return const [];
+    bool wrongProfile(Map<String, dynamic> data) =>
+        data['profile'] != null && data['profile'] != (profile ?? 'default');
+    if (results is List && results.length > limit) {
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_search_too_many_results,
+      );
+    }
+    if (results is! List ||
+        wrongProfile(decoded) ||
+        [
+          decoded['q'],
+          decoded['query'],
+        ].any((echo) => echo != null && echo != query)) {
+      throw SessionSearchException(
+        serviceStrings.rel_svc_backup_message_search_unexpected_response,
+      );
+    }
+    for (final row in results) {
+      if (row is! Map<String, dynamic> ||
+          wrongProfile(row) ||
+          (row['session_id'] ?? row['id']) is! String ||
+          ((row['session_id'] ?? row['id']) as String).trim().isEmpty ||
+          (row['id'] is String &&
+              row['session_id'] != null &&
+              row['id'] != row['session_id'])) {
+        throw SessionSearchException(
+          serviceStrings.rel_svc_backup_message_search_unexpected_result,
+        );
+      }
+    }
 
     return results
         .whereType<Map<String, dynamic>>()

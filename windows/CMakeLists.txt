@@ -53,6 +53,11 @@ add_subdirectory(${FLUTTER_MANAGED_DIR})
 add_subdirectory("runner")
 
 
+# flutter_webrtc downloads a prebuilt libwebrtc with no checksum; pin it by
+# SHA-256 before the plugins are added (docs/libwebrtc-desktop-download.md).
+include("${CMAKE_CURRENT_SOURCE_DIR}/../third_party/webrtc/libwebrtc_pin.cmake")
+ares_pin_libwebrtc_for_app()
+
 # Generated plugin build rules, which manage building the plugins and adding
 # them to the application.
 include(flutter/generated_plugins.cmake)
@@ -74,6 +79,10 @@ set(INSTALL_BUNDLE_LIB_DIR "${CMAKE_INSTALL_PREFIX}")
 
 install(TARGETS ${BINARY_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}"
   COMPONENT Runtime)
+
+add_executable(ares-pty ../native/terminal/pty_windows.cc)
+add_dependencies(${BINARY_NAME} ares-pty)
+install(TARGETS ares-pty RUNTIME DESTINATION "${CMAKE_INSTALL_PREFIX}" COMPONENT Runtime)
 
 install(FILES "${FLUTTER_ICU_DATA_FILE}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   COMPONENT Runtime)

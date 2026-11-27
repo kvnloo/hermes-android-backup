@@ -4,6 +4,7 @@ import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/material.dart';
+import 'core/services/completion_cue_player.dart';
 import 'core/services/hands_free_route_observer.dart';
 import 'core/services/retired_preferences.dart';
 import 'package:file_picker/file_picker.dart';
@@ -20,6 +21,7 @@ import 'core/services/config_backup_service.dart';
 import 'core/services/connection_keepalive_service.dart';
 import 'core/services/connection_manager.dart';
 import 'core/services/desktop_gateway_client.dart';
+import 'core/services/gateway_headers.dart';
 import 'core/services/background_work_prefs.dart';
 import 'core/services/gateway_turn_application_controller.dart';
 import 'core/services/local_chat_pin_store.dart';
@@ -27,15 +29,30 @@ import 'core/services/mobile_push_service.dart';
 import 'core/services/notification_approval_authority.dart';
 import 'core/services/connection_mutation_barrier.dart';
 import 'core/services/notification_prefs.dart';
+import 'core/services/auto_speak_replies.dart';
+import 'core/services/barge_in_preference.dart';
 import 'core/services/hands_free_preference.dart';
 import 'core/services/hermes_sign_in.dart';
+import 'core/services/hermes_deeplink.dart';
+import 'core/services/keep_awake.dart';
+import 'core/services/shortcuts_store.dart';
+import 'core/desktop/desktop_integration.dart';
+import 'core/desktop/desktop_os.dart';
+import 'core/desktop/quick_entry.dart' show quickEntryMarker;
+import 'core/desktop/quick_entry_window.dart';
 import 'core/services/locale_preference.dart';
 import 'core/services/lan_discovery_service.dart';
 import 'core/services/text_size_preference.dart';
 import 'core/services/theme_preference.dart';
 import 'core/services/turn_notification_service.dart';
 import 'core/screens/chat_screen.dart';
+import 'core/workspace/popout_bootstrap.dart';
+import 'core/workspace/popout_protocol.dart';
+import 'core/presentation/pet_window.dart';
+import 'core/presentation/presentation_scope.dart';
 import 'core/screens/workspace_screen.dart';
+import 'core/screens/fleet_screen.dart';
+import 'core/services/gateway_fleet.dart';
 import 'core/theme/hermes_theme.dart';
 import 'core/utils/responsive.dart';
 import 'core/widgets/config_backup_card.dart';
@@ -46,6 +63,7 @@ import 'core/widgets/setup_interface_choice.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
+import 'package:hermes_android/core/l10n/service_strings.dart';
 
 import 'nextgen/nextgen_home.dart';
 import 'nextgen/ui/connect_screen.dart';
@@ -53,8 +71,21 @@ import 'nextgen/nextgen_l10n.dart';
 import 'nextgen/nextgen_preferences.dart';
 import 'nextgen/theme/nextgen_theme.dart';
 
-void main() {
+void main([List<String> args = const []]) {
   WidgetsFlutterBinding.ensureInitialized();
+  CompletionCuePlayer.instance.useDeviceAudio();
+  if (args.contains(workspacePopoutMarker)) {
+    runWorkspacePopoutChild(args);
+    return;
+  }
+  if (args.contains(petWindowMarker)) {
+    unawaited(runPetCompanionChild());
+    return;
+  }
+  if (args.contains(quickEntryMarker)) {
+    runQuickEntryChild(args);
+    return;
+  }
   // Remove any private key left behind by a cancelled connection import.
   unawaited(ClientCertificateService().cleanupStaging());
   runApp(const StartupApp());
@@ -106,6 +137,9 @@ class _StartupAppState extends State<StartupApp> {
       () async {
         prefs = await SharedPreferences.getInstance();
         NextGenPreferences.load(prefs);
+        if (defaultTargetPlatform == TargetPlatform.windows) {
+          await NotificationPrefsStore.load();
+        }
         unawaited(clearRetiredPreferences(prefs));
         try {
           // Browser sign-ins and Cloudflare Access tokens, shared by both
@@ -323,12 +357,14 @@ class _NotificationNavigationIntent {
   final MobilePushRoute? pushRoute;
   final int generation;
   final Object? mutationEpoch;
+  final WindowsToastTarget? windowsTarget;
 
   _NotificationNavigationIntent(
     this.connection,
     this.sessionId,
     MobilePushRoute? pushRoute,
     this.generation,
+    this.windowsTarget,
   ) : mutationEpoch = ConnectionMutationBarrier.capture(connection.id),
       pushRoute = pushRoute == null
           ? null
@@ -339,14 +375,20 @@ class _NotificationNavigationIntent {
               Map<String, dynamic>.unmodifiable(pushRoute.authority),
             );
 
-  bool canCoalesceAuthority(MobilePushRoute? incomingPush) {
+  bool canCoalesceAuthority(
+    MobilePushRoute? incomingPush,
+    WindowsToastTarget? incomingWindows,
+  ) {
     // Ordinary taps share account authority. Push proofs can differ in event,
     // consent revision or expiry; target equality cannot establish equivalence.
-    return pushRoute == null && incomingPush == null;
+    return pushRoute == null &&
+        incomingPush == null &&
+        (windowsTarget == null) == (incomingWindows == null);
   }
 }
 
 class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
+  late final _fleet = GatewayFleet(widget.connManager)..restore().ignore();
   late final GatewayTurnApplicationController _turnApplicationController;
   late final AutoMessagingService _autoMessaging;
   late final TurnNotificationService _notifications;
@@ -387,6 +429,12 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
   /// Bounded to active turns — an idle connection never earns a persistent
   /// notification.
   final ConnectionKeepAliveService _keepAlive = ConnectionKeepAliveService();
+
+  /// Opt-in "keep the computer awake" policy (Dart-side, device-local).
+  KeepAwakeController? _keepAwake;
+  ShortcutsStore? _shortcutsStore;
+  DesktopIntegration? _desktop;
+  VoidCallback? _keepAwakePreferenceListener;
 
   Object? _keepAliveTurnActivityToken;
   bool _background = false;
@@ -444,6 +492,30 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
     );
     notificationPrefs.addListener(_syncOngoingChats);
     _mobilePush.addListener(_onMobilePushChanged);
+    // Validated deep links: the primary window owns the channel; shells
+    // consume pendingLink and route/prefill without sending.
+    unawaited(HermesDeepLinkService.shared.initialize());
+    _keepAwake = KeepAwakeController(
+      adapter: const MethodChannelKeepAwakeAdapter(),
+      store: KeepAwakePolicyStore(widget.connManager.prefs),
+      background:
+          lifecycle == AppLifecycleState.paused ||
+          lifecycle == AppLifecycleState.detached,
+    )..setWorking(_hasActiveTurn);
+    _shortcutsStore = ShortcutsStore(widget.connManager.prefs);
+    // Native tray, quick entry, hotkey and power events: desktop primary
+    // window only, every feature opt-in.
+    if (isDesktopOs) {
+      _desktop = DesktopIntegration(
+        preferences: widget.connManager.prefs,
+        connections: widget.connManager.getConnections,
+        openOwner: _openQuickEntryOwner,
+      )..start();
+    }
+    _keepAwakePreferenceListener = () {
+      _keepAwake?.refreshFromStore();
+    };
+    keepAwakePolicyChanges.addListener(_keepAwakePreferenceListener!);
     _turnApplicationController.conversationTarget = (c, id) =>
         TurnNotificationService.conversationTarget(widget.connManager, c, id);
     _autoMessaging = AutoMessagingService(
@@ -463,6 +535,8 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
       unawaited(_loadBackgroundPolicy());
       unawaited(NotificationPrefsStore.load());
       unawaited(HandsFreePreferenceStore.load());
+      unawaited(AutoSpeakRepliesStore.load());
+      unawaited(BargeInPreferenceStore.load());
       _restoreNormalSessions();
       // The singleton is process-owned, not disposed with a replaceable root.
       unawaited(
@@ -540,6 +614,15 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
     );
     _syncOngoingChats();
     _keepAlive.onAppLifecycleState(state, hasActiveTurn: _hasActiveTurn);
+    // Keep-awake is released in the background (paused) and on exit
+    // (detached), and taken again on resume if still wanted. A minimised
+    // desktop window reports hidden and keeps it.
+    if (state == AppLifecycleState.resumed) {
+      _keepAwake?.setBackground(false);
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      _keepAwake?.setBackground(true);
+    }
   }
 
   void _pruneApprovalActions() {
@@ -586,6 +669,7 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
     if (_closingTurnOwner) return;
     _keepAlive.onTurnActivityChanged(_hasActiveTurn);
     _syncOngoingChats();
+    _keepAwake?.setWorking(_hasActiveTurn);
   }
 
   void _onBackgroundWorkPolicyConfirmed() {
@@ -654,6 +738,7 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
             _ongoingChats.add(key);
             try {
               await service.showOngoingChat(
+                origin: _connectionById(activity.connectionId),
                 connectionId: activity.connectionId,
                 localSessionId: activity.localSessionId,
                 storedSessionId: activity.storedSessionId,
@@ -791,6 +876,28 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
   /// every response lands the user on the session the notification was about.
   void _handleNotificationResponse(NotificationResponse response) {
     if (!mounted || _closingTurnOwner) return;
+    if (response is WindowsToastResponse) {
+      final target = response.target;
+      final connection = _connectionById(target.connectionId);
+      if (connection == null || !target.matches(connection)) return;
+      void open() {
+        if (!target.matches(_connectionById(connection.id))) return;
+        unawaited(
+          _openNotificationSession(
+            connection,
+            target.sessionId,
+            windowsTarget: target,
+          ).catchError((Object _) {}),
+        );
+      }
+
+      if (_background || !_rootFrameReady) {
+        _pendingNormalResponse = open;
+      } else {
+        open();
+      }
+      return;
+    }
     _pruneApprovalActions();
     final route = NotificationRoute.fromResponse(response);
     final hasExplicitConnection =
@@ -937,6 +1044,31 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
         .firstOrNull;
   }
 
+  /// A quick-entry hand-back waits in the deep-link service for the shell
+  /// of [connection] (its owner): bring that shell forward. NextGen
+  /// switches its connection; Classic opens the workspace for it unless one
+  /// is already mounted. The owned link is consumed there, never elsewhere.
+  void _openQuickEntryOwner(SavedConnection connection) {
+    if (!mounted || _closingTurnOwner) return;
+    if (nextGenEnabled.value) {
+      nextGenConnectionRequest.value = connection.id;
+      return;
+    }
+    if (WorkspaceScreen.isOpenFor(connection.id)) return;
+    final navigator = _navigatorKey.currentState;
+    if (navigator == null || !navigator.mounted) return;
+    unawaited(
+      navigator.push(
+        MaterialPageRoute<void>(
+          builder: (_) => WorkspaceScreen(
+            connection: connection,
+            turnApplicationController: _turnApplicationController,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _pruneNotificationChatRoutes() {
     final navigator = _navigatorKey.currentState;
     _notificationChatRoutes.removeWhere(
@@ -994,6 +1126,7 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
     SavedConnection connection,
     String? sessionId, {
     MobilePushRoute? pushRoute,
+    WindowsToastTarget? windowsTarget,
   }) async {
     if (!mounted ||
         _closingTurnOwner ||
@@ -1001,13 +1134,19 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
         !_connectionIsCurrent(connection)) {
       return;
     }
-    if (routeNotificationToNextGen(connection.id, sessionId)) return;
+    if (routeNotificationToNextGen(
+      connection.id,
+      sessionId,
+      target: windowsTarget,
+    )) {
+      return;
+    }
     final identity = _notificationChatIdentity(connection, sessionId);
     final activeIntent = _routingIntent;
     if (_routingIdentity == identity &&
         activeIntent != null &&
         activeIntent.generation == _notificationGeneration &&
-        activeIntent.canCoalesceAuthority(pushRoute)) {
+        activeIntent.canCoalesceAuthority(pushRoute, windowsTarget)) {
       return;
     }
     if (pushRoute == null &&
@@ -1025,6 +1164,7 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
       sessionId,
       pushRoute,
       generation,
+      windowsTarget,
     );
     _pendingNavigation = intent;
     await _runNotificationNavigation(intent);
@@ -1138,7 +1278,10 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
       if (!await current() || !currentSync()) return;
       // Push has no legacy workspace/draft fallback: only the authenticated
       // existing session named by the reconciled event is eligible.
-      if (pushRoute != null && session == null) return;
+      if ((pushRoute != null || intent.windowsTarget != null) &&
+          session == null) {
+        return;
+      }
       // Binding may have converged while the authenticated detail read awaited.
       if (session != null && _focusNotificationChat(connection, session.id)) {
         return;
@@ -1158,26 +1301,37 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
         );
         return;
       }
-      final route = MaterialPageRoute<void>(
-        builder: (_) => ChatScreen(
+      void track(Route<void> route, Session opened, Future<void> closed) {
+        _notificationChatRoutes.add((
           connection: connection,
-          session: session!,
+          sessionId: opened.id,
+          openedAsStoredSession: !opened.isLocalDraft,
+          route: route,
+        ));
+        unawaited(
+          closed.whenComplete(() {
+            _notificationChatRoutes.removeWhere(
+              (entry) => entry.route == route,
+            );
+          }),
+        );
+      }
+
+      // `/resume` opens the pick in place of this chat (and is tracked the
+      // same way); the shell under it stays.
+      final route = resumableChatRoute(
+        session,
+        (opened, onOpenSession) => ChatScreen(
+          connection: connection,
+          session: opened,
           turnApplicationController: _turnApplicationController,
+          onOpenSession: onOpenSession,
         ),
+        onReplaced: track,
       );
       final navigator = _navigatorKey.currentState;
       if (navigator == null || !navigator.mounted) return;
-      _notificationChatRoutes.add((
-        connection: connection,
-        sessionId: session.id,
-        openedAsStoredSession: !session.isLocalDraft,
-        route: route,
-      ));
-      unawaited(
-        navigator.push(route).whenComplete(() {
-          _notificationChatRoutes.removeWhere((entry) => entry.route == route);
-        }),
-      );
+      track(route, session, navigator.push(route));
     } finally {
       if (!deferred && identical(_pendingNavigation, intent)) {
         _pendingNavigation = null;
@@ -1264,19 +1418,36 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
         final preference = HermesApp.getTextSizePreference(
           widget.connManager.prefs,
         );
-        return HermesSystemUi(
-          child: MediaQuery(
-            data: systemMediaQuery.copyWith(
-              textScaler: preference.applyTo(systemMediaQuery.textScaler),
-            ),
-            child: DesktopShortcuts(
-              child: nextGen ? NgLocalizationScope(child: child!) : child!,
+        return PresentationRoot(
+          preferences: widget.connManager.prefs,
+          child: HermesSystemUi(
+            child: MediaQuery(
+              data: systemMediaQuery.copyWith(
+                textScaler: preference.applyTo(systemMediaQuery.textScaler),
+              ),
+              child: FleetScope(
+                fleet: _fleet,
+                child: DesktopShortcuts(
+                  store: _shortcutsStore,
+                  // Text services build outside any widget follows the
+                  // app's language in both layouts.
+                  child: ServiceStringsScope(
+                    child: nextGen
+                        ? NgLocalizationScope(child: child!)
+                        : child!,
+                  ),
+                ),
+              ),
             ),
           ),
         );
       },
       home: nextGen
-          ? NextGenHome(connManager: widget.connManager)
+          ? NextGenHome(
+              connManager: widget.connManager,
+              shareIntents: widget.shareIntents,
+              launchIntents: widget.launchIntents,
+            )
           : HomeScreen(
               connManager: widget.connManager,
               turnApplicationController: _turnApplicationController,
@@ -1291,6 +1462,7 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
     final token = _keepAliveTurnActivityToken;
     _closingTurnOwner = true;
+    _fleet.dispose();
     _autoMessaging.dispose();
     _pendingNormalResponse = null;
     _pendingApprovalResponses.clear();
@@ -1317,6 +1489,14 @@ class HermesAppState extends State<HermesApp> with WidgetsBindingObserver {
       _turnApplicationController.removeTurnActivityListener(token);
       _keepAliveTurnActivityToken = null;
     }
+    final keepAwakeListener = _keepAwakePreferenceListener;
+    if (keepAwakeListener != null) {
+      keepAwakePolicyChanges.removeListener(keepAwakeListener);
+    }
+    _keepAwake?.dispose();
+    _keepAwake = null;
+    unawaited(_desktop?.dispose());
+    _desktop = null;
     // Belt for the detached case: if the widget tree tears down while the
     // service is up, the native side must not outlive its only controller.
     unawaited(_keepAlive.stop());
@@ -1378,6 +1558,28 @@ class HermesHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+String _localizedHealthMessage(
+  AppLocalizations l10n,
+  ApiHealthCheckResult result, {
+  required bool apiKeyProvided,
+}) {
+  if (result.isHealthy) return '';
+  final endpoint = result.endpoint.toString();
+  final statusCode = result.statusCode;
+  if (statusCode == 401 || statusCode == 403) {
+    return apiKeyProvided
+        ? l10n.release_misc_api_key_rejected(endpoint, statusCode!)
+        : l10n.release_misc_api_key_required;
+  }
+  if (statusCode == 404) {
+    return l10n.release_misc_gateway_not_found(endpoint);
+  }
+  if (statusCode != null) {
+    return l10n.release_misc_gateway_http_error(endpoint, statusCode);
+  }
+  return l10n.release_misc_gateway_unreachable(endpoint);
 }
 
 class HomeScreen extends StatefulWidget {
@@ -1604,17 +1806,28 @@ class HomeScreenState extends State<HomeScreen> {
         widget.launchIntents?.pendingQuickChat.value == true) {
       return;
     }
-    final lastId = widget.connManager.prefs.getString(_lastConnectionKey);
+    final primary = GatewayFleet.primaryId(widget.connManager, _connections);
+    final lastId =
+        primary ?? widget.connManager.prefs.getString(_lastConnectionKey);
     if (lastId == null) return;
     final conn = _connections.where((c) => c.id == lastId).firstOrNull;
     if (conn == null) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _navigateToWorkspace(conn);
+      // Launching on the primary is routing, not a last-used choice: share
+      // and quick-chat keep following the account the user last opened.
+      if (mounted) {
+        _navigateToWorkspace(conn, rememberLastUsed: primary == null);
+      }
     });
   }
 
-  void _navigateToWorkspace(SavedConnection conn) {
-    widget.connManager.prefs.setString(_lastConnectionKey, conn.id);
+  void _navigateToWorkspace(
+    SavedConnection conn, {
+    bool rememberLastUsed = true,
+  }) {
+    if (rememberLastUsed) {
+      widget.connManager.prefs.setString(_lastConnectionKey, conn.id);
+    }
     final sharedPayload = widget.shareIntents?.takePendingShare();
     final initialQuickChat =
         widget.launchIntents?.takePendingQuickChat() == true &&
@@ -1727,6 +1940,8 @@ class HomeScreenState extends State<HomeScreen> {
               gatewayProfile,
               clientCertificate,
               clearClientCertificate = false,
+              deploymentToken,
+              customHeaders = const <String, String>{},
             }) async {
               if (existing == null) {
                 await widget.connManager.saveConnection(
@@ -1743,6 +1958,8 @@ class HomeScreenState extends State<HomeScreen> {
                   dashboardPassword: dashboardPassword,
                   gatewayProfile: gatewayProfile,
                   clientCertificate: clientCertificate,
+                  deploymentToken: deploymentToken,
+                  customHeaders: customHeaders,
                 );
               } else {
                 await widget.connManager.updateConnection(
@@ -1761,6 +1978,10 @@ class HomeScreenState extends State<HomeScreen> {
                   gatewayProfile: gatewayProfile,
                   clientCertificate: clientCertificate,
                   clearClientCertificate: clearClientCertificate,
+                  deploymentToken: deploymentToken,
+                  customHeaders: customHeaders,
+                  clearDeploymentToken: deploymentToken == null,
+                  clearCustomHeaders: customHeaders.isEmpty,
                 );
               }
               _refresh();
@@ -1770,6 +1991,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void _showApiKeyDialog(SavedConnection conn) {
+    final l10n = context.l10n;
     final ctrl = TextEditingController(text: conn.apiKey);
     bool validating = false;
     String? error;
@@ -1852,6 +2074,7 @@ class HomeScreenState extends State<HomeScreen> {
                           pathPrefix: conn.gatewayPrefix ?? '',
                           gatewayProfile: conn.gatewayProfile,
                           clientCertificate: conn.clientCertificate,
+                          customHeaders: conn.customHeaders,
                         );
                         final result = await client.checkHealth();
                         client.close();
@@ -1864,7 +2087,11 @@ class HomeScreenState extends State<HomeScreen> {
                           await _closeDialogAndRefresh(ctx);
                         } else {
                           setDialogState(() {
-                            error = result.userMessage(apiKeyProvided: true);
+                            error = _localizedHealthMessage(
+                              l10n,
+                              result,
+                              apiKeyProvided: true,
+                            );
                             validating = false;
                           });
                         }
@@ -1905,6 +2132,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   void _showDashboardAuthDialog(SavedConnection conn) {
+    final l10n = context.l10n;
     final gatewayPrefixCtrl = TextEditingController(
       text: conn.gatewayPrefix ?? '',
     );
@@ -2072,13 +2300,16 @@ class HomeScreenState extends State<HomeScreen> {
                           apiKey: conn.apiKey,
                           pathPrefix: gatewayPrefix,
                           clientCertificate: conn.clientCertificate,
+                          customHeaders: conn.customHeaders,
                         );
                         final result = await apiClient.checkHealth();
                         apiClient.close();
                         if (!ctx.mounted) return;
                         if (!result.isHealthy) {
                           setDialogState(() {
-                            error = result.userMessage(
+                            error = _localizedHealthMessage(
+                              l10n,
+                              result,
                               apiKeyProvided: conn.apiKey.isNotEmpty,
                             );
                             validating = false;
@@ -2319,7 +2550,11 @@ class HomeScreenState extends State<HomeScreen> {
                             key: const Key('home_lan_discovery_button'),
                             onPressed: _showLanDiscovery,
                             icon: const Icon(Icons.wifi_find),
-                            label: const Text('Find Hermes on LAN'),
+                            label: Text(
+                              context
+                                  .sharedL10n
+                                  .release_misc_find_hermes_on_lan,
+                            ),
                           ),
                         ],
                       ),
@@ -2377,6 +2612,8 @@ class _AddDialog extends StatefulWidget {
     String? gatewayProfile,
     ClientCertificateConfig? clientCertificate,
     bool clearClientCertificate,
+    String? deploymentToken,
+    Map<String, String> customHeaders,
   })
   onSave;
   final String? initialHost;
@@ -2408,6 +2645,8 @@ class _AddDialogState extends State<_AddDialog> {
   late final TextEditingController _dashPass;
   late final TextEditingController _desktopGatewayUrl;
   late final TextEditingController _gatewayProfile;
+  late final TextEditingController _deploymentToken;
+  late final TextEditingController _customHeaders;
   late final TextEditingController _certificatePassword;
   late final ClientCertificateService _certificateService;
   final _certificateFileLease = ClientCertificateFileLease();
@@ -2436,6 +2675,7 @@ class _AddDialogState extends State<_AddDialog> {
   /// Whether the current imported identity was committed by a successful save.
   /// Anything still staged when the dialog closes is discarded.
   bool _certificateSaved = false;
+  bool _didInitializeDefaultLabel = false;
 
   bool get _isEditing => widget.initialConnection != null;
 
@@ -2446,7 +2686,7 @@ class _AddDialogState extends State<_AddDialog> {
     super.initState();
     final conn = widget.initialConnection;
     _label = TextEditingController(
-      text: widget.initialLabel ?? conn?.label ?? 'Home',
+      text: widget.initialLabel ?? conn?.label ?? '',
     );
     _host = TextEditingController(
       text: conn == null
@@ -2475,6 +2715,12 @@ class _AddDialogState extends State<_AddDialog> {
       text: conn?.desktopGatewayUrl ?? '',
     );
     _gatewayProfile = TextEditingController(text: conn?.gatewayProfile ?? '');
+    _deploymentToken = TextEditingController(text: conn?.deploymentToken ?? '');
+    _customHeaders = TextEditingController(
+      text: headersBlockFromMap(
+        conn?.customHeaders ?? const <String, String>{},
+      ),
+    );
     _certificateService = ClientCertificateService();
     _certificatePassword = TextEditingController();
     _certificatePassword.addListener(_onCertificatePasswordChanged);
@@ -2495,8 +2741,21 @@ class _AddDialogState extends State<_AddDialog> {
         conn?.dashboardPortOverride != null ||
         conn?.dashboardUsername?.isNotEmpty == true ||
         conn?.dashboardPassword?.isNotEmpty == true ||
+        conn?.deploymentToken?.isNotEmpty == true ||
+        conn?.customHeaders.isNotEmpty == true ||
         _dashboardProxied ||
         conn?.desktopGatewayUrl?.isNotEmpty == true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInitializeDefaultLabel) {
+      _didInitializeDefaultLabel = true;
+      if (widget.initialLabel == null && widget.initialConnection == null) {
+        _label.text = context.l10n.nav_home;
+      }
+    }
   }
 
   void _onHostChanged() {
@@ -2853,6 +3112,7 @@ class _AddDialogState extends State<_AddDialog> {
       _certificateFileLease.run(_validateAndSaveOwned);
 
   Future<void> _validateAndSaveOwned() async {
+    final l10n = context.l10n;
     _scheduleCertificateCleanup();
     final label = _label.text.trim();
     final host = _host.text.trim();
@@ -2877,6 +3137,15 @@ class _AddDialogState extends State<_AddDialog> {
       return;
     }
 
+    final parsedHeaders = parseRemoteHeadersBlock(_customHeaders.text);
+    if (parsedHeaders.problems.isNotEmpty) {
+      setState(() {
+        _error = describeHeaderIssue(context.l10n, parsedHeaders.issues.first);
+        _showDashboard = true;
+      });
+      return;
+    }
+
     setState(() {
       _validating = true;
       _error = null;
@@ -2897,6 +3166,7 @@ class _AddDialogState extends State<_AddDialog> {
         apiKey: apiKey,
         pathPrefix: gatewayPrefix,
         clientCertificate: clientCertificate,
+        customHeaders: parsedHeaders.headers,
       );
       final result = await client.checkHealth();
       client.close();
@@ -2905,7 +3175,11 @@ class _AddDialogState extends State<_AddDialog> {
 
       if (!result.isHealthy) {
         setState(() {
-          _error = result.userMessage(apiKeyProvided: apiKey.isNotEmpty);
+          _error = _localizedHealthMessage(
+            l10n,
+            result,
+            apiKeyProvided: apiKey.isNotEmpty,
+          );
           _validating = false;
         });
         return;
@@ -2916,6 +3190,7 @@ class _AddDialogState extends State<_AddDialog> {
       final dashPass = _dashPass.text.trim();
       final desktopGatewayUrl = _desktopGatewayUrl.text.trim();
       final gatewayProfile = _gatewayProfile.text.trim();
+      final deploymentToken = _deploymentToken.text.trim();
       if (gatewayProfile.contains('/') ||
           gatewayProfile.contains(RegExp(r'\s'))) {
         setState(() {
@@ -2934,6 +3209,7 @@ class _AddDialogState extends State<_AddDialog> {
       if (dashPortText.isNotEmpty ||
           dashUser.isNotEmpty ||
           dashPass.isNotEmpty ||
+          deploymentToken.isNotEmpty ||
           desktopGatewayUrl.isNotEmpty ||
           dashboardPrefix.isNotEmpty ||
           _dashboardProxied) {
@@ -2953,6 +3229,8 @@ class _AddDialogState extends State<_AddDialog> {
             desktopGatewayUrl: desktopGatewayUrl,
             gatewayProfile: gatewayProfile,
             clientCertificate: clientCertificate,
+            deploymentToken: deploymentToken.isEmpty ? null : deploymentToken,
+            customHeaders: parsedHeaders.headers,
           ),
         );
         try {
@@ -2999,6 +3277,8 @@ class _AddDialogState extends State<_AddDialog> {
         gatewayProfile: gatewayProfile.isEmpty ? null : gatewayProfile,
         clientCertificate: savedCertificate,
         clearClientCertificate: savedCertificate == null,
+        deploymentToken: deploymentToken.isEmpty ? null : deploymentToken,
+        customHeaders: parsedHeaders.headers,
       );
       _certificateSaved = true;
       if (mounted) Navigator.pop(context);
@@ -3074,8 +3354,7 @@ class _AddDialogState extends State<_AddDialog> {
               controller: _host,
               decoration: InputDecoration(
                 labelText: context.l10n.host,
-                hintText:
-                    '192.168.1.50, 100.x.y.z, or hermes-machine.tailnet.ts.net',
+                hintText: context.l10n.example_host_hint,
               ),
               keyboardType: TextInputType.text,
               autocorrect: false,
@@ -3214,6 +3493,34 @@ class _AddDialogState extends State<_AddDialog> {
                       .profile_this_connection_chats_as_when_the_dashboard_serves_several,
                   helperMaxLines: 3,
                 ),
+                autocorrect: false,
+              ),
+            ],
+            if (_showDashboard) ...[
+              const SizedBox(height: 8),
+              TextField(
+                controller: _deploymentToken,
+                decoration: InputDecoration(
+                  labelText: context.l10n.deployment_token_label,
+                  hintText: context.l10n.deployment_token_hint,
+                  helperText: context.l10n.deployment_token_helper,
+                  helperMaxLines: 2,
+                ),
+                obscureText: true,
+                autocorrect: false,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                key: const Key('connection_custom_headers_field'),
+                controller: _customHeaders,
+                decoration: InputDecoration(
+                  labelText: context.l10n.custom_headers_label,
+                  hintText: context.l10n.custom_headers_hint,
+                  helperText: context.l10n.custom_headers_helper,
+                  helperMaxLines: 3,
+                ),
+                maxLines: 4,
+                minLines: 2,
                 autocorrect: false,
               ),
             ],
@@ -3429,6 +3736,8 @@ class _AddDialogState extends State<_AddDialog> {
     _dashPass.dispose();
     _desktopGatewayUrl.dispose();
     _gatewayProfile.dispose();
+    _deploymentToken.dispose();
+    _customHeaders.dispose();
     _certificatePassword.dispose();
     super.dispose();
   }
@@ -3446,7 +3755,7 @@ class LanDiscoverySheet extends StatefulWidget {
 class _LanDiscoverySheetState extends State<LanDiscoverySheet> {
   List<DiscoveredHermesServer> _servers = [];
   bool _scanning = true;
-  String? _error;
+  Object? _error;
 
   @override
   void initState() {
@@ -3471,7 +3780,7 @@ class _LanDiscoverySheetState extends State<LanDiscoverySheet> {
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Discovery failed: $e';
+        _error = e;
         _scanning = false;
       });
     }
@@ -3492,7 +3801,7 @@ class _LanDiscoverySheetState extends State<LanDiscoverySheet> {
               children: [
                 Expanded(
                   child: Text(
-                    'Find Hermes on LAN',
+                    context.sharedL10n.release_misc_find_hermes_on_lan,
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                 ),
@@ -3509,14 +3818,18 @@ class _LanDiscoverySheetState extends State<LanDiscoverySheet> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Text(
-                _error!,
+                context.sharedL10n.release_misc_discovery_failed(
+                  _error is TimeoutException
+                      ? context.sharedL10n.rel_svc_lan_timeout
+                      : _error.toString(),
+                ),
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
           if (!_scanning && _servers.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-              child: Text('No Hermes servers found on the local network.'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+              child: Text(context.sharedL10n.release_misc_no_lan_servers),
             ),
           Flexible(
             child: ListView.builder(

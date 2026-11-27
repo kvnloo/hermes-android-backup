@@ -122,7 +122,7 @@ class _CronScreenState extends State<CronScreen> {
   String _scheduleDisplay(Map<String, dynamic> job) => cronScheduleDisplay(job);
 
   String _jobName(Map<String, dynamic> job) =>
-      cronJobName(job, fallback: 'Untitled');
+      cronJobName(job, fallback: context.sharedL10n.rel_svc_misc_untitled);
 
   String _jobPrompt(Map<String, dynamic> job) => cronJobPromptPreview(job);
 
@@ -275,13 +275,20 @@ class _CronScreenState extends State<CronScreen> {
   /// Opens one cron run's transcript. A run is an ordinary session row
   /// (`cron_{job_id}_{timestamp}`), so the regular ChatScreen resume path
   /// shows the full transcript — same as the desktop's run-pill click.
+  ///
+  /// `/resume` there opens the pick in place of that chat; this screen
+  /// under it stays.
   void _openRun(Session run) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ChatScreen(
-          connection: widget.connection,
-          session: run,
-          turnApplicationController: widget.turnApplicationController,
+    unawaited(
+      Navigator.of(context).push(
+        resumableChatRoute(
+          run,
+          (session, onOpenSession) => ChatScreen(
+            connection: widget.connection,
+            session: session,
+            turnApplicationController: widget.turnApplicationController,
+            onOpenSession: onOpenSession,
+          ),
         ),
       ),
     );
@@ -435,7 +442,9 @@ class _CronScreenState extends State<CronScreen> {
         final response = await client.updateJob(jobId, result);
         if (!mounted || !identical(client, _client)) return;
         if (response['ok'] == false) {
-          throw const FormatException('Cron update rejected');
+          throw FormatException(
+            context.sharedL10n.rel_svc_misc_cron_update_rejected,
+          );
         }
         final saved = await client.getCronJob(jobId);
         if (!mounted || !identical(client, _client)) return;
@@ -455,7 +464,9 @@ class _CronScreenState extends State<CronScreen> {
             (saved['model'] ?? '') != (expectedModel ?? '') ||
             (saved['provider'] ?? '') != (expectedProvider ?? '') ||
             (saved['base_url'] ?? '') != (expectedBaseUrl ?? '')) {
-          throw const FormatException('Cron model read-back did not match');
+          throw FormatException(
+            context.sharedL10n.rel_svc_misc_cron_readback_mismatch,
+          );
         }
         if (!mounted) return;
         ScaffoldMessenger.of(
@@ -801,7 +812,11 @@ class _CronScreenState extends State<CronScreen> {
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
-                                  Text(paused ? 'Resume' : 'Pause'),
+                                  Text(
+                                    paused
+                                        ? context.sharedL10n.ng_resume
+                                        : context.sharedL10n.ng_pause,
+                                  ),
                                 ],
                               ),
                             ),

@@ -12,6 +12,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/services/connection_manager.dart';
 import '../../core/services/dashboard_api_client.dart';
+import '../../core/services/gateway_headers.dart';
 import '../../core/services/hermes_sign_in.dart';
 import '../../core/services/lan_discovery_service.dart';
 import '../../core/widgets/setup_interface_choice.dart';
@@ -26,6 +27,9 @@ class NgConnectScreen extends StatefulWidget {
     required this.connManager,
     required this.onConnected,
     this.existing,
+    this.initialAddress,
+    this.initialLabel,
+    this.fleetEnrollment = false,
     this.firstRun = true,
     this.onCancel,
     this.onUseClassic,
@@ -36,6 +40,11 @@ class NgConnectScreen extends StatefulWidget {
 
   /// A saved connection to sign in to again (address pre-filled).
   final SavedConnection? existing;
+
+  /// Credential-free suggestion. Unlike a saved account, never auto-probe it.
+  final Uri? initialAddress;
+  final String? initialLabel;
+  final bool fleetEnrollment;
   final bool firstRun;
   final VoidCallback? onCancel;
 
@@ -50,6 +59,8 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
   final _address = TextEditingController();
   final _clientId = TextEditingController();
   final _clientSecret = TextEditingController();
+  final _customHeaders = TextEditingController();
+  final _deploymentToken = TextEditingController();
   final _username = TextEditingController();
   final _password = TextEditingController();
 
@@ -57,7 +68,9 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
   ProbeResult? _probe;
   String? _addressError;
   bool _showAccess = false;
+  bool _showCustomHeaders = false;
   bool _showCertificate = false;
+  bool _showTokenField = false;
   late final NgCertificateController _certificate = NgCertificateController(
     initial: widget.existing?.clientCertificate,
   );
@@ -66,6 +79,7 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
   bool _waitingForBrowser = false;
   String? _signInError;
   bool _obscure = true;
+  bool _obscureToken = true;
   String? _profile;
   // Set once signed in on a gateway whose status probe hid its profiles.
   SavedConnection? _pendingProfileChoice;
@@ -77,12 +91,21 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
     super.initState();
     _certificate.addListener(_onCertificate);
     final existing = widget.existing;
+    if (widget.initialAddress != null) {
+      _address.text = widget.initialAddress.toString();
+    }
     if (existing != null) {
       _address.text =
           existing.singleLoginUrl ??
           existing.desktopGatewayUrl ??
           existing.baseUrl;
       _username.text = existing.dashboardUsername ?? '';
+      _customHeaders.text = headersBlockFromMap(existing.customHeaders);
+      _showCustomHeaders = existing.customHeaders.isNotEmpty;
+      _deploymentToken.text = existing.deploymentToken ?? '';
+      _showTokenField =
+          existing.signInMethod == 'token' ||
+          existing.deploymentToken?.isNotEmpty == true;
       _showCertificate = existing.clientCertificate != null;
       _profile = existing.gatewayProfile;
       WidgetsBinding.instance.addPostFrameCallback((_) => _test());
@@ -100,6 +123,8 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
       _address,
       _clientId,
       _clientSecret,
+      _customHeaders,
+      _deploymentToken,
       _username,
       _password,
     ]) {
@@ -151,6 +176,14 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
       _clientId.clear();
       _clientSecret.clear();
     }
+    final parsedHeaders = parseRemoteHeadersBlock(_customHeaders.text);
+    if (parsedHeaders.problems.isNotEmpty) {
+      setState(() {
+        _addressError = describeHeaderIssue(ngL, parsedHeaders.issues.first);
+        _showCustomHeaders = true;
+      });
+      return;
+    }
     setState(() {
       _addressError = null;
       _testing = true;
@@ -160,6 +193,7 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
     final result = await GatewayProbe().probe(
       url,
       certificate: _certificate.config,
+      customHeaders: parsedHeaders.headers,
     );
     if (!mounted) return;
     setState(() {
@@ -216,19 +250,33 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
     await _test();
   }
 
+  Map<String, String> get _customHeadersMap =>
+      parseRemoteHeadersBlock(_customHeaders.text).headers;
+
   Future<void> _save(String method) async {
     final url = _url!;
     final certificate = await _certificate.commit();
+    final customHeaders = _customHeadersMap;
+    final token = _deploymentToken.text.trim();
     Future<SavedConnection> persist(String? profile) =>
         widget.connManager.saveSingleLoginConnection(
           url: url,
           signInMethod: method,
-          label: widget.existing?.label,
+          fleetKind: widget.fleetEnrollment
+              ? (widget.initialAddress == null ? 'direct' : 'cloud')
+              : null,
+          label:
+              widget.existing?.label ??
+              (url.uri == widget.initialAddress ? widget.initialLabel : null),
           username: method == 'password' ? _username.text : null,
           password: method == 'password' ? _password.text : null,
           profile: profile,
           clientCertificate: certificate,
           clearClientCertificate: _certificate.cleared,
+          deploymentToken: method == 'token' ? token : null,
+          clearDeploymentToken: method != 'token',
+          customHeaders: customHeaders,
+          clearCustomHeaders: customHeaders.isEmpty,
         );
     var saved = await persist(_profile);
     // A multiplexed gateway answers a request without a profile from its
@@ -340,9 +388,30 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
       username: user,
       password: pass,
       certificate: _certificate.config,
+      customHeaders: _customHeadersMap,
     );
     if (!mounted) return;
     await _handle(result, 'password');
+  }
+
+  Future<void> _tokenSignIn() async {
+    final token = _deploymentToken.text.trim();
+    if (token.isEmpty) {
+      setState(() => _signInError = ngL.ng_enter_a_deployment_token);
+      return;
+    }
+    setState(() {
+      _signingIn = true;
+      _signInError = null;
+    });
+    final result = await HermesSignIn().tokenSignIn(
+      _url!,
+      token: token,
+      certificate: _certificate.config,
+      customHeaders: _customHeadersMap,
+    );
+    if (!mounted) return;
+    await _handle(result, 'token');
   }
 
   Future<void> _browserSignIn() async {
@@ -354,6 +423,7 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
     final result = await HermesSignIn().browserSignIn(
       _url!,
       certificate: _certificate.config,
+      customHeaders: _customHeadersMap,
       openBrowser: (uri) =>
           launchUrl(uri, mode: LaunchMode.externalApplication),
     );
@@ -377,6 +447,8 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
         _signInError = ngL.ng_too_many_attempts_wait_a_moment;
       case SignInFailed(:final message):
         _signInError = message;
+      case SignInGatewayHasNoAuth():
+        _signInError = ngL.ng_token_gateway_has_no_sign_in;
     }
     if (mounted) {
       setState(() {
@@ -516,9 +588,22 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
                   : NgTone.neutral,
               onTap: () => setState(() => _showCertificate = !_showCertificate),
             ),
+            NgPill(
+              ngL.ng_custom_headers,
+              icon: Icons.http_outlined,
+              tone: _customHeadersMap.isNotEmpty
+                  ? NgTone.success
+                  : NgTone.neutral,
+              onTap: () =>
+                  setState(() => _showCustomHeaders = !_showCustomHeaders),
+            ),
           ],
         ),
         if (_showAccess) ...[const SizedBox(height: 16), _accessCard(c)],
+        if (_showCustomHeaders) ...[
+          const SizedBox(height: 16),
+          _customHeadersCard(c),
+        ],
         if (_showCertificate) ...[
           const SizedBox(height: 16),
           NgCertificateCard(
@@ -551,7 +636,7 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
         NgPrimaryButton(
           label: ngL.ng_continue_to_sign_in,
           busy: _testing,
-          onPressed: status == null || !status.canSignIn
+          onPressed: status == null
               ? null
               : () => setState(() {
                   _signInStep = true;
@@ -618,6 +703,42 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
     );
   }
 
+  Widget _customHeadersCard(NgColors c) {
+    final parsed = parseRemoteHeadersBlock(_customHeaders.text);
+    return NgCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            ngL.ng_custom_headers_help,
+            style: NgType.bodySmall.copyWith(color: c.text2),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            key: const Key('ng-connect-custom-headers-field'),
+            controller: _customHeaders,
+            onChanged: (_) => setState(() {}),
+            maxLines: 4,
+            minLines: 2,
+            autocorrect: false,
+            decoration: InputDecoration(
+              labelText: ngL.custom_headers_label,
+              hintText: ngL.custom_headers_hint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+          if (parsed.problems.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              describeHeaderIssue(ngL, parsed.issues.first),
+              style: NgType.caption.copyWith(color: c.danger),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
   Widget _probeCard(NgColors c) {
     final probe = _probe!;
     if (probe case ProbeReachable(:final status)) {
@@ -667,8 +788,10 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
             if (!status.canSignIn) ...[
               const SizedBox(height: 10),
               Text(
-                ngL.ng_this_dashboard_offers_neither_a_username,
-                style: NgType.bodySmall.copyWith(color: c.danger),
+                ngL.ng_release_deployment_sign_in_hint(
+                  ngL.ng_this_dashboard_offers_neither_a_username,
+                ),
+                style: NgType.bodySmall.copyWith(color: c.warning),
               ),
             ] else if (!status.authRequired &&
                 !isPrivateHost(probe.url.host)) ...[
@@ -867,7 +990,7 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
-                      'or',
+                      ngL.ng_release_sign_in_or,
                       style: NgType.caption.copyWith(color: c.text3),
                     ),
                   ),
@@ -898,6 +1021,42 @@ class _NgConnectScreenState extends State<NgConnectScreen> {
               ngL.ng_finish_signing_in_on_the_page,
               textAlign: TextAlign.center,
               style: NgType.caption.copyWith(color: c.text3),
+            ),
+          ],
+          const SizedBox(height: 18),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: NgPill(
+              ngL.ng_use_a_deployment_token,
+              icon: Icons.vpn_key_outlined,
+              tone: _showTokenField ? NgTone.accent : NgTone.neutral,
+              onTap: () => setState(() => _showTokenField = !_showTokenField),
+            ),
+          ),
+          if (_showTokenField || (!password && !browser)) ...[
+            const SizedBox(height: 12),
+            NgField(
+              key: const Key('ng-connect-deployment-token-field'),
+              controller: _deploymentToken,
+              label: ngL.deployment_token_label,
+              hint: ngL.deployment_token_hint,
+              obscure: _obscureToken,
+              textInputAction: TextInputAction.go,
+              onSubmitted: (_) => _tokenSignIn(),
+              suffix: IconButton(
+                icon: Icon(
+                  _obscureToken ? Icons.visibility : Icons.visibility_off,
+                  size: 20,
+                ),
+                onPressed: () => setState(() => _obscureToken = !_obscureToken),
+              ),
+            ),
+            const SizedBox(height: 10),
+            NgSecondaryButton(
+              key: const Key('ng-connect-deployment-token-submit'),
+              label: ngL.ng_sign_in_with_deployment_token,
+              icon: Icons.vpn_key_outlined,
+              onPressed: _signingIn ? null : _tokenSignIn,
             ),
           ],
         ],

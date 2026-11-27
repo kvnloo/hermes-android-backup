@@ -24,7 +24,12 @@ import 'package:flutter/material.dart';
 import '../models/hermes_project.dart';
 import '../models/project_sessions_tree.dart';
 import '../models/session.dart';
+import '../screens/files_screen.dart';
 import '../services/projects_repository.dart';
+import '../services/remote_files_client.dart';
+import '../services/remote_workspace.dart';
+import 'project_settings_view.dart';
+import 'git_review_pane.dart';
 import '../theme/hermes_theme.dart';
 import '../utils/project_session_filter.dart';
 import '../utils/relative_time.dart';
@@ -53,6 +58,9 @@ class ProjectDetailScreen extends StatefulWidget {
   final String projectName;
 
   final ProjectSessionsLoader loadSessions;
+  final RemoteWorkspaceOwner? workspace;
+  final ValueChanged<String>? onNewLaneChat;
+  final RemoteFilesClient Function()? createFilesClient;
 
   /// Opens one chat. When null the rows are drawn inert rather than
   /// fake-tappable.
@@ -77,6 +85,9 @@ class ProjectDetailScreen extends StatefulWidget {
     required this.projectId,
     required this.projectName,
     required this.loadSessions,
+    this.workspace,
+    this.onNewLaneChat,
+    this.createFilesClient,
     this.onOpenSession,
     this.onNewChat,
     this.projects = const [],
@@ -107,6 +118,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
   bool _deleting = false;
   bool _managing = false;
   late String _projectName;
+  List<ProjectSettingsFolder>? _settingsFolders;
 
   @override
   void initState() {
@@ -404,6 +416,32 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       appBar: AppBar(
         title: Text(title),
         actions: [
+          if (widget.workspace case final owner?)
+            IconButton(
+              tooltip: context
+                  .sharedL10n
+                  .release_core_project_settings_view_project_settings,
+              icon: const Icon(Icons.tune),
+              onPressed: () async {
+                final route = owner.route();
+                await Navigator.of(context).push<void>(
+                  MaterialPageRoute(
+                    builder: (_) => ProjectSettingsView(
+                      owner: owner,
+                      route: route,
+                      projectId: widget.projectId,
+                      onChanged: (snapshot) {
+                        if (!mounted || snapshot.id != widget.projectId) {
+                          return;
+                        }
+                        setState(() => _settingsFolders = snapshot.folders);
+                      },
+                    ),
+                  ),
+                );
+                if (mounted) await _load(refresh: true);
+              },
+            ),
           if (hasActions)
             if (_deleting || _managing)
               const Padding(
@@ -674,7 +712,37 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                   HermesSpacing.lg,
                   HermesSpacing.md,
                 ),
-                child: _RepoCard(repo: repo),
+                child: _RepoCard(
+                  repo: repo,
+                  onOpen: widget.onOpenSession,
+                  onNew: view.isStale ? null : widget.onNewLaneChat,
+                  onReview: widget.workspace == null
+                      ? null
+                      : (session, path) {
+                          final owner = widget.workspace!;
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (routeContext) => GitReviewPane(
+                                owner: owner,
+                                route: owner.route(storedSessionId: session.id),
+                                expectedCwd:
+                                    path != null && isSafeWorkspacePath(path)
+                                    ? path
+                                    : null,
+                                turnBaseline: path == null
+                                    ? null
+                                    : gitTurnMemory.baselineFor(
+                                        ownerId: owner.connectionId,
+                                        profile: owner.profile,
+                                        sessionId: session.id,
+                                        cwd: path,
+                                      ),
+                                onClose: () => Navigator.pop(routeContext),
+                              ),
+                            ),
+                          );
+                        },
+                ),
               ),
           ],
           if (tree?.path != null) ...[
@@ -696,8 +764,8 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
 
   /// The project's folders, exactly as the server described them.
   ///
-  /// Paths come from `projects.project_sessions` (project, repos, lanes); the
-  /// screen never scans local storage and never invents a tree of its own.
+  /// Merge the registered project folders with the repos/lanes in its tree.
+  /// Never scan local storage or invent a path for a folderless project.
   Widget _buildFiles(ProjectSessionsView view) {
     final tokens = HermesTokens.of(context);
     final paths = <String>[];
@@ -708,6 +776,20 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
     }
 
     final tree = view.tree;
+    final settingsFolders = _settingsFolders;
+    if (settingsFolders != null) {
+      for (final folder in settingsFolders) {
+        add(folder.path);
+      }
+    } else {
+      final project = widget.projects
+          .where((p) => p.id == widget.projectId)
+          .firstOrNull;
+      add(project?.primaryPath);
+      for (final folder in project?.folders ?? const <ProjectFolder>[]) {
+        add(folder.path);
+      }
+    }
     add(tree?.path);
     for (final repo in tree?.repos ?? const <ProjectRepo>[]) {
       add(repo.path);
@@ -716,6 +798,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
       }
     }
 
+    final createFiles = widget.createFilesClient;
     return RefreshIndicator(
       onRefresh: () => _load(refresh: true),
       child: ListView(
@@ -745,6 +828,13 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                   HermesSpacing.sm,
                 ),
                 child: HermesCard(
+                  onTap: createFiles == null
+                      ? null
+                      : () => FilesScreen.open(
+                          context,
+                          createFiles(),
+                          directory: path,
+                        ),
                   child: Row(
                     children: [
                       Icon(
@@ -761,6 +851,7 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                           ),
                         ),
                       ),
+                      if (createFiles != null) const Icon(Icons.chevron_right),
                     ],
                   ),
                 ),
@@ -858,7 +949,9 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen>
                         status: session.isActive
                             ? HermesStatus.running
                             : HermesStatus.completed,
-                        label: session.isActive ? 'Running' : 'Done',
+                        label: session.isActive
+                            ? context.sharedL10n.status_running
+                            : context.sharedL10n.status_done,
                       ),
                     ],
                   ),
@@ -971,7 +1064,15 @@ class _SessionCard extends StatelessWidget {
 class _RepoCard extends StatelessWidget {
   final ProjectRepo repo;
 
-  const _RepoCard({required this.repo});
+  final ValueChanged<Session>? onOpen;
+  final ValueChanged<String>? onNew;
+  final void Function(Session session, String? path)? onReview;
+  const _RepoCard({
+    required this.repo,
+    required this.onOpen,
+    required this.onNew,
+    required this.onReview,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1004,21 +1105,50 @@ class _RepoCard extends StatelessWidget {
           ),
           if (lanes.isNotEmpty) ...[
             const SizedBox(height: HermesSpacing.sm),
-            Wrap(
-              spacing: HermesSpacing.sm,
-              runSpacing: HermesSpacing.xs,
-              children: [
-                for (final lane in lanes)
-                  Text(
+            for (final lane in lanes)
+              Material(
+                type: MaterialType.transparency,
+                child: ExpansionTile(
+                  title: Text(
                     lane.isMain
                         ? context.l10n.branch_main(lane.label)
                         : lane.label,
-                    style: tokens.typography.label.copyWith(
-                      color: lane.isMain ? tokens.accent : tokens.muted,
-                    ),
                   ),
-              ],
-            ),
+                  subtitle: lane.path == null ? null : Text(lane.path!),
+                  children: [
+                    if (onNew != null &&
+                        lane.path != null &&
+                        isSafeWorkspacePath(lane.path!))
+                      ListTile(
+                        leading: const Icon(Icons.add_comment_outlined),
+                        title: Text(
+                          context
+                              .sharedL10n
+                              .release_core_project_detail_screen_new_chat_in_this_lane,
+                        ),
+                        onTap: () => onNew!(lane.path!),
+                      ),
+                    if (onReview != null && lane.sessions.isNotEmpty)
+                      ListTile(
+                        key: Key('review-git-${lane.id}'),
+                        leading: const Icon(Icons.difference_outlined),
+                        title: Text(
+                          context
+                              .sharedL10n
+                              .release_core_project_detail_screen_review_git,
+                        ),
+                        onTap: () => onReview!(lane.sessions.first, lane.path),
+                      ),
+                    for (final session in lane.sessions)
+                      ListTile(
+                        title: Text(
+                          session.title.isEmpty ? session.id : session.title,
+                        ),
+                        onTap: onOpen == null ? null : () => onOpen!(session),
+                      ),
+                  ],
+                ),
+              ),
           ],
         ],
       ),

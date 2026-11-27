@@ -1,0 +1,66 @@
+diff --git a/hermes_cli/web_routers/files.py b/hermes_cli/web_routers/files.py
+--- a/hermes_cli/web_routers/files.py
++++ b/hermes_cli/web_routers/files.py
+@@ -1168,8 +1168,44 @@
+     return entries
+ 
+ 
++def _fs_mark_git_ignored(target: Path, entries: list[dict[str, Any]]) -> None:
++    """Decorate only the admitted rows; an absent flag means unknown, never false."""
++    from hermes_cli._subprocess_compat import NO_LAZY_FETCH_ENV, noninteractive_repo_git_env
++
++    if not entries or len(entries) > 512:
++        return
++    try:
++        # check-ignore rejects --literal-pathspecs. './' neutralizes leading ':';
++        # don't submit wildmatch characters, which can match unrelated index entries.
++        rows = {b"./" + os.fsencode(e["name"]): e for e in entries
++                if not any(c in e["name"] for c in "*?[\\")}
++        names = b"".join(name + b"\0" for name in rows)
++        if not names or len(names) > 32 * 1024:
++            return
++        env = noninteractive_repo_git_env(target)
++        if env is None:
++            return
++        proc = subprocess.run(
++            ["git", "-c", f"core.excludesFile={os.devnull}", "check-ignore", "--stdin", "-z"],
++            cwd=target, input=names, capture_output=True, timeout=2, creationflags=windows_hide_flags(),
++            env={**env, **NO_LAZY_FETCH_ENV, "GIT_OPTIONAL_LOCKS": "0", "GIT_ALLOW_PROTOCOL": ""},
++        )
++    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError):
++        return
++    # 1 means *no matches*, not a spawn failure. A warning (e.g. unreadable
++    # ignore file), malformed output or any other exit makes the batch unknown.
++    if proc.stderr or proc.returncode not in (0, 1):
++        return
++    records = proc.stdout.split(b"\0")
++    ignored = set(records[:-1])
++    if records[-1] or (proc.returncode == 0) != bool(ignored) or not ignored.issubset(rows):
++        return
++    for name, row in rows.items():
++        row["gitIgnored"] = name in ignored
++
++
+ @router.get("/api/fs/list")
+-async def fs_list(path: str, request: Request, profile: Optional[str] = None):
++async def fs_list(path: str, request: Request, profile: Optional[str] = None, git_flags: bool = False):
+     backend = await asyncio.to_thread(_fs_backend, profile)
+     if backend is not None:
+         try:
+@@ -1180,10 +1216,14 @@
+         listing["entries"] = [e for e in listing["entries"] if not _is_sensitive_path(PurePosixPath(e["path"]))]
+         return listing
+     target = _agent_fs_path(path, profile_home=_fs_profile_home(profile))
+-    await asyncio.to_thread(_hosted_fs_read_guard, target, request)
++    locked_root = await asyncio.to_thread(_hosted_fs_read_guard, target, request)
+     try:
+         # The scan stats every entry (a network share answers in seconds): off the event loop.
+-        return {"entries": await asyncio.to_thread(_fs_list_entries, target)}
++        entries = await asyncio.to_thread(_fs_list_entries, target)
++        # Git metadata/config can live outside its worktree. Never probe across a read boundary.
++        if git_flags and locked_root is None:
++            await asyncio.to_thread(_fs_mark_git_ignored, target, entries)
++        return {"entries": entries}
+     except OSError as exc:
+         for exc_type, code in _FS_LIST_ERRNO:
+             if isinstance(exc, exc_type):

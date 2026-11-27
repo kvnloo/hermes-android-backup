@@ -1,5 +1,6 @@
 import '../utils/generated_media.dart';
 import '../utils/media_tags.dart';
+import '../l10n/service_strings.dart';
 
 enum GatewayToolActivityPhase {
   running,
@@ -118,26 +119,30 @@ class GatewayToolActivity {
 
   String get displayName {
     final words = name.replaceAll(RegExp(r'[_-]+'), ' ').trim();
-    if (words.isEmpty) return 'Tool';
+    if (words.isEmpty) return serviceStrings.task_role_tool;
     return words[0].toUpperCase() + words.substring(1);
   }
 
   String get statusLabel {
     switch (phase) {
       case GatewayToolActivityPhase.running:
-        return 'Running';
+        return serviceStrings.status_running;
       case GatewayToolActivityPhase.generating:
-        return 'Preparing';
+        return serviceStrings.rel_svc_misc_preparing;
       case GatewayToolActivityPhase.progress:
-        return 'Working';
+        return serviceStrings.ng_working;
       case GatewayToolActivityPhase.completed:
         return durationSeconds == null
-            ? 'Completed'
-            : 'Completed in ${_formatDuration(durationSeconds!)}';
+            ? serviceStrings.status_completed
+            : serviceStrings.rel_svc_misc_completed_in(
+                _formatDuration(durationSeconds!),
+              );
       case GatewayToolActivityPhase.failed:
         return durationSeconds == null
-            ? 'Failed'
-            : 'Failed after ${_formatDuration(durationSeconds!)}';
+            ? serviceStrings.status_failed
+            : serviceStrings.rel_svc_misc_failed_after(
+                _formatDuration(durationSeconds!),
+              );
     }
   }
 
@@ -387,9 +392,9 @@ class GatewayTurnStatus {
   static String? _fallbackText(String kind) {
     switch (kind) {
       case 'compacting':
-        return 'Compacting conversation context…';
+        return serviceStrings.rel_svc_misc_compacting_context;
       case 'compacted':
-        return 'Conversation context compacted';
+        return serviceStrings.rel_svc_misc_context_compacted;
       default:
         return null;
     }

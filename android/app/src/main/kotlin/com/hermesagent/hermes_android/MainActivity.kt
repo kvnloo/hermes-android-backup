@@ -18,6 +18,8 @@ class MainActivity : FlutterActivity() {
     private val launchChannelName = "com.hermesagent.hermes_android/launch"
     private val keepAliveChannelName = "com.hermesagent.hermes_android/keepalive"
     private val recordingScreenOwners = mutableSetOf<String>()
+    // Keep-awake (Settings → Keep screen on): owners on com.hermesagent.ares/power.
+    private val keepAwakeOwners = mutableSetOf<String>()
     private val quickChatAction = "com.hermesagent.hermes_android.action.QUICK_CHAT"
     private val maxSharedItems = 10
     private val maxSharedBytes = 64L * 1024L * 1024L
@@ -25,6 +27,11 @@ class MainActivity : FlutterActivity() {
     private var launchChannel: MethodChannel? = null
     private var initialShareIntent: Intent? = null
     private var initialLaunchAction: String? = null
+    // hermes:// links (com.hermesagent.ares/deeplink): the cold-start link, or a
+    // warm one that arrived before Dart asked for the initial link.
+    private var deepLinkChannel: MethodChannel? = null
+    private var pendingDeepLink: String? = null
+    private var deepLinkReady = false
     private var attachmentPdfPreview: AttachmentPdfPreview? = null
     private var attachmentFileSaver: AttachmentFileSaver? = null
     private var handsFreeVoice: HandsFreeVoicePlugin? = null
@@ -32,6 +39,9 @@ class MainActivity : FlutterActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         initialShareIntent = intent.takeIf(::isShareIntent)
         initialLaunchAction = launchActionFor(intent)
+        // A recreated activity (rotation, process restore) re-reads the same
+        // launch intent; only a fresh launch carries the link to Dart.
+        if (savedInstanceState == null) pendingDeepLink = deepLinkFor(intent)
         super.onCreate(savedInstanceState)
         runCatching { MobilePushBridge.captureTap(this, intent) }
         if (intent?.action == HermesAutoNotifications.OPEN) runCatching { HermesAutoNotifications.receive(this, intent) }
@@ -51,13 +61,35 @@ class MainActivity : FlutterActivity() {
                     result.error("invalid_arguments", "Recording owner and enabled are required", null)
                 } else {
                     if (enabled) recordingScreenOwners.add(owner) else recordingScreenOwners.remove(owner)
-                    if (recordingScreenOwners.isEmpty()) {
-                        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                    } else {
-                        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                    }
+                    updateKeepScreenOn()
                     result.success(null)
                 }
+            }
+        }
+        // Same contract as the desktop runners: isSupported, setAwake {owner, enabled}.
+        // Android keeps the screen on while this window is visible; the flag has no
+        // effect once the activity is in the background, and Dart also releases it
+        // when the app is paused.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger,
+            "com.hermesagent.ares/power").setMethodCallHandler { call, result ->
+            when (call.method) {
+                "isSupported" -> result.success(true)
+                "setAwake" -> {
+                    val owner = call.argument<String>("owner")
+                    val enabled = call.argument<Boolean>("enabled")
+                    if (owner.isNullOrBlank() || owner.length > 128 || enabled == null) {
+                        result.error("bad-args", "setAwake expects {owner, enabled}", null)
+                    } else {
+                        if (enabled) {
+                            if (keepAwakeOwners.size < 32) keepAwakeOwners.add(owner)
+                        } else {
+                            keepAwakeOwners.remove(owner)
+                        }
+                        updateKeepScreenOn()
+                        result.success(null)
+                    }
+                }
+                else -> result.notImplemented()
             }
         }
         attachmentPdfPreview?.close()
@@ -82,6 +114,22 @@ class MainActivity : FlutterActivity() {
                         val pending = initialShareIntent
                         initialShareIntent = null
                         processShareIntent(pending) { payload -> result.success(payload) }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+        }
+        deepLinkReady = false
+        deepLinkChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger,
+            "com.hermesagent.ares/deeplink").apply {
+            setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getInitialLink" -> {
+                        // Dart listens from here on: later links go straight to it.
+                        deepLinkReady = true
+                        val pending = pendingDeepLink
+                        pendingDeepLink = null
+                        result.success(pending)
                     }
                     else -> result.notImplemented()
                 }
@@ -125,13 +173,25 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        deepLinkChannel?.setMethodCallHandler(null)
+        deepLinkChannel = null
+        deepLinkReady = false
         handsFreeVoice?.setForeground(false)
         handsFreeVoice = null
         super.cleanUpFlutterEngine(flutterEngine)
     }
 
+    private fun updateKeepScreenOn() {
+        if (recordingScreenOwners.isEmpty() && keepAwakeOwners.isEmpty()) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
     override fun onDestroy() {
         recordingScreenOwners.clear()
+        keepAwakeOwners.clear()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         handsFreeVoice?.setForeground(false)
         attachmentPdfPreview?.close()
@@ -177,6 +237,15 @@ class MainActivity : FlutterActivity() {
         WindowViewport.refresh(window.decorView)
         runCatching { MobilePushBridge.captureTap(this, intent) }
         if (intent?.action == HermesAutoNotifications.OPEN) runCatching { HermesAutoNotifications.receive(this, intent) }
+        deepLinkFor(intent)?.let { link ->
+            val channel = deepLinkChannel
+            if (channel != null && deepLinkReady) {
+                channel.invokeMethod("onDeepLink", link)
+            } else {
+                pendingDeepLink = link
+            }
+            return
+        }
         launchActionFor(intent)?.let { action ->
             launchChannel?.invokeMethod("launchAction", action)
             return
@@ -187,6 +256,17 @@ class MainActivity : FlutterActivity() {
         }
     }
 
+
+    /// The whole hermes: link from a VIEW intent, or null. The runner only bounds
+    /// it (16 KiB, no control characters); Dart's router validates the route.
+    private fun deepLinkFor(intent: Intent?): String? {
+        if (intent == null || intent.action != Intent.ACTION_VIEW) return null
+        val data = intent.data ?: return null
+        if (data.scheme?.lowercase() != "hermes") return null
+        val link = data.toString()
+        if (link.length > 16 * 1024 || link.any { it < ' ' || it == '\u007f' }) return null
+        return link
+    }
 
     private fun launchActionFor(intent: Intent?): String? =
         if (intent?.action == quickChatAction) "quickChat" else null

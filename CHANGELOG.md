@@ -21,6 +21,28 @@ Publication correction: tag v4.0.6 has no published APK assets; its release
 workflow failed the identity gate because the tag preceded the version bump.
 The paging change it names (#284) first ships in the published 4.0.7 APKs.
 
+## [4.0.19] - 2026-11-27
+
+Stable release `4.0.19+3075`, with release APK codes `30751`, `30752` and
+`30753`. Each split exceeds the published 4.0.18 stable splits (`30743`).
+Installs over the existing app.
+
+### Changed
+
+- Chat model pickers list only the LLMs from providers actually configured on
+  the gateway, instead of the whole provider catalog (PR #381). The picker
+  keeps a pinned provider/model pair visible and selected, keeps managed
+  local-runtime and MoA rows that the gateway treats as configured, and falls
+  back to the full list when the gateway sends no flags or the filter would
+  leave the picker empty. The cron picker, model management screen and NextGen
+  models page keep the full catalog.
+
+### Thanks
+
+- [Thaeland](https://github.com/Thaeland) — chat model pickers list only the
+  configured gateway providers, with widget tests and independent reviews
+  (PR #381). Original commits preserved.
+
 ## [4.0.18] - 2026-11-26
 
 Stable release `4.0.18+3074`, with release APK codes `30741`, `30742` and

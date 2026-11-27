@@ -1,7 +1,7 @@
 name: hermes_android
 description: "Hermes Agent — chat with your Hermes Gateway API Server over LAN. SSE streaming, Bearer auth, session management."
 publish_to: 'none'
-version: 4.0.18+3074
+version: 5.0.0+5000
 
 environment:
   sdk: ^3.12.0
@@ -17,13 +17,19 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_markdown: ^0.7.6
   markdown: ^7.3.0
+  html: 0.15.7 # Already locked; MIT. Inert preview DOM, not a script engine.
   video_player: 2.11.1
   video_player_win: ^3.2.2
   pdfx: ^2.9.2
 
   # Offline, bounded Office document previews (also used transitively by image).
   archive: 4.0.9
+  qr: 3.0.3
   xml: 6.6.1
+
+  # Unicode NFC/NFKD for the New Bot profile id (Desktop's
+  # slugifyProfileName). MIT, no dependencies; see NOTICE.md.
+  unorm_dart: 0.3.3
 
   # State management
   flutter_riverpod: ^3.5.0
@@ -37,11 +43,18 @@ dependencies:
 
   # Local storage
   shared_preferences: ^2.3.0
+  shared_preferences_platform_interface: ^2.4.2
+  path_provider_platform_interface: 2.1.3
   flutter_secure_storage: 10.3.1
   path_provider: ^2.1.5
   image: ^4.5.4
   image_picker: ^1.2.4
   file_picker: 10.3.3
+  # Composer intake: files dropped from the OS and images pasted from the
+  # clipboard on desktop. Both Apache-2.0 (MixinNetwork/flutter-plugins);
+  # desktop_drop 0.9 needs Flutter 3.47.
+  desktop_drop: 0.8.4
+  pasteboard: 0.6.2
 
   # Data models
   json_annotation: ^4.9.0
@@ -59,23 +72,24 @@ dependencies:
   speech_to_text: ^7.4.0
   flutter_tts: ^4.2.5
   record: 7.2.0
+  flutter_webrtc: 1.6.3
   audioplayers: 6.8.1
 
   # Notifications
   flutter_local_notifications: ^18.0.0
   cryptography: ^2.7.0
+  xterm: 4.0.0
+  dartssh2: 4.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   msix: ^3.16.8
   flutter_lints: ^6.0.0
-  shared_preferences_platform_interface: ^2.4.2
   video_player_platform_interface: ^6.6.0
   build_runner: ^2.4.14
   json_serializable: ^6.9.4
 
-  path_provider_platform_interface: 2.1.3
   fake_async: any
 flutter:
   generate: true
@@ -100,6 +114,7 @@ flutter:
           weight: 500
   assets:
     - assets/
+    - assets/icon/ares_mark_black.png
     - LICENSE
     - assets/fonts/OFL.txt
     - assets/fonts/geist/OFL.txt
@@ -113,6 +128,14 @@ flutter:
     - third_party/licenses/flutter-BSD-3-Clause.txt
     - third_party/licenses/Apache-2.0.txt
     - third_party/licenses/gradle-NOTICE.txt
+    - third_party/webrtc/NOTICE.md
+    - third_party/licenses/webrtc-BSD-3-Clause.txt
+    - third_party/licenses/webrtc-PATENTS.txt
+    - third_party/licenses/webrtc-third-party-licenses.txt
+    - third_party/licenses/audioswitch-Apache-2.0.txt
+    - third_party/licenses/flutter_webrtc-NOTICE.txt
+    - third_party/licenses/unorm_dart-MIT.txt
+    - third_party/licenses/Unicode-3.0.txt
 
 # MSIX package for sideloading and the Microsoft Store (built on Windows).
 #   flutter build windows --release
@@ -129,8 +152,11 @@ msix_config:
   publisher_display_name: Sam Russell
   identity_name: com.hermesagent.ares
   publisher: CN=Sam Russell
-  msix_version: 4.0.10.0
+  msix_version: 5.0.0.0
   logo_path: assets/icon/icon.png
+  # Toast tickets, and hermes:// links (routed by the runner to the primary
+  # window only, like the toast tickets).
+  protocol_activation: ares-msix-notification, hermes
   capabilities: internetClient, microphone
   languages: en-us
   store: false

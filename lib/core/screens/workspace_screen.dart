@@ -7,6 +7,7 @@
 library;
 
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,12 +17,24 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/attachment_draft.dart';
 import '../models/hermes_project.dart';
 import '../models/projects_tree_overview.dart';
+import '../presentation/presentation_chrome.dart';
+import '../render/render_scope.dart';
 import '../services/android_share_intent_service.dart';
 import '../services/attachment_draft_service.dart';
 import '../services/chat_space_store.dart';
 import '../services/chat_assets_client.dart';
 import '../services/connection_manager.dart';
 import '../services/desktop_gateway_client.dart';
+import '../capabilities/capability_admin.dart';
+import '../capabilities/capability_pages.dart';
+import 'workspace_profiles_screen.dart';
+import 'fleet_screen.dart';
+import 'workspace_workers_screen.dart';
+import 'host_operations_screen.dart';
+import 'kanban_board_screen.dart';
+import 'bots_screen.dart';
+import 'schedule_desk_screen.dart';
+import 'memory_graph_screen.dart';
 import '../services/gateway_turn_application_controller.dart';
 import '../services/gateway_turn_journal.dart';
 import '../services/local_chat_pin_store.dart';
@@ -36,7 +49,10 @@ import '../services/session_archive_ledger.dart';
 import '../services/remote_files_client.dart';
 import '../services/shared_attachment_preparer.dart';
 import '../services/session_browser_loader.dart';
+import '../services/session_search_client.dart';
+import '../models/session_search_hit.dart';
 import '../theme/hermes_theme.dart';
+import '../workspace/profile_presentation_store.dart';
 import '../utils/activity_feed.dart';
 import '../utils/adaptive_layout.dart';
 import '../utils/operational_activity_feed.dart';
@@ -48,6 +64,8 @@ import '../widgets/crons_pane.dart';
 import '../widgets/hermes_components.dart';
 import '../widgets/hermes_shell.dart';
 import '../widgets/more_pane.dart';
+import 'classic_parallel_workspace.dart';
+import 'parallel_workspace_entry.dart';
 import 'projects_root_screen.dart';
 import '../widgets/new_chat_sheet.dart';
 import '../widgets/project_detail_screen.dart';
@@ -58,8 +76,10 @@ import 'files_screen.dart';
 import 'cron_screen.dart';
 import 'memory_screen.dart';
 import 'settings_screen.dart';
+import '../settings/settings_browser.dart';
 import 'model_management_screen.dart';
 import 'open_router_screen.dart';
+import 'model_admin_screen.dart';
 import 'nous_portal_screen.dart';
 import 'provider_oauth_screen.dart';
 import 'provider_screen.dart';
@@ -69,6 +89,10 @@ import 'workspace_sessions_screen.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
 import '../widgets/desktop_shortcuts.dart';
+import '../widgets/command_palette.dart';
+import '../services/hermes_deeplink.dart';
+import '../desktop/desktop_integration.dart';
+import '../desktop/quick_entry.dart';
 
 /// Builds the Projects repository for a connection. Injectable for tests.
 typedef ProjectsRepositoryFactory =
@@ -126,12 +150,15 @@ Widget buildWorkspaceChatScreen({
   String? projectName,
   String? projectWorkingDirectory,
   String? initialComposerText,
+  bool initialComposerAppends = false,
   List<AttachmentDraft> initialAttachmentDrafts = const [],
   GatewayTurnApplicationController? turnApplicationController,
   Future<void> Function(String sessionId, bool archived)? onArchiveChanged,
   Future<bool> Function(String sessionId, bool archived)? sessionArchiver,
   ApiClient? testApiClient,
   VoidCallback? onClose,
+  Future<void> Function(Session session)? onOpenSession,
+  VoidCallback? onOpenAppCommandPalette,
 }) {
   return ChatScreen(
     connection: connection,
@@ -139,17 +166,27 @@ Widget buildWorkspaceChatScreen({
     projectName: projectName,
     projectWorkingDirectory: projectWorkingDirectory,
     initialComposerText: initialComposerText,
+    initialComposerAppends: initialComposerAppends,
     initialAttachmentDrafts: initialAttachmentDrafts,
     turnApplicationController: turnApplicationController,
     onArchiveChanged: onArchiveChanged,
     sessionArchiver: sessionArchiver,
     testApiClient: testApiClient,
     onClose: onClose,
+    onOpenSession: onOpenSession,
+    onOpenAppCommandPalette: onOpenAppCommandPalette,
   );
 }
 
 class WorkspaceScreen extends StatefulWidget {
   final SavedConnection connection;
+
+  static final Map<String, int> _openConnections = <String, int>{};
+
+  /// Whether a workspace for [connectionId] is mounted (the app root routes
+  /// a quick-entry hand-back there instead of opening another).
+  static bool isOpenFor(String connectionId) =>
+      (_openConnections[connectionId] ?? 0) > 0;
 
   /// Overrides repository construction. When provided, the caller keeps
   /// ownership of the repository lifecycle and this screen will not close it.
@@ -260,6 +297,10 @@ class WorkspaceScreen extends StatefulWidget {
 }
 
 class _WorkspaceScreenState extends State<WorkspaceScreen> {
+  /// The connection counted in [WorkspaceScreen.isOpenFor] (stable even if
+  /// the widget is rebuilt with another connection object).
+  late final String _openConnectionId = widget.connection.id;
+
   ProjectsRepository? _repository;
   DesktopGatewayClient? _ownedGateway;
   ChatSpaceStore? _spaceStore;
@@ -294,6 +335,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   String? _detailProjectName;
   String? _detailWorkingDirectory;
   String? _detailComposerText;
+  bool _detailComposerAppends = false;
   List<AttachmentDraft> _detailAttachments = const [];
 
   /// Tracks the previous window class so folding a wide window back to compact
@@ -302,6 +344,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   /// Desktop keyboard shortcut subscription (no-op on touch platforms).
   StreamSubscription<DesktopShortcut>? _desktopShortcutSub;
+  VoidCallback? _deepLinkListener;
+  VoidCallback? _quickEntryTargets;
   final _shellKey = GlobalKey<HermesShellState>();
 
   /// The last known attention/running signals. The compact attention section uses these; an
@@ -454,6 +498,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           titleRevision == _sessionTitleRevision) {
         setState(() => _knownSessions = sessions);
         if (complete) _sessionsKnown = true;
+        if (HermesDeepLinkService.shared.pendingLink.value != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _onPendingDeepLink();
+          });
+        }
       }
       return sessions;
     }
@@ -751,6 +800,25 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   void initState() {
     super.initState();
     _desktopShortcutSub = desktopShortcutBus.stream.listen(_onDesktopShortcut);
+    WorkspaceScreen._openConnections.update(
+      _openConnectionId,
+      (count) => count + 1,
+      ifAbsent: () => 1,
+    );
+    _quickEntryTargets = QuickEntryTargets.register(
+      _quickEntryChats,
+      owner: () => HermesLinkOwner(
+        connectionId: widget.connection.id,
+        profile: widget.connection.gatewayProfile,
+      ),
+    );
+    _deepLinkListener = _onPendingDeepLink;
+    HermesDeepLinkService.shared.pendingLink.addListener(_deepLinkListener!);
+    if (HermesDeepLinkService.shared.pendingLink.value != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _onPendingDeepLink();
+      });
+    }
     _initialization = _initialize();
     _activityListener = _turnController.addTurnActivityListener(
       _onTurnActivityChanged,
@@ -886,6 +954,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   @override
   void dispose() {
     _desktopShortcutSub?.cancel();
+    final open = WorkspaceScreen._openConnections;
+    if ((open[_openConnectionId] ?? 0) <= 1) {
+      open.remove(_openConnectionId);
+    } else {
+      open[_openConnectionId] = open[_openConnectionId]! - 1;
+    }
+    _quickEntryTargets?.call();
+    final deepLinkListener = _deepLinkListener;
+    if (deepLinkListener != null) {
+      HermesDeepLinkService.shared.pendingLink.removeListener(deepLinkListener);
+    }
     _activityRead++;
     _activitySessionRead++;
     _activityDebounce?.cancel();
@@ -907,10 +986,25 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     super.dispose();
   }
 
+  /// Shows a shell destination. A chat or another screen pushed on top of the
+  /// shell (the narrow layout pushes chats) is popped first; switching only
+  /// the hidden tab underneath would look like nothing happened.
+  void _showShellDestination(HermesDestination destination) {
+    if (!mounted) return;
+    final route = ModalRoute.of(context);
+    final navigator = Navigator.maybeOf(context);
+    if (route != null && navigator != null && !route.isCurrent) {
+      navigator.popUntil((candidate) => candidate == route);
+    }
+    _shellKey.currentState?.select(destination);
+  }
+
   /// Handles desktop keyboard shortcuts routed from the app root.
   void _onDesktopShortcut(DesktopShortcut shortcut) {
     if (!mounted) return;
     switch (shortcut) {
+      case DesktopShortcut.commandPalette:
+        _openCommandPalette();
       case DesktopShortcut.newChat:
         unawaited(_startNewChat());
       case DesktopShortcut.search:
@@ -918,13 +1012,268 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       case DesktopShortcut.settings:
         _push(SettingsScreen(connection: widget.connection));
       case DesktopShortcut.tab1:
-        _shellKey.currentState?.select(HermesDestination.chats);
+        _showShellDestination(HermesDestination.chats);
       case DesktopShortcut.tab2:
-        _shellKey.currentState?.select(HermesDestination.crons);
+        _showShellDestination(HermesDestination.crons);
       case DesktopShortcut.tab3:
-        _shellKey.currentState?.select(HermesDestination.projects);
+        _showShellDestination(HermesDestination.projects);
       case DesktopShortcut.tab4:
-        _shellKey.currentState?.select(HermesDestination.activity);
+        _showShellDestination(HermesDestination.activity);
+    }
+  }
+
+  /// Recent human chats offered to the desktop quick-entry window.
+  List<QuickEntryChat> _quickEntryChats() {
+    if (!mounted) return const [];
+    final untitled = context.l10n.untitled_chat;
+    return [
+      for (final session in _knownSessions.where((s) => !isMachineSession(s)))
+        QuickEntryChat(
+          id: session.id,
+          title: session.title.trim().isEmpty ? untitled : session.title,
+        ),
+    ];
+  }
+
+  Future<void> _openQuickEntry() async {
+    final desktop = DesktopIntegration.current;
+    if (desktop == null) return;
+    final opened = await desktop.openQuickEntry();
+    if (opened || !mounted) return;
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(content: Text(context.l10n.quick_entry_unavailable)),
+    );
+  }
+
+  /// Opens the shared app-wide command palette (Classic: same widget as NextGen).
+  void _openCommandPalette() {
+    final sessions = _knownSessions.where((s) => !isMachineSession(s)).toList();
+    showAppCommandPalette(
+      context,
+      actions: [
+        PaletteAction(
+          id: 'new-chat',
+          label: context.l10n.command_palette_new_chat,
+          icon: Icons.add_comment_outlined,
+          keywords: const ['compose', 'start', 'new', 'chat'],
+        ),
+        PaletteAction(
+          id: 'search',
+          label: context.l10n.palette_search_sessions,
+          icon: Icons.search,
+          keywords: const ['find', 'sessions', 'chats', 'search'],
+        ),
+        if (DesktopIntegration.current != null)
+          PaletteAction(
+            id: 'quick-entry',
+            label: context.l10n.quick_entry_title,
+            icon: Icons.edit_note_outlined,
+            keywords: const ['hud', 'quick', 'prompt', 'entry', 'hotkey'],
+          ),
+        PaletteAction(
+          id: 'nav-chats',
+          label: context.l10n.chats,
+          icon: Icons.chat_bubble_outline,
+          keywords: const ['conversations', 'home'],
+        ),
+        PaletteAction(
+          id: 'nav-crons',
+          label: context.l10n.palette_scheduled_crons,
+          icon: Icons.schedule_outlined,
+          keywords: const ['cron', 'scheduled', 'jobs'],
+        ),
+        PaletteAction(
+          id: 'nav-projects',
+          label: context.l10n.projects,
+          icon: Icons.folder_outlined,
+          keywords: const ['folders', 'workspaces'],
+        ),
+        PaletteAction(
+          id: 'nav-activity',
+          label: context.l10n.nav_activity,
+          icon: Icons.bolt_outlined,
+          keywords: const ['timeline', 'runs', 'inbox'],
+        ),
+        PaletteAction(
+          id: 'capabilities',
+          label: context.l10n.palette_capabilities_skills,
+          icon: Icons.extension_outlined,
+          keywords: const ['skills', 'plugins', 'mcp', 'tools'],
+        ),
+        PaletteAction(
+          id: 'settings',
+          label: context.l10n.settings,
+          icon: Icons.settings,
+          keywords: const [
+            'preferences',
+            'options',
+            'shortcuts',
+            'keep awake',
+            'appearance',
+            'notifications',
+          ],
+        ),
+        for (final session in sessions)
+          PaletteAction(
+            id: 'session:${session.id}',
+            label: session.title.trim().isEmpty
+                ? context.l10n.untitled_chat
+                : session.title,
+            hint: session.id,
+            icon: Icons.forum_outlined,
+            keywords: [session.id, if (session.model.isNotEmpty) session.model],
+          ),
+      ],
+      onSelected: (action) {
+        if (!mounted) return;
+        if (action.id.startsWith('session:')) {
+          final id = action.id.substring('session:'.length);
+          final match = _knownSessions.where((s) => s.id == id).firstOrNull;
+          if (match != null) {
+            unawaited(_openSession(match));
+          }
+          return;
+        }
+        switch (action.id) {
+          case 'new-chat':
+            unawaited(_startNewChat());
+          case 'search':
+            _openWorkspaceSessionView(WorkspaceSessionView.search);
+          case 'quick-entry':
+            unawaited(_openQuickEntry());
+          case 'nav-chats':
+            _showShellDestination(HermesDestination.chats);
+          case 'nav-crons':
+            _showShellDestination(HermesDestination.crons);
+          case 'nav-projects':
+            _showShellDestination(HermesDestination.projects);
+          case 'nav-activity':
+            _showShellDestination(HermesDestination.activity);
+          case 'capabilities':
+            _openCapability('capability-admin');
+          case 'settings':
+            _push(SettingsScreen(connection: widget.connection));
+        }
+      },
+    );
+  }
+
+  /// Opens a prefilled draft without sending or executing anything.
+  void _openPrefilledDraft(String prefill) {
+    final draft = buildNewChatDraft(
+      l10n: context.l10n,
+      mode: NewChatMode.quickChat,
+      sessionId:
+          (widget.newChatSessionIdFactory ??
+                  GatewayChatClient.generateSessionId)
+              .call(),
+      now: DateTime.now(),
+    );
+    unawaited(_openSession(draft.session, initialComposerText: prefill));
+  }
+
+  /// Consumes a validated `hermes://` link. Never sends, never executes.
+  void _onPendingDeepLink() {
+    final peek = HermesDeepLinkService.shared.pendingLink.value;
+    if (peek == null || !mounted) return;
+    // A link that belongs to another connection or profile (a quick-entry
+    // hand-back) is left for that owner's workspace.
+    if (!peek.isFor(widget.connection.id, widget.connection.gatewayProfile)) {
+      return;
+    }
+    if (peek.kind == HermesDeepLinkKind.session && !_sessionsKnown) {
+      final id = peek.sessionId;
+      if (id != null && !_knownSessions.any((s) => s.id == id)) {
+        // Wait for the initial session list load before deciding whether this
+        // session exists on the connected gateway.
+        return;
+      }
+    }
+    final link = HermesDeepLinkService.shared.takePendingLink();
+    if (link == null || !mounted || link.isIgnored) return;
+    switch (link.kind) {
+      case HermesDeepLinkKind.launch:
+        return; // focus-only; no route, no prefill
+      case HermesDeepLinkKind.settings:
+        _push(
+          SettingsScreen(
+            connection: widget.connection,
+            initialCategory: SettingsCategory.fromPath(link.path),
+          ),
+        );
+        return;
+      case HermesDeepLinkKind.install:
+        // Navigation-only: open Capabilities for explicit user review, never
+        // auto-installing a skill, plugin or MCP server on link open.
+        _openCapability('capability-admin');
+        return;
+      case HermesDeepLinkKind.open:
+        // In-app route only; never following an external/raw URL.
+        final path = link.path ?? '';
+        if (path.startsWith('/settings')) {
+          _push(
+            SettingsScreen(
+              connection: widget.connection,
+              initialCategory: SettingsCategory.fromPath(path),
+            ),
+          );
+        } else if (path == '/crons' ||
+            path == '/scheduled' ||
+            path == '/cron') {
+          _showShellDestination(HermesDestination.crons);
+        } else if (path == '/projects') {
+          _showShellDestination(HermesDestination.projects);
+        } else if (path == '/activity' || path == '/insights') {
+          _showShellDestination(HermesDestination.activity);
+        } else if (path == '/capabilities' ||
+            path == '/skills' ||
+            path == '/plugins' ||
+            path == '/mcp') {
+          _openCapability('capability-admin');
+        } else {
+          _showShellDestination(HermesDestination.chats);
+          if (link.prefill != null) {
+            _openPrefilledDraft(link.prefill!);
+          }
+        }
+        return;
+      case HermesDeepLinkKind.session:
+        final id = link.sessionId;
+        if (id == null) return;
+        final match = _knownSessions.where((s) => s.id == id).firstOrNull;
+        if (match == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.deeplink_chat_not_found)),
+          );
+          return;
+        }
+        final prefill = link.prefill;
+        if (prefill != null) {
+          // Already open (pushed, or in the wide detail pane): append to its
+          // live composer and bring it forward instead of a second copy.
+          final open = ChatScreen.appendToOpenChat(
+            connectionId: widget.connection.id,
+            sessionId: match.id,
+            text: prefill,
+          );
+          if (open != null) {
+            if (!open.isCurrent) {
+              Navigator.of(context).popUntil((route) => route == open);
+            }
+            return;
+          }
+        }
+        // A link never replaces the chat's unsent draft: append to it.
+        unawaited(
+          _openSession(
+            match,
+            initialComposerText: prefill,
+            initialComposerAppends: prefill != null,
+          ),
+        );
+        return;
+      case HermesDeepLinkKind.ignore:
+        return;
     }
   }
 
@@ -1014,12 +1363,18 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     }
   }
 
-  Widget _pane(BuildContext context, HermesDestination destination) {
+  Widget _pane(
+    BuildContext context,
+    HermesDestination destination,
+    VoidCallback openParallel,
+  ) {
     final tokens = HermesTokens.of(context);
     switch (destination) {
       case HermesDestination.chats:
         final chatsList = WorkspaceSessionsScreen(
           key: _chatsKey,
+          searchMessages: _searchMessages,
+          searchScope: widget.connection,
           title: context.l10n.chats,
           view: WorkspaceSessionView.all,
           embedded: true,
@@ -1071,6 +1426,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                           projectName: _detailProjectName,
                           projectWorkingDirectory: _detailWorkingDirectory,
                           initialComposerText: _detailComposerText,
+                          initialComposerAppends: _detailComposerAppends,
                           initialAttachmentDrafts: _detailAttachments,
                           turnApplicationController:
                               widget.turnApplicationController,
@@ -1082,6 +1438,11 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                           testApiClient: widget.testChatApiClientFactory
                               ?.call(),
                           onClose: _closeDetail,
+                          // /resume swaps the detail pane, keeping the list.
+                          onOpenSession: (picked) => _openSession(
+                            picked,
+                            projectName: _chatProjectLabels[picked.id],
+                          ),
                         ),
                       ),
               ),
@@ -1106,6 +1467,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           ),
           history: WorkspaceSessionsScreen(
             key: _cronsKey,
+            searchMessages: _searchMessages,
+            searchScope: widget.connection,
             archiveSurfaceVisible: _cronsView == CronsView.history,
             title: context.l10n.crons,
             kind: WorkspaceSessionKind.crons,
@@ -1156,6 +1519,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           );
         }
         return ProjectsPane(
+          workspace: _ownedGateway?.workspace,
           repository: repository,
           onProjectSelected: (projectId) => _openProject(repository, projectId),
           spaceStore: _spaceStore,
@@ -1170,13 +1534,32 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
           onOpenItem: _openActivityItem,
         );
       case HermesDestination.more:
+        final gateway = _ownedGateway;
+        final workers = gateway == null
+            ? null
+            : WorkspaceWorkersScreen.capture(
+                gateway.workspace,
+                widget.connection.label,
+              );
         return MorePane(
           sections: buildMoreSections(
             providerIds: _providerIds,
+            profileScopedHistory:
+                widget.connection.singleLogin ||
+                (widget.connection.gatewayProfile?.trim().isEmpty ?? true),
             dashboardReachable: _dashboardReachable,
+            workspaceAvailable: _ownedGateway != null,
             l10n: context.l10n,
           ),
-          onSelect: _openMoreEntry,
+          onSelect: (entry) {
+            if (entry.id == 'parallel-workspace') {
+              openParallel();
+            } else if (entry.id == 'workspace-workers') {
+              workers?.open(context);
+            } else {
+              _openMoreEntry(entry);
+            }
+          },
         );
     }
   }
@@ -1184,6 +1567,15 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   /// The dashboard only exists when the connection names a host to reach it
   /// on. Without one, every dashboard-backed entry is disabled *with a reason*
   /// rather than hidden, per the roadmap's capability-discovery rule.
+  Future<List<SessionSearchHit>> _searchMessages(
+    String term,
+    bool Function() maySend,
+  ) => SessionSearchClient.searchDashboard(
+    _dashboardClient,
+    term,
+    maySend: maySend,
+  );
+
   bool get _dashboardReachable => widget.connection.host.trim().isNotEmpty;
 
   /// The dashboard origin, which is not the gateway chat origin: it has its
@@ -1203,6 +1595,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       password: widget.connection.dashboardPassword,
       clientCertificate: widget.connection.clientCertificate,
       gatewayProfile: widget.connection.gatewayProfile,
+      deploymentToken: widget.connection.deploymentToken,
+      customHeaders: widget.connection.customHeaders,
       httpClient:
           widget.testArchivedSessionsHttpClient ??
           widget.testDashboardHttpClient,
@@ -1246,7 +1640,12 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
   }
 
   void _push(Widget screen) {
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
+    final themed = ProfileTheme(
+      connection: widget.connection,
+      nextGen: false,
+      child: screen,
+    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => themed));
   }
 
   /// Clears the inline detail pane on a wide window.
@@ -1256,6 +1655,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       _detailProjectName = null;
       _detailWorkingDirectory = null;
       _detailComposerText = null;
+      _detailComposerAppends = false;
       _detailAttachments = const [];
     });
   }
@@ -1291,6 +1691,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     String? projectName,
     String? projectWorkingDirectory,
     String? initialComposerText,
+    bool initialComposerAppends = false,
     List<AttachmentDraft> initialAttachmentDrafts = const [],
     VoidCallback? onArchiveCommitted,
     Future<void> Function()? refreshBrowser,
@@ -1313,15 +1714,19 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         _detailProjectName = projectName;
         _detailWorkingDirectory = projectWorkingDirectory;
         _detailComposerText = initialComposerText;
+        _detailComposerAppends = initialComposerAppends;
         _detailAttachments = initialAttachmentDrafts;
       });
       return;
     }
 
     final builder = widget.sessionScreenBuilder;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) =>
+    late final MaterialPageRoute<void> route;
+    route = MaterialPageRoute<void>(
+      builder: (_) => ProfileTheme(
+        connection: widget.connection,
+        nextGen: false,
+        child:
             builder?.call(session) ??
             buildWorkspaceChatScreen(
               connection: widget.connection,
@@ -1329,6 +1734,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
               projectName: projectName,
               projectWorkingDirectory: projectWorkingDirectory,
               initialComposerText: initialComposerText,
+              initialComposerAppends: initialComposerAppends,
               initialAttachmentDrafts: initialAttachmentDrafts,
               turnApplicationController: widget.turnApplicationController,
               sessionArchiver: (storedId, archived) async {
@@ -1340,9 +1746,20 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 return saved;
               },
               testApiClient: widget.testChatApiClientFactory?.call(),
+              onOpenAppCommandPalette: _openCommandPalette,
+              // /resume opens the pick here, in place of this chat route.
+              onOpenSession: (picked) async {
+                if (!mounted) return;
+                if (route.isActive) Navigator.of(context).removeRoute(route);
+                await _openSession(
+                  picked,
+                  projectName: _chatProjectLabels[picked.id],
+                );
+              },
             ),
       ),
     );
+    await Navigator.of(context).push(route);
     if (!mounted) return;
     if (refreshBrowser != null) {
       unawaited(refreshBrowser());
@@ -1374,6 +1791,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         .where((project) => project.id == projectId)
         .firstOrNull;
 
+    final connection = widget.connection;
+    final projectOwner = _ownedGateway?.workspace;
     final project =
         known ??
         HermesProject(
@@ -1385,8 +1804,17 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     await Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => ProjectDetailScreen(
+          workspace: projectOwner,
+          onNewLaneChat: (path) {
+            if (mounted &&
+                projectOwner != null &&
+                identical(projectOwner, _ownedGateway?.workspace)) {
+              _startProjectChat(project.inLane(path));
+            }
+          },
           projectId: projectId,
           projectName: project.name,
+          createFilesClient: () => _createFilesClient(connection),
           loadSessions: ({required bool refresh}) =>
               repository.projectSessions(projectId, refresh: refresh),
           onOpenSession: (session) => _openSession(
@@ -1923,6 +2351,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     _push(
       WorkspaceSessionsScreen(
         key: key,
+        searchMessages: _searchMessages,
+        searchScope: widget.connection,
         title: title,
         view: view,
         onPin: _pinSession,
@@ -2073,20 +2503,24 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     }
   }
 
+  RemoteFilesClient _createFilesClient(
+    SavedConnection connection, {
+    String? sessionId,
+    int? maxDownloadBytes,
+  }) => RemoteFilesClient.fromConnection(
+    connection,
+    sessionId: sessionId,
+    maxDownloadBytes: maxDownloadBytes,
+    httpClient: widget.testDashboardHttpClient,
+  );
+
   Future<void> _openFiles() async {
     final builder = widget.filesScreenBuilder;
     if (builder != null) {
       _push(builder(widget.connection));
       return;
     }
-    final files = RemoteFilesClient.fromConnection(widget.connection);
-    try {
-      await Navigator.of(context).push(
-        MaterialPageRoute<void>(builder: (_) => FilesScreen(files: files)),
-      );
-    } finally {
-      files.close();
-    }
+    await FilesScreen.open(context, _createFilesClient(widget.connection));
   }
 
   /// Opens the full cron manager, which owns every schedule mutation.
@@ -2113,18 +2547,22 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     final factory = widget.assetsSourceFactory;
     final source =
         factory?.call(connection) ??
-        ChatAssetsClient.fromConnection(connection);
+        ChatAssetsClient.fromConnection(
+          connection,
+          httpClient: widget.testDashboardHttpClient,
+        );
     try {
       await Navigator.of(context).push<void>(
         MaterialPageRoute<void>(
           builder: (_) => AssetsScreen(
             source: source,
-            filesClient: (session) => RemoteFilesClient.fromConnection(
+            filesClient: (session) => _createFilesClient(
               connection,
               sessionId: session.id,
               maxDownloadBytes: maxAttachmentDownloadBytes,
             ),
             onOpenSession: (session) => unawaited(_openSession(session)),
+            contributionsScope: renderConnectionKey(connection),
           ),
         ),
       );
@@ -2133,9 +2571,54 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     }
   }
 
+  void _openCapability(String id) {
+    final connection = widget.connection;
+    final gateway = _ownedGateway;
+    final owned = gateway == null
+        ? DashboardClient.fromConnection(connection)
+        : null;
+    final admin = CapabilityAdmin.fromDashboard(
+      gateway?.dashboard ?? owned!,
+      profile: connection.gatewayProfile,
+      rpc: gateway == null
+          ? null
+          : (method, params) => gateway.call(method, params),
+    );
+    final page = switch (id) {
+      'browser-vault' => BrowserVaultScreen(admin: admin),
+      'agent-policy' => AgentPolicyScreen(admin: admin),
+      _ => CapabilityAdminScreen(admin: admin),
+    };
+    unawaited(
+      pushAndRelease(
+        context,
+        ProfileTheme(connection: connection, nextGen: false, child: page),
+        owned?.close,
+      ),
+    );
+  }
+
   void _openMoreEntry(MoreEntry entry) {
     final connection = widget.connection;
     switch (entry.id) {
+      case 'gateway-fleet':
+        _push(
+          FleetScreen(
+            serving: _ownedGateway?.workspace,
+            label: connection.label,
+          ),
+        );
+      case 'workspace-profiles':
+        final gateway = _ownedGateway;
+        if (gateway == null) return;
+        _push(
+          WorkspaceProfilesScreen(
+            owner: gateway.workspace,
+            connection: connection,
+            label: connection.label,
+            route: gateway.workspace.route(),
+          ),
+        );
       case 'unassigned':
         _openWorkspaceSessionView(WorkspaceSessionView.unassigned);
       case 'files':
@@ -2148,12 +2631,78 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         _openCronJobs();
       case 'skills':
         _push(SkillsScreen(connection: connection));
+      case 'capability-admin':
+      case 'browser-vault':
+      case 'agent-policy':
+        _openCapability(entry.id);
       case 'memory':
         _push(MemoryScreen(connection: connection));
+      case 'host-operations':
+        final host = _ownedGateway;
+        if (host == null) return;
+        _push(
+          HostOperationsScreen(
+            owner: host.workspace,
+            route: host.workspace.route(),
+            connection: connection,
+          ),
+        );
+      case 'kanban':
+        final kanban = _ownedGateway;
+        if (kanban == null) return;
+        _push(
+          KanbanBoardScreen(
+            owner: kanban.workspace,
+            route: kanban.workspace.route(),
+            connection: connection,
+          ),
+        );
+      case 'bots':
+        final bots = _ownedGateway;
+        if (bots == null) return;
+        _push(
+          BotsScreen(
+            owner: bots.workspace,
+            route: bots.workspace.route(),
+            connection: connection,
+          ),
+        );
+      case 'schedule-desk':
+        final schedules = _ownedGateway;
+        if (schedules == null) return;
+        _push(
+          ScheduleDeskScreen(
+            owner: schedules.workspace,
+            route: schedules.workspace.route(),
+            connection: connection,
+          ),
+        );
+      case 'memory-graph':
+        final memory = _ownedGateway;
+        if (memory == null) return;
+        _push(
+          MemoryGraphScreen(
+            owner: memory.workspace,
+            route: memory.workspace.route(),
+            connection: connection,
+          ),
+        );
       case 'provider-sign-in':
         _push(ProviderOAuthScreen(connection: connection));
       case 'nous-portal':
         _push(NousPortalScreen(connection: connection));
+      case 'provider-admin':
+        _push(
+          ModelAdminScreen(connection: connection, rpc: _ownedGateway?.rpc),
+        );
+      case 'nous-billing':
+        _push(
+          ModelAdminScreen(
+            connection: connection,
+            initialSection: ModelAdminSection.billing,
+            rpc: _ownedGateway?.rpc,
+          ),
+        );
       case 'openrouter':
         _push(OpenRouterScreen(connection: widget.connection));
       case 'openai':
@@ -2177,7 +2726,6 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = HermesTokens.of(context);
     final expanded = isExpandedWindow(context);
     // Folding a wide window back to compact re-homes an open inline detail
     // chat as a full-screen route so the conversation is not lost. The list
@@ -2187,11 +2735,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
       final projectName = _detailProjectName;
       final workingDir = _detailWorkingDirectory;
       final composerText = _detailComposerText;
+      final composerAppends = _detailComposerAppends;
       final attachments = _detailAttachments;
       _detailSession = null;
       _detailProjectName = null;
       _detailWorkingDirectory = null;
       _detailComposerText = null;
+      _detailComposerAppends = false;
       _detailAttachments = const [];
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
@@ -2201,6 +2751,7 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
             projectName: projectName,
             projectWorkingDirectory: workingDir,
             initialComposerText: composerText,
+            initialComposerAppends: composerAppends,
             initialAttachmentDrafts: attachments,
           ),
         );
@@ -2208,6 +2759,25 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
     }
     _wasExpanded = expanded;
 
+    return ProfileTheme(
+      connection: widget.connection,
+      nextGen: false,
+      child: ParallelWorkspaceEntryHost(
+        owner: widget.connection,
+        connection: widget.connection,
+        workspace: (_) => ClassicParallelWorkspace(
+          connection: widget.connection,
+          turnController: widget.turnApplicationController,
+          clientFactory: widget.testChatApiClientFactory,
+        ),
+        home: (openParallel) =>
+            Builder(builder: (ctx) => _buildHome(ctx, openParallel)),
+      ),
+    );
+  }
+
+  Widget _buildHome(BuildContext context, VoidCallback openParallel) {
+    final tokens = HermesTokens.of(context);
     return Scaffold(
       // The nested HermesShell owns keyboard resizing and the bottom navigation.
       resizeToAvoidBottomInset: false,
@@ -2216,6 +2786,13 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
         title: Text(widget.connection.label),
         centerTitle: false,
         actions: [
+          const PresentationChrome(),
+          IconButton(
+            key: const ValueKey('app-command-palette-button'),
+            tooltip: context.l10n.palette_open,
+            onPressed: _openCommandPalette,
+            icon: const Icon(Icons.keyboard_command_key),
+          ),
           if (_destination == HermesDestination.chats) ...[
             IconButton(
               tooltip: _inboxActionCount == 0
@@ -2275,7 +2852,8 @@ class _WorkspaceScreenState extends State<WorkspaceScreen> {
                 label: Text(context.l10n.new_label),
               )
             : null,
-        builder: _pane,
+        builder: (context, destination) =>
+            _pane(context, destination, openParallel),
       ),
     );
   }

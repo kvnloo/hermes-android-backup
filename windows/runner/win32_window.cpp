@@ -1,4 +1,5 @@
 #include "win32_window.h"
+#include "toast_identity.h"
 
 #include <dwmapi.h>
 #include <flutter_windows.h>
@@ -16,7 +17,7 @@ namespace {
 #define DWMWA_USE_IMMERSIVE_DARK_MODE 20
 #endif
 
-constexpr const wchar_t kWindowClassName[] = L"FLUTTER_RUNNER_WIN32_WINDOW";
+
 
 /// Registry key for app theme preference.
 ///
@@ -28,6 +29,7 @@ constexpr const wchar_t kGetPreferredBrightnessRegValue[] = L"AppsUseLightTheme"
 
 // The number of Win32Window objects that currently exist.
 static int g_active_window_count = 0;
+bool g_chat_popout_process = false;
 
 using EnableNonClientDpiScaling = BOOL __stdcall(HWND hwnd);
 
@@ -55,8 +57,13 @@ void EnableFullDpiSupportIfAvailable(HWND hwnd) {
 
 }  // namespace
 
+void Win32Window::SetChatPopoutProcess(bool is_chat_child) {
+  g_chat_popout_process = is_chat_child;
+}
+
 const wchar_t* Win32Window::WindowClassName() {
-  return kWindowClassName;
+  static const auto child_class = ares::toast::WindowClass() + L".ChatPopout";
+  return g_chat_popout_process ? child_class.c_str() : ares::toast::WindowClass().c_str();
 }
 
 // Manages the Win32Window's window class registration.
@@ -94,7 +101,7 @@ const wchar_t* WindowClassRegistrar::GetWindowClass() {
   if (!class_registered_) {
     WNDCLASS window_class{};
     window_class.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    window_class.lpszClassName = kWindowClassName;
+    window_class.lpszClassName = Win32Window::WindowClassName();
     window_class.style = CS_HREDRAW | CS_VREDRAW;
     window_class.cbClsExtra = 0;
     window_class.cbWndExtra = 0;
@@ -107,11 +114,11 @@ const wchar_t* WindowClassRegistrar::GetWindowClass() {
     RegisterClass(&window_class);
     class_registered_ = true;
   }
-  return kWindowClassName;
+  return Win32Window::WindowClassName();
 }
 
 void WindowClassRegistrar::UnregisterWindowClass() {
-  UnregisterClass(kWindowClassName, nullptr);
+  UnregisterClass(Win32Window::WindowClassName(), nullptr);
   class_registered_ = false;
 }
 

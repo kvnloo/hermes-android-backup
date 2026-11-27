@@ -38,10 +38,23 @@
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Ares uses the microphone for voice dictation and recorded voice messages.</string>
+	<string>Ares uses the microphone for voice dictation, recorded voice messages and live voice conversations with your agent.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Ares uses speech recognition so you can dictate messages to your Hermes agent.</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>com.hermesagent.ares.deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>hermes</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

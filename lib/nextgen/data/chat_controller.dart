@@ -14,9 +14,30 @@ import '../../core/models/attachment_draft.dart';
 import '../../core/models/background_report.dart';
 import '../../core/models/legacy_lcm_summary.dart';
 import '../../core/models/slash_command.dart';
+import '../../core/render/catalog_install.dart';
+import '../../core/render/setup_beat.dart';
 import '../../core/services/attachment_draft_service.dart';
+import '../../core/services/chat_kanban_dock.dart';
+import '../../core/services/completion_cue_player.dart';
+import '../../core/services/remote_workspace.dart';
+import '../../core/services/system_sleep_gate.dart';
+import '../../core/services/composer_draft_store.dart';
+import '../../core/services/connection_mutation_barrier.dart';
+import '../../core/services/prepared_image_store.dart';
 import '../../core/services/slash_command_errors.dart';
 import '../../core/services/ws_client.dart';
+import '../../core/composer/composer_commands.dart';
+import '../../core/composer/failure_recovery.dart';
+import '../../core/history/canonical_rewind.dart'
+    show rewindFencesUnknownReason, rewindTargetUnsavedReason;
+import '../../core/history/rewind_submit.dart'
+    show
+        RewindHistory,
+        RewindPlan,
+        buildRewindParams,
+        isRejectedDeepTruncatePayload,
+        stripRejectedDeepTruncate;
+import '../../core/composer/regenerate.dart';
 import 'history_rows.dart';
 import 'nextgen_gateway.dart';
 import 'session_control.dart';
@@ -184,25 +205,73 @@ class NgUserItem extends NgItem {
   /// Names of files a stored prompt referenced (`@file:` lines).
   final List<String> files;
 
+  /// Original prompt refs before filename-only display projection.
+  final String? fileReferenceText;
+
   /// Client-generated UUID for `prompt.submit` idempotency on modern gateways.
-  final String? submissionId;
+  String? submissionId;
+  bool recoverInComposer = false;
+  final String? composerImageText;
 
   /// The model-facing prompt when the bubble shows something else: a
   /// command's send/skill directive shows its `display` line in [text] and
   /// submits this. Null when [text] is what was sent.
   final String? sentText;
 
+  /// Extra `prompt.submit` params (a regenerate's truncation target, a
+  /// voice-live delegation's surface and context), sent again unchanged
+  /// with the same submission id when the send is retried.
+  final Map<String, Object> promptParams;
+
+  /// The saved row behind a stored prompt (the gateway's `row_id`): the
+  /// durable address an edit or restore cuts at. Null for a prompt of this
+  /// visit, until history covers it.
+  final int? rowId;
+
   NgUserItem(
     super.key,
     this.text, {
+    this.rowId,
     this.time,
     this.steered = false,
     this.pending = false,
     this.attachments = const [],
     this.files = const [],
+    this.fileReferenceText,
     this.submissionId,
+    this.composerImageText,
     this.sentText,
+    this.promptParams = const {},
   });
+}
+
+/// Where an edit or restore of a stored turn cuts
+/// ([NgChatController.rewindTargetFor]): the durable row (null is Desktop's
+/// plain resubmit), whether later user turns are archived, the turn's place
+/// among the user turns, and the transcript's newest row.
+typedef NgRewindTarget = ({
+  int? rowId,
+  bool laterTurns,
+  int ordinal,
+  int? maxRowId,
+});
+
+/// What [NgChatController.retryLast] did.
+enum NgRetryResult {
+  /// Nothing to retry (or the chat closed).
+  nothing,
+
+  /// An unaccepted submission went again under its submission id.
+  resent,
+
+  /// An accepted turn was regenerated in place.
+  regenerated,
+
+  /// An accepted turn with no durable row to replace: nothing was sent.
+  notFound,
+
+  /// The send failed; the transcript is as it was.
+  failed,
 }
 
 /// A `/command` run on the gateway and what it answered: shown under the
@@ -311,6 +380,15 @@ NgSystemItem? ngSystemItemFor(String key, Map<String, dynamic> row) {
 bool ngNoticeIsLong(String text) =>
     text.length > 160 || text.trim().contains('\n');
 
+/// What [NgChatController.runDedicated] did: the card it answered under,
+/// and the live session to watch when it requested a handoff.
+class NgDedicatedResult {
+  const NgDedicatedResult(this.card, {this.handoffSession});
+
+  final NgCommandItem card;
+  final String? handoffSession;
+}
+
 /// A queued prompt, sent when the running turn ends.
 class NgQueued {
   final String key;
@@ -363,7 +441,7 @@ class NgCommandOutcome {
       result == NgCommandResult.unsupported;
 }
 
-enum NgRequestKind { approval, clarify, secret, saveLogin }
+enum NgRequestKind { approval, clarify, secret, saveLogin, setupBeat }
 
 class NgClarifyQuestion {
   final String? qid;
@@ -389,6 +467,9 @@ class NgInputRequest {
   final List<NgClarifyQuestion> questions;
   final bool masked;
 
+  /// The onboarding card, for [NgRequestKind.setupBeat].
+  final SetupBeatRequest? setupBeat;
+
   NgInputRequest._(
     this.request, {
     required this.kind,
@@ -398,6 +479,7 @@ class NgInputRequest {
     this.choices = const [],
     this.questions = const [],
     this.masked = true,
+    this.setupBeat,
   });
 
   static List<String> _strings(Object? value) => value is List
@@ -422,6 +504,31 @@ class NgInputRequest {
         }
         choices.add('deny');
         const order = ['once', 'session', 'always', 'deny'];
+        final ordered = order.where(choices.contains).toList();
+        final kind = s('kind');
+        if (kind == 'access' || kind == 'network') {
+          final description = s('description');
+          final level = switch (s('access')) {
+            'read' => ngL.ng_folder_read_only,
+            'read_write' => ngL.ng_folder_read_write,
+            _ => kind == 'access' ? ngL.ng_folder_access_unspecified : '',
+          };
+          final target = kind == 'access' ? s('path') : s('host');
+          return NgInputRequest._(
+            request,
+            kind: NgRequestKind.approval,
+            title: kind == 'access'
+                ? ngL.ng_folder_access
+                : ngL.ng_website_access,
+            body: [
+              if (description.isNotEmpty) description,
+              if (level.isNotEmpty) level,
+              ngL.ng_allow_until_sandbox_off,
+            ].join('\n'),
+            command: target,
+            choices: ordered,
+          );
+        }
         return NgInputRequest._(
           request,
           kind: NgRequestKind.approval,
@@ -432,7 +539,16 @@ class NgInputRequest {
               ? ngL.ng_hermes_wants_to_run_this_with(s('tool_name'))
               : ngL.ng_hermes_wants_to_run_this,
           command: s('command'),
-          choices: order.where(choices.contains).toList(),
+          choices: ordered,
+        );
+      case 'setup_beat':
+        final card = SetupBeatRequest.parse(request.id, p);
+        if (card == null) return null;
+        return NgInputRequest._(
+          request,
+          kind: NgRequestKind.setupBeat,
+          title: card.question,
+          setupBeat: card,
         );
       case 'clarify':
         final batch = <NgClarifyQuestion>[];
@@ -537,6 +653,10 @@ class NgUsage {
   final int? contextUsed;
   final int? contextMax;
   final int calls;
+  final double? cacheHitPct;
+  final double? avgTps;
+  final int? compressions;
+  final bool contextEstimated;
   const NgUsage({
     this.input = 0,
     this.output = 0,
@@ -546,6 +666,10 @@ class NgUsage {
     this.contextUsed,
     this.contextMax,
     this.calls = 0,
+    this.cacheHitPct,
+    this.avgTps,
+    this.compressions,
+    this.contextEstimated = false,
   });
 
   static int _i(Object? v) => v is num ? v.toInt() : int.tryParse('$v') ?? 0;
@@ -570,6 +694,18 @@ class NgUsage {
           ? (raw['context_length'] as num).toInt()
           : null,
       calls: _i(raw['api_calls'] ?? raw['calls']),
+      cacheHitPct:
+          raw.containsKey('cache_hit_pct') && raw['cache_hit_pct'] is num
+          ? (raw['cache_hit_pct'] as num).toDouble()
+          : null,
+      avgTps: raw.containsKey('avg_tps') && raw['avg_tps'] is num
+          ? (raw['avg_tps'] as num).toDouble()
+          : null,
+      compressions:
+          raw.containsKey('compressions') && raw['compressions'] is num
+          ? (raw['compressions'] as num).toInt()
+          : null,
+      contextEstimated: raw['context_estimated'] == true,
     );
   }
 }
@@ -583,19 +719,78 @@ class NgChatController extends ChangeNotifier {
     this.onCreated,
     this.onTurnFinished,
     AttachmentDraftService? attachmentService,
+    String? initialText,
     // Keep the public named argument while the mutable field stays private.
     // ignore: prefer_initializing_formals
   }) : _workingDirectory = workingDirectory,
+       _imageEpoch = ConnectionMutationBarrier.capture(gateway.connection.id),
        storedId = sessionId,
+       draftKey = sessionId ?? ComposerDraftStore.newLocalKey(),
        attachmentService = attachmentService ?? AttachmentDraftService() {
+    _initialText = initialText;
     _subs.add(gateway.events.listen(_onEvent));
     _subs.add(gateway.serverRequests.listen(_onServerRequest));
     _subs.add(gateway.reconnected.listen((_) => unawaited(_reattach())));
+    // The socket is up (again): the dock may read the board now.
+    _subs.add(gateway.reconnected.listen((_) => unawaited(kanban.refresh())));
     // Answered on another device, withdrawn, or no longer open per the server.
     _subs.add(gateway.withdrawnRequests.listen(forgetRequest));
+    SystemSleepGate.instance.addListener(_onSleepGate);
+  }
+
+  /// The computer slept or the session locked with this turn running: the
+  /// paused socket cannot see it end, so keep-awake waits until this chat
+  /// has re-attached and caught up after the pause ([_reattach]).
+  void _onSleepGate() {
+    if (_disposed) return;
+    if (SystemSleepGate.instance.value && running) {
+      SystemSleepGate.instance.holdReconcile(this);
+    }
   }
 
   final NextGenGateway gateway;
+  final String draftKey;
+
+  /// One-shot composer prefill (used by validated `hermes://` deep links).
+  /// Consumed exactly once by the chat view on mount; never re-applied.
+  String? _initialText;
+  String? consumeInitialText() {
+    final value = _initialText;
+    _initialText = null;
+    if (value == null || value.trim().isEmpty) return null;
+    return value;
+  }
+
+  /// Offers a deep-link prefill to this chat's view (a mounted view picks it
+  /// up on its next change notification, a new one when it mounts). The view
+  /// appends it after any unsent draft; nothing is sent.
+  void offerInitialText(String text) {
+    if (_disposed || text.trim().isEmpty) return;
+    _initialText = text;
+    notifyListeners();
+  }
+
+  bool get draftOwnerCurrent => !_disposed && gateway.draftAccountCurrent;
+  final Object? _imageEpoch;
+  PreparedImageTarget? get imageTarget {
+    final stored = storedId;
+    if (_disposed ||
+        stored == null ||
+        !ConnectionMutationBarrier.isCurrent(
+          gateway.connection.id,
+          _imageEpoch,
+        )) {
+      return null;
+    }
+    return PreparedImageTarget(
+      gateway.connection,
+      stored,
+      gateway.sessionAuthority
+          ? PreparedImageTransport.nextgenCanonical
+          : PreparedImageTransport.nextgenPending,
+    );
+  }
+
   String? _workingDirectory;
   String? get workingDirectory => _workingDirectory;
   bool _creatingSession = false;
@@ -632,6 +827,12 @@ class NgChatController extends ChangeNotifier {
   String title;
   final List<NgItem> items = [];
   final List<NgQueued> queued = [];
+  bool localQueuePaused = false;
+
+  /// The local row whose editor is open. Drain skips it and may send later
+  /// rows in their original order.
+  String? editingLocalKey;
+  bool _drainScheduled = false;
   bool running = false;
   bool loadingHistory = false;
 
@@ -676,10 +877,49 @@ class NgChatController extends ChangeNotifier {
   String? status;
   String? thinkingFrame;
   String? error;
+  FailureSurface? turnFailure;
   NgInputRequest? request;
+
+  /// The open `manage_catalog` install card of this chat, if any.
+  CatalogOperation? catalog;
+
+  /// Answers this chat's catalog card through `connection.respond`, owned
+  /// by this chat's runtime session. False when the card is not this chat's
+  /// open operation any more or the gateway refused the answer.
+  Future<bool> respondCatalog(
+    CatalogOperation operation,
+    Map<String, dynamic> answer,
+  ) async {
+    final current = catalog;
+    final runtime = runtimeId;
+    if (_disposed ||
+        runtime == null ||
+        current == null ||
+        current.opId != operation.opId ||
+        current.settled) {
+      return false;
+    }
+    final result = await gateway.call('connection.respond', {
+      'owner': {'type': 'session', 'session_id': runtime},
+      'op_id': operation.opId,
+      'result': answer,
+    });
+    return result['status'] == 'ok';
+  }
+
+  /// Hides a settled catalog card.
+  void dismissCatalog(String opId) {
+    if (catalog?.opId != opId || !(catalog?.settled ?? false)) return;
+    catalog = null;
+    _changed();
+  }
+
   String? model;
   String? provider;
   String? reasoningEffort;
+
+  /// What the route actually sends. Empty until session.info stamps it.
+  String? reasoningEffortWire;
   NgUsage? usage;
   DateTime? turnStartedAt;
 
@@ -703,6 +943,31 @@ class NgChatController extends ChangeNotifier {
   /// When the current batch of subagents started: the dock lists those
   /// since, so one delegation's finished siblings stay beside its live ones.
   DateTime? subagentBatchStart;
+
+  /// The Kanban cards this chat sent to the board, for the dock: its own
+  /// `kanban_create` / `kanban_link` calls plus the cards the board says this
+  /// session created. Reads through this chat's own gateway owner only.
+  late final ChatKanbanDockController kanban = ChatKanbanDockController(
+    connectionId: gateway.connection.id,
+    profile: gateway.profile,
+    openSource: () => _disposed
+        ? null
+        : debugKanbanSource?.call() ?? WorkspaceChatKanbanSource(kanbanOwner),
+    // The dock reads over the socket this chat opened; it never opens one.
+    // The socket itself is asked, as [NextGenGateway.connected] asks it: a
+    // connected state alone does not mean a socket is there to reuse.
+    online: () =>
+        debugKanbanSource != null || (gateway.socket?.isConnected ?? false),
+  )..setChat(primaryId: storedId);
+
+  /// The gateway owner the dock reads the board and opens it through.
+  RemoteWorkspaceOwner get kanbanOwner => debugKanbanOwner ?? gateway.workspace;
+
+  @visibleForTesting
+  RemoteWorkspaceOwner? debugKanbanOwner;
+
+  @visibleForTesting
+  ChatKanbanSource Function()? debugKanbanSource;
 
   /// The subagents the dock shows while any of them is still live.
   List<NgSubagent> get dockSubagents {
@@ -812,6 +1077,7 @@ class NgChatController extends ChangeNotifier {
         // The canonical resume model forbids inline_images (#291).
         if (!gateway.sessionAuthority) 'inline_images': false,
       });
+      if (_disposed || storedId != id) return;
       _withAuthority(result);
       // The first canonical attach starts the cursor at the snapshot's
       // watermark. A later one (a poll, a re-attach after a replay) keeps the
@@ -821,9 +1087,21 @@ class NgChatController extends ChangeNotifier {
       }
       runtimeId = result['session_id']?.toString() ?? runtimeId;
       if (runtimeId != null) gateway.bindRuntime(runtimeId!, id);
+      // A compressed chat resumes as its continuation: cards it creates
+      // from here on carry that session id.
+      kanban.setChat(
+        primaryId: id,
+        aliases: [
+          for (final key in const ['stored_session_id', 'resumed'])
+            if (result[key] case final String alias) alias,
+        ],
+      );
       final wasRunning = running;
       running = result['running'] == true;
-      if (running && !wasRunning) turnStartedAt ??= DateTime.now();
+      if (running && !wasRunning) {
+        turnStartedAt ??= DateTime.now();
+        _captureGitTurnBaseline();
+      }
       _withInfo(result['info']);
       _withTodos(NgTodoList.parse(result['todo_state']));
       _attachedOnce = true;
@@ -884,11 +1162,28 @@ class NgChatController extends ChangeNotifier {
     }
   }
 
-  static String _clean(Object e) => e
+  static String _clean(Object e) => switch (e) {
+    // The transport's own refusals, in the user's language.
+    JsonRpcError(reason: rewindTargetUnsavedReason) =>
+      ngL.rewind_target_unsaved,
+    JsonRpcError(reason: rewindFencesUnknownReason) =>
+      ngL.rewind_session_changed,
+    _ => _cleanText(e),
+  };
+
+  static String _cleanText(Object e) => e
       .toString()
       .replaceFirst('Bad state: ', '')
       .replaceFirst('Exception: ', '')
       .replaceFirst(RegExp(r'^JsonRpcError\([^)]*\): '), '');
+
+  void _captureGitTurnBaseline() {
+    final session = storedId;
+    if (session == null || session.isEmpty) return;
+    unawaited(
+      captureGitTurnBaseline(owner: gateway.workspace, sessionId: session),
+    );
+  }
 
   void _withInfo(Object? raw) {
     if (raw is! Map) return;
@@ -899,10 +1194,24 @@ class NgChatController extends ChangeNotifier {
     if (raw.containsKey('reasoning_effort')) {
       final r = raw['reasoning_effort']?.toString() ?? '';
       reasoningEffort = r.isEmpty ? null : r;
+      if (!raw.containsKey('reasoning_effort_wire')) {
+        reasoningEffortWire = '';
+      }
+    }
+    if (raw.containsKey('reasoning_effort_wire')) {
+      reasoningEffortWire = raw['reasoning_effort_wire']?.toString() ?? '';
     }
     final t = raw['title']?.toString();
     if (t != null && t.trim().isNotEmpty) title = t;
     usage = NgUsage.parse(raw['usage']) ?? usage;
+    // Context compression moves the chat to a continuation session and the
+    // gateway says so here (`stored_session_id`). Cards made from then on
+    // carry the new id, cards made before keep the old one: the dock counts
+    // both as this chat's.
+    final stored = raw['stored_session_id'];
+    if (stored is String && stored.trim().isNotEmpty) {
+      kanban.setChat(primaryId: storedId, aliases: [stored]);
+    }
   }
 
   // ── History ─────────────────────────────────────────────────────────
@@ -916,7 +1225,7 @@ class NgChatController extends ChangeNotifier {
             if (part is String) return part;
             if (part is Map) {
               final type = part['type']?.toString() ?? '';
-              if (type.contains('image')) return '[image]';
+              if (type.contains('image')) return ngL.task_image_placeholder;
               // Only plain text: a structured `text` value (Kyllene #419)
               // is skipped rather than shown as a Dart map.
               final text = part['text'];
@@ -963,6 +1272,22 @@ class NgChatController extends ChangeNotifier {
     }
   }
 
+  /// A local command result (side question, background, handoff, compress).
+  void showCommandNotice(String text) {
+    _addNotice(text);
+    _changedNow();
+  }
+
+  /// Re-read the transcript after a compression. Does not open a new session.
+  Future<void> reloadTranscript() async {
+    final id = storedId;
+    if (id == null || _disposed) return;
+    final messages = await _fetchRows(id, limit: ngHistoryPage);
+    if (_disposed) return;
+    _setRows(messages, ngHistoryPage);
+    _changedNow();
+  }
+
   @visibleForTesting
   void debugApplyHistory(
     List<Map<String, dynamic>> messages, {
@@ -972,6 +1297,7 @@ class NgChatController extends ChangeNotifier {
   /// Shows [page] (the newest rows, asked for with [limit]) as the whole
   /// transcript.
   void _setRows(List<Map<String, dynamic>> page, int limit) {
+    kanban.observeHistoryRows(page);
     final full = page.length >= limit;
     final rows = full ? ngFromFirstTurn(page) : page;
     hasOlder = full;
@@ -997,6 +1323,7 @@ class NgChatController extends ChangeNotifier {
       final guardShift = _olderShift;
       final page = await _fetchRows(id, limit: ngHistoryPage, offset: offset);
       if (_disposed) return;
+      kanban.observeHistoryRows(page);
       // Adoption or a window rebuild during the fetch moved the accounting
       // this page's offset was computed from. Applying it would double-count
       // the adopted rows in the shift; drop it and let the next scroll retry
@@ -1060,6 +1387,9 @@ class NgChatController extends ChangeNotifier {
           offset: page * ngHistoryPage,
         );
         if (_disposed || storedId != id || _rowIds.length != baseline) return;
+        // The finished turn's stored rows: its Kanban calls are here even
+        // when the gateway sent no live tool events for them.
+        kanban.observeHistoryRows(rows);
         final known = _rowIds.whereType<String>().toSet();
         var cut = rows.length;
         while (cut > 0) {
@@ -1131,6 +1461,7 @@ class NgChatController extends ChangeNotifier {
                 body,
                 time: _time(m['timestamp']),
                 files: files,
+                fileReferenceText: split.$2,
               ),
             );
           } else {
@@ -1154,13 +1485,16 @@ class NgChatController extends ChangeNotifier {
         reply?.open = false;
         reply = null;
         final (body, files) = splitFileRefs(text);
+        final rawId = m['id'];
         items.add(
           NgUserItem(
             _key('u'),
             body,
+            rowId: rawId is int && rawId > 0 ? rawId : null,
             time: _time(m['timestamp']),
             steered: displayKind == 'steer',
             files: files,
+            fileReferenceText: text,
           ),
         );
       } else if (role == 'assistant') {
@@ -1435,21 +1769,28 @@ class NgChatController extends ChangeNotifier {
 
   /// Re-attaches after the socket came back, then fills what was missed.
   Future<void> _reattach() async {
-    if (_disposed) return;
-    // The first connect is the chat opening, which reads everything anyway.
-    if (!_attachedOnce) {
+    try {
+      if (_disposed) return;
+      // The first connect is the chat opening, which reads everything anyway.
+      if (!_attachedOnce) {
+        await _attach();
+        return;
+      }
+      _held ??= [];
+      if (gateway.sessionAuthority && _cursor != null) {
+        // Replay first, then attach: the owner bridges whatever it publishes
+        // between the two onto this socket.
+        await _catchUp(resubscribe: true);
+        return;
+      }
       await _attach();
-      return;
+      await _catchUp();
+    } finally {
+      // Caught up after a pause: [running] is current again.
+      if (!SystemSleepGate.instance.value) {
+        SystemSleepGate.instance.releaseReconcile(this);
+      }
     }
-    _held ??= [];
-    if (gateway.sessionAuthority && _cursor != null) {
-      // Replay first, then attach: the owner bridges whatever it publishes
-      // between the two onto this socket.
-      await _catchUp(resubscribe: true);
-      return;
-    }
-    await _attach();
-    await _catchUp();
   }
 
   bool _attachedOnce = false;
@@ -1658,11 +1999,15 @@ class NgChatController extends ChangeNotifier {
     switch (event.type) {
       case 'message.start':
         // A new turn hasn't planned yet; the last plan is from before.
+        final starting = !running;
         todosLive = todosLive && running;
         running = true;
         _replyGap = false;
         error = null;
-        turnStartedAt ??= DateTime.now();
+        if (starting) {
+          turnStartedAt ??= DateTime.now();
+          _captureGitTurnBaseline();
+        }
         for (final item in items.whereType<NgUserItem>()) {
           item.pending = false;
         }
@@ -1740,6 +2085,11 @@ class NgChatController extends ChangeNotifier {
         tool.failed =
             result is Map &&
             (result['success'] == false || result['error'] != null);
+        kanban.observeToolCall(
+          name: s('name') ?? tool.name,
+          args: p['args'] ?? tool.input,
+          result: result ?? s('result_text'),
+        );
       case 'status.update':
         final text = s('text');
         status = text == null || text.trim().isEmpty ? null : text;
@@ -1817,8 +2167,12 @@ class NgChatController extends ChangeNotifier {
         if (message != null && message.isNotEmpty) _addNotice(message);
       case 'error':
         error = s('message') ?? ngL.ng_the_turn_failed;
+        turnFailure = FailureSurface.parse(
+          p['surface'] ?? p['error_surface'] ?? p,
+        );
         _finishTurn(failed: true);
       case 'message.complete' || 'turn.end':
+        final live = running;
         final reply = _openReply();
         final text = s('text');
         if (text != null &&
@@ -1835,6 +2189,13 @@ class NgChatController extends ChangeNotifier {
         lastTurnFailed = outcome == 'error';
         lastTurnInterrupted = outcome == 'interrupted';
         _finishTurn(failed: lastTurnFailed);
+        // The in-app cue for a live reply that finished here (Desktop plays
+        // it on message.complete); a stopped or failed turn has none.
+        if (live && !lastTurnFailed && !lastTurnInterrupted) {
+          CompletionCuePlayer.instance.turnFinished(
+            '${gateway.connection.id}|${storedId ?? runtimeId}',
+          );
+        }
         unawaited(_adoptPersistedIds());
       case 'turn.error':
         error = s('message') ?? ngL.ng_the_turn_failed;
@@ -1848,6 +2209,25 @@ class NgChatController extends ChangeNotifier {
           gateway.forgetRequest(id);
           if (request?.request.id == id) request = null;
         }
+      case 'btw.complete' || 'background.complete':
+        // Desktop's dispatcher: the answer to /btw or /background arrives
+        // only as this event on the session that asked, so it is the one
+        // place it can be shown. A replay of the same answer is not another.
+        final answer = SideAnswer.fromEvent(event.type, p);
+        if (answer == null || !_sideAnswers.add(answer.identity)) return;
+        items.add(
+          NgCommandItem(_key('c'), answer.header, time: DateTime.now())
+            ..output = answer.text
+            ..running = false,
+        );
+      case 'connection.request' || 'connection.update':
+        final next = CatalogOperation.merge(
+          catalog,
+          p,
+          opens: event.type == 'connection.request',
+        );
+        if (identical(next, catalog)) return;
+        catalog = next;
       default:
         return;
     }
@@ -1858,10 +2238,14 @@ class NgChatController extends ChangeNotifier {
           'error' ||
           'turn.error' ||
           'request.cancel' ||
+          'connection.request' ||
+          'connection.update' ||
           'message.start' ||
           'session.updated' ||
           'session.info' ||
           'session.title' ||
+          'btw.complete' ||
+          'background.complete' ||
           'notice':
         _changedNow();
       default:
@@ -2029,15 +2413,76 @@ class NgChatController extends ChangeNotifier {
     thinkingFrame = null;
     turnStartedAt = null;
     request = null;
+    kanban.turnEnded();
     onTurnFinished?.call();
     // The goal's judge runs after the turn; pick up its verdict.
     if (control?.goal != null) unawaited(refreshControl());
-    if (queued.isNotEmpty && !failed) {
-      final next = queued.removeAt(0);
-      scheduleMicrotask(
-        () => unawaited(send(next.text, display: next.display)),
-      );
+    if (failed && queued.isNotEmpty) localQueuePaused = true;
+    _scheduleLocalDrain();
+  }
+
+  // These are this client's unsent entries, never admissions copied back
+  // from the owner. Recheck at dispatch: a pause/removal may win the tick.
+  NgQueued? _nextLocalDrain() {
+    for (final row in queued) {
+      if (row.key == editingLocalKey) continue;
+      return row;
     }
+    return null;
+  }
+
+  void _scheduleLocalDrain() {
+    if (_drainScheduled ||
+        localQueuePaused ||
+        running ||
+        _nextLocalDrain() == null) {
+      return;
+    }
+    _drainScheduled = true;
+    scheduleMicrotask(() {
+      _drainScheduled = false;
+      if (!draftOwnerCurrent || localQueuePaused || running) return;
+      final next = _nextLocalDrain();
+      if (next == null) return;
+      queued.remove(next);
+      unawaited(send(next.text, display: next.display));
+    });
+  }
+
+  void beginLocalEdit(NgQueued row) {
+    if (_disposed || !draftOwnerCurrent) return;
+    editingLocalKey = row.key;
+  }
+
+  void endLocalEdit(NgQueued row) {
+    if (editingLocalKey == row.key) editingLocalKey = null;
+    if (_disposed) return;
+    _scheduleLocalDrain();
+    _changed();
+  }
+
+  void setLocalQueuePaused(bool paused) {
+    if (!draftOwnerCurrent) return;
+    if (paused && queued.isEmpty) return;
+    localQueuePaused = paused;
+    if (!paused) _scheduleLocalDrain();
+    _changed();
+  }
+
+  void editLocalQueue(NgQueued original, String text) {
+    if (!draftOwnerCurrent || text.trim().isEmpty || original.display != null) {
+      return;
+    }
+    final index = queued.indexOf(original);
+    if (index < 0) {
+      if (!queued.any((row) => row.key == original.key)) {
+        error = ngL.release_chat_unsent_prompt_gone;
+        _changed();
+      }
+      return;
+    }
+    queued[index] = NgQueued(original.key, text.trim());
+    _changed();
   }
 
   /// Drops the request [id] once it was answered elsewhere (a notification,
@@ -2065,6 +2510,15 @@ class NgChatController extends ChangeNotifier {
       throw StateError(ngL.ng_the_gateway_connection_dropped_try_again);
     }
     if (runtimeId != null && storedId != null) return;
+    // A missing or refused runtime binding is never permission to create a
+    // different chat. This also joins an initial attach still in flight.
+    if (storedId != null) {
+      await _attach();
+      if (_disposed || runtimeId == null) {
+        throw StateError(ngL.ng_the_gateway_connection_dropped_try_again);
+      }
+      return;
+    }
     if (_createUncertain) throw StateError(ngL.ng_project_create_uncertain);
     if (_creatingSession) {
       throw StateError(ngL.ng_connecting);
@@ -2136,6 +2590,14 @@ class NgChatController extends ChangeNotifier {
         error = ngL.ng_project_cwd_fallback(actualCwd);
       }
       if (runtimeId != null) gateway.bindRuntime(runtimeId!, storedId!);
+      // Created just now: there is nothing on the board to look for yet.
+      kanban.setChat(primaryId: storedId, discover: false);
+      final storedDraft = result['stored_session_id'];
+      if (draftOwnerCurrent &&
+          storedDraft is String &&
+          storedDraft.isNotEmpty) {
+        gateway.draftPresentation.bind(draftKey, storedDraft);
+      }
       _withInfo(result['info']);
       if (storedId != null) onCreated?.call(storedId!);
       _pickedModel = null;
@@ -2170,7 +2632,12 @@ class NgChatController extends ChangeNotifier {
   /// * any other file up to that size goes inline with `file.attach`;
   /// * anything larger streams over HTTP to `/api/files/upload-stream` (up
   ///   to 100 MB) and is attached by its path there, then removed.
-  Future<String?> _upload(AttachmentDraft draft, List<String> queued) async {
+  Future<String?> _upload(
+    AttachmentDraft draft,
+    List<String> queued,
+    List<Map<String, String>> canonicalImages,
+    void Function() checkOwner,
+  ) async {
     draft.status = AttachmentDraftStatus.uploading;
     draft.error = null;
     _changed();
@@ -2183,7 +2650,9 @@ class NgChatController extends ChangeNotifier {
         return ref;
       }
       if (draft.isImage) {
+        final staged = gateway.sessionAuthority;
         final bytes = await File(draft.cachedPath).readAsBytes();
+        checkOwner();
         final result = await gateway.call('image.attach_bytes', {
           'session_id': runtimeId,
           'content_base64': base64Encode(bytes),
@@ -2192,11 +2661,22 @@ class NgChatController extends ChangeNotifier {
         if (result['attached'] != true) {
           throw StateError(
             result['message']?.toString() ??
-                'The gateway did not attach ${draft.name}.',
+                ngL.ng_release_attachment_not_attached(draft.name),
           );
         }
         final path = result['path']?.toString();
-        if (path != null && path.isNotEmpty) queued.add(path);
+        if (staged) {
+          // gateway/session_images.py stages only on the session authority.
+          // Legacy image.attach_bytes instead queues onto the next turn.
+          if (path == null ||
+              path.isEmpty ||
+              result['mime'] != draft.mediaType) {
+            throw const PreparedImageException();
+          }
+          canonicalImages.add({'path': path, 'mime': draft.mediaType});
+        } else if (path != null && path.isNotEmpty) {
+          queued.add(path);
+        }
         draft.status = AttachmentDraftStatus.attached;
         return null;
       }
@@ -2209,7 +2689,7 @@ class NgChatController extends ChangeNotifier {
       }, timeout: const Duration(minutes: 2));
       final ref = result['ref_text']?.toString() ?? '';
       if (result['attached'] != true || ref.isEmpty) {
-        throw StateError('The gateway did not attach ${draft.name}.');
+        throw StateError(ngL.ng_release_attachment_not_attached(draft.name));
       }
       draft
         ..status = AttachmentDraftStatus.attached
@@ -2317,7 +2797,7 @@ class NgChatController extends ChangeNotifier {
           : result['path']?.toString() == staged;
       final ref = result['ref_text']?.toString() ?? '';
       if (result['attached'] != true || ref.isEmpty) {
-        throw StateError('The gateway did not attach ${draft.name}.');
+        throw StateError(ngL.ng_release_attachment_not_attached(draft.name));
       }
       return ref;
     } finally {
@@ -2358,68 +2838,192 @@ class NgChatController extends ChangeNotifier {
   Future<bool> send(
     String text, {
     List<AttachmentDraft> attachments = const [],
+    String? composerImageText,
     String? submissionId,
     String? display,
+    bool hidden = false,
+    WorkspaceTarget? fleetTarget,
+    Map<String, Object> promptParams = const {},
   }) async {
     final trimmed = text.trim();
+    if (fleetTarget != null && promptParams.isNotEmpty) return false;
+    // A fleet send is text only, on the exact bound route and runtime.
+    if (fleetTarget != null &&
+        (attachments.isNotEmpty ||
+            composerImageText != null ||
+            fleetTarget.route !=
+                gateway.workspace.route(storedSessionId: storedId) ||
+            runtimeId == null ||
+            fleetTarget.runtimeSessionId != runtimeId ||
+            !fleetTarget.isCurrent)) {
+      return false;
+    }
     if (trimmed.isEmpty && attachments.isEmpty) return false;
+    // A hidden widget intent is plain text on this chat's own runtime, and
+    // only starts a turn: it never steers or queues behind a running one.
+    if (hidden &&
+        (running ||
+            attachments.isNotEmpty ||
+            composerImageText != null ||
+            fleetTarget != null)) {
+      return false;
+    }
     final shown = display?.trim() ?? '';
+    if (composerImageText != null &&
+        (composerImageText.trim() != trimmed || shown.isNotEmpty)) {
+      return false;
+    }
     final effectiveSubmissionId = submissionId ?? const Uuid().v4();
-    final item = NgUserItem(
-      _key('u'),
-      shown.isEmpty ? trimmed : shown,
-      time: DateTime.now(),
-      pending: true,
-      attachments: List.of(attachments),
-      submissionId: effectiveSubmissionId,
-      sentText: shown.isEmpty ? null : trimmed,
-    );
-    items.add(item);
+    final NgUserItem? item = hidden
+        ? null
+        : NgUserItem(
+            _key('u'),
+            shown.isEmpty ? trimmed : shown,
+            time: DateTime.now(),
+            pending: true,
+            attachments: List.of(attachments),
+            submissionId: effectiveSubmissionId,
+            composerImageText: composerImageText,
+            sentText: shown.isEmpty ? null : trimmed,
+            promptParams: promptParams,
+          );
+    if (item != null) items.add(item);
     error = null;
     running = true;
     turnStartedAt = DateTime.now();
     _changed();
     final queued = <String>[];
+    PreparedImageCapture? capture;
+    var mayHaveSubmitted = false;
+    bool Function()? sameUploadOwner;
     try {
-      await _ensureSession();
-      final refs = <String>[];
-      try {
-        for (final draft in item.attachments) {
-          final ref = draft.refText ?? await _upload(draft, queued);
-          if (ref != null) refs.add(ref);
+      if (fleetTarget == null) await _ensureSession();
+      final journal =
+          composerImageText != null &&
+          PreparedImageStore.supports(composerImageText, attachments);
+      final target = journal ? imageTarget : null;
+      final live = runtimeId;
+      final socket = gateway.socket;
+      final epoch = socket?.socketEpoch;
+      sameUploadOwner = () =>
+          !_disposed &&
+          live == runtimeId &&
+          identical(socket, gateway.socket) &&
+          epoch == socket?.socketEpoch &&
+          ConnectionMutationBarrier.isCurrent(
+            gateway.connection.id,
+            _imageEpoch,
+          );
+      void checkOwner() {
+        if (!sameUploadOwner!() ||
+            (journal && (target == null || imageTarget?.key != target.key))) {
+          throw const PreparedImageException();
         }
-      } catch (_) {
-        await _detach(queued);
-        _resetQueuedImages(item.attachments);
-        rethrow;
+      }
+
+      checkOwner();
+      final adopted = journal
+          ? await PreparedImageStore.shared.adopt(
+              target!,
+              composerImageText,
+              attachments,
+            )
+          : null;
+      if (journal && adopted == null) {
+        capture = await PreparedImageStore.shared.capture(
+          attachments,
+          beforeUpload: (target: target!, text: composerImageText),
+        );
+      }
+      checkOwner();
+      final refs = <String>[];
+      final wireImages = <Map<String, String>>[];
+      for (final draft
+          in capture?.drafts ??
+              item?.attachments ??
+              const <AttachmentDraft>[]) {
+        if (adopted != null) break;
+        checkOwner();
+        final ref =
+            draft.refText ??
+            await _upload(draft, queued, wireImages, checkOwner);
+        if (ref != null) refs.add(ref);
       }
       // Like Desktop and Kyllene: the file references first, then the text.
-      final prompt = [
-        refs.join('\n'),
-        trimmed,
-      ].where((part) => part.trim().isNotEmpty).join('\n\n');
+      final prompt =
+          adopted?.entry.prompt ??
+          [
+            refs.join('\n'),
+            trimmed,
+          ].where((part) => part.trim().isNotEmpty).join('\n\n');
+      checkOwner();
+      final attempt =
+          adopted ??
+          (journal
+              ? await PreparedImageStore.shared.prepare(
+                  target!,
+                  composerImageText,
+                  capture!,
+                  prompt: prompt,
+                  wireImages: wireImages,
+                  copyOnly: !gateway.sessionAuthority,
+                )
+              : null);
+      checkOwner();
+      if (attempt != null && item != null) {
+        item.submissionId = attempt.id;
+        item.recoverInComposer = true;
+      }
+      final wireSubmissionId = item?.submissionId ?? effectiveSubmissionId;
+      final explicitImages = adopted?.entry.wireImages ?? wireImages;
       _clearRetainedModelMutation();
-      final result = await _submitPromptWithCompatibility({
-        'session_id': runtimeId,
-        'text': prompt,
-      }, submissionId: effectiveSubmissionId);
-      item.pending = false;
+      mayHaveSubmitted = true;
+      final result = fleetTarget != null
+          ? await fleetTarget.submitFleetText(prompt, wireSubmissionId)
+          : await _submitPromptWithCompatibility(
+              {
+                ...promptParams,
+                'session_id': runtimeId,
+                'text': prompt,
+                if (explicitImages.isNotEmpty) 'attachments': explicitImages,
+              },
+              submissionId: wireSubmissionId,
+              attempt: attempt,
+              checkOwner: checkOwner,
+            );
+      if (attempt != null) await attempt.receipt(result, live!);
+      item?.pending = false;
       // A canonical receipt names the execution its admission started.
       _adoptExecutionGeneration(result['execution_generation']);
       final status = result['status']?.toString();
-      if (status == 'queued' && item.sentText == null) item.text = trimmed;
+      if (item != null && status == 'queued' && item.sentText == null) {
+        item.text = trimmed;
+      }
       _changed();
-      if (item.attachments.isNotEmpty) {
+      if (item != null && item.attachments.isNotEmpty) {
         unawaited(attachmentService.removeAll(item.attachments));
       }
       return true;
     } catch (e) {
-      item.pending = false;
-      item.failure = _clean(e);
+      if (item != null) {
+        if (!mayHaveSubmitted && sameUploadOwner?.call() == true) {
+          await _detach(queued);
+          _resetQueuedImages(item.attachments);
+        }
+        if (item.recoverInComposer) {
+          await attachmentService.removeAll(item.attachments);
+        }
+        item.pending = false;
+        item.failure = _clean(e);
+      } else {
+        error = _clean(e);
+      }
       running = false;
       turnStartedAt = null;
       _changed();
       return false;
+    } finally {
+      await capture?.close();
     }
   }
 
@@ -2475,23 +3079,54 @@ class NgChatController extends ChangeNotifier {
       : _clean(e);
 
   /// Queues [text] to send once the running turn ends.
+  ///
+  /// Queueing is fresh intent, so a park from Stop or a failed turn is lifted.
+  /// The entry still waits while a turn is running.
   void enqueue(String text) {
     final trimmed = text.trim();
-    if (trimmed.isEmpty) return;
+    if (trimmed.isEmpty || !draftOwnerCurrent) return;
     queued.add(NgQueued(_key('q'), trimmed));
+    localQueuePaused = false;
     _changed();
+    _scheduleLocalDrain();
   }
 
   void unqueue(NgQueued item) {
     queued.remove(item);
+    if (queued.isEmpty) localQueuePaused = false;
     _changed();
+  }
+
+  /// Row send. While a turn is running this unparks, moves [item] to the
+  /// head and interrupts; the settle drain admits it. While idle it admits
+  /// [item] now and leaves the rest to follow.
+  Future<void> sendQueuedNow(NgQueued item) async {
+    final index = queued.indexOf(item);
+    if (!draftOwnerCurrent || index < 0 || item.key == editingLocalKey) {
+      return;
+    }
+    if (index > 0) {
+      queued.removeAt(index);
+      queued.insert(0, item);
+    }
+    localQueuePaused = false;
+    _changed();
+    if (running) {
+      await stop(parkLocalQueue: false);
+      return;
+    }
+    if (queued.isEmpty || !identical(queued.first, item)) return;
+    queued.removeAt(0);
+    if (queued.isEmpty) localQueuePaused = false;
+    await send(item.text, display: item.display);
   }
 
   /// Stops the running turn. On the canonical session authority the stop
   /// names the exact execution the user saw ([_executionGeneration] now): a
   /// later claim is never stopped by it, and `stale_generation` is reported,
   /// not retried against the newer turn. Legacy gateways get their own shape.
-  Future<void> stop() async {
+  Future<void> stop({bool parkLocalQueue = true}) async {
+    if (parkLocalQueue && queued.isNotEmpty) setLocalQueuePaused(true);
     final id = runtimeId;
     if (id == null) return;
     final canonical = gateway.sessionAuthority;
@@ -2515,10 +3150,96 @@ class NgChatController extends ChangeNotifier {
   /// Stops the running turn, then sends [text].
   Future<void> stopAndSend(String text) async {
     queued.insert(0, NgQueued(_key('q'), text.trim()));
-    await stop();
+    localQueuePaused = false;
+    await stop(parkLocalQueue: false);
   }
 
   // ── Slash commands (Kyllene's ChatSession.runCommand) ─────────────────
+
+  /// Side answers already shown (a replayed event is not a second answer).
+  final Set<String> _sideAnswers = {};
+
+  /// Runs `/btw`, `/background` (`/bg`) or `/handoff` through its own RPC,
+  /// the way Desktop does, under a command card: never through
+  /// `slash.exec` (whose capture window closes before the answer) and never
+  /// as a prompt. A new chat is created and a stored chat attached first,
+  /// as Desktop's `ensureSessionId` does, so the RPC never names a stale id.
+  /// Returns null when [command] is not one of these, or the gateway has no
+  /// such method: the ordinary command path then runs it.
+  Future<NgDedicatedResult?> runDedicated(NgSlashLine command) async {
+    final kind = dedicatedSlash(command.name);
+    if (kind == null || kind == DedicatedSlash.resume) return null;
+    final card = NgCommandItem(_key('c'), command.label, time: DateTime.now());
+    items.add(card);
+    error = null;
+    _changedNow();
+    final usage = planDedicated(
+      name: command.name,
+      arg: command.arg,
+      sessionId: 'unused',
+      l10n: ngL,
+    );
+    if (usage.request == null) {
+      card
+        ..output = usage.notice ?? ''
+        ..running = false;
+      _changedNow();
+      return NgDedicatedResult(card);
+    }
+    final String runtime;
+    try {
+      runtime = await _ensureCommandSession();
+    } catch (e) {
+      _commandFailed(
+        card,
+        NgCommandResult.failed,
+        ngL.ng_slash_command_failed(_clean(e)),
+      );
+      return NgDedicatedResult(card);
+    }
+    if (_disposed) return NgDedicatedResult(card);
+    final run = await runDedicatedCommand(
+      name: command.name,
+      arg: command.arg,
+      sessionId: runtime,
+      l10n: ngL,
+      rpc: (method, params) =>
+          gateway.call(method, params, timeout: kNgSlashCommandTimeout),
+    );
+    final answer = run?.answer;
+    if (answer == null || answer.fallbackToExec) {
+      items.remove(card);
+      _changedNow();
+      return null;
+    }
+    if (answer.failed) {
+      _commandFailed(
+        card,
+        NgCommandResult.failed,
+        ngL.ng_slash_command_failed(answer.notice),
+      );
+      return NgDedicatedResult(card);
+    }
+    card
+      ..output = answer.notice
+      ..running = false;
+    _changedNow();
+    return NgDedicatedResult(
+      card,
+      handoffSession: answer.watchHandoff ? runtime : null,
+    );
+  }
+
+  /// Shows how a watched handoff ended on its command card.
+  void settleHandoff(NgCommandItem card, String text, {bool failed = false}) {
+    if (_disposed) return;
+    if (!items.contains(card)) items.add(card);
+    card
+      ..output = card.output.isEmpty ? text : '${card.output}\n$text'
+      ..running = false
+      ..failed = failed;
+    _changedNow();
+  }
 
   /// Whether this connection said it has no `slash.exec` (an older gateway).
   bool get slashExecUnsupported =>
@@ -2550,6 +3271,22 @@ class NgChatController extends ChangeNotifier {
       );
     }
     return _execute(card, command, runtime, followAlias: true);
+  }
+
+  /// The live runtime id for a session-scoped call (completions, Compress,
+  /// the context breakdown). A stored chat that is not attached yet attaches
+  /// first: a stored id is never sent where a runtime id belongs. A new chat
+  /// is created only when [create] (Desktop's `ensureSessionId`); otherwise
+  /// it has no session yet and the answer is null.
+  Future<String?> liveSessionId({bool create = false}) async {
+    final live = runtimeId;
+    if (live != null) return live;
+    if (storedId == null && !create) return null;
+    try {
+      return await _ensureCommandSession();
+    } catch (_) {
+      return null;
+    }
   }
 
   /// The live session a command runs in: a new chat is created as a prompt
@@ -2758,14 +3495,38 @@ class NgChatController extends ChangeNotifier {
   Future<Map<String, dynamic>> _submitPromptWithCompatibility(
     Map<String, dynamic> baseParams, {
     required String submissionId,
+    PreparedImageAttempt? attempt,
+    required void Function() checkOwner,
   }) async {
+    final sent = <String, dynamic>{
+      ...baseParams,
+      'submission_id': submissionId,
+    };
     try {
-      return await gateway.call('prompt.submit', {
-        ...baseParams,
-        'submission_id': submissionId,
-      }, timeout: const Duration(seconds: 60));
+      return await gateway.call(
+        'prompt.submit',
+        sent,
+        timeout: const Duration(seconds: 60),
+      );
     } on JsonRpcError catch (e) {
+      // Backends predating confirm_deep_truncate reject it at contract
+      // admission (4000, handler never runs). The user already confirmed, so
+      // retry once without only that field — mirror of Desktop's
+      // runRewindSubmit (rewind.ts).
+      if (isRejectedDeepTruncatePayload(
+        code: e.code,
+        message: e.message,
+        sentParams: sent,
+      )) {
+        return gateway.call(
+          'prompt.submit',
+          stripRejectedDeepTruncate(sent),
+          timeout: const Duration(seconds: 60),
+        );
+      }
       if (!isRejectedSubmissionIdError(e)) rethrow;
+      if (attempt != null) await attempt.beforeLegacy();
+      checkOwner();
       return gateway.call(
         'prompt.submit',
         baseParams,
@@ -2774,19 +3535,192 @@ class NgChatController extends ChangeNotifier {
     }
   }
 
-  /// Sends the last prompt again.
-  Future<void> retryLast() async {
-    final last = items.whereType<NgUserItem>().lastOrNull;
-    if (last == null) return;
+  /// Retry for the last prompt, the way Desktop retries.
+  ///
+  /// A submission the gateway never accepted goes again with the SAME
+  /// `submission_id`, so a gateway that did receive it answers with the turn
+  /// it already has. A turn the gateway accepted is regenerated (Desktop's
+  /// `runReload`): the running turn is interrupted first, then the prompt is
+  /// submitted with `confirm_truncate` and its durable row
+  /// (`truncate_before_row_id`), replacing the failed turn. Without a
+  /// durable row nothing is sent: a plain resubmit would append the same
+  /// turn twice.
+  Future<NgRetryResult> retryLast() async {
+    final last = items
+        .whereType<NgUserItem>()
+        .where((item) => !item.steered)
+        .lastOrNull;
+    if (last == null) return NgRetryResult.nothing;
     if (last.failure != null) {
+      if (last.recoverInComposer) return NgRetryResult.nothing;
       items.remove(last);
+      final sent = await send(
+        last.sentText ?? last.text,
+        attachments: last.attachments,
+        composerImageText: last.composerImageText,
+        submissionId: last.submissionId,
+        display: last.sentText == null ? null : last.text,
+        promptParams: last.promptParams,
+      );
+      return sent ? NgRetryResult.resent : NgRetryResult.failed;
     }
-    await send(
-      last.sentText ?? last.text,
-      attachments: last.failure != null ? last.attachments : const [],
-      submissionId: last.failure != null ? last.submissionId : null,
-      display: last.sentText == null ? null : last.text,
+    final text = last.sentText ?? last.text;
+    final String runtime;
+    try {
+      runtime = await _ensureCommandSession();
+    } catch (_) {
+      return NgRetryResult.notFound;
+    }
+    if (running) {
+      await stop(parkLocalQueue: false);
+      for (var i = 0; i < 50 && running && !_disposed; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      if (_disposed || running) return NgRetryResult.failed;
+    }
+    final target = await resolveRegenerateTarget(
+      rpc: (method, params) => gateway.call(method, params),
+      sessionId: runtime,
+      text: text,
     );
+    if (_disposed) return NgRetryResult.nothing;
+    if (target == null) return NgRetryResult.notFound;
+    final index = items.indexOf(last);
+    if (index < 0) return NgRetryResult.nothing;
+    // As Desktop's applyReloadOptimistic: the replaced turn leaves the view.
+    final replaced = items.sublist(index);
+    items.removeRange(index, items.length);
+    final sent = await send(
+      text,
+      display: last.sentText == null ? null : last.text,
+      // runRewindSubmit's params for the resolved row (Desktop's runReload).
+      promptParams: regenerateSubmitParams(target.rowId),
+    );
+    if (!sent && !_disposed) {
+      // Desktop's rollback: the transcript as it was, and why.
+      final failed = items.whereType<NgUserItem>().lastOrNull;
+      if (failed != null && failed.failure != null) {
+        error = failed.failure;
+        items.remove(failed);
+      }
+      items.addAll(replaced);
+      _changedNow();
+    }
+    return sent ? NgRetryResult.regenerated : NgRetryResult.failed;
+  }
+
+  /// Where an edit or restore of [item] cuts, from the session's full saved
+  /// transcript (`session.history`): the durable row (the bubble's own row
+  /// id first, as Desktop's `source.rowId`) and whether later user turns are
+  /// archived. The items on screen are a paged window and cannot answer
+  /// either. Null when the saved transcript does not hold the turn yet:
+  /// a cut would be a guess, so nothing may be sent.
+  Future<NgRewindTarget?> rewindTargetFor(NgUserItem item) async {
+    final users = items
+        .whereType<NgUserItem>()
+        .where((entry) => !entry.steered)
+        .toList();
+    final index = users.indexOf(item);
+    final ordinal = index < 0 ? users.length : index;
+    final shownLater = index >= 0 && index < users.length - 1;
+    final String runtime;
+    try {
+      runtime = await _ensureCommandSession();
+    } catch (_) {
+      return null;
+    }
+    final history = await RewindHistory.read(
+      (method, params) => gateway.call(method, params),
+      runtime,
+    );
+    if (_disposed) return null;
+    if (history == null) {
+      // The transcript cannot be read (an old gateway): the bubble's own
+      // row, or Desktop's plain resubmit.
+      return (
+        rowId: item.rowId,
+        laterTurns: shownLater,
+        ordinal: ordinal,
+        maxRowId: null,
+      );
+    }
+    final rowId = history.rowFor(
+      bubbleRowId: item.rowId,
+      sourceText: item.text,
+      expectedOrdinal: ordinal,
+    );
+    if (rowId == null && history.hasRowIds) return null;
+    return (
+      rowId: rowId,
+      laterTurns: rowId == null ? shownLater : history.laterUserTurns(rowId),
+      ordinal: ordinal,
+      maxRowId: history.maxRowId,
+    );
+  }
+
+  /// Edit or restore a stored user turn (F17, Desktop rewind semantics):
+  /// a live turn is interrupted first, then exactly ONE truncating
+  /// `prompt.submit` goes out for [target] through the same owned path Retry
+  /// uses. The archived turns leave the view at once (Desktop's
+  /// `applyRewindOptimistic`) and come back if the send fails. The composer
+  /// is never consumed.
+  Future<bool> rewindUserTurn({
+    required NgUserItem item,
+    required String text,
+    required NgRewindTarget target,
+  }) async {
+    final runtime = runtimeId;
+    if (runtime == null) return false;
+    if (running) {
+      await stop(parkLocalQueue: false);
+      for (var i = 0; i < 50 && running && !_disposed; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      }
+      if (_disposed || running) return false;
+    } else {
+      // Best-effort interrupt before the rewind, matching Classic and Desktop's
+      // runRewindSubmit when a detached/remote turn may still be running.
+      try {
+        await gateway.call('session.interrupt', {
+          'session_id': runtime,
+          if (gateway.sessionAuthority)
+            'execution_generation': ?_executionGeneration,
+        });
+      } catch (_) {
+        // The submit path still gates on the gateway's own busy state.
+      }
+      if (_disposed) return false;
+    }
+    final index = target.rowId == null ? -1 : items.indexOf(item);
+    final archived = index < 0 ? const <NgItem>[] : items.sublist(index);
+    if (index >= 0) {
+      items.removeRange(index, items.length);
+      _changedNow();
+    }
+    final sent = await send(
+      text,
+      promptParams: Map<String, Object>.from(
+        buildRewindParams(
+          RewindPlan.resolved(
+            rowId: target.rowId,
+            sourceText: item.text,
+            originalOrdinal: target.ordinal,
+          ),
+          confirmDeepTruncate: target.laterTurns,
+        ),
+      ),
+    );
+    if (!sent && !_disposed && archived.isNotEmpty) {
+      // Desktop's rollback: the transcript as it was, and why.
+      final failed = items.whereType<NgUserItem>().lastOrNull;
+      if (failed != null && failed.failure != null) {
+        error = failed.failure;
+        items.remove(failed);
+      }
+      items.insertAll(index.clamp(0, items.length), archived);
+      _changedNow();
+    }
+    return sent;
   }
 
   bool _answer(Map<String, dynamic> result) {
@@ -2800,6 +3734,44 @@ class NgChatController extends ChangeNotifier {
   }
 
   bool answerApproval(String choice) => _answer({'choice': choice});
+
+  /// Answers this chat's waiting setup card [requestId] on the socket it
+  /// arrived on. False when that card is no longer the one waiting here
+  /// (withdrawn, answered elsewhere, or replaced by a newer card) or the
+  /// answer did not go out.
+  bool answerSetupBeat(String requestId, Map<String, dynamic> result) =>
+      sendSetupBeat(requestId, result) == SetupBeatSend.sent;
+
+  /// Sends [result] for this chat's waiting setup card [requestId]. The
+  /// card closes only once the answer went out; a send that failed keeps it
+  /// to be answered again, as the Desktop's setup-beat store does.
+  SetupBeatSend sendSetupBeat(String requestId, Map<String, dynamic> result) {
+    final current = request;
+    if (current == null ||
+        current.kind != NgRequestKind.setupBeat ||
+        current.request.id != requestId ||
+        !gateway.openRequests.containsKey(requestId)) {
+      return SetupBeatSend.closed;
+    }
+    if (!current.request.raw.respond(result)) return SetupBeatSend.failed;
+    gateway.forgetRequest(current.request.id);
+    request = null;
+    _changed();
+    return SetupBeatSend.sent;
+  }
+
+  /// A message sent while a setup card waits closes it unanswered with
+  /// `{wrote_instead: true}`: the backend ends the card's turn and the
+  /// message runs as the next one (Desktop's yieldSetupBeatToMessage). True
+  /// when a card closed.
+  bool yieldSetupBeatToMessage() {
+    final current = request;
+    if (current == null || current.kind != NgRequestKind.setupBeat) {
+      return false;
+    }
+    return sendSetupBeat(current.request.id, const {'wrote_instead': true}) ==
+        SetupBeatSend.sent;
+  }
 
   bool answerClarify(List<List<String>> answers) {
     final current = request;
@@ -3109,7 +4081,9 @@ class NgChatController extends ChangeNotifier {
   /// Switches this chat's thinking level.
   Future<void> setReasoning(String effort) async {
     final previous = reasoningEffort;
+    final previousWire = reasoningEffortWire;
     reasoningEffort = effort;
+    reasoningEffortWire = '';
     _changed();
     if (runtimeId == null && storedId == null) {
       _pickedEffort = effort;
@@ -3118,6 +4092,7 @@ class NgChatController extends ChangeNotifier {
     if (runtimeId == null) await _attach();
     if (runtimeId == null) {
       reasoningEffort = previous;
+      reasoningEffortWire = previousWire;
       _changed();
       throw StateError(ngL.ng_model_switch_not_connected);
     }
@@ -3129,6 +4104,7 @@ class NgChatController extends ChangeNotifier {
       });
     } catch (_) {
       reasoningEffort = previous;
+      reasoningEffortWire = previousWire;
       _changed();
       rethrow;
     }
@@ -3149,9 +4125,12 @@ class NgChatController extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
+    SystemSleepGate.instance.removeListener(_onSleepGate);
+    SystemSleepGate.instance.releaseReconcile(this);
     for (final sub in _subs) {
       unawaited(sub.cancel());
     }
+    kanban.dispose();
     super.dispose();
   }
 }

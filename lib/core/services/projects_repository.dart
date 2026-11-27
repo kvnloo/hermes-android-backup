@@ -403,9 +403,13 @@ class ProjectsRepository {
   ProjectsTreeOverview? _newerOverview(int generation) =>
       !_closed && _overviewCacheGeneration > generation ? _overviewCache : null;
 
-  Future<HermesProject> create(String name, {bool select = false}) => select
-      ? _serializeMutation(() => _create(name, select: true))
-      : _create(name, select: false);
+  Future<HermesProject> create(
+    String name, {
+    bool select = false,
+    String? idea,
+  }) => select
+      ? _serializeMutation(() => _create(name, select: true, idea: idea))
+      : _create(name, select: false, idea: idea);
 
   /// Registers an already-existing server directory as a Project.
   ///
@@ -445,6 +449,7 @@ class ProjectsRepository {
     String name, {
     required bool select,
     String? adoptPath,
+    String? idea,
   }) async {
     _requireSupported();
     final trimmed = name.trim();
@@ -466,6 +471,7 @@ class ProjectsRepository {
     try {
       created = await client.create(
         name: trimmed,
+        description: idea,
         primaryPath: adoptPath,
         folders: adoptPath == null ? const [] : [adoptPath],
         use: select,

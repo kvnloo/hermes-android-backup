@@ -16,7 +16,9 @@ enum GatewayApprovalChoice {
   }
 }
 
-/// A command approval emitted by the Hermes Desktop gateway.
+enum GatewayApprovalKind { command, access, network }
+
+/// A command, folder or website approval emitted by the Hermes Desktop gateway.
 ///
 /// The backend is authoritative about the available scopes. Android also
 /// removes unsafe combinations defensively so a malformed event cannot expose
@@ -33,6 +35,10 @@ class GatewayApprovalRequest {
   // silently downgrade to the legacy approval contract.
   final Object? executionGeneration;
   final bool canonicalControl;
+  final GatewayApprovalKind kind;
+  final String? folderPath;
+  final String? folderAccess;
+  final String? host;
 
   const GatewayApprovalRequest({
     required this.command,
@@ -44,6 +50,10 @@ class GatewayApprovalRequest {
     this.requestId,
     this.executionGeneration,
     this.canonicalControl = false,
+    this.kind = GatewayApprovalKind.command,
+    this.folderPath,
+    this.folderAccess,
+    this.host,
   });
 
   factory GatewayApprovalRequest.fromEventData(Map<String, dynamic> data) {
@@ -96,6 +106,13 @@ class GatewayApprovalRequest {
       choices.add(GatewayApprovalChoice.deny);
     }
 
+    final kind = switch (data['kind']) {
+      'access' => GatewayApprovalKind.access,
+      'network' => GatewayApprovalKind.network,
+      _ => GatewayApprovalKind.command,
+    };
+    final access = data['access'];
+
     return GatewayApprovalRequest(
       command: data['command']?.toString().trim() ?? '',
       description:
@@ -118,6 +135,12 @@ class GatewayApprovalRequest {
       canonicalControl:
           data.containsKey('prompt_id') ||
           data.containsKey('execution_generation'),
+      kind: kind,
+      folderPath: data['path']?.toString().trim(),
+      folderAccess: access == 'read' || access == 'read_write'
+          ? access as String
+          : null,
+      host: data['host']?.toString().trim(),
     );
   }
 }

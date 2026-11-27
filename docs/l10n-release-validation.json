@@ -1,0 +1,158 @@
+{
+  "status": "partial-release-pass; legacy string extraction remains",
+  "branch": "v5/l10n",
+  "base": "9794eeb34298aa123cab13d424a7549ba2d6d700",
+  "tested_source_commit": "95035859a66f07eaefb6795ab5239a821ba4d37f",
+  "initial_missing_translations_filled": 2615,
+  "new_messages_extracted": 607,
+  "original_english_entries_changed": [],
+  "catalogs": {
+    "ar": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "de": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "en": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "es": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "fr": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "ja": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "ko": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "pt": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "pt_BR": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "ru": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "uk": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "zh": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "zh_Hans": {
+      "messages": 3234,
+      "missing": 0
+    },
+    "zh_Hant": {
+      "messages": 3234,
+      "missing": 0
+    }
+  },
+  "checks": {
+    "placeholders": {
+      "command": [
+        "dart",
+        "run",
+        "tool/check_l10n_placeholders.dart"
+      ],
+      "exit_code": 0,
+      "output": "Running build hooks...Running build hooks...All 13 locales: complete source-ordered keys and matching placeholders/ICU structure."
+    },
+    "analyzer": {
+      "command": [
+        "flutter",
+        "analyze",
+        "--no-pub",
+        "--fatal-infos"
+      ],
+      "exit_code": 0,
+      "output": "Analyzing l10n...                                               \nNo issues found! (ran in 12.8s)"
+    }
+  },
+  "test_count_policy": "Unique testDone events with hidden != true; do not filter names beginning with loading, since two real tests use that word.",
+  "focused": {
+    "files": 22,
+    "visible_test_counts": {
+      "success": 291
+    },
+    "done": {
+      "success": true,
+      "type": "done",
+      "time": 27169
+    },
+    "json_log": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/l10n/.dart_tool/l10n-release/focused-tests.jsonl"
+  },
+  "affected_regression_files": {
+    "files": 14,
+    "visible_test_counts": {
+      "success": 159
+    },
+    "done": {
+      "success": true,
+      "type": "done",
+      "time": 82019
+    },
+    "json_log": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/l10n/.dart_tool/l10n-release/regress-tests.jsonl"
+  },
+  "full_initial": {
+    "files": 641,
+    "visible_test_counts": {
+      "success": 8333,
+      "error": 24
+    },
+    "done": {
+      "success": false,
+      "type": "done",
+      "time": 1627562
+    },
+    "json_log": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/l10n/.dart_tool/l10n-release/full-initial-tests.jsonl"
+  },
+  "full_final": {
+    "files": 641,
+    "visible_test_counts": {
+      "success": 8357
+    },
+    "done": {
+      "success": true,
+      "type": "done",
+      "time": 1600809
+    },
+    "json_log": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/l10n/.dart_tool/l10n-release/full-tests.jsonl"
+  },
+  "full_command": [
+    "flutter",
+    "test",
+    "--no-pub",
+    "-j2",
+    "--exclude-tags",
+    "perf",
+    "--reporter",
+    "json"
+  ],
+  "full_environment": {
+    "TMPDIR": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/l10n/.dart_tool/full-tmp",
+    "ARES_SSH_FIXTURE": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/integration-fleet/build/fleet-ssh-fixture",
+    "ARES_TERMINAL_FIXTURE_HELPER": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/pty/build/pty-tmp/ares-pty",
+    "ARES_TERMINAL_FIXTURE_PYTHON": "/Volumes/Storage/Hermes/workspace/ares-v5-lanes/pty/build/pty-tmp/venv/bin/python",
+    "ARES_TEST_FFMPEG": "/opt/homebrew/bin/ffmpeg",
+    "ARES_TEST_FFPROBE": "/opt/homebrew/bin/ffprobe"
+  },
+  "remaining_inventory": "docs/l10n-release-remaining.md",
+  "pushed": false
+}

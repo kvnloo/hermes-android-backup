@@ -8,22 +8,53 @@ import 'package:flutter/material.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/models/hermes_project.dart';
 import '../../core/models/session.dart';
+import '../../core/render/contributions_page.dart';
+import '../../core/render/render_scope.dart';
+import '../../core/screens/assets_screen.dart';
 import '../../core/screens/cron_screen.dart';
+import '../../core/screens/files_screen.dart';
+import '../../core/screens/fleet_screen.dart';
 import '../../core/screens/memory_screen.dart';
+import '../../core/screens/model_admin_screen.dart';
 import '../../core/screens/nous_portal_screen.dart';
+import '../../core/screens/parallel_workspace_entry.dart';
 import '../../core/screens/projects_root_screen.dart';
 import '../../core/screens/provider_oauth_screen.dart';
 import '../../core/screens/skills_screen.dart';
+import '../../core/capabilities/capability_admin.dart';
+import '../../core/capabilities/capability_pages.dart';
+import '../../core/screens/workspace_profiles_screen.dart';
+import '../../core/services/chat_assets_client.dart';
+import '../../core/screens/workspace_workers_screen.dart';
+import '../../core/screens/host_operations_screen.dart';
+import '../../core/screens/kanban_board_screen.dart';
+import '../../core/screens/bots_screen.dart';
+import '../../core/screens/memory_graph_screen.dart';
+import '../../core/screens/schedule_desk_screen.dart';
 import '../../core/services/dashboard_api_client.dart';
+import '../../core/services/remote_files_client.dart';
 import '../nextgen_preferences.dart';
 import '../theme/nextgen_theme.dart';
 import 'models_page.dart';
 import 'nextgen_scope.dart';
+import 'parallel_workspace_page.dart';
 import 'projects_page.dart';
 import 'scheduled_page.dart';
 import 'sessions_sidebar.dart';
 import 'widgets.dart';
 import '../nextgen_l10n.dart';
+
+CapabilityAdmin _capabilityAdmin(BuildContext context) {
+  final gateway = NgScope.of(context).gateway;
+  return CapabilityAdmin.fromDashboard(
+    gateway.dashboard,
+    profile: gateway.profile,
+    rpc: (method, params) async {
+      await gateway.connected();
+      return gateway.call(method, params, timeout: const Duration(seconds: 45));
+    },
+  );
+}
 
 class NgMorePage extends StatelessWidget {
   const NgMorePage({
@@ -37,7 +68,20 @@ class NgMorePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scope = NgScope.of(context);
+    return ParallelWorkspaceEntryHost(
+      owner: scope.gateway,
+      connection: scope.connection,
+      workspace: (_) => NgParallelWorkspacePage(gateway: scope.gateway),
+      home: (openParallel) => _menu(context, scope, openParallel),
+    );
+  }
+
+  Widget _menu(BuildContext context, NgScope scope, VoidCallback openParallel) {
     final conn = scope.connection;
+    final workers = WorkspaceWorkersScreen.capture(
+      scope.gateway.workspace,
+      conn.label,
+    );
     void push(Widget page) => Navigator.of(
       context,
     ).push(MaterialPageRoute<void>(builder: (_) => page));
@@ -58,6 +102,12 @@ class NgMorePage extends StatelessWidget {
                       push(NgArchivedPage(onOpenSession: onOpenSession)),
                 ),
                 NgRow(
+                  icon: Icons.view_week_outlined,
+                  title: ngL.ng_release_more_parallel_workspace,
+                  subtitle: ngL.ng_release_more_parallel_workspace_subtitle,
+                  onTap: openParallel,
+                ),
+                NgRow(
                   icon: Icons.folder_outlined,
                   title: ngL.ng_projects,
                   subtitle: ngL.ng_chats_grouped_by_project_and_workspace,
@@ -69,10 +119,57 @@ class NgMorePage extends StatelessWidget {
                   ),
                 ),
                 NgRow(
+                  icon: Icons.folder_open_outlined,
+                  title: context.l10n.files,
+                  onTap: () => FilesScreen.open(
+                    context,
+                    scope.gateway.createFilesClient(),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.perm_media_outlined,
+                  title: context.l10n.assets,
+                  onTap: () => push(
+                    AssetsScreen(
+                      source: ChatAssetsClient(
+                        dashboard: scope.gateway.dashboard,
+                        profile: scope.gateway.profile,
+                      ),
+                      filesClient: (session) => scope.gateway.createFilesClient(
+                        sessionId: session.id,
+                        maxDownloadBytes: maxAttachmentDownloadBytes,
+                      ),
+                      onOpenSession: (session) {
+                        if (!context.mounted ||
+                            !identical(
+                              NgScope.of(context).gateway,
+                              scope.gateway,
+                            )) {
+                          return;
+                        }
+                        Navigator.of(
+                          context,
+                        ).popUntil((route) => route.isFirst);
+                        onOpenSession(session);
+                      },
+                    ),
+                  ),
+                ),
+                NgRow(
                   icon: Icons.drive_file_move_outline,
                   title: context.l10n.projects_root_title,
                   subtitle: context.l10n.projects_root_more_subtitle,
                   onTap: () => push(ProjectsRootScreen(connection: conn)),
+                ),
+                NgRow(
+                  icon: Icons.extension_outlined,
+                  title: ngL.render_contributions,
+                  subtitle: ngL.ng_release_more_contributions_subtitle,
+                  onTap: () => push(
+                    ContributionsPage(
+                      scope: renderConnectionKey(scope.gateway.connection),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -83,10 +180,76 @@ class NgMorePage extends StatelessWidget {
             child: Column(
               children: [
                 NgRow(
+                  icon: Icons.people_outline,
+                  title: ngL.ng_release_more_gateway_fleet,
+                  onTap: () => push(
+                    FleetScreen(
+                      serving: scope.gateway.workspace,
+                      label: conn.label,
+                    ),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.people_outline,
+                  title: ngL.ng_profiles,
+                  subtitle: ngL.ng_agent_gateway,
+                  onTap: () => push(
+                    WorkspaceProfilesScreen(
+                      nextGen: true,
+                      owner: scope.gateway.workspace,
+                      connection: conn,
+                      label: conn.label,
+                      route: scope.gateway.workspace.route(),
+                    ),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.account_tree_outlined,
+                  title: ngL.workspace_workers,
+                  subtitle: ngL.ng_show_subagents,
+                  onTap: () => workers.open(context),
+                ),
+                NgRow(
+                  icon: Icons.view_kanban_outlined,
+                  title: ngL.ng_more_kanban,
+                  subtitle: ngL.ng_more_kanban_subtitle,
+                  onTap: () => push(
+                    KanbanBoardScreen(
+                      owner: scope.gateway.workspace,
+                      route: scope.gateway.workspace.route(),
+                      connection: conn,
+                    ),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.pets_outlined,
+                  title: ngL.ng_more_bots,
+                  subtitle: ngL.ng_more_bots_subtitle,
+                  onTap: () => push(
+                    BotsScreen(
+                      owner: scope.gateway.workspace,
+                      route: scope.gateway.workspace.route(),
+                      connection: conn,
+                    ),
+                  ),
+                ),
+                NgRow(
                   icon: Icons.memory,
                   title: ngL.ng_memory,
                   subtitle: ngL.ng_what_hermes_remembers_about_you,
                   onTap: () => push(MemoryScreen(connection: conn)),
+                ),
+                NgRow(
+                  icon: Icons.hub_outlined,
+                  title: ngL.ng_release_more_memory_graph,
+                  subtitle: ngL.ng_release_more_memory_graph_subtitle,
+                  onTap: () => push(
+                    MemoryGraphScreen(
+                      owner: scope.gateway.workspace,
+                      route: scope.gateway.workspace.route(),
+                      connection: conn,
+                    ),
+                  ),
                 ),
                 NgRow(
                   icon: Icons.auto_fix_high_outlined,
@@ -95,10 +258,57 @@ class NgMorePage extends StatelessWidget {
                   onTap: () => push(SkillsScreen(connection: conn)),
                 ),
                 NgRow(
+                  icon: Icons.extension_outlined,
+                  title: ngL.ng_capabilities,
+                  subtitle: ngL.ng_release_more_capabilities_subtitle,
+                  onTap: () => push(
+                    CapabilityAdminScreen(admin: _capabilityAdmin(context)),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.vpn_key_outlined,
+                  title: ngL.ng_release_more_browser_vault,
+                  subtitle: ngL.ng_release_more_browser_vault_subtitle,
+                  onTap: () => push(
+                    BrowserVaultScreen(admin: _capabilityAdmin(context)),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.admin_panel_settings_outlined,
+                  title: ngL.ng_release_more_agent_policy,
+                  subtitle: ngL.ng_release_more_agent_policy_subtitle,
+                  onTap: () =>
+                      push(AgentPolicyScreen(admin: _capabilityAdmin(context))),
+                ),
+                NgRow(
                   icon: Icons.event_repeat,
                   title: ngL.ng_cron_editor,
                   subtitle: ngL.ng_edit_schedules_prompts_and_delivery,
                   onTap: () => push(CronScreen(connection: conn)),
+                ),
+                NgRow(
+                  icon: Icons.event_note_outlined,
+                  title: ngL.ng_release_more_schedules,
+                  subtitle: ngL.ng_release_more_schedules_subtitle,
+                  onTap: () => push(
+                    ScheduleDeskScreen(
+                      owner: scope.gateway.workspace,
+                      route: scope.gateway.workspace.route(),
+                      connection: conn,
+                    ),
+                  ),
+                ),
+                NgRow(
+                  icon: Icons.monitor_heart_outlined,
+                  title: ngL.host,
+                  subtitle: ngL.ng_release_more_host_subtitle,
+                  onTap: () => push(
+                    HostOperationsScreen(
+                      owner: scope.gateway.workspace,
+                      route: scope.gateway.workspace.route(),
+                      connection: conn,
+                    ),
+                  ),
                 ),
                 NgRow(
                   icon: Icons.code,
@@ -136,6 +346,41 @@ class NgMorePage extends StatelessWidget {
                   title: ngL.ng_nous_portal,
                   subtitle: ngL.ng_subscription_credits_and_usage,
                   onTap: () => push(NousPortalScreen(connection: conn)),
+                ),
+                NgRow(
+                  icon: Icons.key_outlined,
+                  title: ngL.ng_release_more_providers_routes,
+                  subtitle: ngL.ng_release_more_providers_routes_subtitle,
+                  onTap: () {
+                    final socket = scope.gateway.socket;
+                    push(
+                      ModelAdminScreen(
+                        connection: conn,
+                        dashboard: scope.gateway.dashboard,
+                        rpc: socket != null && socket.isConnected
+                            ? socket.send
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+                NgRow(
+                  icon: Icons.payments_outlined,
+                  title: ngL.ng_release_more_credits_plans,
+                  subtitle: ngL.ng_release_more_credits_plans_subtitle,
+                  onTap: () {
+                    final socket = scope.gateway.socket;
+                    push(
+                      ModelAdminScreen(
+                        connection: conn,
+                        dashboard: scope.gateway.dashboard,
+                        initialSection: ModelAdminSection.billing,
+                        rpc: socket != null && socket.isConnected
+                            ? socket.send
+                            : null,
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

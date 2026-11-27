@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../l10n/l10n.dart';
 
 import '../models/session.dart';
+import '../render/artifact_library.dart';
+import '../render/contributions_page.dart';
 import '../services/chat_assets_client.dart';
 import '../services/remote_files_client.dart';
 import '../theme/hermes_theme.dart';
@@ -19,10 +21,15 @@ class AssetsScreen extends StatefulWidget {
   final RemoteFilesDataSource Function(Session session) filesClient;
   final ValueChanged<Session> onOpenSession;
 
+  /// The render connection key for Contributions; the toolbar entry is
+  /// shown only when the caller names the connection.
+  final String? contributionsScope;
+
   const AssetsScreen({
     required this.source,
     required this.filesClient,
     required this.onOpenSession,
+    this.contributionsScope,
     super.key,
   });
 
@@ -45,6 +52,8 @@ class _AssetsScreenState extends State<AssetsScreen> {
   static const _batchSize = 10;
   final _search = TextEditingController();
   final _assets = <String, ChatAsset>{};
+  final _links = <String, IndexedArtifact>{};
+  bool _linksOnly = false;
   final _seenSessions = <String>{};
   final _scannedSessions = <String>{};
   final _recent = Queue<_MessageCursor>();
@@ -90,6 +99,8 @@ class _AssetsScreenState extends State<AssetsScreen> {
       if (reset) {
         _assetEpoch++;
         _assets.clear();
+        _links.clear();
+        _linksOnly = false;
         _seenSessions.clear();
         _scannedSessions.clear();
         _recent.clear();
@@ -153,6 +164,15 @@ class _AssetsScreenState extends State<AssetsScreen> {
             final previous = _assets[asset.id];
             _assets[asset.id] = previous?.merge(asset) ?? asset;
           }
+          for (final item in indexArtifactsFromMessages(
+            sessionId: cursor.session.id,
+            sessionTitle: cursor.session.title,
+            messages: page.messages,
+          )) {
+            if (item.kind == IndexedArtifactKind.link) {
+              _links[item.id] = item;
+            }
+          }
           _scannedSessions.add(cursor.session.id);
           _failed.remove(cursor.key);
           if (page.hasMore) {
@@ -171,7 +191,22 @@ class _AssetsScreenState extends State<AssetsScreen> {
     }
   }
 
+  List<IndexedArtifact> get _linkRows {
+    if (_kind != null) return const [];
+    final query = _search.text.trim().toLowerCase();
+    return _links.values.where((item) {
+      return query.isEmpty ||
+          item.value.toLowerCase().contains(query) ||
+          item.label.toLowerCase().contains(query) ||
+          item.sessionTitle.toLowerCase().contains(query);
+    }).toList()..sort((a, b) {
+      final time = b.timestamp.compareTo(a.timestamp);
+      return time == 0 ? a.id.compareTo(b.id) : time;
+    });
+  }
+
   List<ChatAsset> get _visible {
+    if (_linksOnly) return const [];
     final query = _search.text.trim().toLowerCase();
     return _assets.values.where((asset) {
       if (_kind != null && asset.kind != _kind) return false;
@@ -233,10 +268,28 @@ class _AssetsScreenState extends State<AssetsScreen> {
                   padding: const EdgeInsets.only(right: HermesSpacing.sm),
                   child: FilterChip(
                     label: Text(_kindLabel(kind)),
-                    selected: _kind == kind,
-                    onSelected: (_) => setState(() => _kind = kind),
+                    selected: kind == null
+                        ? _kind == null && !_linksOnly
+                        : _kind == kind,
+                    onSelected: (_) => setState(() {
+                      _kind = kind;
+                      _linksOnly = false;
+                    }),
                   ),
                 ),
+              Padding(
+                padding: const EdgeInsets.only(right: HermesSpacing.sm),
+                child: FilterChip(
+                  label: Text(
+                    context.sharedL10n.release_core_assets_screen_links,
+                  ),
+                  selected: _linksOnly,
+                  onSelected: (_) => setState(() {
+                    _linksOnly = true;
+                    _kind = null;
+                  }),
+                ),
+              ),
             ],
           ),
         ),
@@ -267,28 +320,44 @@ class _AssetsScreenState extends State<AssetsScreen> {
     );
   }
 
-  Widget _footer() => Padding(
-    padding: const EdgeInsets.symmetric(vertical: HermesSpacing.lg),
-    child: Wrap(
-      spacing: HermesSpacing.sm,
-      runSpacing: HermesSpacing.sm,
-      children: [
-        if (_moreSessions || _recent.isNotEmpty)
-          OutlinedButton.icon(
-            key: const Key('assets-more-chats'),
-            onPressed: _loading ? null : () => unawaited(_scan(_Scan.chats)),
-            icon: const Icon(Icons.forum_outlined),
-            label: Text(context.l10n.assets_load_more_chats),
-          ),
-        if (_older.isNotEmpty)
-          OutlinedButton.icon(
-            key: const Key('assets-older-messages'),
-            onPressed: _loading ? null : () => unawaited(_scan(_Scan.older)),
-            icon: const Icon(Icons.history),
-            label: Text(context.l10n.assets_load_older_messages),
-          ),
-      ],
-    ),
+  Widget _footer() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      for (final link in _linkRows)
+        ListTile(
+          key: ValueKey('asset-link-${link.id}'),
+          leading: const Icon(Icons.link),
+          title: Text(link.label),
+          subtitle: Text(link.value),
+        ),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: HermesSpacing.lg),
+        child: Wrap(
+          spacing: HermesSpacing.sm,
+          runSpacing: HermesSpacing.sm,
+          children: [
+            if (_moreSessions || _recent.isNotEmpty)
+              OutlinedButton.icon(
+                key: const Key('assets-more-chats'),
+                onPressed: _loading
+                    ? null
+                    : () => unawaited(_scan(_Scan.chats)),
+                icon: const Icon(Icons.forum_outlined),
+                label: Text(context.l10n.assets_load_more_chats),
+              ),
+            if (_older.isNotEmpty)
+              OutlinedButton.icon(
+                key: const Key('assets-older-messages'),
+                onPressed: _loading
+                    ? null
+                    : () => unawaited(_scan(_Scan.older)),
+                icon: const Icon(Icons.history),
+                label: Text(context.l10n.assets_load_older_messages),
+              ),
+          ],
+        ),
+      ),
+    ],
   );
 
   @override
@@ -302,6 +371,18 @@ class _AssetsScreenState extends State<AssetsScreen> {
       appBar: AppBar(
         title: Text(context.l10n.assets),
         actions: [
+          if (widget.contributionsScope case final scope?)
+            IconButton(
+              tooltip: context.sharedL10n.render_contributions,
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => ContributionsPage(scope: scope),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.extension_outlined),
+            ),
           IconButton(
             tooltip: context.l10n.refresh,
             onPressed: () => unawaited(_scan(_Scan.chats, reset: true)),
@@ -335,7 +416,7 @@ class _AssetsScreenState extends State<AssetsScreen> {
               );
             }
             if (index == visible.length + 1) {
-              if (visible.isNotEmpty || _loading) {
+              if (visible.isNotEmpty || _loading || _linkRows.isNotEmpty) {
                 return const SizedBox.shrink(key: Key('assets-empty'));
               }
               return Padding(

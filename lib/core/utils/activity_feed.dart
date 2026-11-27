@@ -30,6 +30,7 @@
 library;
 
 import '../models/gateway_turn_contract.dart';
+import '../l10n/service_strings.dart';
 import '../services/gateway_turn_journal.dart';
 import '../theme/hermes_theme.dart';
 
@@ -203,7 +204,9 @@ ActivityFeed buildActivityFeed({
   Duration runningStaleAfter = kActivityRunningStaleAfter,
   Duration completedWindow = kActivityCompletedWindow,
   int groupLimit = kActivityGroupLimit,
+  AppLocalizations? strings,
 }) {
+  final l = strings ?? serviceStrings;
   if (groupLimit <= 0) {
     throw ArgumentError.value(
       groupLimit,
@@ -238,6 +241,7 @@ ActivityFeed buildActivityFeed({
 
     final classification = _classify(
       entry,
+      l10n: l,
       ageMs: nowMs - entry.updatedAtEpochMs,
       staleMs: staleMs,
     );
@@ -290,6 +294,7 @@ ActivityFeed buildActivityFeed({
 /// Where one journal entry belongs, and what the row says.
 _Classification _classify(
   GatewayTurnJournalEntry entry, {
+  required AppLocalizations l10n,
   required int ageMs,
   required int staleMs,
 }) {
@@ -297,36 +302,36 @@ _Classification _classify(
   // completed server-side, but the client could not reconcile it and the
   // composer stays blocked, which is what the timeline must state.
   if (entry.failure != null) {
-    return const _Classification(
+    return _Classification(
       ActivityGroupKind.failed,
-      'Turn recovery failed',
+      l10n.turn_recovery_failed,
       HermesStatus.failed,
     );
   }
 
   switch (entry.status) {
     case GatewayRecoveryTurnStatus.waitingInput:
-      return const _Classification(
+      return _Classification(
         ActivityGroupKind.needsYou,
-        'Waiting for your input',
+        l10n.waiting_for_your_input,
         HermesStatus.blocked,
       );
     case GatewayRecoveryTurnStatus.failed:
-      return const _Classification(
+      return _Classification(
         ActivityGroupKind.failed,
-        'The turn failed',
+        l10n.the_turn_failed,
         HermesStatus.failed,
       );
     case GatewayRecoveryTurnStatus.completed:
-      return const _Classification(
+      return _Classification(
         ActivityGroupKind.completed,
-        'Completed',
+        l10n.status_completed,
         HermesStatus.completed,
       );
     case GatewayRecoveryTurnStatus.interrupted:
-      return const _Classification(
+      return _Classification(
         ActivityGroupKind.completed,
-        'Stopped',
+        l10n.release_core_cloud_status_stopped,
         HermesStatus.idle,
       );
     case null:
@@ -335,9 +340,9 @@ _Classification _classify(
       // A negative age means the device clock is behind the journal; trust the
       // journal rather than converting live work into a fabricated failure.
       if (ageMs > staleMs) {
-        return const _Classification(
+        return _Classification(
           ActivityGroupKind.failed,
-          'Stalled — no update from Hermes',
+          l10n.stalled_no_update_from_hermes,
           HermesStatus.failed,
         );
       }
@@ -345,7 +350,9 @@ _Classification _classify(
       // but the gateway has not answered yet, so the work is outstanding.
       return _Classification(
         ActivityGroupKind.running,
-        entry.status == null ? 'Submitted, waiting for Hermes' : 'Running',
+        entry.status == null
+            ? l10n.submitted_waiting_for_hermes
+            : l10n.status_running,
         HermesStatus.running,
       );
   }
@@ -365,6 +372,7 @@ Future<ActivityFeed> readActivityFeed({
   Duration runningStaleAfter = kActivityRunningStaleAfter,
   Duration completedWindow = kActivityCompletedWindow,
   int groupLimit = kActivityGroupLimit,
+  AppLocalizations? strings,
 }) async {
   try {
     final snapshot = await journal.loadSnapshot();
@@ -377,6 +385,7 @@ Future<ActivityFeed> readActivityFeed({
       runningStaleAfter: runningStaleAfter,
       completedWindow: completedWindow,
       groupLimit: groupLimit,
+      strings: strings,
     );
   } catch (_) {
     return const ActivityFeed(groups: [], blockedCount: 0, runningCount: 0);

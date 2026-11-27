@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../l10n/l10n.dart';
 import '../services/connection_manager.dart';
 import '../services/mobile_push_service.dart';
 import '../services/notification_prefs.dart';
@@ -70,7 +71,7 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
       if (mounted) {
         setState(() {
           ready = true;
-          message = 'Unable to read Android push availability. Retry below.';
+          message = context.sharedL10n.rel_svc_push_availability_read_failed;
         });
       }
     }
@@ -89,8 +90,7 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
       if (mounted && ticket == operation) {
         setState(
           () => message =
-              service.error ??
-              'Push setup failed. Check Android permission, server authorization and transport, then retry.',
+              service.error ?? context.sharedL10n.rel_svc_push_setup_failed,
         );
       }
     } finally {
@@ -140,6 +140,7 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
   @override
   Widget build(BuildContext context) {
     if (!service.supported) return const SizedBox.shrink();
+    final l10n = context.sharedL10n;
     final on = service.enabled || service.enabling;
     final boundId = service.enabling
         ? service.pendingConnectionId
@@ -148,9 +149,12 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
     final boundLabel = another ? _boundConnectionLabel(boundId) : null;
     final rawStatus = availability?.status ?? service.status;
     final statusText = another
-        ? 'Status: Bound to ${boundLabel ?? 'another saved connection'} '
-              '(not active for ${widget.connection.label}; handshake: $rawStatus)'
-        : 'Status: $rawStatus';
+        ? l10n.rel_svc_push_status_bound(
+            boundLabel ?? l10n.rel_svc_push_another_saved_connection,
+            widget.connection.label,
+            rawStatus,
+          )
+        : l10n.rel_svc_push_status(rawStatus);
     return ValueListenableBuilder<NotificationPrefs>(
       valueListenable: notificationPrefs,
       builder: (context, prefs, _) => Card(
@@ -165,12 +169,17 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
                 child: SwitchListTile(
                   key: const Key('mobile-push-switch'),
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Background notifications'),
+                  title: Text(l10n.rel_svc_push_background_notifications),
                   subtitle: Text(
                     another
-                        ? 'Bound to ${boundLabel ?? 'another saved connection'} '
-                              '— revoke that binding below before enabling for ${widget.connection.label}'
-                        : 'Private server activity for ${widget.connection.label}',
+                        ? l10n.rel_svc_push_bound_subtitle(
+                            boundLabel ??
+                                l10n.rel_svc_push_another_saved_connection,
+                            widget.connection.label,
+                          )
+                        : l10n.rel_svc_push_private_activity(
+                            widget.connection.label,
+                          ),
                   ),
                   value: on && !another,
                   // Opt-out stays actionable through capabilities, permission, native
@@ -196,16 +205,16 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
                 const SizedBox(height: 8),
                 Text(
                   boundLabel != null
-                      ? 'Bound to another saved connection ($boundLabel). Disable and revoke that binding before enabling for this connection.'
-                      : 'Bound to another saved connection. Disable and revoke that binding before enabling for this connection.',
+                      ? l10n.rel_svc_push_bound_warning_named(boundLabel)
+                      : l10n.rel_svc_push_bound_warning,
                   key: const Key('mobile-push-another-warning'),
                 ),
               ],
               if (service.enabled && !another && !prefs.enabled) ...[
                 const SizedBox(height: 8),
-                const Text(
-                  'Local notifications are turned off above. Background notification consent is unchanged, but ordinary background activity hints are muted until "Enable notifications" is turned on.',
-                  key: Key('mobile-push-local-mute-warning'),
+                Text(
+                  l10n.rel_svc_push_local_notifications_muted,
+                  key: const Key('mobile-push-local-mute-warning'),
                 ),
               ],
               if (service.enabled &&
@@ -213,22 +222,22 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
                   service.sessionScope == 'explicit') ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Legacy subscription: ${service.sessionIds.length} selected session(s) only. It will not expand automatically. Turn off, then on to opt in to server-authorized sessions.',
+                  l10n.rel_svc_push_legacy_subscription(
+                    service.sessionIds.length,
+                  ),
                 ),
               ],
               if (service.enabled &&
                   !another &&
                   service.sessionScope == 'authorized') ...[
                 const SizedBox(height: 8),
-                const Text(
-                  'Bound only to this saved connection and profile. Session access follows current server authorization.',
-                ),
+                Text(l10n.rel_svc_push_authorized_binding),
               ],
               if (service.pendingRevocations > 0) ...[
                 const SizedBox(height: 8),
-                const Text(
-                  'Server revocation pending. Local delivery is off; retry while the original saved login is available.',
-                  key: Key('mobile-push-revocation-pending'),
+                Text(
+                  l10n.rel_svc_push_revocation_pending,
+                  key: const Key('mobile-push-revocation-pending'),
                 ),
               ],
               if (message ?? availability?.error ?? service.error
@@ -248,7 +257,7 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
                   OutlinedButton(
                     key: const Key('mobile-push-refresh-retry'),
                     onPressed: busy || !ready ? null : () => _run(_refresh),
-                    child: const Text('Refresh / retry'),
+                    child: Text(l10n.rel_svc_push_refresh_retry),
                   ),
                   if (on)
                     TextButton(
@@ -256,47 +265,41 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
                       onPressed: () => _run(service.disable),
                       child: Text(
                         another
-                            ? 'Disable and revoke ${boundLabel ?? 'other connection'}'
-                            : 'Disable and revoke',
+                            ? l10n.rel_svc_push_disable_named(
+                                boundLabel ??
+                                    l10n.rel_svc_push_other_connection,
+                              )
+                            : l10n.rel_svc_push_disable,
                       ),
                     ),
                 ],
               ),
-              const Text(
-                'Refresh / retry rechecks availability after server setup; it cannot install the companion. Enabling notifications remains a separate choice.',
-              ),
-              const Text(
-                'Background notifications require a separately installed and enabled server-side mobile-push companion. Android cannot install it. Updating the APK alone does not set up the server.',
-              ),
+              Text(l10n.rel_svc_push_refresh_explanation),
+              Text(l10n.rel_svc_push_companion_required),
               TextButton.icon(
-                onPressed: () => openMarkdownWebLink(context, _serverSetupGuide),
+                onPressed: () =>
+                    openMarkdownWebLink(context, _serverSetupGuide),
                 icon: const Icon(Icons.open_in_new),
-                label: const Text('Server setup guide'),
+                label: Text(l10n.rel_svc_push_server_setup_guide),
               ),
-              const Text(
-                'Enable to request Android notification permission and share this installation’s endpoint and encryption keys with this server. Encrypted activity hints contain no chat content. Only sessions authorized by your server login are included.',
-              ),
-              const Text(
-                'Built-in delivery uses Google’s push transport and needs Google Play Services, but includes no Firebase SDK. An optional UnifiedPush distributor can be used instead. Delivery is best-effort; reopen Hermes to reconcile.',
-              ),
+              Text(l10n.rel_svc_push_enable_disclosure),
+              Text(l10n.rel_svc_push_transport_disclosure),
               ExpansionTile(
                 tilePadding: EdgeInsets.zero,
-                title: const Text('Advanced transport'),
+                title: Text(l10n.rel_svc_push_advanced_transport),
                 children: [
-                  const Text(
-                    'Automatic preserves an existing distributor choice, otherwise uses built-in Google delivery when available. Disable before changing transport.',
-                  ),
+                  Text(l10n.rel_svc_push_automatic_explanation),
                   DropdownButtonFormField<String>(
                     key: ValueKey(distributor),
                     initialValue: distributor ?? 'automatic',
-                    decoration: const InputDecoration(
-                      labelText: 'Push transport',
+                    decoration: InputDecoration(
+                      labelText: l10n.rel_svc_push_transport_label,
                     ),
                     isExpanded: true,
                     items: [
-                      const DropdownMenuItem(
+                      DropdownMenuItem(
                         value: 'automatic',
-                        child: Text('Automatic (recommended)'),
+                        child: Text(l10n.rel_svc_push_automatic_recommended),
                       ),
                       if (distributor != null &&
                           !transports.any(
@@ -305,9 +308,7 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
                         DropdownMenuItem(
                           value: distributor,
                           enabled: false,
-                          child: const Text(
-                            'Selected distributor (unavailable)',
-                          ),
+                          child: Text(l10n.rel_svc_push_selected_unavailable),
                         ),
                       for (final option in transports)
                         DropdownMenuItem(
@@ -327,9 +328,7 @@ class _MobilePushSettingsState extends State<MobilePushSettings> {
                           ),
                   ),
                   if (transports.isEmpty)
-                    const Text(
-                      'No available transport detected. Built-in delivery needs Google Play Services; without it, install and configure a UnifiedPush distributor, then refresh.',
-                    ),
+                    Text(l10n.rel_svc_push_no_transport_detected),
                 ],
               ),
             ],

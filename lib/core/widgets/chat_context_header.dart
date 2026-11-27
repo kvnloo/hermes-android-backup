@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../services/model_admin.dart';
 import '../theme/hermes_theme.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
+
 /// Transport state shown in the sticky chat context header.
 enum ChatConnectionStatus {
   connecting('connecting'),
@@ -24,6 +26,7 @@ class ChatContextHeader extends StatelessWidget {
   final String? projectName;
   final String model;
   final String reasoningEffort;
+  final String? reasoningEffortWire;
   final String connectionLabel;
   final ChatConnectionStatus connectionStatus;
 
@@ -31,6 +34,7 @@ class ChatContextHeader extends StatelessWidget {
     required this.model,
     required this.reasoningEffort,
     required this.connectionLabel,
+    this.reasoningEffortWire,
     required this.connectionStatus,
     this.projectName,
     super.key,
@@ -65,7 +69,7 @@ class ChatContextHeader extends StatelessWidget {
               const SizedBox(width: HermesSpacing.sm),
               _ContextChip(
                 icon: Icons.psychology_outlined,
-                label: _reasoningLabel(context, reasoningEffort),
+                label: _effortChip(context),
               ),
               const SizedBox(width: HermesSpacing.sm),
               Semantics(
@@ -110,6 +114,12 @@ class ChatContextHeader extends StatelessWidget {
       ChatConnectionStatus.reconnecting => tokens.warning,
       ChatConnectionStatus.offline => tokens.danger,
     };
+  }
+
+  String _effortChip(BuildContext context) {
+    final clamp = reasoningEffortClamp(reasoningEffort, reasoningEffortWire);
+    if (clamp == null) return _reasoningLabel(context, reasoningEffort);
+    return '${_reasoningLabel(context, clamp.picked)}→${_reasoningLabel(context, clamp.wire)}';
   }
 
   String _reasoningLabel(BuildContext context, String value) {

@@ -362,7 +362,9 @@ void main() {
 }
 
 Future<void> _refresh(WidgetTester tester) async {
-  await tester.tap(find.byType(PopupMenuButton<String>));
+  // The chat actions menu (the composer's Status menu is another
+  // PopupMenuButton<String>).
+  await tester.tap(find.byTooltip('Chat actions'));
   await tester.pumpAndSettle();
   final item = find.byWidgetPredicate(
     (widget) => widget is PopupMenuItem<String> && widget.value == 'refresh',

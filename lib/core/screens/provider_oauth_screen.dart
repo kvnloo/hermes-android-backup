@@ -81,6 +81,8 @@ class _ProviderOAuthScreenState extends State<ProviderOAuthScreen>
             password: widget.connection.dashboardPassword,
             gatewayProfile: widget.connection.gatewayProfile,
             clientCertificate: widget.connection.clientCertificate,
+            deploymentToken: widget.connection.deploymentToken,
+            customHeaders: widget.connection.customHeaders,
           );
       _unavailable = switch (_client!.providerOAuthUnavailableReason) {
         OAuthTransportUnavailableReason.httpsRequired =>

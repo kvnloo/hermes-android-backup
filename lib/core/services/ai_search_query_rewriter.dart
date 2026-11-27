@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../l10n/service_strings.dart';
 import '../models/client_certificate.dart';
 import 'tls_client_factory.dart';
 
@@ -39,8 +40,8 @@ class AiSearchQueryRewriter {
     final original = query.trim();
     if (original.isEmpty) return '';
     if (provider.trim().isEmpty || model.trim().isEmpty) {
-      throw const AiSearchRewriteException(
-        'Choose an AI search model before using AI search.',
+      throw AiSearchRewriteException(
+        serviceStrings.choose_an_ai_search_model_before_using_ai_search,
       );
     }
 
@@ -68,8 +69,8 @@ class AiSearchQueryRewriter {
     }
 
     if (response.statusCode == 401 || response.statusCode == 403) {
-      throw const AiSearchRewriteException(
-        'The Hermes API rejected the saved API key.',
+      throw AiSearchRewriteException(
+        serviceStrings.rel_svc_backup_ai_search_api_key_rejected,
       );
     }
     if (response.statusCode == 404 ||
@@ -80,7 +81,9 @@ class AiSearchQueryRewriter {
     if (response.statusCode != 200) {
       throw AiSearchRewriteException(
         _errorMessage(response.body) ??
-            'AI query rewrite failed with HTTP ${response.statusCode}.',
+            serviceStrings.rel_svc_backup_ai_search_http_failed(
+              response.statusCode,
+            ),
       );
     }
 
@@ -91,16 +94,16 @@ class AiSearchQueryRewriter {
       }
       final rewritten = decoded['query']?.toString().trim() ?? '';
       if (rewritten.isEmpty) {
-        throw const AiSearchRewriteException(
-          'The selected model returned no usable search query.',
+        throw AiSearchRewriteException(
+          serviceStrings.rel_svc_backup_ai_search_no_usable_query,
         );
       }
       return rewritten;
     } on AiSearchRewriteException {
       rethrow;
     } catch (_) {
-      throw const AiSearchRewriteException(
-        'Hermes returned a malformed AI rewrite response.',
+      throw AiSearchRewriteException(
+        serviceStrings.rel_svc_backup_ai_search_malformed_response,
       );
     }
   }

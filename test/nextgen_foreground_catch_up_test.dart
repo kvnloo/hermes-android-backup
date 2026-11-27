@@ -106,6 +106,11 @@ void main() {
       ),
     );
     await _pumps(tester);
+    // Cold launch is now the landing. Explicitly open the stored chat before
+    // exercising its unchanged foreground/catch-up contract.
+    expect(find.byKey(const Key('ng-brand-new-chat')), findsOneWidget);
+    nextGenOpenRequest.value = (connectionId: 'c1', sessionId: sid);
+    await _pumps(tester);
     final chat = tester.widget<NgChatView>(find.byType(NgChatView)).chat;
     expect(chat.storedId, sid);
     expect(chat.runtimeId, sid);

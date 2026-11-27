@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hermes_android/core/widgets/transcript_reader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/screens/chat_screen.dart';
 import 'package:hermes_android/core/services/connection_manager.dart';
@@ -158,6 +159,17 @@ void main() {
         await tester.pump(const Duration(seconds: 2));
       }
       final active = owner.snapshot.hasActiveTurn;
+      expect(owner.snapshot.storedSessionId, 'stored-new-chat');
+      final positionKey = readingPositionKey(
+        'classic',
+        connection.id,
+        null,
+        'stored-new-chat',
+      );
+      final reader = tester.widget<TranscriptReader>(
+        find.byType(TranscriptReader),
+      );
+      expect(reader.storageKey, positionKey);
       expect(owner.snapshot.phase, NormalGatewayTurnPhase.completed);
       for (final source in [
         ChatDisplaySource.canonical,
@@ -173,6 +185,23 @@ void main() {
             .widget<IconButton>(find.widgetWithIcon(IconButton, Icons.send))
             .onPressed,
         isNotNull,
+      );
+      // Make the two source sections scrollable and leave the end by hand.
+      await tester.binding.setSurfaceSize(const Size(600, 440));
+      await tester.pumpAndSettle();
+      final list = find.descendant(
+        of: find.byType(TranscriptReader),
+        matching: find.byType(ListView),
+      );
+      await tester.drag(list, const Offset(0, 180));
+      await tester.pumpAndSettle();
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getDouble(positionKey), greaterThan(0));
+      expect(
+        prefs.containsKey(
+          readingPositionKey('classic', connection.id, null, 'mob-new-chat'),
+        ),
+        isFalse,
       );
       await tester.pumpWidget(const SizedBox.shrink());
       await tester.pump();

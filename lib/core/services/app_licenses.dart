@@ -3,6 +3,11 @@ import 'package:flutter/services.dart';
 
 bool _registered = false;
 
+/// One licence-page entry for the native WebRTC libraries on every platform.
+const _webrtc =
+    'WebRTC (webrtc-sdk 150.7871.04 Android, iOS, macOS; '
+    'libwebrtc m150.7871.07 Windows, Linux)';
+
 /// Adds local application and third-party notices without reading assets yet.
 void registerAppLicenses({AssetBundle? assetBundle}) {
   if (_registered) return;
@@ -31,6 +36,18 @@ void registerAppLicenses({AssetBundle? assetBundle}) {
           'Gradle wrapper (Library build material)',
       'third_party/licenses/gradle-NOTICE.txt':
           'Gradle wrapper (Library build material)',
+      // GPT-Live voice: the native WebRTC stack flutter_webrtc brings in.
+      'third_party/webrtc/NOTICE.md': _webrtc,
+      'third_party/licenses/webrtc-BSD-3-Clause.txt': _webrtc,
+      'third_party/licenses/webrtc-PATENTS.txt': _webrtc,
+      'third_party/licenses/webrtc-third-party-licenses.txt': _webrtc,
+      'third_party/licenses/audioswitch-Apache-2.0.txt':
+          'audioswitch (com.github.davidliu, Android)',
+      'third_party/licenses/flutter_webrtc-NOTICE.txt':
+          'flutter_webrtc (1.6.3) NOTICE',
+      'third_party/licenses/unorm_dart-MIT.txt': 'unorm_dart (0.3.3)',
+      'third_party/licenses/Unicode-3.0.txt':
+          'Unicode Character Database (unorm_dart 0.3.3 normalisation data)',
     };
     for (final notice in notices.entries) {
       yield LicenseEntryWithLineBreaks([

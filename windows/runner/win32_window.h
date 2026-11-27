@@ -51,6 +51,7 @@ class Win32Window {
 
   // The window class name used by the Win32 window. Exposed so a launched
   // second instance can find the running window by class.
+  static void SetChatPopoutProcess(bool is_chat_child);
   static const wchar_t* WindowClassName();
 
   // If true, closing this window will quit the application.

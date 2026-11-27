@@ -36,7 +36,8 @@ class _FakeCallGateway extends NextGenGateway {
   final Future<Map<String, dynamic>> Function(
     String method,
     Map<String, dynamic> params,
-  ) onCall;
+  )
+  onCall;
 
   @override
   Future<Map<String, dynamic>> call(
@@ -276,71 +277,179 @@ void main() {
       await pumpEventQueue();
       expect(chat.running, isFalse);
       expect(chat.error, 'Provider down');
+      expect(chat.localQueuePaused, isTrue);
     });
 
-    test('send includes submission_id and retries without it on legacy gateway', () async {
-      final calls = <Map<String, dynamic>>[];
-      final legacyGateway = _FakeCallGateway((method, params) async {
-        calls.add({'method': method, ...params});
-        if (method == 'prompt.submit' && params.containsKey('submission_id')) {
-          throw JsonRpcError(
-            'prompt.submit',
-            'Invalid params: submission_id: Extra inputs are not permitted',
-            code: 4000,
-          );
-        }
-        return {'ok': true};
-      });
-      final localChat = NgChatController(legacyGateway, sessionId: 'stored');
-      localChat.runtimeId = 'rt';
-      addTearDown(() {
-        localChat.dispose();
-        legacyGateway.dispose();
-      });
+    test(
+      'pause wins a scheduled local drain; resume sends edited head once',
+      () async {
+        final sends = <String>[];
+        final legacy = _FakeCallGateway((method, params) async {
+          if (method == 'prompt.submit') sends.add(params['text'] as String);
+          return {'status': 'queued'};
+        });
+        final owner = NgChatController(legacy, sessionId: 'stored')
+          ..runtimeId = 'rt';
+        addTearDown(() {
+          owner.dispose();
+          legacy.dispose();
+        });
+        owner.enqueue('first');
+        owner.enqueue('second');
+        owner.setLocalQueuePaused(false);
+        owner.setLocalQueuePaused(true);
+        await pumpEventQueue();
+        expect(sends, isEmpty);
+        owner.unqueue(owner.queued.first);
+        final old = owner.queued.single;
+        owner.editLocalQueue(old, 'new second');
+        owner.editLocalQueue(old, 'stale');
+        owner.setLocalQueuePaused(false);
+        owner.setLocalQueuePaused(false);
+        await pumpEventQueue();
+        expect(sends, ['new second']);
+        expect(owner.queued, isEmpty);
+      },
+    );
 
-      final accepted = await localChat.send('hello');
-      expect(accepted, isTrue);
-      expect(calls, hasLength(2));
-      expect(calls[0]['method'], 'prompt.submit');
-      expect(calls[0]['submission_id'], isA<String>());
-      expect((calls[0]['submission_id'] as String).isNotEmpty, isTrue);
-      expect(calls[1]['method'], 'prompt.submit');
-      expect(calls[1].containsKey('submission_id'), isFalse);
-      expect(calls[1]['text'], 'hello');
-      expect(calls[1]['session_id'], 'rt');
+    test('an empty device queue cannot be parked', () {
+      chat.setLocalQueuePaused(true);
+      expect(chat.localQueuePaused, isFalse);
     });
 
-    test('send does not retry on unrelated 4000 error and retryLast reuses submission_id', () async {
-      var shouldFail = true;
-      final calls = <Map<String, dynamic>>[];
-      final errGateway = _FakeCallGateway((method, params) async {
-        calls.add({'method': method, ...params});
-        if (method == 'prompt.submit' && shouldFail) {
-          throw JsonRpcError('prompt.submit', 'Session busy', code: 4000);
-        }
-        return {'ok': true};
-      });
-      final localChat = NgChatController(errGateway, sessionId: 'stored');
-      localChat.runtimeId = 'rt';
-      addTearDown(() {
-        localChat.dispose();
-        errGateway.dispose();
-      });
+    test(
+      'queueing a fresh prompt lifts a park without sending mid-turn',
+      () async {
+        gateway.debugEmit(ev('message.start'));
+        await pumpEventQueue();
+        chat.enqueue('held');
+        chat.setLocalQueuePaused(true);
+        chat.enqueue('fresh');
+        await pumpEventQueue();
+        expect(chat.running, isTrue);
+        expect(chat.localQueuePaused, isFalse);
+        expect(chat.queued.map((row) => row.text), ['held', 'fresh']);
+      },
+    );
 
-      final first = await localChat.send('hello');
-      expect(first, isFalse);
-      expect(calls, hasLength(1));
-      final firstSubId = calls.single['submission_id'] as String;
-
-      shouldFail = false;
-      await localChat.retryLast();
-      expect(calls, hasLength(2));
-      expect(calls[1]['submission_id'], firstSubId);
-
-      await localChat.send('second message');
-      expect(calls, hasLength(3));
-      expect(calls[2]['submission_id'], isNot(firstSubId));
+    test('removing the last held prompt clears the park', () {
+      chat.enqueue('only');
+      chat.setLocalQueuePaused(true);
+      chat.unqueue(chat.queued.single);
+      expect(chat.localQueuePaused, isFalse);
+      expect(chat.queued, isEmpty);
     });
+
+    test(
+      'row send while busy unparks, promotes, and admits the row once',
+      () async {
+        final sends = <String>[];
+        final legacy = _FakeCallGateway((method, params) async {
+          if (method == 'prompt.submit') sends.add(params['text'] as String);
+          return {'status': 'queued'};
+        });
+        final owner = NgChatController(legacy, sessionId: 'stored')
+          ..runtimeId = 'rt';
+        addTearDown(() {
+          owner.dispose();
+          legacy.dispose();
+        });
+        legacy.debugEmit(
+          StreamEvent(type: 'message.start', data: const {}, sessionId: 'rt'),
+        );
+        await pumpEventQueue();
+        owner.enqueue('first');
+        owner.enqueue('second');
+        owner.setLocalQueuePaused(true);
+        final second = owner.queued.last;
+        await owner.sendQueuedNow(second);
+        expect(owner.localQueuePaused, isFalse);
+        expect(owner.queued.first.text, 'second');
+        expect(sends, isEmpty);
+        legacy.debugEmit(
+          StreamEvent(
+            type: 'message.complete',
+            data: const {},
+            sessionId: 'rt',
+          ),
+        );
+        await pumpEventQueue();
+        expect(sends, ['second']);
+        expect(owner.queued.single.text, 'first');
+        expect(owner.running, isTrue);
+      },
+    );
+
+    test(
+      'send includes submission_id and retries without it on legacy gateway',
+      () async {
+        final calls = <Map<String, dynamic>>[];
+        final legacyGateway = _FakeCallGateway((method, params) async {
+          calls.add({'method': method, ...params});
+          if (method == 'prompt.submit' &&
+              params.containsKey('submission_id')) {
+            throw JsonRpcError(
+              'prompt.submit',
+              'Invalid params: submission_id: Extra inputs are not permitted',
+              code: 4000,
+            );
+          }
+          return {'ok': true};
+        });
+        final localChat = NgChatController(legacyGateway, sessionId: 'stored');
+        localChat.runtimeId = 'rt';
+        addTearDown(() {
+          localChat.dispose();
+          legacyGateway.dispose();
+        });
+
+        final accepted = await localChat.send('hello');
+        expect(accepted, isTrue);
+        expect(calls, hasLength(2));
+        expect(calls[0]['method'], 'prompt.submit');
+        expect(calls[0]['submission_id'], isA<String>());
+        expect((calls[0]['submission_id'] as String).isNotEmpty, isTrue);
+        expect(calls[1]['method'], 'prompt.submit');
+        expect(calls[1].containsKey('submission_id'), isFalse);
+        expect(calls[1]['text'], 'hello');
+        expect(calls[1]['session_id'], 'rt');
+      },
+    );
+
+    test(
+      'send does not retry on unrelated 4000 error and retryLast reuses submission_id',
+      () async {
+        var shouldFail = true;
+        final calls = <Map<String, dynamic>>[];
+        final errGateway = _FakeCallGateway((method, params) async {
+          calls.add({'method': method, ...params});
+          if (method == 'prompt.submit' && shouldFail) {
+            throw JsonRpcError('prompt.submit', 'Session busy', code: 4000);
+          }
+          return {'ok': true};
+        });
+        final localChat = NgChatController(errGateway, sessionId: 'stored');
+        localChat.runtimeId = 'rt';
+        addTearDown(() {
+          localChat.dispose();
+          errGateway.dispose();
+        });
+
+        final first = await localChat.send('hello');
+        expect(first, isFalse);
+        expect(calls, hasLength(1));
+        final firstSubId = calls.single['submission_id'] as String;
+
+        shouldFail = false;
+        await localChat.retryLast();
+        expect(calls, hasLength(2));
+        expect(calls[1]['submission_id'], firstSubId);
+
+        await localChat.send('second message');
+        expect(calls, hasLength(3));
+        expect(calls[2]['submission_id'], isNot(firstSubId));
+      },
+    );
   });
 
   test('NextGenPreferences persist look and interface choice', () async {

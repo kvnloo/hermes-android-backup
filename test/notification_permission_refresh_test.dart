@@ -1,3 +1,4 @@
+import 'support/settings_navigation.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
@@ -162,6 +163,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await openSettingsCategory(tester, 'notifications');
       await tester.scrollUntilVisible(
         find.text('Send test notification'),
         400,

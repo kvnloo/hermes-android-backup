@@ -1,3 +1,4 @@
+import 'support/settings_navigation.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -153,6 +154,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await openSettingsCategory(tester, 'device');
       expect(find.text('Failed to load settings'), findsNothing);
       await tester.scrollUntilVisible(
         find.text('Keep chats active in the background'),

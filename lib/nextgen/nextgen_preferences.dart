@@ -4,6 +4,8 @@
 // sign-in. Only how the app looks and which connection NextGen opens on launch
 // are kept here.
 import 'package:flutter/material.dart';
+import '../core/services/turn_notification_service.dart'
+    show WindowsToastTarget;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Whether the app runs the NextGen interface. Toggled from Settings in either
@@ -17,12 +19,25 @@ typedef NgOpenRequest = ({String connectionId, String sessionId});
 /// NextGen switches to the connection, opens the chat and clears it.
 final ValueNotifier<NgOpenRequest?> nextGenOpenRequest = ValueNotifier(null);
 
+/// Set by the app root when something owned by a connection (a quick-entry
+/// hand-back waiting in the deep-link service) must be shown there: NextGen
+/// switches to that connection and clears it. Its main page then consumes
+/// the owned link.
+final ValueNotifier<String?> nextGenConnectionRequest = ValueNotifier(null);
+
 /// Routes a notification tap to NextGen. Returns false when NextGen is off
 /// or the payload names no chat, so the classic routing handles it.
-bool routeNotificationToNextGen(String? connectionId, String? sessionId) {
+WindowsToastTarget? pendingWindowsToastTarget;
+
+bool routeNotificationToNextGen(
+  String? connectionId,
+  String? sessionId, {
+  WindowsToastTarget? target,
+}) {
   if (!nextGenEnabled.value) return false;
   if (connectionId == null || connectionId.isEmpty) return false;
   if (sessionId == null || sessionId.isEmpty) return false;
+  pendingWindowsToastTarget = target;
   nextGenOpenRequest.value = (connectionId: connectionId, sessionId: sessionId);
   return true;
 }
@@ -170,6 +185,17 @@ abstract final class NextGenPreferences {
     final next = [key, ...recentModels(prefs).where((k) => k != key)];
     return prefs.setStringList(recentModelsKey, next.take(6).toList());
   }
+
+  static const reopenKey = 'nextgen_reopen_last_chat';
+  static bool reopenLastChat(SharedPreferences prefs) =>
+      prefs.getBool(reopenKey) ?? true;
+  static String? launchSession(
+    SharedPreferences prefs,
+    String connectionId, {
+    String? requested,
+  }) =>
+      requested ??
+      (reopenLastChat(prefs) ? lastSession(prefs, connectionId) : null);
 
   /// The chat NextGen last had open on [connectionId], reopened on launch.
   static String? lastSession(SharedPreferences prefs, String connectionId) =>

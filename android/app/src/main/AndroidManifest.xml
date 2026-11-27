@@ -50,6 +50,21 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="*/*" />
             </intent-filter>
+            <!-- hermes:// links. MainActivity hands the whole link to Dart's
+                 validated router on com.hermesagent.ares/deeplink (cold:
+                 getInitialLink, warm: onNewIntent). A link can navigate and
+                 prefill a draft; it never sends, approves or installs. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="hermes" />
+            </intent-filter>
+            <!-- Links go through the channel above, never Flutter's built-in
+                 route push (the app has no named routes for them). -->
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="false" />
         </activity>
         <!-- Notification-only messaging. No car launcher/category service. -->
         <meta-data android:name="com.google.android.gms.car.application"

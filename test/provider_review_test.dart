@@ -165,6 +165,8 @@ void main() {
       expect(usage.entries.map((entry) => entry.id), [
         'provider-sign-in',
         'nous-portal',
+        'provider-admin',
+        'nous-billing',
         'openrouter',
         'openai',
         'anthropic',

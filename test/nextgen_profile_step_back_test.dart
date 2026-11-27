@@ -143,6 +143,13 @@ void main() {
         await tester.tap(find.text('Test'));
         await settle();
         expect(find.textContaining('is reachable'), findsOneWidget);
+        // The network settings section (custom headers, deployment token)
+        // pushes the button below the fold of the 800x600 test view.
+        await tester.scrollUntilVisible(
+          find.text('Continue to sign in'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         await tester.tap(find.text('Continue to sign in'));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));

@@ -13,6 +13,7 @@ Future<String?> showSessionNameDialog({
   var draft = initialValue;
   final result = await showDialog<String>(
     context: context,
+    useRootNavigator: false,
     builder: (dialogContext) => StatefulBuilder(
       builder: (dialogContext, setDialogState) {
         void submit() {

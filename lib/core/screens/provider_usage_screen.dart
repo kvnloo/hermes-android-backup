@@ -91,6 +91,8 @@ class _ProviderUsageScreenState extends State<ProviderUsageScreen> {
           password: widget.connection.dashboardPassword,
           gatewayProfile: widget.connection.gatewayProfile,
           clientCertificate: widget.connection.clientCertificate,
+          deploymentToken: widget.connection.deploymentToken,
+          customHeaders: widget.connection.customHeaders,
         );
   }
 

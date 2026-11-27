@@ -1,4 +1,7 @@
 import 'dart:async';
+
+import 'package:hermes_android/core/services/session_search_preferences.dart';
+import 'support/session_search_controls.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -76,6 +79,83 @@ Future<void> mount(
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  for (final savedLocal in [false, true]) {
+    testWidgets(
+      'Classic sends no local queries and revokes held search (saved: $savedLocal)',
+      (t) async {
+        final conn = SavedConnection(
+          id: 'privacy',
+          label: 'local',
+          host: 'example.invalid',
+          port: 8642,
+          apiKey: 'test',
+          dashboardProxied: true,
+        );
+        final prefs = await SessionSearchPreferences.open();
+        final identity =
+            '${conn.baseUrl}|${conn.gatewayPrefix ?? ''}|${conn.desktopGatewayUrl ?? ''}';
+        if (savedLocal) {
+          await prefs.saveMode(
+            connectionIdentity: identity,
+            mode: SessionSearchMode.local,
+          );
+        }
+        expect(
+          prefs.readMode(connectionIdentity: identity),
+          SessionSearchMode.local,
+        );
+        final queries = <String>[];
+        final held = Completer<http.Response>();
+        await mount(
+          t,
+          connection: conn,
+          active: MockClient((r) async => livePage([row(1)])),
+          archive: MockClient((r) async {
+            if (r.url.path.endsWith('/sessions/search')) {
+              queries.add(r.url.queryParameters['q']!);
+              return held.future;
+            }
+            return archivePage(0, 0, 0);
+          }),
+        );
+        await t.tap(find.text('Chats').last);
+        await t.pump();
+        await t.pump(const Duration(milliseconds: 400));
+        final field = find.byKey(kWorkspaceSessionSearchKey);
+        await t.enterText(field, 'private test query');
+        await t.pump(const Duration(milliseconds: 350));
+        await t.pump();
+        expect(queries, isEmpty);
+        await t.enterText(field, 'Live chat');
+        await t.pump(const Duration(milliseconds: 350));
+        expect(find.text('Live chat 1'), findsOneWidget);
+        expect(queries, isEmpty);
+        await chooseGatewaySearch(t, enable: true);
+        await t.pump(const Duration(milliseconds: 350));
+        expect(queries, ['Live chat']);
+        await chooseGatewaySearch(t, enable: false);
+        held.complete(
+          http.Response(
+            '{"results":[{"id":"remote","snippet":"secret excerpt"}]}',
+            200,
+          ),
+        );
+        await t.pump();
+        expect(find.text('secret excerpt'), findsNothing);
+        expect(find.text('Live chat 1'), findsOneWidget);
+        await t.enterText(field, 'private again');
+        await t.pump(const Duration(milliseconds: 350));
+        expect(queries, ['Live chat']);
+        expect(find.text('secret excerpt'), findsNothing);
+        expect(
+          prefs.readMode(connectionIdentity: identity),
+          SessionSearchMode.local,
+        );
+        await t.pumpWidget(const SizedBox());
+      },
+    );
+  }
 
   testWidgets(
     'Unassigned and Archived show five while independent pages load',

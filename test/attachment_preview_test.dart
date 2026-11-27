@@ -236,13 +236,13 @@ void main() {
   );
 
   testWidgets(
-    'text and Markdown are selectable inert text and popup Save reuses bytes',
+    'plain text stays literal and popup Save reuses bytes',
     (tester) async {
       const source =
           '# Report\n![remote](https://example.invalid/private.png)\n<script>fetch("https://example.invalid")</script>';
       final files = _Files(utf8.encode(source));
-      await tester.pumpWidget(_host(() => files, path: '/gateway/report.md'));
-      await tester.tap(find.text('report.md'));
+      await tester.pumpWidget(_host(() => files));
+      await tester.tap(find.text('report.txt'));
       await tester.pumpAndSettle();
       final text = tester.widget<SelectableText>(
         find.byKey(const Key('attachment-text-preview')),
@@ -252,7 +252,8 @@ void main() {
       expect(find.byType(Dialog), findsOneWidget);
       await tester.tap(find.byKey(const Key('attachment-preview-save')));
       await tester.pumpAndSettle();
-      expect(picker.names, ['report.md']);
+      expect(picker.names, ['report.txt']);
+      expect(find.text('Source'), findsNothing);
       expect(picker.payloads.single, utf8.encode(source));
       expect(files.paths.length, 1);
       expect(find.byKey(const Key('attachment-preview-share')), findsOneWidget);

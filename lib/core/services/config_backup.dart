@@ -4,7 +4,9 @@ import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
 
+import '../l10n/service_strings.dart';
 import '../models/connection.dart';
+import 'gateway_headers.dart';
 
 /// Raised for every backup failure. The message is intentionally generic and
 /// never carries platform errors or secret material, so it can be surfaced
@@ -103,15 +105,14 @@ class ConfigBackup {
 
   factory ConfigBackup.fromJson(Map<String, dynamic> json) {
     if (json['format'] != format) {
-      throw const ConfigBackupException(
-        'This file is not a Hermes configuration backup.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_not_hermes_configuration_backup,
       );
     }
     final version = json['version'];
     if (version is! int || version < 1 || version > currentVersion) {
-      throw const ConfigBackupException(
-        'This backup was made by a newer version of the app and cannot be '
-        'imported.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_newer_version_cannot_import,
       );
     }
 
@@ -138,9 +139,8 @@ class ConfigBackup {
         final map = entry as Map<String, dynamic>;
         if (map['requires_client_certificate'] == true &&
             !certificates.containsKey(map['id'])) {
-          throw const ConfigBackupException(
-            'This backup claims a client certificate for a connection but '
-            'does not contain it, so a complete restore is not possible.',
+          throw ConfigBackupException(
+            serviceStrings.rel_svc_backup_missing_client_certificate,
           );
         }
       }
@@ -160,8 +160,8 @@ class ConfigBackup {
     } on ConfigBackupException {
       rethrow;
     } catch (_) {
-      throw const ConfigBackupException(
-        'This backup file is damaged and could not be read.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_damaged_unreadable,
       );
     }
   }
@@ -185,6 +185,11 @@ class ConfigBackup {
       if (connection.singleLogin) 'single_login': true,
       if (connection.signInMethod != null)
         'sign_in_method': connection.signInMethod,
+      if (connection.deploymentToken != null &&
+          connection.deploymentToken!.isNotEmpty)
+        'deployment_token': connection.deploymentToken,
+      if (connection.customHeaders.isNotEmpty)
+        'custom_headers': connection.customHeaders,
       // Paths are device-specific and meaningless on the target device; the
       // PEM contents travel in `client_certificates`. The marker lets a
       // hand-edited file fail closed instead of silently dropping mTLS.
@@ -216,6 +221,13 @@ class ConfigBackup {
       gatewayProfile: nonEmpty(map['gateway_profile']),
       singleLogin: (map['single_login'] as bool?) ?? false,
       signInMethod: nonEmpty(map['sign_in_method']),
+      deploymentToken: nonEmpty(map['deployment_token']),
+      customHeaders: switch (map['custom_headers']) {
+        final Map<dynamic, dynamic> raw => normalizeRemoteHeaders(
+          Map<String, dynamic>.from(raw),
+        ),
+        _ => const <String, String>{},
+      },
     );
   }
 
@@ -238,8 +250,8 @@ class ConfigBackup {
     if (value is List<String>) {
       return <String, dynamic>{'type': 'string_list', 'value': value};
     }
-    throw const ConfigBackupException(
-      'A saved preference has an unsupported type and cannot be exported.',
+    throw ConfigBackupException(
+      serviceStrings.rel_svc_backup_unsupported_preference_type,
     );
   }
 
@@ -265,8 +277,8 @@ class ConfigBackup {
         }
         break;
     }
-    throw const ConfigBackupException(
-      'This backup file is damaged and could not be read.',
+    throw ConfigBackupException(
+      serviceStrings.rel_svc_backup_damaged_unreadable,
     );
   }
 }
@@ -293,13 +305,13 @@ class ConfigBackupCodec {
     int iterations = defaultIterations,
   }) async {
     if (passphrase.trim().isEmpty) {
-      throw const ConfigBackupException(
-        'Choose a passphrase — the backup contains your API keys.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_choose_passphrase_api_keys,
       );
     }
     if (iterations < 1 || iterations > _maxIterations) {
-      throw const ConfigBackupException(
-        'The backup could not be protected safely.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_could_not_protect_safely,
       );
     }
 
@@ -316,8 +328,8 @@ class ConfigBackupCodec {
         nonce: nonce,
       );
     } catch (_) {
-      throw const ConfigBackupException(
-        'The backup could not be protected safely.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_could_not_protect_safely,
       );
     }
 
@@ -346,21 +358,20 @@ class ConfigBackupCodec {
     try {
       envelope = jsonDecode(armored) as Map<String, dynamic>;
     } catch (_) {
-      throw const ConfigBackupException(
-        'This file is not a Hermes configuration backup.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_not_hermes_configuration_backup,
       );
     }
 
     if (envelope['format'] != envelopeFormat) {
-      throw const ConfigBackupException(
-        'This file is not a Hermes configuration backup.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_not_hermes_configuration_backup,
       );
     }
     final version = envelope['version'];
     if (version is! int || version < 1 || version > envelopeVersion) {
-      throw const ConfigBackupException(
-        'This backup was made by a newer version of the app and cannot be '
-        'imported.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_newer_version_cannot_import,
       );
     }
 
@@ -374,8 +385,8 @@ class ConfigBackupCodec {
       final cipher = envelope['cipher'] as Map<String, dynamic>;
       if (kdf['algorithm'] != 'pbkdf2-hmac-sha256' ||
           cipher['algorithm'] != 'aes-256-gcm') {
-        throw const ConfigBackupException(
-          'This backup uses an unsupported encryption scheme.',
+        throw ConfigBackupException(
+          serviceStrings.rel_svc_backup_unsupported_encryption,
         );
       }
       iterations = kdf['iterations'] as int;
@@ -386,16 +397,16 @@ class ConfigBackupCodec {
     } on ConfigBackupException {
       rethrow;
     } catch (_) {
-      throw const ConfigBackupException(
-        'This backup file is damaged and could not be read.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_damaged_unreadable,
       );
     }
 
     // An untrusted file must never be able to pin the UI thread by asking for
     // an unbounded amount of key-stretching work.
     if (iterations < 1 || iterations > _maxIterations) {
-      throw const ConfigBackupException(
-        'This backup file is damaged and could not be read.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_damaged_unreadable,
       );
     }
 
@@ -410,8 +421,8 @@ class ConfigBackupCodec {
     } catch (_) {
       // Wrong passphrase and tampered ciphertext are indistinguishable here by
       // design — both fail the GCM authentication tag.
-      throw const ConfigBackupException(
-        'Wrong passphrase, or this backup file has been altered.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_wrong_passphrase_or_altered,
       );
     }
 
@@ -422,8 +433,8 @@ class ConfigBackupCodec {
     } on ConfigBackupException {
       rethrow;
     } catch (_) {
-      throw const ConfigBackupException(
-        'This backup file is damaged and could not be read.',
+      throw ConfigBackupException(
+        serviceStrings.rel_svc_backup_damaged_unreadable,
       );
     }
   }

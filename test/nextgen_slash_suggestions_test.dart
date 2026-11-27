@@ -540,21 +540,26 @@ void main() {
       expect(_fieldFocused(tester), isTrue, reason: 'Tab did not move focus');
       expect(sends, 0);
 
-      // Box closed: Enter belongs to the wrapper again.
+      // Box closed: Enter belongs to sending again. 5.0.0 builds the
+      // ports' send-on-Enter into the composer (SendOnEnter), inside any
+      // outer wrapper, so the command runs once and the wrapper stays idle.
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await tester.pump();
-      expect(sends, greaterThan(0));
+      await _settle(tester);
+      expect(gateway.of('slash.exec').single.params['command'], 'help');
+      expect(_composer(tester), isEmpty);
+      expect(sends, 0, reason: 'sent once, by the composer');
       expect(gateway.of('prompt.submit'), isEmpty);
 
-      // A command typed in full: Enter is not taken (the wrapper sends
-      // `/help` as typed) and the box closes; Tab still accepts.
-      sends = 0;
+      // A command typed in full: Enter is not taken by the box (the
+      // composer sends `/help` as typed) and the box closes; Tab still
+      // accepts.
       await _type(tester, '/help');
       expect(find.byKey(_row('/help')), findsOneWidget);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await _settle(tester);
-      expect(sends, greaterThan(0));
-      expect(_composer(tester), '/help');
+      expect(gateway.of('slash.exec'), hasLength(2));
+      expect(_composer(tester), isEmpty);
+      expect(sends, 0);
       expect(find.byKey(_boxKey), findsNothing);
       await _type(tester, '/hel');
       await _type(tester, '/help');
@@ -572,7 +577,7 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     try {
       var sends = 0;
-      await pump(
+      final (gateway, _) = await pump(
         tester,
         outerKeys: (node, event) {
           if (event is KeyDownEvent &&
@@ -586,9 +591,13 @@ void main() {
       await _type(tester, '/zzz');
       expect(_inBox('No matching commands'), findsOneWidget);
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await tester.pump();
-      expect(sends, 1);
-      expect(_composer(tester), '/zzz');
+      await _settle(tester);
+      // The box let Enter through: the composer's SendOnEnter sent `/zzz`
+      // as an ordinary prompt (not a gateway command), once.
+      expect(_composer(tester), isEmpty);
+      expect(gateway.of('slash.exec'), isEmpty);
+      expect(gateway.of('prompt.submit'), hasLength(1));
+      expect(sends, 0, reason: 'sent once, by the composer');
     } finally {
       debugDefaultTargetPlatformOverride = null;
     }
@@ -726,13 +735,63 @@ void main() {
     });
     expect(find.byKey(_row('alice')), findsOneWidget);
     expect(_inBox('Friendly helper'), findsOneWidget);
+    expect(gateway.completions, ['/personality al']);
 
     await tester.tap(find.byKey(_row('alice')));
     await _settle(tester);
-    expect(_composer(tester), '/personality alice ');
-    expect(_value(tester).selection, const TextSelection.collapsed(offset: 19));
+    expect(_composer(tester), '/personality alice');
+    expect(_value(tester).selection, const TextSelection.collapsed(offset: 18));
     expect(find.byKey(_boxKey), findsNothing);
     expect(gateway.of('slash.exec'), isEmpty);
+  });
+
+  for (final acceptKey in [LogicalKeyboardKey.enter, LogicalKeyboardKey.tab]) {
+    testWidgets(
+      'argument choices accept ${acceptKey.keyLabel} without sending',
+      (tester) async {
+        final gateway = _Gateway();
+        gateway.handlers['complete.slash'] = (_) => {
+          'items': [
+            _item('alice', 'Friendly helper'),
+            _item('alfred', 'Butler'),
+          ],
+          'replace_from': 13,
+        };
+        await pump(tester, runtimeId: 'rt-1', gateway: gateway);
+        await _type(tester, '/personality al');
+        expect(gateway.completions, ['/personality al']);
+        await tester.sendKeyEvent(LogicalKeyboardKey.arrowDown);
+        await tester.sendKeyEvent(acceptKey);
+        await _settle(tester);
+        expect(_composer(tester), '/personality alfred');
+        expect(
+          _value(tester).selection,
+          const TextSelection.collapsed(offset: 19),
+        );
+        expect(find.byKey(_boxKey), findsNothing);
+        expect(gateway.of('slash.exec'), isEmpty);
+        expect(gateway.of('prompt.submit'), isEmpty);
+      },
+    );
+  }
+
+  testWidgets('Escape dismisses argument choices without sending', (
+    tester,
+  ) async {
+    final gateway = _Gateway();
+    gateway.handlers['complete.slash'] = (_) => {
+      'items': [_item('alice', 'Friendly helper')],
+      'replace_from': 13,
+    };
+    await pump(tester, runtimeId: 'rt-1', gateway: gateway);
+    await _type(tester, '/personality al');
+    expect(find.byKey(_boxKey), findsOneWidget);
+    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+    await _settle(tester);
+    expect(find.byKey(_boxKey), findsNothing);
+    expect(_composer(tester), '/personality al');
+    expect(gateway.of('slash.exec'), isEmpty);
+    expect(gateway.of('prompt.submit'), isEmpty);
   });
 
   group('placement', () {
@@ -821,7 +880,9 @@ void main() {
             child: Navigator(
               key: navigator,
               onGenerateInitialRoutes: (_, _) => [
-                MaterialPageRoute<void>(builder: (_) => const NgMainPage()),
+                MaterialPageRoute<void>(
+                  builder: (_) => const NgMainPage(coldStart: false),
+                ),
               ],
             ),
           ),

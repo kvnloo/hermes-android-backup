@@ -25,12 +25,12 @@
 
 [![Ares 4.0.0 showcase: Classic and NextGen](docs/video/ares-4.0-poster.png)](docs/video/ares-4.0-showcase.mp4)
 
-**[Watch the 80 second showcase](docs/video/ares-4.0-showcase.mp4).** No voiceover. The score is original synthwave written for this film. It was recorded on the production-signed [4.0.0-rc.7](https://github.com/rusty4444/hermes-android/releases/tag/v4.0.0-rc.7) build during the candidate cycle, with illustrative fixture chats. **4.0.17** is the latest stable release. NextGen adapts the [Kyllene](https://github.com/Giton22/kyllene) design by Giton22 (MIT).
+**[Watch the 80 second showcase](docs/video/ares-4.0-showcase.mp4).** No voiceover. The score is original synthwave written for this film. It was recorded on the production-signed [4.0.0-rc.7](https://github.com/rusty4444/hermes-android/releases/tag/v4.0.0-rc.7) build during the candidate cycle, with illustrative fixture chats. **4.0.19** is the latest stable release. NextGen adapts the [Kyllene](https://github.com/Giton22/kyllene) design by Giton22 (MIT).
 
-# Ares - formerly Hermes Android v4.0.18
+# Ares - formerly Hermes Android v4.0.19
 
 > **Hermes Android is now Ares.** In 4.0.0 the app is called "Ares - formerly
-> Hermes Android", and the launcher label is Ares. **4.0.18** is the latest
+> Hermes Android", and the launcher label is Ares. **4.0.19** is the latest
 > stable release. The package
 > `com.hermesagent.hermes_android` and the signing key are unchanged, so the
 > update installs over the existing app. It still connects to
@@ -98,19 +98,19 @@ Emulator captures of production-signed **4.0.0-rc.7** (version code 30432). Clas
 
 ## Current release
 
-**4.0.18** (base build **3074**) is the latest stable release. Its ABI splits are
-`30741`, `30742` and `30743`, each above the highest published 4.0.17
-split (`30733`). The production package and signer are unchanged. Install over
-the existing app; do not uninstall or clear app data. 4.0.18 removes the
-in-app update check and APK installer: updates come from your store.
+**4.0.19** (base build **3075**) is the latest stable release. Its ABI splits are
+`30751`, `30752` and `30753`, each above the highest published 4.0.18
+split (`30743`). The production package and signer are unchanged. Install over
+the existing app; do not uninstall or clear app data. 4.0.19 narrows the
+chat model pickers to the providers actually configured on the gateway.
 
 | Download | Device | Version code |
 | --- | --- | --- |
-| [ARM64 APK](https://github.com/rusty4444/ares/releases/download/v4.0.18/app-arm64-v8a-release.apk) | Most current Android phones/tablets | `30742` |
-| [ARMv7 APK](https://github.com/rusty4444/ares/releases/download/v4.0.18/app-armeabi-v7a-release.apk) | Older 32-bit ARM devices | `30741` |
-| [x86_64 APK](https://github.com/rusty4444/ares/releases/download/v4.0.18/app-x86_64-release.apk) | x86_64 Android devices/emulators | `30743` |
+| [ARM64 APK](https://github.com/rusty4444/ares/releases/download/v4.0.19/app-arm64-v8a-release.apk) | Most current Android phones/tablets | `30752` |
+| [ARMv7 APK](https://github.com/rusty4444/ares/releases/download/v4.0.19/app-armeabi-v7a-release.apk) | Older 32-bit ARM devices | `30751` |
+| [x86_64 APK](https://github.com/rusty4444/ares/releases/download/v4.0.19/app-x86_64-release.apk) | x86_64 Android devices/emulators | `30753` |
 
-[Release and checksums](https://github.com/rusty4444/ares/releases/tag/v4.0.18) · [4.0.18 release notes](docs/releases/4.0.18.md) · [Full changelog](CHANGELOG.md)
+[Release and checksums](https://github.com/rusty4444/ares/releases/tag/v4.0.19) · [4.0.19 release notes](docs/releases/4.0.19.md) · [Full changelog](CHANGELOG.md)
 
 Debug builds use the separate `com.hermesagent.hermes_android.dev` package and Android debug certificate. Older production APKs have lower version codes; downgrading can require uninstalling and restoring a backup.
 
@@ -327,6 +327,20 @@ sanitized implementation and validation record.
 NextGen adapts [Kyllene](https://github.com/Giton22/kyllene) by Giton22 (MIT).
 See [4.0.0 release notes](docs/releases/4.0.0.md).
 
+## What's new in v4.0.19
+
+- **Chat model pickers list only configured providers (#381).** In both
+  Classic and NextGen, the picker now shows only the LLMs from providers you
+  actually configured on the gateway — on a typical gateway ~170 models across
+  five providers become the ~10 that are yours — instead of dumping the whole
+  provider catalog. A pinned provider/model pair stays visible and selected,
+  managed local-runtime and MoA rows stay visible, and the picker falls back
+  to the full list when the gateway sends no flags or the filter would leave
+  it empty. The cron picker, model management screen and NextGen models page
+  are unchanged.
+
+See [4.0.19 release notes](docs/releases/4.0.19.md).
+
 ## What's new in v4.0.18
 
 - **No in-app updater (#379).** Ares no longer checks GitHub for a newer
@@ -348,19 +362,6 @@ See [4.0.18 release notes](docs/releases/4.0.18.md).
   to either Play track.
 
 See [4.0.17 release notes](docs/releases/4.0.17.md).
-
-## What's new in v4.0.16
-
-- **Chat menu with a mouse (#373).** In NextGen, right-click a chat, or use
-  the ⋯ button that appears on hover, to pin, unpin, rename, archive or delete
-  it. Shift+F10 opens the menu from the keyboard. Long-press on Android is
-  unchanged.
-- **Suggested commands (#374).** Typing `/` in the NextGen composer opens a box
-  of matching commands with short descriptions, filtered as you type, like
-  Hermes desktop. Pick one with a tap, click, or the arrow keys and Enter or
-  Tab.
-
-See [4.0.16 release notes](docs/releases/4.0.16.md).
 
 ## Features
 
@@ -693,8 +694,21 @@ Android's restrictions; the app does not request an exemption on startup.
 
 While protection is active, Android requires a foreground-service disclosure.
 Hermes uses one service for active chats and separate quiet ongoing entries for
-their status. **Settings → Notifications** controls optional alerts. Returning
-to the app does not mean all chat notifications should disappear: ongoing work
+their status. **Settings → Notifications** controls optional alerts, including
+an opt-in report of activity in the open chat and a completion sound. The
+activity report is off until enabled, counts only input inside the chat
+(touches, clicks, keys, and typing or focus in the composer), and is sent on
+the chat's existing connection when the gateway accepts it. Panes that share a
+connection send one report for the pane used most recently, and leaving the
+chat withdraws it at once. Pop-out chat windows follow the same setting. The
+completion sound can be the system sound, Mail, Reminder or silent. Mail and
+Reminder are original short tones on Android and Apple, desktop sound-theme
+names on Linux, and Windows notification sounds on Windows. While Ares is open
+it also plays the chosen sound in the app when a reply finishes (System default
+plays a short chime); **Mute app sounds** turns that off. Approvals, other
+notification kinds, background notifications from the server and Android Auto
+messages keep the system sound. Returning to the app does not mean all chat
+notifications should disappear: ongoing work
 and other chats retain their own state. Grant or revoke OS notification permission
 in Android settings; the app refreshes that status on return without another
 startup prompt.
@@ -863,10 +877,9 @@ compact re-homes the inline chat as a full-screen route.
   microphone, speech recognition, camera and photo library (iOS/macOS), plus
   local-network access for gateway connections.
 - **Android-only features are hidden, not broken:** the foreground/background
-  work service, battery-optimisation prompts, embedded FCM push bridge, APK
-  self-update and the Android hands-free wake-word service do not apply to
-  Apple platforms and are omitted there. Android behaviour and tests are
-  unchanged.
+  work service, battery-optimisation prompts, embedded FCM push bridge and the
+  Android hands-free wake-word service do not apply to Apple platforms and are
+  omitted there. The in-app GitHub updater is removed on every platform.
 - **Known limitations:** background execution follows iOS/macOS rules (no
   Android-style foreground service), so a backgrounded turn is reported via
   local notifications rather than a persistent socket. `image_picker` camera
@@ -891,7 +904,7 @@ centrally and are **not** performed here.
 
 Ares runs on Windows 10 (1809 or later) and Windows 11, x64, from the same
 Dart sources as the Android, iOS and macOS apps. The app is `ares.exe`,
-version `4.0.18`, packaged as an MSIX.
+version `4.0.15`, packaged as an MSIX.
 
 What is specific to Windows:
 
@@ -907,10 +920,14 @@ What is specific to Windows:
   joining it after pause/resume uses the `ffmpeg.exe` and `ffprobe.exe` that
   ship in an `ffmpeg` folder beside `ares.exe`. Ares only ever runs that
   bundled copy.
-- **Notifications**: Windows does not post notifications yet, and the
-  notification settings are hidden there. The notification plugin Ares pins
-  has no Windows support; adding it means a major upgrade of that plugin on
-  every platform.
+- **Notifications (5.0 development)**: Classic and NextGen use Windows toasts
+  for background replies and requests. Category controls, the test
+  notification, the completion sound and optional chat activity sharing are
+  the same controls as on the other platforms; Windows plays the chosen
+  completion sound as a Windows notification sound.
+  Turn notifications on or off in Windows **Settings → System → Notifications**.
+  Use an installed build: a loose copy does not own the installer's click handler.
+  [Native verification and remaining gates](docs/windows-notifications.md).
 - **Android-only settings** (mobile push and background work) are hidden.
 
 ### Build
@@ -926,14 +943,9 @@ flutter build windows --release
 
 The app is written to `build\windows\x64\runner\Release`.
 
-That build asks GitHub at launch whether a newer release exists, as the
-Android build from GitHub does. A Microsoft Store package must not: the Store
-delivers its updates, and the GitHub releases carry no Windows download. Build
-the Store package with the check compiled out:
-
-```powershell
-flutter build windows --release --dart-define=ARES_PLAY_BUILD=true
-```
+Windows builds do not check GitHub for updates. Update through the Microsoft
+Store for Store installs, or use the releases page for manually installed
+builds. No platform includes an in-app update check or APK installer.
 
 ### Test
 
@@ -974,7 +986,7 @@ Pass them on the command line to both commands:
 --store --identity-name <Package/Identity/Name> `
   --publisher <Package/Identity/Publisher> `
   --publisher-display-name <PublisherDisplayName> `
-  --display-name "<reserved product name>" --version 4.0.18.0
+  --display-name "<reserved product name>" --version 4.0.15.0
 ```
 
 Between `msix:build` and `msix:pack`, edit `Release\AppxManifest.xml`:
@@ -1025,7 +1037,7 @@ cp build/app/outputs/flutter-apk/app-*-release.apk release-apks/
 block in `android/app/build.gradle.kts` derives per-ABI codes as
 `base * 10 + ABI code` (armeabi-v7a = 1, arm64-v8a = 2, x86_64 = 3), so the
 codes stay ordered armeabi-v7a < arm64-v8a < x86_64 as fdroiddata requires.
-For v4.0.18, base `3074` produces codes `30741`/`30742`/`30743`.
+For v4.0.19, base `3075` produces codes `30751`/`30752`/`30753`.
 Before publication, CI verifies all three actual APKs: package, version, ABI,
 effective code, production signer and required licence/source assets. Releases
 include checksums and exact-commit source/relink materials. Release-floor checks
@@ -1182,6 +1194,7 @@ lib/
   `/reset` start a fresh session locally like the desktop instead of the
   headless slash worker (PR #301, v4.0.11), with regression tests. Original
   commits preserved.
+- **Thaeland** — narrowed the chat model pickers to the providers actually configured on the gateway, keeping pinned pairs and local-runtime/MoA rows, with widget tests and independent reviews (PR #381, v4.0.19). Original commits preserved.
 
 **AI assistance:** Hermes Agent assists with implementation, research, code
 review and regression tests, including the saved-memory viewer and compact chat

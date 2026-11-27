@@ -1,7 +1,7 @@
 /// Platform capability reporting for features that only exist on Android.
 ///
 /// Apple builds keep the shared chat/gateway code but must not offer Android
-/// foreground services, battery-optimisation prompts, APK self-update, or the
+/// foreground services, battery-optimisation prompts, or the
 /// embedded Android push bridge. Nothing here changes Android behaviour.
 library;
 
@@ -16,10 +16,8 @@ bool get isApplePlatform =>
 /// True when the app is running on Windows.
 bool get isWindowsPlatform => defaultTargetPlatform == TargetPlatform.windows;
 
-/// Operating-system notifications. The notification plugin has no Windows
-/// implementation at the version Ares pins, so Windows posts none and hides
-/// the notification settings.
-bool get supportsLocalNotifications => !isWindowsPlatform;
+/// Windows implements local toasts in the runner rather than FLN v18.
+bool get supportsLocalNotifications => true;
 
 /// Android foreground service / battery-optimisation background work.
 bool get supportsAndroidBackgroundWork =>

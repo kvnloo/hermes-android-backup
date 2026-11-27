@@ -44,6 +44,59 @@ String? deliveredFilePathFromHref(String href) {
 /// No URL is fetched or converted to an authenticated file request here.
 List<MediaTagRef> extractMarkdownFileRefs(String text, {bool isFinal = true}) {
   if (!isFinal) return const [];
+  // A file link needs inline syntax `](`, a reference definition `]:` or an
+  // autolink `<`. Without them there is nothing to find, and the Markdown
+  // parse is skipped: on some long replies it costs seconds on the UI thread
+  // (20 KB of one character took 9 s) or overflows the stack (deep `>`).
+  if (!_mayHoldFileLink(text)) return const [];
+  final cached = _markdownRefCache.remove(text);
+  if (cached != null) {
+    _markdownRefCache[text] = cached;
+    return cached;
+  }
+  final refs = _parseMarkdownFileRefs(text);
+  _markdownRefCache[text] = refs;
+  while (_markdownRefCache.length > _markdownRefCacheSize) {
+    _markdownRefCache.remove(_markdownRefCache.keys.first);
+  }
+  return refs;
+}
+
+const _markdownRefCacheSize = 64;
+const _blockPrefix = ' \t#-*+=_.)0123456789';
+// Replies are final and rebuilt often; parse each one once (LRU by text).
+final _markdownRefCache = <String, List<MediaTagRef>>{};
+
+bool _mayHoldFileLink(String text) =>
+    text.contains('](') || text.contains(']:') || text.contains('<');
+
+/// A very long line with no Markdown structure characters can only be plain
+/// paragraph text; it carries no destination and does not change which
+/// blocks are code or quotation. Shorten it in the parser's copy only.
+String _boundLongPlainLines(String text) {
+  const limit = 2048;
+  if (text.length <= limit) return text;
+  final lines = text.split('\n');
+  var changed = false;
+  for (var i = 0; i < lines.length; i++) {
+    final line = lines[i];
+    if (line.length <= limit || line.contains(RegExp(r'[\[\]<>`~()]'))) {
+      continue;
+    }
+    // Keep the block prefix (indentation, heading/list/break markers) so the
+    // line keeps its block kind, and drop the long plain text after it.
+    var end = 0;
+    while (end < line.length && _blockPrefix.contains(line[end])) {
+      end++;
+    }
+    final prefix = line.substring(0, end > 16 ? 16 : end);
+    lines[i] = end == line.length ? prefix : '${prefix}x';
+    changed = true;
+  }
+  return changed ? lines.join('\n') : text;
+}
+
+List<MediaTagRef> _parseMarkdownFileRefs(String text) {
   final refs = <MediaTagRef>[];
   void collect(md.Node node) {
     if (node is! md.Element ||
@@ -60,10 +113,14 @@ List<MediaTagRef> extractMarkdownFileRefs(String text, {bool isFinal = true}) {
     node.children?.forEach(collect);
   }
 
-  md.Document(
-    extensionSet: md.ExtensionSet.gitHubFlavored,
-  ).parse(_protectLazyQuoteLinks(text)).forEach(collect);
-  return refs;
+  try {
+    md.Document(extensionSet: md.ExtensionSet.gitHubFlavored)
+        .parse(_protectLazyQuoteLinks(_boundLongPlainLines(text)))
+        .forEach(collect);
+  } on StackOverflowError {
+    return const []; // Pathological nesting: index nothing rather than crash.
+  }
+  return List.unmodifiable(refs);
 }
 
 /// markdown 7.3 treats a link-led lazy continuation as a possible reference

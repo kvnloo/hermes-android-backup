@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 /// An unavailable read is not evidence that a draft is absent. Keep provider
 /// details out of this public error, including paths and stored values.
@@ -19,11 +21,29 @@ class ComposerDraftHandle {
   final String connectionId;
   final String sessionId;
   final int _owner;
+  final String? recoveryScope;
+  final bool _deviceLocal;
 
-  ComposerDraftHandle._(this.connectionId, this.sessionId, this._owner);
+  ComposerDraftHandle._(
+    this.connectionId,
+    this.sessionId,
+    this._owner,
+    this.recoveryScope,
+    this._deviceLocal,
+  );
 
   /// An explicit edit may take ownership back, including a deliberate clear.
   void edited() => ComposerDraftStore._claim(this);
+
+  Future<bool> ownsLease() => ComposerDraftStore._serialized(
+    (prefs) async =>
+        ComposerDraftStore._owners[ComposerDraftStore._resolve(
+          prefs,
+          connectionId,
+          sessionId,
+        )] ==
+        _owner,
+  ).catchError((Object _) => false);
 
   /// Transfer only a participating lease after a verified durable alias. This
   /// does not manufacture user intent or reclaim an unrelated newer writer.
@@ -54,6 +74,8 @@ class ComposerDraftHandle {
         sessionId: sessionId,
         text: text,
         owner: _owner,
+        recoveryScope: recoveryScope,
+        deviceLocal: _deviceLocal,
         isCurrent: isCurrent,
       );
 }
@@ -66,6 +88,15 @@ abstract final class ComposerDraftStore {
   static const _prefix = 'composer_draft';
   static const _aliasPrefix = 'composer_draft_alias';
   static const _writtenPrefix = 'composer_draft_written';
+  static const _recoveryPrefix = 'composer_draft_recovery';
+  static const _heldPrefix = 'client_held_queue';
+
+  // The slash disambiguates this client-only namespace from a server ID.
+  static String newLocalKey() => 'local-draft/${const Uuid().v4()}';
+  static bool isLocalKey(String id) => RegExp(
+    r'^local-draft/[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$',
+  ).hasMatch(id);
+
   static Future<void>? _tail;
   static int _nextOwner = 0;
   static final Map<String, int> _owners = {};
@@ -126,8 +157,16 @@ abstract final class ComposerDraftStore {
   static ComposerDraftHandle open({
     required String connectionId,
     required String sessionId,
+    String? recoveryScope,
+    bool deviceLocal = false,
   }) {
-    final handle = ComposerDraftHandle._(connectionId, sessionId, ++_nextOwner);
+    final handle = ComposerDraftHandle._(
+      connectionId,
+      sessionId,
+      ++_nextOwner,
+      recoveryScope,
+      deviceLocal,
+    );
     _claim(handle);
     return handle;
   }
@@ -171,6 +210,13 @@ abstract final class ComposerDraftStore {
             if (draft != null || prefs.getBool(_writtenKey(local)) == true) {
               await _write(prefs, stored, draft ?? '');
               copied = true;
+              await _restoreValue(
+                prefs,
+                _recoveryKey(stored),
+                prefs
+                    .getString(_recoveryKey(local))
+                    ?.replaceFirst(RegExp(r':local$'), ''),
+              );
             }
           }
           if (isCurrent?.call() == false ||
@@ -195,6 +241,13 @@ abstract final class ComposerDraftStore {
         // Only an explicit later edit can claim this shared lease again.
         _owners[stored] ??= canonicalExists ? 0 : _owners[local] ?? 0;
         _owners.remove(local);
+        final targetHeld = _heldStorageKey(stored);
+        if (prefs.getString(targetHeld) == null) {
+          final held = prefs.getString(_heldStorageKey(local));
+          if (held != null && held.isNotEmpty) {
+            await prefs.setString(targetHeld, held);
+          }
+        }
       });
     } catch (_) {
       // Best-effort; the untouched source remains available to retry migration.
@@ -206,13 +259,20 @@ abstract final class ComposerDraftStore {
   static Future<String?> read({
     required String connectionId,
     required String sessionId,
+    String? expectedScope,
   }) async {
     try {
       return await _serialized((prefs) async {
         // Remount hydration must observe physical drafts, not a process-wide
         // cache that an older unrelated reload may have replaced during save.
         await prefs.reload();
-        final value = prefs.getString(_resolve(prefs, connectionId, sessionId));
+        final key = _resolve(prefs, connectionId, sessionId);
+        final value = prefs.getString(key);
+        if (expectedScope != null && value != null) {
+          final proof = _proof(expectedScope, value);
+          final stamp = prefs.getString(_recoveryKey(key));
+          if (stamp != proof && stamp != '$proof:local') return null;
+        }
         return (value == null || value.isEmpty) ? null : value;
       });
     } catch (_) {
@@ -237,6 +297,8 @@ abstract final class ComposerDraftStore {
     required String sessionId,
     required String text,
     int? owner,
+    String? recoveryScope,
+    bool deviceLocal = false,
     bool Function()? isCurrent,
   }) async {
     try {
@@ -246,6 +308,19 @@ abstract final class ComposerDraftStore {
         if (owner != null && _owners[key] != owner) return;
         if (owner == null) _owners[key] = 0;
         await _write(prefs, key, text);
+        // Cross-chat discovery requires provenance that exact-chat legacy
+        // reads never recorded. Bind the proof to these exact bytes so a
+        // failed/partial publication cannot lend an old scope to new text.
+        if (recoveryScope != null && text.isNotEmpty) {
+          final local = deviceLocal && key == _key(connectionId, sessionId);
+          final proof = _proof(recoveryScope, text);
+          await prefs.setString(
+            _recoveryKey(key),
+            local ? '$proof:local' : proof,
+          );
+        } else if (prefs.containsKey(_recoveryKey(key))) {
+          await prefs.remove(_recoveryKey(key));
+        }
       });
     } catch (_) {
       // Best-effort: a failed save must never break the screen.
@@ -291,6 +366,56 @@ abstract final class ComposerDraftStore {
   static String _writtenKey(String key) =>
       "$_writtenPrefix.${key.substring(_prefix.length + 1)}";
 
+  static String _recoveryKey(String key) =>
+      '$_recoveryPrefix.${key.substring(_prefix.length + 1)}';
+  static String _proof(String scope, String text) =>
+      '$scope:${sha256.convert(utf8.encode(text))}';
+
+  /// Only canonical, nonempty drafts written under this account can cross
+  /// into a different chat. A legacy unscoped draft remains in its own chat.
+  static Future<List<String>> recoveryCandidates(ComposerDraftHandle target) =>
+      _serialized((prefs) async {
+        await prefs.reload();
+        final scope = target.recoveryScope;
+        if (scope == null) return [];
+        final prefix = '${target.connectionId}\u0000';
+        final excluded = _resolve(prefs, target.connectionId, target.sessionId);
+        return [
+          for (final key in prefs.getKeys())
+            if (key.startsWith('$_prefix.') &&
+                key != excluded &&
+                prefs.getString(_aliasKey(key)) == null &&
+                prefs.getString(_recoveryKey(key))?.startsWith('$scope:') ==
+                    true)
+              if (_decode(key, _prefix) case final value?)
+                if (value.startsWith(prefix) &&
+                    !value.substring(prefix.length).contains('\u0000'))
+                  value.substring(prefix.length),
+        ]..sort();
+      });
+
+  static Future<String?> recoveryText(
+    ComposerDraftHandle target,
+    String sourceId,
+  ) => _serialized((prefs) async {
+    await prefs.reload();
+    final scope = target.recoveryScope;
+    final targetKey = _resolve(prefs, target.connectionId, target.sessionId);
+    final sourceKey = _key(target.connectionId, sourceId);
+    if (scope == null ||
+        targetKey == sourceKey ||
+        _owners[targetKey] != target._owner ||
+        prefs.containsKey(_aliasKey(sourceKey))) {
+      return null;
+    }
+    final text = prefs.getString(sourceKey);
+    if (text == null || text.isEmpty) return null;
+    final proof = _proof(scope, text);
+    // Never bypass a server lookup based on just the spelling of a stored ID.
+    final expected = isLocalKey(sourceId) ? '$proof:local' : proof;
+    return prefs.getString(_recoveryKey(sourceKey)) == expected ? text : null;
+  });
+
   static Future<void> _restoreValue(
     SharedPreferences prefs,
     String key,
@@ -313,7 +438,68 @@ abstract final class ComposerDraftStore {
   static Future<void> remove({
     required String connectionId,
     required String sessionId,
-  }) => save(connectionId: connectionId, sessionId: sessionId, text: '');
+  }) async {
+    await save(connectionId: connectionId, sessionId: sessionId, text: '');
+    await saveHeldPrompts(
+      connectionId: connectionId,
+      sessionId: sessionId,
+      texts: const [],
+    );
+  }
+
+  /// Prompt texts only. Same owner and session resolution as a draft. No
+  /// credentials and no attachments.
+  static Future<List<String>> readHeldPrompts({
+    required String connectionId,
+    required String sessionId,
+  }) async {
+    try {
+      return await _serialized((prefs) async {
+        await prefs.reload();
+        final raw = prefs.getString(
+          _heldStorageKey(_resolve(prefs, connectionId, sessionId)),
+        );
+        if (raw == null || raw.isEmpty) return const <String>[];
+        final decoded = jsonDecode(raw);
+        if (decoded is! List) return const <String>[];
+        return [
+          for (final item in decoded)
+            if (item is String && item.trim().isNotEmpty) item,
+        ];
+      });
+    } catch (_) {
+      return const <String>[];
+    }
+  }
+
+  static Future<void> saveHeldPrompts({
+    required String connectionId,
+    required String sessionId,
+    required List<String> texts,
+  }) async {
+    try {
+      await _serialized((prefs) async {
+        final key = _heldStorageKey(_resolve(prefs, connectionId, sessionId));
+        final body = [
+          for (final text in texts)
+            if (text.trim().isNotEmpty) text,
+        ];
+        if (body.isEmpty) {
+          if (prefs.containsKey(key)) await prefs.remove(key);
+          return;
+        }
+        final saved = await prefs.setString(key, jsonEncode(body));
+        if (!saved) {
+          throw StateError('Client-held queue write was rejected.');
+        }
+      });
+    } catch (_) {
+      // Best-effort, same as a draft save.
+    }
+  }
+
+  static String _heldStorageKey(String resolvedDraftKey) =>
+      '$_heldPrefix.${resolvedDraftKey.substring(_prefix.length + 1)}';
 
   /// Drops every draft and alias for this connection only.
   static Future<void> removeConnection(String connectionId) async {
@@ -327,6 +513,10 @@ abstract final class ComposerDraftStore {
               ? _aliasPrefix
               : key.startsWith('$_writtenPrefix.')
               ? _writtenPrefix
+              : key.startsWith('$_recoveryPrefix.')
+              ? _recoveryPrefix
+              : key.startsWith('$_heldPrefix.')
+              ? _heldPrefix
               : null;
           if (prefix == null) continue;
           final decoded = _decode(key, prefix);

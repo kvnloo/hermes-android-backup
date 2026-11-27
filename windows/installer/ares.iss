@@ -16,7 +16,7 @@
 #define MyAppName "Ares"
 ; Keep in step with pubspec.yaml, or pass /DMyAppVersion=x.y.z to ISCC.
 #ifndef MyAppVersion
-  #define MyAppVersion "4.0.18"
+  #define MyAppVersion "5.0.0"
 #endif
 #define MyAppPublisher "Sam Russell"
 #define MyAppURL "https://github.com/rusty4444/ares"
@@ -65,14 +65,33 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+; hermes:// is also the Hermes Desktop app's scheme, so taking it over is a
+; visible choice (on by default).
+Name: "hermeslinks"; Description: "Open hermes:// links with Ares"; GroupDescription: "Links:"
 
 [Files]
 ; The whole app folder: engine, Dart AOT, plugin DLLs, PDFium, the FFmpeg
 ; helpers and the licence texts. MSIX package metadata is not part of the app.
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Excludes: "AppxManifest.xml,AppxBlockMap.xml,AppxSignature.p7x,[Content_Types].xml,resources*.pri,\Images\*,\AppxMetadata\*"; Flags: ignoreversion recursesubdirs
 
+[Registry]
+; Only a fixed opaque toast ticket is accepted by the runner. The shell never
+; evaluates or expands it. A distinct scheme is used by the MSIX manifest.
+Root: HKCU; Subkey: "Software\Classes\ares-notification"; ValueType: string; ValueData: "URL:Ares notification"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\Classes\ares-notification"; ValueName: "URL Protocol"; ValueType: string; ValueData: ""
+Root: HKCU; Subkey: "Software\Classes\ares-notification\shell\open\command"; ValueType: string; ValueData: """{app}\{#MyAppExeName}"" ""%1"""
+; hermes:// links: the runner accepts the whole link as the sole argument,
+; forwards it to the running primary window (the toast ticket's single-instance
+; path, no second activator) and Dart's router validates it. A link can
+; navigate and prefill a draft; it never sends, approves or installs anything.
+Root: HKCU; Subkey: "Software\Classes\hermes"; ValueType: string; ValueData: "URL:Hermes link"; Flags: uninsdeletekey; Tasks: hermeslinks
+Root: HKCU; Subkey: "Software\Classes\hermes"; ValueName: "URL Protocol"; ValueType: string; ValueData: ""; Tasks: hermeslinks
+Root: HKCU; Subkey: "Software\Classes\hermes\DefaultIcon"; ValueType: string; ValueData: """{app}\{#MyAppExeName}"",0"; Tasks: hermeslinks
+Root: HKCU; Subkey: "Software\Classes\hermes\shell\open\command"; ValueType: string; ValueData: """{app}\{#MyAppExeName}"" ""%1"""; Tasks: hermeslinks
+
 [Icons]
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+; Protocol-only activation uses Microsoft's stub-CLSID desktop toast model.
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AppUserModelID: "com.hermesagent.ares"; AppUserModelToastActivatorCLSID: "F2BCD1C8-EDAB-4F31-A09F-39C2ED0F2A37"
 Name: "{group}\Uninstall {#MyAppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 

@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/screens/projects_root_screen.dart';
 import 'package:hermes_android/core/services/connection_manager.dart';
 import 'package:hermes_android/core/services/ws_client.dart';
+import 'package:hermes_android/core/services/remote_files_client.dart';
 import 'package:hermes_android/core/widgets/project_detail_screen.dart';
 import 'package:hermes_android/core/widgets/projects_pane.dart';
 import 'package:hermes_android/l10n/app_localizations.dart';
@@ -23,7 +24,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/markdown_file_fixture.dart';
 import 'support/mtls_fixture.dart';
+import 'support/strict_nextgen_gateway.dart';
 
 SavedConnection _connection({String id = 'c1', String profile = 'work'}) =>
     SavedConnection(
@@ -42,13 +45,14 @@ SavedConnection _connection({String id = 'c1', String profile = 'work'}) =>
     );
 
 class _Gateway extends NextGenGateway {
-  _Gateway(super.connection)
+  _Gateway(super.connection, {this.markdown})
     : super(
         dashboard: DashboardClient.fromConnection(
           connection,
           httpClient: MockClient((request) async {
             expectSync(request.method, 'GET', reason: 'no settings writes');
             expectSync(request.url.path, startsWith('/hermes/api/'));
+            if (markdown != null) return markdown.respond(request);
             if (request.url.path.endsWith('/messages')) {
               return http.Response(jsonEncode({'messages': []}), 200);
             }
@@ -59,6 +63,18 @@ class _Gateway extends NextGenGateway {
           }),
         ),
       );
+
+  final MarkdownDashboardFixture? markdown;
+  @override
+  RemoteFilesClient createFilesClient({
+    String? sessionId,
+    int? maxDownloadBytes,
+  }) => RemoteFilesClient.fromConnection(
+    connection,
+    sessionId: sessionId,
+    maxDownloadBytes: maxDownloadBytes,
+    httpClient: MockClient(markdown!.respond),
+  );
 
   @override
   NgConnectionState get state =>
@@ -96,12 +112,21 @@ class _Gateway extends NextGenGateway {
     return dummy;
   }
 
+  /// On an authority gateway the call goes through the client's guard and
+  /// the strict contract check, as the real socket does.
   @override
   Future<Map<String, dynamic>> call(
     String method,
     Map<String, dynamic> params, {
     Duration timeout = const Duration(seconds: 30),
-  }) async {
+  }) => sessionAuthority
+      ? strictCall(this, method, params, _answer)
+      : _answer(method, params);
+
+  Future<Map<String, dynamic>> _answer(
+    String method,
+    Map<String, dynamic> params,
+  ) async {
     calls.add((method: method, params: Map.of(params)));
     switch (method) {
       case 'projects.list':
@@ -227,16 +252,27 @@ Future<void> _app(
     ),
   );
   await _frames(tester);
+  if (main &&
+      find.byKey(const Key('ng-brand-new-chat')).evaluate().isNotEmpty) {
+    expect(find.byKey(const Key('ng-brand-new-chat')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('ng-brand-new-chat')));
+    await _frames(tester);
+  }
+}
+
+Future<void> _openMore(WidgetTester tester) async {
+  final more = find.text('More');
+  // The desktop sidebar is already docked; phones need to open the drawer.
+  if (more.hitTestable().evaluate().isEmpty) {
+    await tester.tap(find.byKey(const Key('ng-sidebar-button')));
+    await _frames(tester);
+  }
+  await tester.tap(more.hitTestable());
+  await _frames(tester);
 }
 
 Future<void> _browse(WidgetTester tester, {bool main = false}) async {
-  if (main) {
-    final chat = tester.widget<NgChatView>(find.byType(NgChatView));
-    chat.onOpenSidebar();
-    await _frames(tester);
-    await tester.tap(find.text('More'));
-    await _frames(tester);
-  }
+  if (main) await _openMore(tester);
   await tester.tap(find.text('Projects'));
   await _frames(tester);
   expect(find.byType(ProjectsPane), findsOneWidget);
@@ -696,6 +732,74 @@ void main() {
     });
   }
 
+  for (final entry in [
+    'Files',
+    'Assets',
+    'project folder',
+    'chat attachment',
+  ]) {
+    testWidgets(
+      'NextGen $entry opens the same rich Markdown fixture',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = markdownViewport;
+        addTearDown(tester.view.reset);
+        final backend = MarkdownDashboardFixture();
+        final gateway = _Gateway(_connection(), markdown: backend);
+        final chat = entry == 'chat attachment';
+        final folder = entry == 'project folder';
+        await _app(tester, ValueNotifier(gateway), main: true);
+        await _openMore(tester);
+        if (folder || chat) {
+          await _browse(tester);
+          await _detail(tester, gateway);
+          if (folder) {
+            await tester.tap(find.text('Files'));
+            await _frames(tester);
+            await tester.tap(find.text(MarkdownDashboardFixture.directory));
+          } else {
+            await tester.tap(find.text('Existing project conversation'));
+          }
+        } else {
+          await tester.tap(find.text(entry));
+        }
+        await _frames(tester);
+        final file = find.text(MarkdownDashboardFixture.filename);
+        await tester.ensureVisible(file);
+        expect(
+          backend.requests.where((uri) => uri.path.contains('/fs/download')),
+          isEmpty,
+        );
+        await tester.tap(file);
+        await _frames(tester);
+        if (chat || entry == 'Assets') await waitForMarkdownDownload(tester);
+        await verifyMarkdownPreview(tester);
+        final fs = backend.requests
+            .where((uri) => uri.path.contains('/fs/'))
+            .toList();
+        expect(
+          fs.every((uri) => uri.queryParameters['profile'] == 'work'),
+          isTrue,
+        );
+        if (chat || entry == 'Assets') {
+          expect(
+            fs.single.queryParameters['session_id'],
+            MarkdownDashboardFixture.session,
+          );
+          expect(fs.single.path, endsWith('/fs/download'));
+        } else {
+          expect(fs.last.path, endsWith('/fs/read-text'));
+          expect(
+            fs.any((uri) => uri.path.endsWith('/fs/default-cwd')),
+            !folder,
+          );
+        }
+        await _close(tester, [gateway]);
+      },
+      variant: markdownPlatforms,
+    );
+  }
+
   testWidgets('More browses Classic projects and refreshes counts on return', (
     tester,
   ) async {
@@ -812,7 +916,7 @@ void main() {
     await _frames(tester);
     var view = tester.widget<NgChatView>(find.byType(NgChatView));
     expect(view.chat.workingDirectory, '/srv/work/project');
-    view.onNewChat();
+    view.onNewChat!();
     await _frames(tester);
     view = tester.widget<NgChatView>(find.byType(NgChatView));
     expect(view.chat.workingDirectory, isNull);

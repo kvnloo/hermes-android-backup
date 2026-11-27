@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import '../theme/hermes_theme.dart';
 
 import '../models/attachment_draft.dart';
+import 'attachment_audio_preview.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
 
 class AttachmentDraftTile extends StatelessWidget {
   final AttachmentDraft draft;
+  final Object? previewOwner;
   final int index;
   final int total;
   final bool busy;
@@ -19,6 +21,7 @@ class AttachmentDraftTile extends StatelessWidget {
 
   const AttachmentDraftTile({
     required this.draft,
+    this.previewOwner,
     required this.index,
     required this.total,
     required this.busy,
@@ -35,55 +38,61 @@ class AttachmentDraftTile extends StatelessWidget {
       container: true,
       label: context.l10n.attachment_of(index + 1, total),
       value: _statusLabel(context),
-      child: Material(
-        type: MaterialType.transparency,
-        child: ListTile(
-          minVerticalPadding: 4,
-          leading: ExcludeSemantics(child: _leading(context)),
-          title: ExcludeSemantics(
-            child: Text(
-              draft.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          subtitle: ExcludeSemantics(
-            child: Text(
-              draft.status == AttachmentDraftStatus.failed
-                  ? context.l10n.upload_failed_tap_retry
-                  : '${_formatFileSize(draft.byteLength)} • ${_statusLabel(context)}',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _semanticIconButton(
-                icon: Icons.arrow_upward,
-                label: context.l10n.move_attachment_previous,
-                onPressed: busy || index == 0 ? null : onMovePrevious,
-              ),
-              _semanticIconButton(
-                icon: Icons.arrow_downward,
-                label: context.l10n.move_attachment_next,
-                onPressed: busy || index == total - 1 ? null : onMoveNext,
-              ),
-              if (draft.status == AttachmentDraftStatus.failed)
-                _semanticIconButton(
-                  icon: Icons.refresh,
-                  label: context.l10n.retry_upload,
-                  onPressed: busy ? null : onRetry,
-                )
-              else
-                _semanticIconButton(
-                  icon: Icons.close,
-                  label: context.l10n.remove_attachment,
-                  onPressed: busy ? null : onRemove,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Material(
+            type: MaterialType.transparency,
+            child: ListTile(
+              minVerticalPadding: 4,
+              leading: ExcludeSemantics(child: _leading(context)),
+              title: ExcludeSemantics(
+                child: Text(
+                  draft.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-            ],
+              ),
+              subtitle: ExcludeSemantics(
+                child: Text(
+                  draft.status == AttachmentDraftStatus.failed
+                      ? context.l10n.upload_failed_tap_retry
+                      : '${_formatFileSize(draft.byteLength)} • ${_statusLabel(context)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _semanticIconButton(
+                    icon: Icons.arrow_upward,
+                    label: context.l10n.move_attachment_previous,
+                    onPressed: busy || index == 0 ? null : onMovePrevious,
+                  ),
+                  _semanticIconButton(
+                    icon: Icons.arrow_downward,
+                    label: context.l10n.move_attachment_next,
+                    onPressed: busy || index == total - 1 ? null : onMoveNext,
+                  ),
+                  if (draft.status == AttachmentDraftStatus.failed)
+                    _semanticIconButton(
+                      icon: Icons.refresh,
+                      label: context.l10n.retry_upload,
+                      onPressed: busy ? null : onRetry,
+                    )
+                  else
+                    _semanticIconButton(
+                      icon: Icons.close,
+                      label: context.l10n.remove_attachment,
+                      onPressed: busy ? null : onRemove,
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
+          AttachmentDraftAudioPreview(draft: draft, owner: previewOwner),
+        ],
       ),
     );
   }

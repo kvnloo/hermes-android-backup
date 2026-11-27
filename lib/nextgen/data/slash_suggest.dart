@@ -145,6 +145,7 @@ class NgSlashQuery {
     String draft,
     NgSlashSuggestion suggestion, {
     int replaceFrom = 1,
+    bool appendSpace = true,
   }) {
     final int from;
     final int to;
@@ -159,10 +160,12 @@ class NgSlashQuery {
     final rest = draft.substring(to);
     final spaced = rest.isNotEmpty && _space.hasMatch(rest[0]);
     final head = '${draft.substring(0, from)}$insert';
-    final next = spaced ? '$head$rest' : '$head $rest';
+    final next = spaced || !appendSpace ? '$head$rest' : '$head $rest';
     return TextEditingValue(
       text: next,
-      selection: TextSelection.collapsed(offset: head.length + 1),
+      selection: TextSelection.collapsed(
+        offset: head.length + (appendSpace ? 1 : 0),
+      ),
     );
   }
 

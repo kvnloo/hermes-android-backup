@@ -18,6 +18,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/parked_automotive.dart';
 import '../../core/controllers/hands_free_conversation_controller.dart'
     show HandsFreeSpeechOutcome;
+import '../../core/services/barge_in_monitor.dart';
+import '../../core/services/barge_in_preference.dart';
+import '../../core/services/client_direct_voice_speaker.dart';
 import '../../core/services/hands_free_speech.dart';
 
 class NgReadAloud extends ChangeNotifier {
@@ -26,14 +29,33 @@ class NgReadAloud extends ChangeNotifier {
     VoiceReplySpeaker? speaker,
     Future<SharedPreferences> Function()? prefs,
     bool? android,
-  }) : _prefs = prefs ?? SharedPreferences.getInstance,
+    BargeInMonitor Function()? bargeInMonitor,
+    VoiceReplySpeaker? Function(VoiceReplySpeaker fallback)?
+    directSpeakerFactory,
+  }) : _bargeInMonitor = bargeInMonitor ?? SpeechToTextBargeInMonitor.new,
+       _prefs = prefs ?? SharedPreferences.getInstance,
        _android =
            android ??
            (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-    if (isParkedAutomotive) return;
+    if (isParkedAutomotive) {
+      _speaker = null;
+      return;
+    }
     _tts = tts ?? FlutterTts();
-    _speaker = speaker ?? (_android ? FlutterVoiceReplySpeaker(_tts) : null);
-    if (_speaker == null) {
+    final relaySpeaker = FlutterVoiceReplySpeaker(_tts);
+    final direct = speaker == null && directSpeakerFactory != null
+        ? directSpeakerFactory(relaySpeaker)
+        : null;
+    // A client-direct speaker made here is this controller's to release.
+    if (direct is ClientDirectVoiceReplySpeaker) _ownedDirect = direct;
+    _speaker =
+        speaker ??
+        (directSpeakerFactory != null
+            ? direct
+            : _android
+            ? relaySpeaker
+            : null);
+    if (_speaker == null || identical(_speaker, relaySpeaker)) {
       _tts.setCompletionHandler(
         () => _terminal(HandsFreeSpeechOutcome.completed),
       );
@@ -43,9 +65,11 @@ class NgReadAloud extends ChangeNotifier {
   }
 
   late final FlutterTts _tts;
+  final BargeInMonitor Function() _bargeInMonitor;
   final Future<SharedPreferences> Function() _prefs;
   final bool _android;
   late final VoiceReplySpeaker? _speaker;
+  ClientDirectVoiceReplySpeaker? _ownedDirect;
   bool _prepared = false;
   bool _disposed = false;
   int _generation = 0;
@@ -65,6 +89,19 @@ class NgReadAloud extends ChangeNotifier {
   /// The key of the reply currently being read, if any.
   String? get readingKey => _readingKey;
 
+  /// The barge-in monitor whose microphone is open for the current read.
+  BargeInMonitor? _liveMonitor;
+
+  /// True while barge-in listens over a read: the microphone is on, and the
+  /// view shows that it is.
+  bool get bargeInListening => _liveMonitor != null;
+
+  void _setBargeInMonitor(BargeInMonitor? monitor) {
+    if (identical(_liveMonitor, monitor)) return;
+    _liveMonitor = monitor;
+    if (!_disposed) notifyListeners();
+  }
+
   bool isReading(String key) => _readingKey == key;
 
   /// Reads [text] for the reply identified by [key], stopping any other
@@ -74,14 +111,50 @@ class NgReadAloud extends ChangeNotifier {
     if (isParkedAutomotive || spoken.isEmpty || _disposed) return;
     final intent = await _claim(key);
     if (intent == null || _disposed) return;
+    BargeInMonitor? monitor;
     HandsFreeSpeechOutcome? outcome;
+    var interrupted = false;
+    var ended = false;
     try {
       await _configureVoice();
       if (_disposed || intent != _generation) return;
+      if (bargeInEnabled.value) {
+        final listening = monitor = _bargeInMonitor();
+        unawaited(
+          listening
+              .start(
+                onInterrupt: () {
+                  interrupted = true;
+                  unawaited(stop());
+                },
+                echoText: spoken,
+                isCurrent: () => !_disposed && intent == _generation,
+              )
+              .then((opened) {
+                // The mic is live only once the monitor really opened it,
+                // and only while this read is still the one playing.
+                if (opened &&
+                    !ended &&
+                    !interrupted &&
+                    !_disposed &&
+                    intent == _generation) {
+                  _setBargeInMonitor(listening);
+                }
+              }, onError: (Object _) {}),
+        );
+      }
       outcome = await _speak(spoken, intent);
     } catch (_) {
       outcome = HandsFreeSpeechOutcome.failed;
+    } finally {
+      ended = true;
+      await monitor?.stop();
+      if (monitor != null && identical(_liveMonitor, monitor)) {
+        _setBargeInMonitor(null);
+      }
     }
+    // A user interrupt is not a failure: stop() already cleaned the state.
+    if (interrupted) return;
     // A null outcome means the side-channel handlers own the terminal state.
     if (outcome == null || _disposed || intent != _generation) return;
     _readingKey = null;
@@ -196,11 +269,18 @@ class NgReadAloud extends ChangeNotifier {
     _disposed = true;
     _generation++;
     _readingKey = null;
-    if (!isParkedAutomotive) {
-      final speaker = _speaker;
-      final stopping = speaker != null ? speaker.stop() : _tts.stop();
-      unawaited(stopping.catchError((Object _) {}));
-    }
+    _liveMonitor = null;
+    final speaker = _speaker;
+    final owned = _ownedDirect;
+    _ownedDirect = null;
+    final stopping = isParkedAutomotive
+        ? Future<void>.value()
+        : speaker != null
+        ? speaker.stop()
+        : _tts.stop();
+    unawaited(
+      stopping.catchError((Object _) {}).whenComplete(() => owned?.dispose()),
+    );
     super.dispose();
   }
 }

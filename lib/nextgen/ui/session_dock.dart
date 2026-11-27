@@ -1,21 +1,42 @@
 // What sits above the composer: one card with a folding row per thing going
 // on (the goal with its loop and heartbeat, running subagents, the agent's
-// task list), each opening to its details.
+// task list, the Kanban cards the chat sent to the board), each opening to
+// its details.
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../core/services/chat_kanban_dock.dart';
+import '../../core/widgets/kanban_dock.dart';
 import '../data/chat_controller.dart';
 import '../data/session_control.dart';
 import '../nextgen_l10n.dart';
 import '../theme/nextgen_theme.dart';
 import 'widgets.dart';
 
-/// The card above the composer: a row each for the goal, running subagents
-/// and the task list, when there is one. Each row folds open to its details.
+/// The card above the composer: a row each for the goal, running subagents,
+/// the task list and the chat's Kanban cards, when there are any. Each row
+/// folds open to its details.
 class NgSessionDock extends StatelessWidget {
-  const NgSessionDock({super.key, required this.chat});
+  const NgSessionDock({super.key, required this.chat, this.available});
   final NgChatController chat;
+
+  /// The chat body's height (keyboard already removed), when known.
+  final double? available;
+
+  /// Opens the board on [card], or on all of this chat's cards, through the
+  /// chat's own gateway. A chat closed or switched meanwhile opens nothing.
+  Future<void> _openKanban(BuildContext context, [ChatKanbanCard? card]) =>
+      openChatKanban(
+        context,
+        dock: chat.kanban,
+        owner: chat.kanbanOwner,
+        connection: chat.gateway.connection,
+        card: card,
+        isCurrent: () => context.mounted && chat.draftOwnerCurrent,
+        explain: (reason) => ngToast(context, reason),
+      );
 
   @override
   Widget build(BuildContext context) => NgDock(
@@ -23,13 +44,17 @@ class NgSessionDock extends StatelessWidget {
     todos: chat.todos,
     todosLive: chat.todosLive,
     subagents: chat.dockSubagents,
+    kanban: chat.kanban,
+    onOpenKanbanCard: (card) => unawaited(_openKanban(context, card)),
+    onShowAllKanban: () => unawaited(_openKanban(context)),
     onOpenControl: () =>
         showNgSheet<void>(context, builder: (_) => NgControlSheet(chat: chat)),
     onStopSubagent: chat.stopSubagent,
+    available: available,
   );
 }
 
-enum _DockSection { goal, subagents, tasks }
+enum _DockSection { goal, subagents, tasks, kanban }
 
 class NgDock extends StatefulWidget {
   const NgDock({
@@ -38,14 +63,27 @@ class NgDock extends StatefulWidget {
     this.todos,
     this.todosLive = false,
     this.subagents = const [],
+    this.kanban,
+    this.onOpenKanbanCard,
+    this.onShowAllKanban,
     required this.onOpenControl,
     required this.onStopSubagent,
+    this.available,
   });
 
+  /// The chat body's height (keyboard already removed), when known.
+  final double? available;
   final NgSessionControl? control;
   final NgTodoList? todos;
   final bool todosLive;
   final List<NgSubagent> subagents;
+
+  /// The chat's Kanban cards. The dock follows the board only while it is
+  /// on screen, and lets go when the chat is closed or switched, covered by
+  /// a route or in a hidden pane.
+  final ChatKanbanDockController? kanban;
+  final ValueChanged<ChatKanbanCard>? onOpenKanbanCard;
+  final VoidCallback? onShowAllKanban;
   final VoidCallback onOpenControl;
   final Future<void> Function(NgSubagent agent) onStopSubagent;
 
@@ -53,49 +91,80 @@ class NgDock extends StatefulWidget {
   State<NgDock> createState() => _NgDockState();
 }
 
-class _NgDockState extends State<NgDock> {
+class _NgDockState extends State<NgDock> with KanbanDockAttachment<NgDock> {
   final Set<_DockSection> _open = {};
 
   void _toggle(_DockSection s) => setState(() {
     if (!_open.remove(s)) _open.add(s);
   });
 
+  /// Attached only while the chat is on screen: a route over it (the board
+  /// it opened, a sheet) or a hidden pane lets go of the board.
+  @override
+  ChatKanbanDockController? get attachedKanban => widget.kanban;
+
   @override
   Widget build(BuildContext context) {
+    final kanban = widget.kanban;
+    if (kanban == null) return _build(context, null);
+    return ListenableBuilder(
+      listenable: kanban,
+      builder: (context, _) => _build(context, kanban),
+    );
+  }
+
+  Widget _build(BuildContext context, ChatKanbanDockController? kanban) {
     final c = NgColors.of(context);
     final control = widget.control;
     final todos = widget.todos;
     final agents = widget.subagents;
+    final cards = kanban?.cards ?? const <ChatKanbanCard>[];
     final sections = <Widget>[
       if (control != null) _goalSection(context, c, control),
       if (agents.isNotEmpty) _subagentSection(c, agents),
       if (todos != null && todos.items.isNotEmpty) _taskSection(c, todos),
+      if (kanban != null && cards.isNotEmpty) _kanbanSection(c, kanban, cards),
     ];
-    // Never more than about half the screen, so the transcript stays usable
-    // on a small phone at large text; the dock scrolls beyond that.
-    return AnimatedSize(
-      duration: const Duration(milliseconds: 200),
-      alignment: Alignment.bottomCenter,
-      child: sections.isEmpty
-          ? const SizedBox(width: double.infinity)
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
-              child: Container(
-                key: const ValueKey('ng-dock'),
-                constraints: BoxConstraints(
-                  maxHeight: MediaQuery.sizeOf(context).height * 0.45,
-                ),
-                decoration: _panelDecoration(c),
-                clipBehavior: Clip.antiAlias,
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: sections,
+    // Never more than about half the visible screen, so the transcript stays
+    // usable on a small phone at large text; the dock scrolls beyond that.
+    // With the keyboard up it takes at most a quarter of what is left above
+    // the keyboard, so the composer is never pushed underneath it.
+    final cap = ngAboveComposerMaxHeight(
+      context,
+      available: widget.available ?? double.infinity,
+      fraction: 0.45,
+      withKeyboard: 0.25,
+    );
+    // Folding and unfolding animate; the cap does not. AnimatedSize would
+    // keep the old height for the first frame after the keyboard opens and
+    // overflow the chat column, so the cap sits outside it and applies at
+    // once.
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: sections.isEmpty ? double.infinity : cap + 6,
+      ),
+      child: AnimatedSize(
+        duration: const Duration(milliseconds: 200),
+        alignment: Alignment.bottomCenter,
+        child: sections.isEmpty
+            ? const SizedBox(width: double.infinity)
+            : Padding(
+                padding: const EdgeInsets.fromLTRB(12, 6, 12, 0),
+                child: Container(
+                  key: const ValueKey('ng-dock'),
+                  constraints: BoxConstraints(maxHeight: cap),
+                  decoration: _panelDecoration(c),
+                  clipBehavior: Clip.antiAlias,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: sections,
+                    ),
                   ),
                 ),
               ),
-            ),
+      ),
     );
   }
 
@@ -389,6 +458,41 @@ class _NgDockState extends State<NgDock> {
       ),
     );
   }
+
+  Widget _kanbanSection(
+    NgColors c,
+    ChatKanbanDockController dock,
+    List<ChatKanbanCard> cards,
+  ) {
+    final style = KanbanDockStyle(
+      title: NgType.bodySmall,
+      meta: NgType.caption,
+      text: c.text,
+      dim: c.text3,
+      accent: c.accentText,
+      success: c.success,
+      warning: c.warning,
+      danger: c.danger,
+    );
+    final current = cards.where((card) => !card.settled).firstOrNull;
+    return _section(
+      id: _DockSection.kanban,
+      c: c,
+      icon: Icons.view_kanban_outlined,
+      tint: current == null ? c.text3 : c.accentText,
+      label: kanbanDockLabel(ngL, cards),
+      trailing: KanbanDockDots(cards: cards, style: style),
+      detail: current?.title,
+      showLabel: ngL.ng_show_kanban,
+      hideLabel: ngL.ng_hide_kanban,
+      body: KanbanDockRows(
+        dock: dock,
+        style: style,
+        onOpen: widget.onOpenKanbanCard ?? (_) {},
+        onShowAll: widget.onShowAllKanban ?? () {},
+      ),
+    );
+  }
 }
 
 String ngDockGoalLabel(NgGoalPhase phase) => switch (phase) {
@@ -618,7 +722,9 @@ class _SubagentRowState extends State<_SubagentRow> {
         a.durationSeconds?.round() ??
         (a.finishedAt ?? DateTime.now()).difference(a.startedAt).inSeconds;
     final s = seconds < 0 ? 0 : seconds;
-    return s >= 60 ? '${s ~/ 60}m ${s % 60}s' : '${s}s';
+    return s >= 60
+        ? ngL.ng_release_elapsed_minutes_seconds(s ~/ 60, s % 60)
+        : ngL.ng_release_elapsed_seconds(s);
   }
 
   @override
@@ -1242,4 +1348,51 @@ class _NgControlSheetState extends State<NgControlSheet> {
       ),
     ]);
   }
+}
+
+/// The tallest a card stacked above the composer may be.
+///
+/// [available] is the height the chat body really has: Scaffold has already
+/// taken the on-screen keyboard off it. Never use the window height: it does
+/// not shrink when the keyboard opens, and Scaffold also removes the keyboard
+/// from the MediaQuery its body sees, so a share of the window pushed the
+/// composer under the keyboard. The keyboard itself is read from the View,
+/// which Scaffold leaves untouched. With no bounded [available] (a card shown
+/// on its own), the window less the keyboard and status bar is used.
+double ngAboveComposerMaxHeight(
+  BuildContext context, {
+  double available = double.infinity,
+  required double fraction,
+  double? withKeyboard,
+}) {
+  final media = MediaQuery.of(context);
+  final view = View.maybeOf(context);
+  final viewKeyboard = view == null
+      ? 0.0
+      : view.viewInsets.bottom / view.devicePixelRatio;
+  final keyboard = math.max(media.viewInsets.bottom, viewKeyboard);
+  final height = available.isFinite
+      ? available
+      : math.max(0.0, media.size.height - keyboard - media.padding.top);
+  return height * (keyboard > 0 ? (withKeyboard ?? fraction) : fraction);
+}
+
+/// The tallest the strip under the transcript (dock, cards and composer)
+/// may be, from [available], the chat body's height with the keyboard
+/// already off it: most of it, leaving the transcript a share, but never
+/// less than the composer's own controls need (all of [available] when it
+/// is smaller still).
+double ngComposerStripMaxHeight(double available) {
+  if (!available.isFinite) return double.infinity;
+  const composerMinimum = 140.0;
+  return math.max(math.min(available, composerMinimum), available * 0.85);
+}
+
+/// The tallest the composer's editor may be inside a composer column of
+/// [maxHeight]: the send row (48) always fits under it, and the rows above
+/// it keep a share. A longer draft scrolls inside the editor.
+double ngComposerEditorMaxHeight(double maxHeight) {
+  if (!maxHeight.isFinite) return double.infinity;
+  const actionRow = 48.0;
+  return math.max(40.0, (maxHeight - actionRow) * 0.7);
 }

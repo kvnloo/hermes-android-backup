@@ -37,8 +37,10 @@ class LocalePreference {
     'pt' => 'Português',
     'pt-BR' => 'Português (Brasil)',
     'ru' => 'Русский',
+    'ar' => 'العربية',
     'zh' => '中文',
     'zh-Hans' => '中文（简体）',
+    'zh-Hant' => '中文（繁體）',
     _ => locale.toLanguageTag(),
   };
 }

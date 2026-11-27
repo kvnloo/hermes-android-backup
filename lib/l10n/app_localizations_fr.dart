@@ -9,6 +9,20 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get attachment_audio_failed =>
+      'Impossible de lire cet audio. Le format ou le codec peut être incompatible, ou la taille limite de l’aperçu a été dépassée. Réessayez, enregistrez ou partagez le fichier original.';
+
+  @override
+  String get attachment_audio_seek => 'Position audio';
+
+  @override
+  String get workspace_workers => 'Sous-agents actifs';
+
+  @override
+  String get workers_unattached =>
+      'Seul le nombre est affiché. Pour guider un sous-agent, choisissez Sous-agents actifs dans la conversation parente connectée.';
+
+  @override
   String get slash_local_arguments =>
       'Ce raccourci n’accepte pas d’arguments ici. Utilisez les commandes de l’application ; votre brouillon a été conservé.';
 
@@ -171,6 +185,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get background_report_collapse => 'Réduire le rapport';
 
   @override
+  String get ng_brand_open_chat => 'Ouvrir un chat';
+
+  @override
+  String get ng_brand_recent => 'Récents';
+
+  @override
+  String get ng_brand_sidebar_hint =>
+      'ou choisissez un chat dans la barre latérale';
+
+  @override
+  String get copy_session_id => 'Copier l’identifiant de session';
+
+  @override
+  String get copy_session_id_failed =>
+      'Impossible de copier l’identifiant de session.';
+
+  @override
   String get setup_interface_title => 'Choisissez votre interface';
 
   @override
@@ -296,17 +327,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String message_time_recorded(String time) {
-    return 'Recorded by server: $time (local time)';
+    return 'Enregistré par le serveur : $time (heure locale)';
   }
 
   @override
   String message_time_sent(String time) {
-    return 'Send observed on this device: $time (local time)';
+    return 'Envoi observé sur cet appareil : $time (heure locale)';
   }
 
   @override
   String message_time_received(String time) {
-    return 'First received on this device: $time (local time)';
+    return 'Première réception sur cet appareil : $time (heure locale)';
   }
 
   @override
@@ -427,28 +458,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get attachment_retry => 'Réessayer';
 
   @override
-  String get saved_history_heading => 'Saved history';
+  String get saved_history_heading => 'Historique enregistré';
 
   @override
   String get received_output_heading =>
-      'Received output — match to saved history unconfirmed';
+      'Sortie reçue — correspondance avec l’historique enregistré non confirmée';
 
   @override
-  String get received_output_details => 'About received output';
+  String get received_output_details => 'À propos de la sortie reçue';
 
   @override
   String get received_output_explanation =>
-      'This may also appear in saved history. The app cannot confirm a match.';
+      'Ceci peut aussi apparaître dans l’historique enregistré. L’application ne peut pas confirmer de correspondance.';
 
   @override
-  String get local_prompt_context => 'Local prompt context';
+  String get local_prompt_context => 'Contexte local du prompt';
 
   @override
-  String get received_output_badge => 'Received · match unconfirmed';
+  String get received_output_badge => 'Reçu · correspondance non confirmée';
 
   @override
   String get received_output_lifetime =>
-      'Received output is kept temporarily in this app session and may be shortened or removed as limits are reached. It may not be available after the app or connection is closed.';
+      'Les sorties reçues sont conservées temporairement dans cette session de l’application et peuvent être raccourcies ou supprimées lorsque les limites sont atteintes. Elles peuvent ne plus être disponibles après la fermeture de l’application ou de la connexion.';
 
   @override
   String get theme_palette => 'Thème de couleur';
@@ -652,7 +683,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Autoriser les commandes correspondantes jusqu\'à la fin de cette session Hermes.';
 
   @override
+  String get allow_folder_until_sandbox_off =>
+      'Autoriser ce dossier jusqu’à la désactivation du bac à sable.';
+
+  @override
   String get allow_once => 'Autoriser une fois';
+
+  @override
+  String get allow_website_until_sandbox_off =>
+      'Autoriser ce site web jusqu’à la désactivation du bac à sable.';
 
   @override
   String get always_allow => 'Toujours autoriser';
@@ -719,6 +758,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get attachment_drafts => 'Brouillons de pièces jointes';
+
+  @override
+  String get recover_text_draft => 'Récupérer un brouillon';
+
+  @override
+  String get undo_draft_recovery => 'Annuler';
+
+  @override
+  String get draft_session_exists =>
+      'Cette discussion existe toujours. Ouvrez-la pour reprendre votre brouillon.';
+
+  @override
+  String get draft_recovery_unavailable =>
+      'Impossible de vérifier le brouillon. Aucune modification effectuée.';
 
   @override
   String attachment_of(Object index, Object total) {
@@ -886,25 +939,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get command => 'Commande';
 
   @override
-  String get command_palette => 'Command palette';
+  String get command_palette => 'Palette de commandes';
 
   @override
-  String get command_palette_hint => 'Type a command';
+  String get command_palette_hint => 'Saisir une commande';
 
   @override
-  String get command_palette_no_results => 'No commands found';
+  String get command_palette_no_results => 'Aucune commande trouvée';
 
   @override
-  String get command_palette_new_chat => 'New chat';
+  String get command_palette_new_chat => 'Nouvelle discussion';
 
   @override
-  String get command_palette_search_chats => 'Search chats';
+  String get command_palette_search_chats => 'Rechercher des discussions';
 
   @override
-  String get command_palette_toggle_theme => 'Toggle theme';
+  String get command_palette_toggle_theme => 'Changer de thème';
 
   @override
-  String get command_palette_copy_last_code => 'Copy last code block';
+  String get command_palette_copy_last_code => 'Copier le dernier bloc de code';
 
   @override
   String get command_line_chats => 'Discussions en ligne de commande';
@@ -1100,14 +1153,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cron => 'Cron';
 
   @override
-  String get crons => 'Crons';
+  String get crons => 'Tâches cron';
 
   @override
   String get cron_conversations_empty =>
-      'Conversations from scheduled jobs appear here, including older runs.';
+      'Les conversations des tâches planifiées apparaissent ici, y compris celles des anciennes exécutions.';
 
   @override
-  String get search_cron_conversations => 'Search cron conversations';
+  String get search_cron_conversations => 'Rechercher des conversations cron';
 
   @override
   String get cron_jobs => 'Tâches Cron';
@@ -1903,6 +1956,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
+  String get windows_notifications_blocked =>
+      'Les notifications sont indisponibles. Utilisez l’application Ares installée et vérifiez Paramètres → Système → Notifications dans Windows.';
+
+  @override
+  String get windows_notification_diagnostics =>
+      'Ce qu’Ares a transmis à Windows';
+
+  @override
+  String get chat_activity_share => 'Partager l’activité de la discussion';
+
+  @override
+  String get chat_activity_share_hint =>
+      'Indiquer à une passerelle connectée compatible quand vous utilisez cette discussion, afin que son extension de notifications sur téléphone puisse éviter les alertes en double. Aucune clé ni aucun texte de message n’est envoyé.';
+
+  @override
+  String get completion_sound => 'Son de fin de réponse';
+
+  @override
+  String get completion_sound_system => 'Par défaut du système';
+
+  @override
+  String get completion_sound_mail => 'Courrier';
+
+  @override
+  String get completion_sound_reminder => 'Rappel';
+
+  @override
+  String get completion_sound_silent => 'Silencieux';
+
+  @override
+  String get completion_sound_scope =>
+      'Joué pour les réponses terminées, la notification de test et dans l’application. Les approbations et autres alertes conservent leur son habituel.';
+
+  @override
+  String get completion_sound_scope_android =>
+      'Joué pour les réponses terminées, la notification de test et dans l’application. Les approbations, les autres alertes, les notifications en arrière-plan du serveur et les messages Android Auto conservent leur son habituel.';
+
+  @override
+  String get notification_open_action => 'Ouvrir';
+
+  @override
+  String get app_sounds_mute => 'Couper les sons de l’application';
+
+  @override
+  String get app_sounds_mute_hint =>
+      'Coupe le son de fin de réponse qu’Ares joue lorsqu’il est ouvert. Les notifications conservent leur propre son.';
+
+  @override
   String get notifications_permission_denied =>
       'Les notifications sont bloquées par le système. Activez-les pour cette application dans les réglages Android.';
 
@@ -2385,10 +2486,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get starting_hermes => 'Démarrage de Hermes…';
 
   @override
-  String get media_card_download => 'Download file';
+  String get media_card_download => 'Télécharger le fichier';
 
   @override
-  String get media_card_tap_to_download => 'Tap to download';
+  String get media_card_tap_to_download => 'Appuyer pour télécharger';
 
   @override
   String get still_loading_your_projects =>
@@ -2694,7 +2795,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get verbose_mode => 'Mode détaillé';
 
   @override
-  String get message_metadata => 'Message details';
+  String get message_metadata => 'Détails du message';
 
   @override
   String get voice => 'Voix';
@@ -2954,6 +3055,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get destination_label => 'Destination';
+
+  @override
+  String get markdown_source => 'Source';
 
   @override
   String get preview_label => 'Aperçu';
@@ -3228,45 +3332,45 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le mode compacte supprime les étiquettes « You » et « Hermes » et réduit les marges internes, l’espacement et les marges latérales des bulles.';
 
   @override
-  String get client_certificate_mtls => 'Client certificate (mTLS)';
+  String get client_certificate_mtls => 'Certificat client (mTLS)';
 
   @override
   String get client_certificate_mtls_description =>
-      'Present a certificate when an HTTPS proxy requires mutual TLS.';
+      'Présenter un certificat lorsqu’un proxy HTTPS exige une authentification TLS mutuelle.';
 
   @override
   String get client_certificate_https_only =>
-      'Client certificates are only used for HTTPS connections.';
+      'Les certificats clients sont utilisés uniquement pour les connexions HTTPS.';
 
   @override
-  String get choose_certificate => 'Choose certificate';
+  String get choose_certificate => 'Choisir un certificat';
 
   @override
-  String get certificate_password => 'Certificate password';
+  String get certificate_password => 'Mot de passe du certificat';
 
   @override
   String get this_certificate_is_password_protected =>
-      'This certificate is password-protected. It opens as you type.';
+      'Ce certificat est protégé par un mot de passe. Il s’ouvre pendant la saisie.';
 
   @override
   String get enter_the_certificate_password_to_finish_loading_it =>
-      'Enter the certificate password to finish loading the certificate you chose.';
+      'Saisissez le mot de passe du certificat pour terminer le chargement du certificat choisi.';
 
   @override
   String get client_certificate_required =>
-      'Load a client certificate or turn off the client certificate option.';
+      'Chargez un certificat client ou désactivez l’option de certificat client.';
 
   @override
   String client_certificate_loaded(String label) {
-    return 'Loaded: $label';
+    return 'Chargé : $label';
   }
 
   @override
-  String get remove_certificate => 'Remove certificate';
+  String get remove_certificate => 'Retirer le certificat';
 
   @override
   String get certificate_import_failed =>
-      'That certificate could not be loaded.';
+      'Ce certificat n’a pas pu être chargé.';
 
   @override
   String get background_work => 'Activité en arrière-plan';
@@ -3749,73 +3853,75 @@ class AppLocalizationsFr extends AppLocalizations {
       'État du compte sur le serveur indisponible.';
 
   @override
-  String get app_language => 'App language';
+  String get app_language => 'Langue de l’application';
 
   @override
-  String get app_language_system => 'Same as phone';
+  String get app_language_system => 'Comme le téléphone';
 
   @override
-  String get auto_archives_after_72_hours => 'Auto-archives after 72 hours';
+  String get auto_archives_after_72_hours =>
+      'Archivage automatique après 72 heures';
 
   @override
-  String get automation => 'Automation';
+  String get automation => 'Automatisation';
 
   @override
-  String get voice_recording_start => 'Record voice message';
+  String get voice_recording_start => 'Enregistrer un message vocal';
 
   @override
-  String get voice_recording_pause => 'Pause recording';
+  String get voice_recording_pause => 'Suspendre l’enregistrement';
 
   @override
-  String get voice_recording_preview => 'Play recording';
+  String get voice_recording_preview => 'Lire l’enregistrement';
 
   @override
-  String get voice_recording_resume => 'Continue recording';
+  String get voice_recording_resume => 'Reprendre l’enregistrement';
 
   @override
-  String get voice_recording_send => 'Send voice message';
+  String get voice_recording_send => 'Envoyer le message vocal';
 
   @override
-  String get voice_recording_discard => 'Discard recording';
+  String get voice_recording_discard => 'Supprimer l’enregistrement';
 
   @override
-  String get voice_recording_processing => 'Preparing voice message…';
+  String get voice_recording_processing => 'Préparation du message vocal…';
 
   @override
   String voice_recording_elapsed(String time) {
-    return 'Recording $time';
+    return 'Enregistrement $time';
   }
 
   @override
   String voice_recording_draft(String time) {
-    return 'Voice message $time';
+    return 'Message vocal $time';
   }
 
   @override
   String get voice_recording_permission =>
-      'Allow microphone access to record a voice message.';
+      'Autorisez l’accès au microphone pour enregistrer un message vocal.';
 
   @override
   String get voice_recording_limit =>
-      'This recording has reached the ten-minute limit.';
+      'Cet enregistrement a atteint la limite de dix minutes.';
 
   @override
-  String get voice_recording_empty => 'No audio was recorded. Try again.';
+  String get voice_recording_empty =>
+      'Aucun son n’a été enregistré. Réessayez.';
 
   @override
   String get voice_recording_failed =>
-      'Could not process the recording. Any saved fragments have been kept.';
+      'Impossible de traiter l’enregistrement. Les fragments sauvegardés ont été conservés.';
 
   @override
   String get voice_recording_unconfirmed =>
-      'Delivery was not confirmed. Your recording is saved. Check the chat before trying again.';
+      'La livraison n’a pas été confirmée. Votre enregistrement est sauvegardé. Vérifiez la discussion avant de réessayer.';
 
   @override
   String get voice_recording_submit_failed =>
-      'Could not send the voice message. Your recording is saved. Check the connection, Dashboard access and server transcription settings.';
+      'Impossible d’envoyer le message vocal. Votre enregistrement est sauvegardé. Vérifiez la connexion, l’accès au tableau de bord et les paramètres de transcription du serveur.';
 
   @override
-  String get voice_recording_pause_playback => 'Pause playback';
+  String get voice_recording_pause_playback => 'Suspendre la lecture';
 
   @override
   String get projects_root_title => 'Dossier des Projets sur le serveur';
@@ -3968,6 +4074,236 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get slash_sessions_inline =>
       'Ouvrez la liste des sessions pour choisir une conversation. Votre brouillon a été conservé.';
+
+  @override
+  String get composer_snippets => 'Modèles de prompts';
+
+  @override
+  String get composer_snippets_description =>
+      'Choisir un prompt de départ à insérer dans la zone de saisie.';
+
+  @override
+  String get composer_snippet_review => 'Revue de code';
+
+  @override
+  String get composer_snippet_review_body =>
+      'Vérifier la modification actuelle pour repérer les régressions, les cas limites oubliés et les tests manquants.';
+
+  @override
+  String get composer_snippet_review_text =>
+      'Veuillez examiner ceci pour repérer les bugs, les régressions et les tests manquants.';
+
+  @override
+  String get composer_snippet_plan => 'Plan de mise en œuvre';
+
+  @override
+  String get composer_snippet_plan_body =>
+      'Définir une approche avant de toucher au code pour garder un diff ciblé.';
+
+  @override
+  String get composer_snippet_plan_text =>
+      'Veuillez établir un plan de mise en œuvre concis avant de modifier le code.';
+
+  @override
+  String get composer_snippet_explain => 'Expliquer ceci';
+
+  @override
+  String get composer_snippet_explain_body =>
+      'Expliquer le fonctionnement du code sélectionné et indiquer les fichiers clés.';
+
+  @override
+  String get composer_snippet_explain_text =>
+      'Veuillez expliquer comment ceci fonctionne et m’indiquer les fichiers clés.';
+
+  @override
+  String get composer_status => 'Statut';
+
+  @override
+  String get composer_status_context => 'Contexte';
+
+  @override
+  String get composer_status_cache => 'Succès du cache';
+
+  @override
+  String get composer_status_throughput => 'Tokens générés/s';
+
+  @override
+  String get composer_status_running => 'En cours';
+
+  @override
+  String get composer_status_session => 'Session';
+
+  @override
+  String get composer_status_not_reported => 'Non signalé';
+
+  @override
+  String get composer_status_empty =>
+      'Aucune répartition du contexte n’a été signalée.';
+
+  @override
+  String get composer_status_loading =>
+      'Chargement de la répartition du contexte';
+
+  @override
+  String get composer_status_reset => 'Réinitialiser la barre d’état';
+
+  @override
+  String get composer_resume_title => 'Reprendre une discussion';
+
+  @override
+  String get composer_resume_search =>
+      'Rechercher dans les titres et identifiants';
+
+  @override
+  String get composer_resume_empty => 'Aucune discussion correspondante.';
+
+  @override
+  String get composer_resume_unavailable =>
+      'Ce volet n’a pas de liste de discussions à parcourir.';
+
+  @override
+  String get composer_failure_retry => 'Réessayer';
+
+  @override
+  String composer_failure_retry_at(String time) {
+    return 'Réessayer à $time';
+  }
+
+  @override
+  String get composer_failure_compress => 'Compresser';
+
+  @override
+  String get composer_failure_switch_model => 'Changer de modèle';
+
+  @override
+  String composer_failure_switch_to(String model) {
+    return 'Passer à $model';
+  }
+
+  @override
+  String get composer_failure_new_chat => 'Nouvelle discussion';
+
+  @override
+  String get composer_failure_edit => 'Modifier le message';
+
+  @override
+  String get composer_failure_details => 'Détails';
+
+  @override
+  String get composer_failure_hide_details => 'Masquer les détails';
+
+  @override
+  String get composer_failure_copy => 'Copier les diagnostics';
+
+  @override
+  String get composer_failure_account =>
+      'L’autre solution se trouve dans le compte de la passerelle. Cette discussion ne permet pas de l’appliquer.';
+
+  @override
+  String get composer_failure_account_only =>
+      'Ceci doit être corrigé dans le compte de la passerelle. Cette discussion ne permet pas de le faire.';
+
+  @override
+  String get composer_failure_confirm_compress =>
+      'Compresser cette discussion ? La passerelle raccourcira la transcription.';
+
+  @override
+  String composer_failure_confirm_model(String model) {
+    return 'Passer cette discussion à $model ?';
+  }
+
+  @override
+  String get composer_drop_attach => 'Déposer pour joindre';
+
+  @override
+  String get composer_drop_folder_unsupported =>
+      'Les dossiers ne peuvent pas être joints. Déposez plutôt les fichiers.';
+
+  @override
+  String get composer_drop_reference => 'Déposer pour référencer';
+
+  @override
+  String get composer_reference_copy => 'Copier la référence';
+
+  @override
+  String get composer_reference_remove => 'Retirer la référence';
+
+  @override
+  String get composer_btw_usage =>
+      'Utilisation : /btw <question> — réponse à partir d’un instantané de cette conversation, sans l’interrompre.';
+
+  @override
+  String get composer_background_usage =>
+      'Utilisation : /background <prompt> — la tâche s’exécute séparément et le résultat revient ici.';
+
+  @override
+  String get composer_handoff_usage =>
+      'Utilisation : /handoff <platform> — transférer cette discussion vers cette plateforme de messagerie.';
+
+  @override
+  String get composer_command_needs_session =>
+      'Cette commande nécessite une discussion ouverte.';
+
+  @override
+  String get composer_retry_not_found =>
+      'Ce tour ne figure pas dans l’historique enregistré ; Réessayer ne peut donc pas le remplacer. Rien n’a été renvoyé. Modifiez le message et envoyez-le pour réessayer.';
+
+  @override
+  String get composer_retry_unavailable =>
+      'Réessayer ne peut pas remplacer un tour sur cette connexion ; rien n’a donc été renvoyé. Modifiez le message et envoyez-le pour réessayer.';
+
+  @override
+  String get composer_failure_switch_no_retry =>
+      'Le changement ne modifie que le modèle : cette connexion ne peut pas relancer le tour en échec. Renvoyez-le après le changement.';
+
+  @override
+  String get composer_command_needs_gateway_session =>
+      'Cette discussion n’a pas encore de session sur la passerelle. Envoyez d’abord un message, puis relancez la commande.';
+
+  @override
+  String get composer_side_question =>
+      'btw — réponse à partir d’un instantané de la conversation';
+
+  @override
+  String composer_side_question_id(String id) {
+    return 'btw $id — réponse à partir d’un instantané de la conversation';
+  }
+
+  @override
+  String get composer_background_started =>
+      'Tâche en arrière-plan démarrée. Vous pouvez continuer la discussion. Le résultat apparaîtra ici.';
+
+  @override
+  String composer_background_started_id(String id) {
+    return 'Tâche en arrière-plan $id démarrée. Vous pouvez continuer la discussion. Le résultat apparaîtra ici.';
+  }
+
+  @override
+  String composer_handoff_requested(String platform) {
+    return 'Transfert vers $platform demandé.';
+  }
+
+  @override
+  String composer_handoff_done(String platform) {
+    return 'Cette discussion a été transférée vers $platform.';
+  }
+
+  @override
+  String get composer_handoff_failed => 'Échec du transfert.';
+
+  @override
+  String get composer_handoff_timeout =>
+      'Le transfert n’est pas terminé. Il est peut-être encore en cours sur la passerelle.';
+
+  @override
+  String get composer_compress_done => 'Cette discussion a été compressée.';
+
+  @override
+  String get composer_file_missing => 'Ce fichier n’est pas sur cet appareil.';
+
+  @override
+  String get composer_attach_busy =>
+      'Les pièces jointes pourront être ajoutées une fois cette réponse terminée.';
 
   @override
   String get nextgen_toggle => 'Interface NextGen';
@@ -4631,6 +4967,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ng_allow_once => 'Autoriser une fois';
+
+  @override
+  String get ng_allow_until_sandbox_off =>
+      'Jusqu’à la désactivation du bac à sable';
+
+  @override
+  String get ng_folder_access => 'Accès au dossier';
+
+  @override
+  String get ng_folder_access_unspecified =>
+      'La passerelle n’a pas indiqué si l’accès est en lecture seule ou en lecture et écriture.';
+
+  @override
+  String get ng_folder_read_only => 'Lecture seule';
+
+  @override
+  String get ng_folder_read_write => 'Lecture et écriture';
+
+  @override
+  String get ng_website_access => 'Accès au site web';
 
   @override
   String get ng_allow_for_this_chat => 'Autoriser pour cette conversation';
@@ -6104,14 +6460,9352 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ng_aux_curator_hint => 'Examine l’utilisation des compétences';
 
   @override
-  String get ng_slash_suggestions_label => 'Suggestions de commandes';
+  String get appearance_save_failed =>
+      'Impossible d’enregistrer cette modification.';
 
   @override
-  String get ng_slash_suggestions_empty => 'Aucune commande correspondante';
+  String get appearance_keep_which_theme => 'Quel thème conserver ?';
+
+  @override
+  String get appearance_tour_back => 'Retour';
+
+  @override
+  String get appearance_tour_finish => 'Terminer';
+
+  @override
+  String get appearance_tour_next => 'Suivant';
+
+  @override
+  String get appearance_tour_close => 'Fermer la visite';
+
+  @override
+  String get appearance_dismiss_tip => 'Masquer l’astuce';
+
+  @override
+  String get appearance_search_settings => 'Rechercher dans les paramètres';
+
+  @override
+  String get appearance_search_show => 'Afficher';
+
+  @override
+  String get appearance_no_matching_setting => 'Aucun paramètre correspondant.';
+
+  @override
+  String get appearance_replay_tour => 'Revoir la visite';
+
+  @override
+  String get appearance_show_tips_again => 'Réafficher les astuces';
+
+  @override
+  String get appearance_window_translucency_unavailable =>
+      'La translucidité des fenêtres est indisponible sur cet hôte. Linux ne peut pas la fournir, et les runners Apple et Windows dessinent une vue Flutter opaque.';
+
+  @override
+  String get appearance_imported_themes => 'Thèmes importés';
+
+  @override
+  String get appearance_import_theme_file => 'Importer un fichier de thème';
+
+  @override
+  String get appearance_remove_theme => 'Retirer le thème';
+
+  @override
+  String get appearance_chat_font => 'Police de discussion';
+
+  @override
+  String get appearance_terminal_font => 'Police du terminal';
+
+  @override
+  String get appearance_font_platform => 'Plateforme';
+
+  @override
+  String get appearance_automatic => 'Automatique';
+
+  @override
+  String get appearance_force_left_to_right => 'Forcer de gauche à droite';
+
+  @override
+  String get appearance_force_right_to_left => 'Forcer de droite à gauche';
+
+  @override
+  String get appearance_user_bubble_opacity => 'Opacité des bulles utilisateur';
+
+  @override
+  String get appearance_inline_embeds => 'Contenus intégrés';
+
+  @override
+  String get appearance_inline_embeds_hint =>
+      'Les aperçus enrichis se chargent depuis des sites tiers (YouTube, X, …). Demander affiche un espace réservé jusqu’à ce que vous autorisiez chacun ; Toujours les charge automatiquement ; Désactivé conserve des liens simples.';
+
+  @override
+  String get appearance_embeds_ask => 'Demander';
+
+  @override
+  String get appearance_embeds_always => 'Toujours';
+
+  @override
+  String get appearance_embeds_off => 'Désactivé';
+
+  @override
+  String appearance_embeds_reset(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Réinitialiser $count services autorisés',
+      one: 'Réinitialiser 1 service autorisé',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get appearance_embed_load => 'Charger';
+
+  @override
+  String appearance_embed_always_allow(String service) {
+    return 'Toujours autoriser $service';
+  }
+
+  @override
+  String get appearance_embed_loading => 'Chargement de l’aperçu…';
+
+  @override
+  String appearance_embed_image_failed(String host) {
+    return 'Impossible de charger l’image depuis $host. Touchez pour l’ouvrir.';
+  }
+
+  @override
+  String get appearance_embed_preview_unavailable => 'Aperçu indisponible';
+
+  @override
+  String get appearance_emoji_reactions => 'Réactions emoji';
+
+  @override
+  String get appearance_celebration_hearts => 'Cœurs de célébration';
+
+  @override
+  String get appearance_celebration_hearts_hint =>
+      'Un cœur s’anime lorsqu’une réponse est arrivée pendant votre absence.';
+
+  @override
+  String get appearance_pop_out_companion => 'Détacher le compagnon';
+
+  @override
+  String get appearance_mosskip => 'Mosskip';
+
+  @override
+  String get appearance_emberbun => 'Emberbun';
+
+  @override
+  String get appearance_tideling => 'Tideling';
+
+  @override
+  String get appearance_my_hatchling => 'Mon petit compagnon';
+
+  @override
+  String get appearance_at_rest => 'Au repos';
+
+  @override
+  String get appearance_working => 'En cours';
+
+  @override
+  String get appearance_thinking => 'Réfléchit';
+
+  @override
+  String get appearance_waiting_for_you => 'Vous attend';
+
+  @override
+  String get appearance_reply_ready => 'Réponse prête';
+
+  @override
+  String get appearance_turn_failed => 'Échec du tour';
+
+  @override
+  String get appearance_small => 'Petit';
+
+  @override
+  String get appearance_medium => 'Moyen';
+
+  @override
+  String get appearance_large => 'Grand';
+
+  @override
+  String get appearance_hello => 'Bonjour !';
+
+  @override
+  String get appearance_unread_reply => 'Réponse non lue';
+
+  @override
+  String get appearance_compose => 'Rédiger';
+
+  @override
+  String get appearance_say_hello => 'Dire bonjour';
+
+  @override
+  String get appearance_pet_image_failed =>
+      'Impossible d’ouvrir cette image. Choisissez un PNG ou un JPEG plus petit.';
+
+  @override
+  String get appearance_pet_companion => 'Compagnon virtuel';
+
+  @override
+  String get appearance_pet_companion_hint =>
+      'Afficher un compagnon pendant la discussion.';
+
+  @override
+  String get appearance_adopt_a_companion => 'Adopter un compagnon';
+
+  @override
+  String get appearance_roam_when_idle => 'Se promener au repos';
+
+  @override
+  String get appearance_pet_size => 'Taille du compagnon';
+
+  @override
+  String get appearance_hatch_from_a_local_picture =>
+      'Faire éclore à partir d’une image locale';
+
+  @override
+  String get appearance_pet_image_limits =>
+      'Choisissez un PNG ou un JPEG (jusqu’à 4 MiB, 4096 px par côté et 8 MP). Prévisualisez-le d’abord. L’éclosion enregistre un portrait de 24 × 24 pixels et remplace votre précédent petit compagnon.';
+
+  @override
+  String get appearance_choose_picture => 'Choisir une image';
+
+  @override
+  String get appearance_hatchling_preview => 'Aperçu du petit compagnon';
+
+  @override
+  String get appearance_hatch_and_adopt => 'Faire éclore et adopter';
+
+  @override
+  String get appearance_discard_draft => 'Supprimer le brouillon';
+
+  @override
+  String get appearance_forget_saved_hatchling =>
+      'Oublier le petit compagnon enregistré';
+
+  @override
+  String get appearance_radio => 'Radio';
+
+  @override
+  String appearance_radio_hint(String stations) {
+    return 'Les flux proviennent directement de $stations et ne démarrent que lorsque vous appuyez sur Lecture. La recherche de stations reste sur cet appareil.';
+  }
+
+  @override
+  String get appearance_radio_save_failed =>
+      'Impossible d’enregistrer les paramètres de la radio.';
+
+  @override
+  String get appearance_choose_a_station => 'Choisir une station';
+
+  @override
+  String get appearance_pause_radio => 'Mettre la radio en pause';
+
+  @override
+  String get appearance_play_radio => 'Écouter la radio';
+
+  @override
+  String get appearance_next_station => 'Station suivante';
+
+  @override
+  String get appearance_radio_trace_semantics =>
+      'Activité du flux. Les niveaux audio sont indisponibles ; cette ligne reste donc plate.';
+
+  @override
+  String get appearance_radio_is_off => 'La radio est désactivée';
+
+  @override
+  String get appearance_paused => 'En pause';
+
+  @override
+  String get appearance_connecting => 'Connexion…';
+
+  @override
+  String get appearance_live => 'En direct';
+
+  @override
+  String get appearance_stream_unavailable => 'Flux indisponible';
+
+  @override
+  String appearance_now_playing(String credit) {
+    return 'En cours de lecture : $credit';
+  }
+
+  @override
+  String get appearance_audio_only_waveform_unavailable =>
+      'Audio seul · forme d’onde indisponible';
+
+  @override
+  String get appearance_volume => 'Volume';
+
+  @override
+  String get appearance_search_presets => 'Rechercher dans les préréglages';
+
+  @override
+  String get appearance_no_stations_found => 'Aucune station trouvée';
+
+  @override
+  String appearance_unpin_station(String station) {
+    return 'Désépingler la station : $station';
+  }
+
+  @override
+  String appearance_pin_station(String station) {
+    return 'Épingler la station : $station';
+  }
+
+  @override
+  String get appearance_radio_picker_metadata_notice =>
+      'Tant que ce sélecteur est ouvert, les stations en lecture peuvent partager les détails des titres directement depuis le diffuseur.';
+
+  @override
+  String get appearance_message_from_your_companion =>
+      'Message de votre compagnon';
+
+  @override
+  String get appearance_send_to_the_open_chat =>
+      'Envoyer à la discussion ouverte';
+
+  @override
+  String get appearance_tour_theme_body =>
+      'Importez un thème de couleur VS Code depuis un fichier de cet appareil, puis choisissez la variante à conserver.';
+
+  @override
+  String get appearance_tour_fonts_title => 'Polices de lecture';
+
+  @override
+  String get appearance_tour_fonts_body =>
+      'Le texte des discussions et le code du terminal utilisent des polices distinctes fournies avec Ares.';
+
+  @override
+  String get appearance_tour_direction_title => 'Sens de la transcription';
+
+  @override
+  String get appearance_tour_direction_body =>
+      'Laissez le réglage automatique ou imposez à la transcription un sens de gauche à droite ou de droite à gauche.';
+
+  @override
+  String get appearance_tour_pet_title => 'Compagnon';
+
+  @override
+  String get appearance_tour_pet_body =>
+      'Le compagnon reste désactivé jusqu’à ce que vous en adoptiez un. Le mode détaché ajoute une petite zone de saisie.';
+
+  @override
+  String get appearance_tour_radio_body =>
+      'La radio reste désactivée jusqu’à son activation. Appuyer sur Lecture ouvre un flux.';
+
+  @override
+  String get appearance_tip_theme =>
+      'Les thèmes importés remplacent la palette intégrée jusqu’à ce que vous effaciez la sélection. Seules les couleurs sont conservées.';
+
+  @override
+  String get appearance_tip_pet =>
+      'Le compagnon conserve un petit portrait sur cet appareil. L’image utilisée pour l’éclosion n’est pas téléversée.';
+
+  @override
+  String get appearance_theme_import_failed =>
+      'Impossible d’importer ce thème. Choisissez un thème de couleur VS Code enregistré dans un fichier .vsix, .json ou .jsonc.';
+
+  @override
+  String get render_widget_file_truncated =>
+      'Seul le début de ce fichier a été lu : le widget peut être incomplet.';
+
+  @override
+  String get setup_beat_title => 'Configuration';
+
+  @override
+  String setup_beat_use_name(String name) {
+    return 'Utiliser $name';
+  }
+
+  @override
+  String get setup_beat_name_hint => 'Comment Hermes doit-il vous appeler ?';
+
+  @override
+  String get setup_beat_on_computer =>
+      'Cette étape se fait dans Hermes, sur l’ordinateur où il s’exécute. Continuer conserve ce qui y est déjà configuré.';
+
+  @override
+  String get setup_beat_not_waiting =>
+      'Cette carte de configuration n’attend plus de réponse.';
+
+  @override
+  String get catalog_kind_plugin => 'Plugin';
+
+  @override
+  String get catalog_kind_skill => 'Compétence';
+
+  @override
+  String get catalog_tier_official => 'Officiel';
+
+  @override
+  String get catalog_tier_verified => 'Vérifié';
+
+  @override
+  String get catalog_tier_community => 'Communauté';
+
+  @override
+  String get catalog_install => 'Installer';
+
+  @override
+  String get catalog_waiting => 'En attente de votre choix';
+
+  @override
+  String get catalog_installed => 'Installé';
+
+  @override
+  String get catalog_installed_off => 'Installé, non activé';
+
+  @override
+  String get catalog_skipped => 'Ignoré';
+
+  @override
+  String get catalog_not_installed => 'Non installé';
+
+  @override
+  String catalog_target_profile(String profile) {
+    return 'S’installe dans le profil $profile';
+  }
+
+  @override
+  String catalog_source(String repo, String sha) {
+    return '$repo à $sha';
+  }
+
+  @override
+  String catalog_scan(String status, String summary) {
+    return 'Analyse de sécurité : $status. $summary';
+  }
+
+  @override
+  String catalog_requires_hermes(String range) {
+    return 'Nécessite Hermes $range';
+  }
+
+  @override
+  String catalog_skill_ready(String name) {
+    return 'La compétence $name est prête';
+  }
+
+  @override
+  String catalog_missing_env(String names) {
+    return 'Il manque encore : $names';
+  }
+
+  @override
+  String catalog_server_error(String name, String error) {
+    return '$name ne s’est pas connecté : $error';
+  }
+
+  @override
+  String get catalog_send_failed =>
+      'Votre choix n’a pas été envoyé. Réessayez.';
+
+  @override
+  String get attachment_video_speed => 'Vitesse de lecture';
+
+  @override
+  String get catalog_installing => 'Installation…';
+
+  @override
+  String get catalog_phase_downloading => 'Téléchargement…';
+
+  @override
+  String get catalog_phase_python_packages =>
+      'Installation des paquets Python…';
+
+  @override
+  String get catalog_phase_loading_tools => 'Chargement de ses outils…';
+
+  @override
+  String get setup_beat_send_failed =>
+      'Votre réponse n’a pas été envoyée. Réessayez.';
+
+  @override
+  String catalog_tool_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count outils',
+      one: '1 outil',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get render_svg_not_drawn => 'Ce SVG n’a pas été dessiné.';
+
+  @override
+  String get render_notes_directive => 'Directive de notes';
+
+  @override
+  String get render_maths_source => 'Source de la formule';
+
+  @override
+  String get render_inline_maths_source => 'Source de la formule en ligne';
+
+  @override
+  String get render_sequence_outline => 'Plan de la séquence';
+
+  @override
+  String get render_diagram_outline => 'Plan du diagramme';
+
+  @override
+  String render_revision_of(int index, int count) {
+    return 'Révision $index sur $count';
+  }
+
+  @override
+  String get render_previous_revision => 'Révision précédente';
+
+  @override
+  String get render_next_revision => 'Révision suivante';
+
+  @override
+  String get render_show_rendered => 'Rendu';
+
+  @override
+  String get render_show_source => 'Code source';
+
+  @override
+  String render_copied_file(String name) {
+    return '$name copié';
+  }
+
+  @override
+  String render_copy_file(String name) {
+    return 'Copier $name';
+  }
+
+  @override
+  String get render_artifact_too_long =>
+      'Cet artefact est trop long pour être affiché ici sous forme de page.';
+
+  @override
+  String get render_active_content_removed =>
+      'Les scripts, les cadres et les adresses externes ont été supprimés.';
+
+  @override
+  String render_widget_file(String file) {
+    return 'Fichier widget $file';
+  }
+
+  @override
+  String get render_widget_runs_as_text =>
+      'S’exécute sous forme de texte dans cette discussion. Les scripts et les cadres externes sont supprimés.';
+
+  @override
+  String get render_load_widget => 'Charger le widget';
+
+  @override
+  String get render_not_html_widget => 'Ce fichier n’est pas un widget HTML.';
+
+  @override
+  String get render_widget_sent => 'Envoyé dans cette discussion';
+
+  @override
+  String get render_widget_not_sent => 'Non envoyé dans cette discussion';
+
+  @override
+  String get render_widget_throttled =>
+      'Patientez un instant avant de renvoyer';
+
+  @override
+  String get render_widget_too_long =>
+      'Cette demande est trop longue pour être envoyée';
+
+  @override
+  String get render_widget_no_gesture =>
+      'Touchez une commande du widget pour envoyer';
+
+  @override
+  String get render_widget_invalid => 'Cette demande n’a pas pu être envoyée';
+
+  @override
+  String get render_inspected_image => 'Image inspectée';
+
+  @override
+  String get render_contributions => 'Contributions';
+
+  @override
+  String get render_contributions_intro =>
+      'Seules les contributions intégrées à Ares peuvent compléter une réponse. Le texte de la discussion ne peut pas en enregistrer, et une autorisation ne s’applique qu’à cette connexion.';
+
+  @override
+  String render_grant_plugin(String name) {
+    return 'Autoriser $name';
+  }
+
+  @override
+  String render_revoke_plugin(String name) {
+    return 'Révoquer $name';
+  }
+
+  @override
+  String render_plugin_slots(String directive) {
+    return 'cartes de réponse pour ::$directive';
+  }
+
+  @override
+  String get render_plugin_notes => 'Notes';
+
+  @override
+  String get catalog_scan_passed => 'réussi';
+
+  @override
+  String get catalog_scan_warnings => 'avertissements trouvés';
+
+  @override
+  String get catalog_scan_failed => 'échoué';
+
+  @override
+  String get deployment_token_label => 'Jeton de déploiement (facultatif)';
+
+  @override
+  String get deployment_token_helper =>
+      'Pour les jetons de session Hermes Dashboard envoyés comme X-Hermes-Session-Token. Non stocké en clair dans les préférences.';
+
+  @override
+  String get deployment_token_hint => 'Jeton de session du tableau de bord';
+
+  @override
+  String get custom_headers_label => 'En-têtes personnalisés (facultatif)';
+
+  @override
+  String get custom_headers_helper =>
+      'Un par ligne, p. ex. X-Custom: valeur. Les en-têtes interdits sont refusés.';
+
+  @override
+  String get custom_headers_hint => 'p. ex. X-Custom-Header: valeur';
+
+  @override
+  String get desktop_tray_open => 'Ouvrir Ares';
+
+  @override
+  String get desktop_tray_new_chat => 'Nouvelle discussion';
+
+  @override
+  String get desktop_tray_quick_entry => 'Saisie rapide…';
+
+  @override
+  String get desktop_tray_pause_notifications => 'Suspendre les notifications';
+
+  @override
+  String get desktop_tray_quit => 'Quitter Ares';
+
+  @override
+  String get desktop_integration_title => 'Intégration au bureau';
+
+  @override
+  String get desktop_tray_setting =>
+      'Afficher Ares dans la zone de notification ou la barre des menus';
+
+  @override
+  String get desktop_tray_setting_help =>
+      'Depuis l’icône : ouvrir Ares, démarrer une discussion, ouvrir la saisie rapide, suspendre les notifications ou quitter.';
+
+  @override
+  String get desktop_close_to_tray_setting =>
+      'Continuer dans la zone de notification à la fermeture de la fenêtre';
+
+  @override
+  String get desktop_tray_unsupported =>
+      'Ce bureau n’a pas de zone de notification utilisable par Ares.';
+
+  @override
+  String get quick_entry_title => 'Saisie rapide';
+
+  @override
+  String get quick_entry_hint => 'Saisissez une requête pour Ares…';
+
+  @override
+  String get quick_entry_submit => 'Placer dans la zone de saisie';
+
+  @override
+  String get quick_entry_never_sends =>
+      'Entrée place le texte dans la zone de saisie de la discussion. Rien n’est envoyé avant que vous appuyiez sur Envoyer.';
+
+  @override
+  String get quick_entry_unavailable =>
+      'Impossible d’ouvrir la saisie rapide. Réessayez.';
+
+  @override
+  String get desktop_hotkey_setting => 'Raccourci de saisie rapide';
+
+  @override
+  String desktop_hotkey_help(String shortcut) {
+    return 'Appuyez sur $shortcut n’importe où pour ouvrir la saisie rapide.';
+  }
+
+  @override
+  String desktop_hotkey_conflict(String shortcut) {
+    return 'Une autre app utilise déjà $shortcut. Choisissez un autre raccourci.';
+  }
+
+  @override
+  String get desktop_hotkey_unsupported =>
+      'Ce bureau ne permet pas aux apps d’enregistrer un raccourci global (par exemple sous Wayland).';
+
+  @override
+  String get desktop_hotkey_no_modifier => 'Incluez Cmd, Ctrl ou Alt.';
+
+  @override
+  String get desktop_hotkey_super_key =>
+      'La touche Windows ou Super est réservée au système.';
+
+  @override
+  String get desktop_hotkey_reserved => 'Le système utilise déjà ce raccourci.';
+
+  @override
+  String desktop_hotkey_in_app(String action) {
+    return 'Ares utilise déjà ce raccourci pour $action.';
+  }
+
+  @override
+  String get desktop_hotkey_change => 'Modifier';
+
+  @override
+  String get desktop_hotkey_reset => 'Utiliser la valeur par défaut';
+
+  @override
+  String get capture_screen_action => 'Capturer l’écran';
+
+  @override
+  String get capture_screen_help =>
+      'Ajoute une capture au message en brouillon. Rien n’est envoyé avant que vous appuyiez sur Envoyer.';
+
+  @override
+  String get capture_screen_unavailable =>
+      'La capture d’écran n’est pas disponible sur ce bureau.';
+
+  @override
+  String get capture_screen_failed =>
+      'Impossible de capturer l’écran. Réessayez.';
+
+  @override
+  String get capture_permission_title =>
+      'Autoriser l’enregistrement de l’écran';
+
+  @override
+  String get capture_permission_body =>
+      'Pour capturer une fenêtre, Ares a besoin de l’autorisation d’enregistrement de l’écran. Activez Ares dans Réglages Système > Confidentialité et sécurité > Enregistrement de l’écran, puis réessayez.';
+
+  @override
+  String get capture_open_settings => 'Ouvrir Réglages Système';
+
+  @override
+  String get keep_awake_title => 'Garder l’ordinateur éveillé';
+
+  @override
+  String get keep_awake_title_mobile => 'Garder l’écran allumé';
+
+  @override
+  String get keep_awake_mode_off => 'Désactivé';
+
+  @override
+  String get keep_awake_mode_while_working => 'Pendant le travail';
+
+  @override
+  String get keep_awake_mode_always => 'Toujours';
+
+  @override
+  String get keep_awake_off_help =>
+      'Ne jamais empêcher la mise en veille (par défaut).';
+
+  @override
+  String get keep_awake_while_working_help =>
+      'Empêcher la mise en veille d’inactivité uniquement pendant un tour de l’agent.';
+
+  @override
+  String get keep_awake_always_help =>
+      'Empêcher la mise en veille d’inactivité tant qu’Ares est ouvert sur cet appareil.';
+
+  @override
+  String get keep_awake_off_help_mobile =>
+      'Laisser l’écran s’éteindre normalement (par défaut).';
+
+  @override
+  String get keep_awake_while_working_help_mobile =>
+      'Garder l’écran allumé pendant un tour de l’agent, tant qu’Ares est ouvert.';
+
+  @override
+  String get keep_awake_always_help_mobile =>
+      'Garder l’écran allumé tant qu’Ares est ouvert.';
+
+  @override
+  String get ng_token_gateway_has_no_sign_in =>
+      'Cette passerelle n’a pas de connexion, elle ne peut donc pas vérifier un jeton de déploiement. Activez l’authentification du tableau de bord sur l’hôte (ou mettez Hermes à jour), puis réessayez.';
+
+  @override
+  String get palette_open => 'Palette de commandes de l’app';
+
+  @override
+  String get palette_no_matches => 'Aucune action correspondante';
+
+  @override
+  String get palette_filter_hint => 'Tapez pour filtrer les actions…';
+
+  @override
+  String get palette_keys_move => '↑↓ pour se déplacer';
+
+  @override
+  String get palette_keys_run => 'Entrée pour exécuter';
+
+  @override
+  String get palette_keys_close => 'Échap pour fermer';
+
+  @override
+  String get palette_search_sessions => 'Rechercher des sessions';
+
+  @override
+  String get palette_scheduled_crons => 'Planifiées / Crons';
+
+  @override
+  String get palette_capabilities_skills => 'Capacités et compétences';
+
+  @override
+  String get palette_insights_usage => 'Aperçus et utilisation';
+
+  @override
+  String get palette_more_projects => 'Plus et projets';
+
+  @override
+  String get deeplink_chat_not_found =>
+      'Discussion introuvable dans la liste. Elle n’est peut-être pas encore chargée.';
+
+  @override
+  String get keyboard_shortcuts_title => 'Raccourcis clavier';
+
+  @override
+  String get shortcuts_reset_all => 'Tout réinitialiser';
+
+  @override
+  String get shortcuts_reset_to_default => 'Rétablir la valeur par défaut';
+
+  @override
+  String get shortcut_action_command_palette => 'Palette de commandes';
+
+  @override
+  String get shortcut_action_new_chat => 'Nouvelle discussion';
+
+  @override
+  String get shortcut_action_search => 'Rechercher';
+
+  @override
+  String get shortcut_action_settings => 'Paramètres';
+
+  @override
+  String shortcut_action_go_to_tab(int number) {
+    return 'Aller à l’onglet $number';
+  }
+
+  @override
+  String shortcuts_conflict(String first, String second, String chord) {
+    return 'Conflit : « $first » et « $second » utilisent tous deux $chord. Le raccourci personnalisé garde sa valeur par défaut jusqu’à ce que vous en changiez un.';
+  }
+
+  @override
+  String shortcuts_editor_title(String action) {
+    return 'Raccourci : $action';
+  }
+
+  @override
+  String get shortcuts_editor_help =>
+      'Appuyez sur une combinaison de touches, ou choisissez des modificateurs et une touche ci-dessous :';
+
+  @override
+  String get shortcuts_editor_needs_modifier =>
+      'Choisissez au moins Cmd/Meta, Ctrl ou Alt pour que la saisie dans le champ de message ne soit pas affectée.';
+
+  @override
+  String shortcuts_text_editing_warning(String chord) {
+    return '$chord est un raccourci d’édition de texte (copier, coller, couper, annuler, rétablir ou tout sélectionner). L’attribuer ici le retire aux champs de texte.';
+  }
+
+  @override
+  String shortcuts_text_editing_in_use(String action, String chord) {
+    return '« $action » utilise $chord, un raccourci d’édition de texte. Les champs de texte le perdent tant qu’il est attribué ici.';
+  }
+
+  @override
+  String custom_headers_problem_format(int line) {
+    return 'Ligne $line : « Nom: Valeur » attendu';
+  }
+
+  @override
+  String custom_headers_problem_missing_name(int line) {
+    return 'Ligne $line : nom d’en-tête manquant';
+  }
+
+  @override
+  String custom_headers_problem_invalid_name(int line, String name) {
+    return 'Ligne $line : nom d’en-tête « $name » non valide';
+  }
+
+  @override
+  String custom_headers_problem_reserved(int line, String name) {
+    return 'Ligne $line : « $name » est réservé et ne peut pas être transmis';
+  }
+
+  @override
+  String custom_headers_problem_empty_value(int line) {
+    return 'Ligne $line : valeur d’en-tête vide';
+  }
+
+  @override
+  String get ng_enter_a_deployment_token =>
+      'Saisissez un jeton de session de déploiement.';
+
+  @override
+  String get ng_custom_headers => 'En-têtes personnalisés';
+
+  @override
+  String get ng_custom_headers_help =>
+      'En-têtes HTTP supplémentaires pour cette passerelle (Nom: Valeur, un par ligne), envoyés avec ses appels REST et WebSocket. Ils sont conservés dans le stockage sécurisé des identifiants. Les en-têtes d’authentification et hop-by-hop sont refusés.';
+
+  @override
+  String get ng_use_a_deployment_token =>
+      'Utiliser un jeton de session de déploiement';
+
+  @override
+  String get ng_sign_in_with_deployment_token =>
+      'Se connecter avec le jeton de déploiement';
+
+  @override
+  String get ng_signed_in_with_deployment_token =>
+      'Connecté avec le jeton de déploiement.';
+
+  @override
+  String get auto_speak_replies_title => 'Lire les réponses à voix haute';
+
+  @override
+  String get auto_speak_replies_subtitle =>
+      'Lit chaque nouvelle réponse à voix haute à la fin d’un tour. Par défaut désactivé ; le contrôle « Spoken replies » reste valable.';
+
+  @override
+  String get ng_auto_read_replies_title => 'Lecture automatique des réponses';
+
+  @override
+  String get ng_auto_read_replies_subtitle =>
+      'Lit chaque nouvelle réponse à voix haute à la fin d’un tour. Par défaut désactivé.';
+
+  @override
+  String get barge_in_title => 'Couper la lecture';
+
+  @override
+  String get barge_in_subtitle =>
+      'Parlez par-dessus une réponse pour l’interrompre. Le micro reste allumé pendant la lecture des réponses à voix haute.';
+
+  @override
+  String get barge_in_mic_live =>
+      'Micro allumé : parlez pour interrompre la réponse';
+
+  @override
+  String get ng_barge_in_title => 'Couper la lecture';
+
+  @override
+  String get ng_barge_in_subtitle =>
+      'Parlez par-dessus une réponse pour l’interrompre. Le micro reste allumé pendant la lecture des réponses à voix haute.';
+
+  @override
+  String get ng_barge_in_mic_live =>
+      'Micro allumé : parlez pour interrompre la réponse';
+
+  @override
+  String get wake_word_title => 'Mot d’activation';
+
+  @override
+  String get wake_word_subtitle =>
+      'Détection mains libres sur la passerelle. Désactivée par défaut ; ne diffuse le micro que lorsque la capture client est active.';
+
+  @override
+  String wake_word_listening(String phrase) {
+    return 'Écoute du mot d’activation « $phrase »';
+  }
+
+  @override
+  String wake_word_paused(String phrase) {
+    return 'Mot d’activation « $phrase » — en pause';
+  }
+
+  @override
+  String wake_word_off(String phrase) {
+    return 'Mot d’activation « $phrase » — désactivé';
+  }
+
+  @override
+  String get wake_word_arming => 'Activation du mot d’activation…';
+
+  @override
+  String get wake_word_stop => 'Arrêter le mot d’activation';
+
+  @override
+  String get wake_word_rearm => 'Réarmer';
+
+  @override
+  String get wake_word_capture_mode => 'Mode de capture';
+
+  @override
+  String get wake_word_capture_auto => 'Automatique';
+
+  @override
+  String get wake_word_capture_client => 'Microphone de cet appareil';
+
+  @override
+  String get wake_word_capture_local => 'Microphone de l’hôte passerelle';
+
+  @override
+  String get wake_word_capture_unavailable =>
+      'Cette passerelle ne permet pas aux applications de changer le mode de capture. Définissez wake_word.capture dans la configuration Hermes de l’hôte passerelle.';
+
+  @override
+  String get wake_word_input_device => 'Microphone d’entrée';
+
+  @override
+  String get wake_word_default_device => 'Par défaut du système';
+
+  @override
+  String get ng_wake_word_title => 'Mot d’activation';
+
+  @override
+  String get ng_wake_word_subtitle =>
+      'Détection mains libres sur la passerelle. Désactivée par défaut.';
+
+  @override
+  String get voice_engine_title => 'Moteur de conversation vocale';
+
+  @override
+  String get voice_engine_subtitle =>
+      'Choisissez comment les conversations vocales mains libres fonctionnent sur ce profil de passerelle.';
+
+  @override
+  String get voice_engine_chained =>
+      'Enchaîné (parole en texte → Hermes → parole)';
+
+  @override
+  String get voice_engine_chained_short => 'Enchaîné';
+
+  @override
+  String get voice_engine_live => 'GPT-Live (voix en temps réel)';
+
+  @override
+  String get voice_engine_live_short => 'GPT-Live';
+
+  @override
+  String get voice_engine_live_needs_key =>
+      'Configurez une clé d’API OpenAI sur l’hôte de la passerelle pour activer GPT-Live.';
+
+  @override
+  String voice_engine_fallback_chained(String reason) {
+    return 'GPT-Live indisponible ($reason) — voix enchaînée utilisée.';
+  }
+
+  @override
+  String get voice_live_start => 'Démarrer une conversation vocale';
+
+  @override
+  String get voice_live_stop => 'Terminer la conversation vocale';
+
+  @override
+  String get voice_live_mute => 'Couper le micro';
+
+  @override
+  String get voice_live_unmute => 'Réactiver le micro';
+
+  @override
+  String get voice_live_interrupt => 'Interrompre ou répondre maintenant';
+
+  @override
+  String get voice_live_listening => 'À l’écoute';
+
+  @override
+  String get voice_live_speaking => 'Parle';
+
+  @override
+  String get voice_live_thinking => 'Réfléchit';
+
+  @override
+  String get voice_live_muted => 'Micro coupé';
+
+  @override
+  String get voice_live_ended_connection_lost =>
+      'La session vocale en direct a perdu la connexion.';
+
+  @override
+  String get voice_live_ended_closed =>
+      'La session vocale en direct a été fermée par le service.';
+
+  @override
+  String wake_word_other_profile(String profile) {
+    return 'Ce mot d’activation appartient au profil « $profile ». Ouvrez une connexion à ce profil pour y répondre.';
+  }
+
+  @override
+  String get wake_word_reason_disabled => 'Désactivé — touchez pour activer';
+
+  @override
+  String get wake_word_reason_surface =>
+      'Limité à une autre interface (configuration wake_word.surface)';
+
+  @override
+  String get wake_word_reason_owned =>
+      'Une autre interface gère l’écoute du mot d’activation';
+
+  @override
+  String wake_word_reason_owned_by(String surface) {
+    return 'Une autre interface ($surface) gère l’écoute du mot d’activation';
+  }
+
+  @override
+  String get wake_word_reason_unavailable =>
+      'Mot d’activation indisponible sur cette passerelle';
+
+  @override
+  String get wake_word_reason_permission_denied =>
+      'Autorisation du micro refusée';
+
+  @override
+  String get wake_word_reason_permission_required =>
+      'Autorisation du micro requise — touchez pour activer';
+
+  @override
+  String get voice_live_not_enabled =>
+      'GPT-Live n’est pas activé pour ce profil.';
+
+  @override
+  String get voice_live_not_available => 'GPT-Live n’est pas disponible';
+
+  @override
+  String voice_live_start_failed(String error) {
+    return 'Impossible de démarrer GPT-Live : $error';
+  }
+
+  @override
+  String voice_direct_stt_timeout(String seconds, String provider) {
+    return 'La transcription a expiré après $seconds s ($provider n’a pas répondu)';
+  }
+
+  @override
+  String voice_direct_stt_error(String provider, String status) {
+    return 'Erreur STT de $provider (HTTP $status)';
+  }
+
+  @override
+  String voice_direct_tts_failed(String provider) {
+    return 'La requête TTS à $provider a échoué';
+  }
+
+  @override
+  String voice_direct_tts_error(String provider, String status) {
+    return 'Erreur TTS de $provider (HTTP $status)';
+  }
+
+  @override
+  String ng_wake_status_listening(String phrase) {
+    return 'À l’écoute (« $phrase »)';
+  }
+
+  @override
+  String ng_wake_status_off(String phrase) {
+    return 'Désactivé (« $phrase »)';
+  }
+
+  @override
+  String ng_wire_setting_unavailable(Object setting) {
+    return 'La modification de $setting n’est pas encore disponible sur la passerelle partagée';
+  }
+
+  @override
+  String ng_wire_method_unavailable(Object method) {
+    return '$method n’est pas encore disponible sur la passerelle partagée';
+  }
+
+  @override
+  String ng_wire_session_options_unsupported(Object options) {
+    return 'La passerelle canonique ne prend pas en charge ces options de session explicites : $options';
+  }
+
+  @override
+  String get ng_wire_prompt_stale =>
+      'La demande est obsolète ou indisponible ; reconnectez-vous avant de répondre';
+
+  @override
+  String get ng_wire_revision_unavailable =>
+      'La révision de la session est indisponible ; rouvrez la session avant de modifier les métadonnées';
+
+  @override
+  String get ng_wire_generation_unavailable =>
+      'L’identité d’exécution de la session est indisponible ; reconnectez-vous avant cette commande';
+
+  @override
+  String get ng_wire_message_not_saved =>
+      'Ce message n’est pas encore enregistré ; attendez qu’il soit finalisé, puis créez de nouveau une branche à partir de lui';
+
+  @override
+  String get ng_wire_not_available =>
+      'Pas encore disponible sur la passerelle partagée';
+
+  @override
+  String get edit_turn_title => 'Modifier cette invite ?';
+
+  @override
+  String get edit_turn_body =>
+      'L’invite sera relancée à partir d’ici. Les tours suivants seront archivés.';
+
+  @override
+  String get edit_turn_send => 'Envoyer';
+
+  @override
+  String get restore_turn_title => 'Restaurer à ce point de contrôle ?';
+
+  @override
+  String get restore_turn_body =>
+      'Tout ce qui suit cette invite sera retiré de la conversation et l’invite sera relancée à partir d’ici.';
+
+  @override
+  String get restore_turn_confirm => 'Restaurer et relancer';
+
+  @override
+  String get edit_turn_later_turns_body =>
+      'Cela archivera les tours suivants de la conversation. Continuer ?';
+
+  @override
+  String get session_history => 'Historique de la session';
+
+  @override
+  String get import_claude_or_codex => 'Importer Claude ou Codex';
+
+  @override
+  String get ng_session_history => 'Historique de la session';
+
+  @override
+  String get ng_import_claude_or_codex => 'Importer Claude ou Codex';
+
+  @override
+  String get ng_edit_and_resend => 'Modifier et renvoyer';
+
+  @override
+  String get ng_restore_turn_confirm => 'Restaurer et relancer';
+
+  @override
+  String get rewind_target_unsaved =>
+      'Ce message n\'est pas encore enregistré. Attendez qu\'il soit terminé, puis modifiez-le à nouveau.';
+
+  @override
+  String get rewind_turn_busy =>
+      'La réponse en cours n\'est pas encore arrêtée, rien n\'a donc été envoyé. Réessayez dans un instant.';
+
+  @override
+  String get rewind_session_changed =>
+      'Cette conversation a changé depuis son ouverture ici, rien n\'a donc été supprimé ni envoyé. Rouvrez-la, puis réessayez.';
+
+  @override
+  String get history_lineage => 'Conversations liées';
+
+  @override
+  String get history_lineage_none =>
+      'Cette conversation n’a ni branche ni conversation sœur.';
+
+  @override
+  String get history_lineage_unavailable =>
+      'Impossible de lire les conversations liées depuis cette passerelle.';
+
+  @override
+  String get history_lineage_parent => 'Parent';
+
+  @override
+  String get history_lineage_sibling => 'Sœur';
+
+  @override
+  String get history_lineage_fork => 'Branche';
+
+  @override
+  String get history_messages => 'Messages';
+
+  @override
+  String get history_messages_hint =>
+      'Sélectionnez un message enregistré pour créer une branche ou revenir à ce point.';
+
+  @override
+  String get history_messages_none =>
+      'Aucun message enregistré pour l’instant.';
+
+  @override
+  String get history_messages_unavailable =>
+      'Impossible de lire les messages enregistrés. Ouvrez cette conversation, puis actualisez.';
+
+  @override
+  String get history_role_user => 'Vous';
+
+  @override
+  String get history_role_assistant => 'Hermes';
+
+  @override
+  String get history_branch_here => 'Créer une branche ici';
+
+  @override
+  String get history_rewind_here => 'Revenir à ce point';
+
+  @override
+  String get history_branch_title => 'Créer une branche depuis ce message';
+
+  @override
+  String get history_branch_body =>
+      'Cela crée une nouvelle conversation contenant l’historique jusqu’au message sélectionné. La conversation actuelle reste telle quelle.';
+
+  @override
+  String get history_rewind_title => 'Revenir à ce message';
+
+  @override
+  String get history_rewind_body =>
+      'Les messages à partir de celui sélectionné sont retirés de cette conversation. Les fichiers de l’ordinateur ne changent pas. Leur restauration est une action distincte, par point de contrôle.';
+
+  @override
+  String history_branched(String id) {
+    return 'Branche créée : $id';
+  }
+
+  @override
+  String get history_open_chat => 'Ouvrir la conversation';
+
+  @override
+  String get history_mutate_unsupported =>
+      'Les branches et le retour en arrière nécessitent Hermes 0.23 ou plus récent sur cette passerelle.';
+
+  @override
+  String get history_checkpoints => 'Points de contrôle';
+
+  @override
+  String get history_checkpoints_none =>
+      'Cette session n’a aucun point de contrôle de fichiers.';
+
+  @override
+  String get history_checkpoints_unavailable =>
+      'Les points de contrôle ne sont pas disponibles sur cette passerelle.';
+
+  @override
+  String get history_diff_none => 'Aucune différence.';
+
+  @override
+  String get history_diff_loading => 'Chargement des modifications…';
+
+  @override
+  String get history_diff_failed =>
+      'Les modifications n’ont pas pu être chargées ; ce point de contrôle ne peut pas encore être restauré.';
+
+  @override
+  String get history_restore_checkpoint => 'Restaurer le point de contrôle';
+
+  @override
+  String get history_restore_title => 'Restaurer ce point de contrôle';
+
+  @override
+  String get history_restore_body =>
+      'Les fichiers modifiés par l’agent depuis ce point de contrôle reviennent à leur état d’alors. Vos propres modifications sont conservées. Des messages ultérieurs peuvent aussi être retirés. La conversation n’est pas dupliquée.';
+
+  @override
+  String get history_restore_body_all =>
+      'Tous les fichiers du dossier de la session reviennent à ce point de contrôle, y compris vos propres modifications. Des messages ultérieurs peuvent aussi être retirés. La conversation n’est pas dupliquée.';
+
+  @override
+  String get history_restore_own_edits =>
+      'Annuler aussi mes propres modifications';
+
+  @override
+  String get history_restored => 'Point de contrôle restauré.';
+
+  @override
+  String history_restored_removed(int count) {
+    return 'Point de contrôle restauré. $count messages ont été retirés.';
+  }
+
+  @override
+  String get history_export => 'Exporter';
+
+  @override
+  String get history_export_redact => 'Masquer les jetons';
+
+  @override
+  String get history_export_action => 'Exporter la transcription';
+
+  @override
+  String get history_export_saved => 'Transcription enregistrée.';
+
+  @override
+  String get history_export_unsupported =>
+      'L’export nécessite Hermes 0.23 ou plus récent sur cette passerelle.';
+
+  @override
+  String get history_import_unsupported =>
+      'L’import depuis Claude et Codex n’est pas pris en charge par cette passerelle.';
+
+  @override
+  String history_import_destination(String profile) {
+    return 'Profil de destination : $profile.';
+  }
+
+  @override
+  String history_import_reading(String host, String profile, int count) {
+    return 'Lecture depuis $host · Profil de destination : $profile. $count journaux illisibles.';
+  }
+
+  @override
+  String get history_import_all => 'Tous';
+
+  @override
+  String history_import_scan_failed(String reason) {
+    return 'Impossible d’analyser les sessions de l’hôte : $reason';
+  }
+
+  @override
+  String get history_import_none =>
+      'Aucune session Claude Code ou Codex trouvée sur cet hôte.';
+
+  @override
+  String get history_import_no_match => 'Aucune session d’hôte correspondante.';
+
+  @override
+  String history_import_preview_failed(String reason) {
+    return 'Aperçu de la session impossible : $reason';
+  }
+
+  @override
+  String get history_import_open => 'Ouvrir la session importée';
+
+  @override
+  String get history_import_action => 'Importer la session sélectionnée';
+
+  @override
+  String get history_import_title => 'Importer cette session';
+
+  @override
+  String history_import_body(String profile) {
+    return 'Copier cette session Claude ou Codex dans le profil « $profile » de cette passerelle.';
+  }
+
+  @override
+  String history_import_body_existing(String profile) {
+    return 'Cette session a déjà été importée dans « $profile ». Continuer avec la copie existante.';
+  }
+
+  @override
+  String history_imported(String id) {
+    return 'Importé : $id';
+  }
+
+  @override
+  String history_imported_already(String id) {
+    return 'Déjà importé : $id';
+  }
+
+  @override
+  String history_import_directory(String path) {
+    return 'Dossier : $path';
+  }
+
+  @override
+  String history_import_preview_partial(int shown, int total) {
+    return 'L’aperçu affiche $shown sur $total.';
+  }
+
+  @override
+  String history_failed(String reason) {
+    return 'Impossible de terminer : $reason';
+  }
+
+  @override
+  String get history_error_unavailable =>
+      'La passerelle n’a pas pu le faire pour le moment. Réessayez.';
+
+  @override
+  String get history_error_unsupported =>
+      'Cette passerelle ne prend pas cela en charge.';
+
+  @override
+  String get history_error_denied => 'Cette passerelle a refusé la demande.';
+
+  @override
+  String get history_error_changed =>
+      'Cette conversation a changé pendant que cette page était ouverte. Actualisez, puis réessayez.';
+
+  @override
+  String get history_error_unbound =>
+      'Cette conversation n’est pas ouverte sur la passerelle. Ouvrez-la, puis réessayez.';
+
+  @override
+  String get history_error_invalid =>
+      'La passerelle a envoyé une réponse que cette application n’a pas pu lire.';
+
+  @override
+  String ng_dock_kanban(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cartes Kanban',
+      one: '1 carte Kanban',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_dock_kanban_done(int count) {
+    return '$count terminées';
+  }
+
+  @override
+  String get ng_show_kanban => 'Afficher les cartes Kanban';
+
+  @override
+  String get ng_hide_kanban => 'Masquer les cartes Kanban';
+
+  @override
+  String get ng_kanban_status_triage => 'Tri';
+
+  @override
+  String get ng_kanban_status_todo => 'À faire';
+
+  @override
+  String get ng_kanban_status_scheduled => 'Planifiée';
+
+  @override
+  String get ng_kanban_status_ready => 'Prête';
+
+  @override
+  String get ng_kanban_status_running => 'En cours';
+
+  @override
+  String get ng_kanban_status_blocked => 'Bloquée';
+
+  @override
+  String get ng_kanban_status_review => 'En revue';
+
+  @override
+  String get ng_kanban_status_done => 'Terminée';
+
+  @override
+  String get ng_kanban_status_archived => 'Archivée';
+
+  @override
+  String ng_kanban_open_card(String title) {
+    return 'Ouvrir $title dans Kanban';
+  }
+
+  @override
+  String ng_kanban_show_all(int count) {
+    return 'Tout afficher ($count)';
+  }
+
+  @override
+  String ng_kanban_this_chat(int count) {
+    return 'Cette discussion ($count)';
+  }
+
+  @override
+  String get ng_kanban_close => 'Fermer Kanban';
+
+  @override
+  String get ng_kanban_block_no_dashboard =>
+      'Cette connexion n’a pas accès au tableau de bord : l’état des cartes n’est pas en direct et le tableau ne peut pas s’ouvrir.';
+
+  @override
+  String get ng_kanban_block_unsupported =>
+      'Kanban n’est pas activé sur cette passerelle. Activez son plugin kanban pour voir l’état en direct et ouvrir le tableau.';
+
+  @override
+  String get ng_kanban_block_denied =>
+      'Connectez-vous au tableau de bord pour voir l’état en direct des cartes et ouvrir le tableau.';
+
+  @override
+  String get ng_kanban_block_insecure =>
+      'Kanban nécessite HTTPS ou une connexion locale : l’état des cartes n’est pas en direct et le tableau ne peut pas s’ouvrir.';
+
+  @override
+  String get ng_kanban_block_unreachable =>
+      'Impossible de joindre Kanban sur cette passerelle. L’état des cartes n’est peut-être plus à jour.';
+
+  @override
+  String get ng_kanban_block_stale =>
+      'La connexion a changé. Rouvrez cette discussion pour voir l’état en direct des cartes.';
+
+  @override
+  String get ng_bots_tab_roster => 'Équipe';
+
+  @override
+  String get ng_bots_tab_rooms => 'Salons';
+
+  @override
+  String get ng_bots_tab_screen => 'Écran';
+
+  @override
+  String get ng_bots_tab_routines => 'Routines';
+
+  @override
+  String ng_bots_rooms_load_failed(String error) {
+    return 'Impossible de charger les salons : $error';
+  }
+
+  @override
+  String ng_bots_routines_load_failed(String error) {
+    return 'Impossible de charger les routines : $error';
+  }
+
+  @override
+  String ng_bots_desktop_failed(String error) {
+    return 'Bot Desktop : $error';
+  }
+
+  @override
+  String get ng_bots_install_not_started =>
+      'La passerelle n’a pas lancé l’installation.';
+
+  @override
+  String ng_bots_install_failed_error(String error) {
+    return 'Échec de l’installation : $error';
+  }
+
+  @override
+  String get ng_bots_install_cancelled => 'L’installation a été annulée.';
+
+  @override
+  String get ng_bots_install_no_sudo =>
+      'sudo n’est pas disponible sur l’hôte de la passerelle. Exécutez-y la commande ci-dessus, puis actualisez.';
+
+  @override
+  String ng_bots_install_exit_code(String code) {
+    return 'L’installation a échoué (code de sortie $code).';
+  }
+
+  @override
+  String ng_bots_install_done(String bot) {
+    return 'Bot Desktop installé pour $bot';
+  }
+
+  @override
+  String get ng_bots_start_failed => 'Échec du démarrage';
+
+  @override
+  String ng_bots_stop_title(String bot) {
+    return 'Arrêter Bot Desktop pour $bot ?';
+  }
+
+  @override
+  String get ng_bots_stop_human_held =>
+      'Quelqu’un contrôle cet écran. L’arrêter met fin à sa session et ferme tout ce qui y est ouvert.';
+
+  @override
+  String get ng_bots_stop_body =>
+      'Tout ce qui est ouvert sur l’écran du bot sera fermé.';
+
+  @override
+  String get ng_bots_stop_refused => 'Arrêt refusé';
+
+  @override
+  String get ng_bots_take_over_reason => 'Prise de main depuis Ares';
+
+  @override
+  String ng_bots_take_over_failed(String error) {
+    return 'Échec de la prise de main : $error';
+  }
+
+  @override
+  String ng_bots_force_hand_back_title(String bot) {
+    return 'Rendre l’écran de $bot au bot ?';
+  }
+
+  @override
+  String get ng_bots_force_hand_back_body =>
+      'Une personne contrôle cet écran. Si elle l’utilise encore, elle en perdra le contrôle.';
+
+  @override
+  String get ng_bots_hand_back => 'Rendre la main';
+
+  @override
+  String get ng_bots_hand_back_failed => 'Échec de la restitution';
+
+  @override
+  String get ng_bots_adopt_title => 'Adopter la nouvelle image de sandbox ?';
+
+  @override
+  String ng_bots_adopt_body(String bot, String current, String target) {
+    return '$bot passe de $current à $target. Son conteneur sera recréé au prochain appel du terminal ; tout ce qui n’existe que dans le conteneur actuel sera perdu.';
+  }
+
+  @override
+  String get ng_bots_adopt_image => 'Adopter l’image';
+
+  @override
+  String get ng_bots_image_switch_failed => 'Échec du changement d’image';
+
+  @override
+  String get ng_bots_keep_refused => 'Conservation refusée';
+
+  @override
+  String ng_bots_chat_open_failed(String error) {
+    return 'Impossible d’ouvrir Bot Chat : $error';
+  }
+
+  @override
+  String ng_bots_title(String connection) {
+    return 'Bots · $connection';
+  }
+
+  @override
+  String get ng_bots_protocol_tooltip =>
+      'La passerelle injecte elle-même le protocole de messagerie entre coéquipiers — aucun protocole SOUL.md supplémentaire n’est envoyé.';
+
+  @override
+  String ng_bots_unavailable(String reason) {
+    return 'Bots indisponibles ($reason)';
+  }
+
+  @override
+  String get ng_bots_account_changed =>
+      'Le compte a changé. Reconnectez-vous ou actualisez.';
+
+  @override
+  String get ng_bots_try_refresh =>
+      'Essayez d’actualiser. Si le problème persiste, la passerelle ne prend peut-être pas en charge les bots.';
+
+  @override
+  String get ng_bots_search => 'Rechercher des bots';
+
+  @override
+  String get ng_bots_none_found => 'Aucun bot trouvé.';
+
+  @override
+  String get ng_bots_no_model => 'aucun modèle';
+
+  @override
+  String ng_bots_skill_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count compétences',
+      one: '1 compétence',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_bot_chat => 'Bot Chat';
+
+  @override
+  String ng_bots_install_id(String id, String protocol) {
+    return 'La passerelle signale l’ID d’installation $id · bot_mode_protocol : $protocol';
+  }
+
+  @override
+  String get ng_bots_protocol_note =>
+      'La passerelle injecte le protocole de messagerie entre coéquipiers lorsque bot_mode_protocol est défini. Identifiant : default→hermes, sinon le nom du profil.';
+
+  @override
+  String get ng_bots_no_rooms =>
+      'Aucun salon pour l’instant. Créez-en un depuis votre équipe.';
+
+  @override
+  String ng_bots_member_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count membres',
+      one: '1 membre',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_room_disbanded => 'dissous';
+
+  @override
+  String get ng_bots_room_adopted => 'adopté';
+
+  @override
+  String get ng_bots_rooms_gateway => 'Salons de la passerelle';
+
+  @override
+  String get ng_bots_rooms_desktop => 'Salons pilotés par le Desktop';
+
+  @override
+  String ng_bots_rooms_gateway_body(String methods) {
+    return 'Les salons appartiennent à la passerelle. Méthodes : $methods.';
+  }
+
+  @override
+  String get ng_bots_rooms_no_seat =>
+      'Cette passerelle ne peut peut-être pas héberger de salons (processus persistant requis).';
+
+  @override
+  String get ng_bots_rooms_fallback =>
+      'Repli classique : le Desktop pilote les tours de groupe (non créés ici).';
+
+  @override
+  String get ng_bots_create_room => 'Créer un salon';
+
+  @override
+  String get ng_bots_refresh_rooms => 'Actualiser les salons';
+
+  @override
+  String get ng_bots_room_created => 'Salon créé';
+
+  @override
+  String ng_bots_room_refused(String reason) {
+    return 'Création du salon refusée ($reason)';
+  }
+
+  @override
+  String ng_bots_room_failed(String error) {
+    return 'Échec de la création du salon : $error';
+  }
+
+  @override
+  String get ng_bots_bot => 'Bot';
+
+  @override
+  String get ng_bots_screen_unavailable => 'État de l’écran indisponible';
+
+  @override
+  String get ng_bots_screen_unavailable_body =>
+      'Démarrez l’écran du bot pour voir sa miniature, ou prenez la main pour l’utiliser vous-même.';
+
+  @override
+  String get ng_bots_take_over_note =>
+      '« Prendre la main » ouvre l’écran en direct et vous en donne le contrôle. Le contrôle revient au bot lorsque vous fermez l’écran en direct, quittez cette page ou mettez l’app en arrière-plan.';
+
+  @override
+  String get ng_bots_not_installed => 'Non installé';
+
+  @override
+  String get ng_bots_unsupported_host => 'Hôte non pris en charge';
+
+  @override
+  String ng_bots_pid(String pid) {
+    return 'pid $pid';
+  }
+
+  @override
+  String ng_bots_missing(String items) {
+    return 'manquant : $items';
+  }
+
+  @override
+  String ng_bots_blocked(String reason) {
+    return 'bloqué : $reason';
+  }
+
+  @override
+  String get ng_bots_no_switch =>
+      'Aucun changement d’image de sandbox en attente.';
+
+  @override
+  String ng_bots_switch_image(String current, String target) {
+    return 'changement d’image : $current → $target';
+  }
+
+  @override
+  String get ng_bots_bot_in_control => 'le bot a le contrôle';
+
+  @override
+  String get ng_bots_person_in_control => 'une personne a le contrôle';
+
+  @override
+  String get ng_bots_installing =>
+      'Installation de Bot Desktop sur l’hôte de la passerelle…';
+
+  @override
+  String get ng_bots_install_unfinished => 'L’installation n’a pas abouti';
+
+  @override
+  String get ng_bots_install => 'Installer';
+
+  @override
+  String get ng_bots_start => 'Démarrer';
+
+  @override
+  String get ng_bots_take_over => 'Prendre la main';
+
+  @override
+  String get ng_bots_keep_image => 'Conserver l’image actuelle';
+
+  @override
+  String ng_bots_missing_pieces(String items) {
+    return 'La passerelle signale des composants manquants : $items';
+  }
+
+  @override
+  String get ng_bots_install_missing => 'Installer les composants manquants';
+
+  @override
+  String get ng_bots_thumbnail_unavailable => 'Miniature indisponible';
+
+  @override
+  String get ng_bots_thumbnail_title => 'Miniature de l’écran (en direct)';
+
+  @override
+  String get ng_bots_thumbnail_suppressed =>
+      'Miniature masquée tant qu’une personne contrôle l’écran.';
+
+  @override
+  String get ng_bots_thumbnail_pending => 'Miniature pas encore disponible.';
+
+  @override
+  String ng_bots_routines_of(String bot) {
+    return '$bot · routines';
+  }
+
+  @override
+  String get ng_bots_add_routine => 'Ajouter une routine';
+
+  @override
+  String get ng_bots_no_routines => 'Aucune routine pour ce bot.';
+
+  @override
+  String get ng_bots_routines_note =>
+      'Les routines sont des tâches marquées [bot:<name>] qui appartiennent au stockage du profil du bot. Les anciennes routines déléguées sont mises en pause d’office au chargement.';
+
+  @override
+  String ng_bots_routine_last(String status) {
+    return 'dernière : $status';
+  }
+
+  @override
+  String ng_bots_routine_next(String time) {
+    return 'prochaine : $time';
+  }
+
+  @override
+  String ng_bots_routine_error(String error) {
+    return 'erreur : $error';
+  }
+
+  @override
+  String ng_bots_remove_routine_title(String routine) {
+    return 'Supprimer la routine $routine ?';
+  }
+
+  @override
+  String ng_bots_remove_routine_body(String bot) {
+    return 'La routine sera supprimée du planning de $bot. Cette action est irréversible.';
+  }
+
+  @override
+  String ng_bots_routine_action_failed(String action, String error) {
+    return 'Échec de l’action $action : $error';
+  }
+
+  @override
+  String get ng_bots_not_connected => 'Non connecté.';
+
+  @override
+  String ng_bots_add_failed(String error) {
+    return 'Échec de l’ajout : $error';
+  }
+
+  @override
+  String get ng_bots_routine_added => 'Routine ajoutée';
+
+  @override
+  String get ng_bots_routine_enabled => 'activée';
+
+  @override
+  String get ng_bots_routine_paused => 'en pause';
+
+  @override
+  String ng_bots_path(String path) {
+    return 'Chemin : $path';
+  }
+
+  @override
+  String get ng_bots_chat_present => 'Bot Chat présent';
+
+  @override
+  String get ng_bots_chat_missing => 'Bot Chat absent';
+
+  @override
+  String ng_bots_last_session(String preview) {
+    return 'Dernière session : $preview';
+  }
+
+  @override
+  String get ng_bots_open_chat => 'Ouvrir Bot Chat';
+
+  @override
+  String get ng_bots_desktop => 'Bot Desktop';
+
+  @override
+  String get ng_bots_room_name => 'Nom du salon';
+
+  @override
+  String get ng_bots_select_member => 'Sélectionnez au moins un membre.';
+
+  @override
+  String get ng_bots_sudo_title => 'Mot de passe administrateur';
+
+  @override
+  String ng_bots_sudo_body(String bot) {
+    return 'L’installation de Bot Desktop pour $bot nécessite sudo sur l’hôte de la passerelle. Le mot de passe est envoyé uniquement à cette passerelle, pour cette installation, et n’est pas enregistré.';
+  }
+
+  @override
+  String get ng_bots_sudo_password => 'Mot de passe sudo';
+
+  @override
+  String get ng_bots_new_routine => 'Nouvelle routine';
+
+  @override
+  String get ng_bots_routine_title => 'Titre';
+
+  @override
+  String get ng_bots_routine_instruction => 'Instruction';
+
+  @override
+  String get ng_bots_cron => 'Expression cron';
+
+  @override
+  String get ng_bots_interval => 'Intervalle';
+
+  @override
+  String get ng_bots_cron_help => '0 9 * * * s’exécute tous les jours à 09:00';
+
+  @override
+  String get ng_bots_every => 'Tous les';
+
+  @override
+  String get ng_bots_unit_minutes => 'minutes';
+
+  @override
+  String get ng_bots_unit_hours => 'heures';
+
+  @override
+  String get ng_bots_unit_days => 'jours';
+
+  @override
+  String get ng_bots_stop_after => 'Arrêter après (exécutions)';
+
+  @override
+  String get ng_bots_stop_after_help =>
+      'Laisser vide pour continuer indéfiniment';
+
+  @override
+  String get ng_bots_send_results => 'Envoyer les résultats à';
+
+  @override
+  String get ng_bots_run_history => 'Historique d’exécution uniquement';
+
+  @override
+  String get ng_bots_continuity =>
+      'Reprendre à partir de l’exécution précédente';
+
+  @override
+  String get ng_bots_account_changed_refresh =>
+      'Le compte a changé. Actualisez avant de continuer.';
+
+  @override
+  String ng_bots_room_load_failed(String error) {
+    return 'Impossible de charger le salon : $error';
+  }
+
+  @override
+  String ng_bots_send_failed(String error) {
+    return 'Échec de l’envoi : $error';
+  }
+
+  @override
+  String ng_bots_stop_failed(String error) {
+    return 'Échec de l’arrêt : $error';
+  }
+
+  @override
+  String get ng_bots_stop_room => 'Arrêter le salon';
+
+  @override
+  String get ng_bots_send_message => 'Envoyer un message';
+
+  @override
+  String get ng_bots_room_hint =>
+      'Écrire au salon (mentionnez des membres avec @handle)';
+
+  @override
+  String get ng_bots_history => 'Historique';
+
+  @override
+  String ng_bots_revision(String revision) {
+    return 'révision $revision';
+  }
+
+  @override
+  String ng_bots_last_error(String error) {
+    return 'dernière erreur : $error';
+  }
+
+  @override
+  String get ng_bots_members => 'Membres';
+
+  @override
+  String get ng_bots_room_context => 'Contexte du salon';
+
+  @override
+  String ng_bots_purpose(String purpose) {
+    return 'Objectif : $purpose';
+  }
+
+  @override
+  String ng_bots_notes(String notes) {
+    return 'Notes : $notes';
+  }
+
+  @override
+  String ng_bots_routing(String routing) {
+    return 'Routage : $routing';
+  }
+
+  @override
+  String ng_bots_lead(String member) {
+    return 'responsable $member';
+  }
+
+  @override
+  String get ng_bots_viewer_you_control =>
+      'Vous contrôlez cet écran. Le bot attend que vous lui rendiez la main.';
+
+  @override
+  String get ng_bots_viewer_handed_back => 'Le bot a repris le contrôle.';
+
+  @override
+  String get ng_bots_viewer_background =>
+      'Le contrôle est revenu au bot, car l’app n’est plus au premier plan.';
+
+  @override
+  String get ng_bots_viewer_taken =>
+      'Quelqu’un d’autre a pris le contrôle de cet écran.';
+
+  @override
+  String get ng_bots_viewer_lost =>
+      'La vue en direct a été perdue ; le contrôle est donc revenu au bot.';
+
+  @override
+  String ng_bots_viewer_title(String bot) {
+    return 'Bot Desktop · $bot';
+  }
+
+  @override
+  String get ng_bots_viewer_type_hint => 'Saisir sur l’écran du bot';
+
+  @override
+  String get ng_bots_viewer_type => 'Saisir';
+
+  @override
+  String get ng_bots_viewer_enter => 'Entrée';
+
+  @override
+  String get ng_bots_viewer_backspace => 'Retour arrière';
+
+  @override
+  String get ng_more_kanban => 'Kanban';
+
+  @override
+  String get ng_more_kanban_subtitle =>
+      'Tableaux, dépendances des tâches, affectation des workers et journaux';
+
+  @override
+  String get ng_more_bots => 'Bots';
+
+  @override
+  String get ng_more_bots_subtitle => 'Équipe, salons, routines et Bot Desktop';
+
+  @override
+  String get ng_slash_kanban => 'Ouvrir le tableau Kanban';
+
+  @override
+  String get ng_slash_bots => 'Ouvrir vos bots';
+
+  @override
+  String ng_board_card_count(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cartes',
+      one: '1 carte',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_board_event_toast(String task, String event) {
+    return 'Kanban $task : $event';
+  }
+
+  @override
+  String get ng_board_task => 'tâche';
+
+  @override
+  String ng_board_refused_http(String status) {
+    return 'Action refusée (HTTP $status).';
+  }
+
+  @override
+  String get ng_board_err_unsupported =>
+      'Le plugin Kanban n’est pas activé sur cette passerelle.';
+
+  @override
+  String get ng_board_err_denied =>
+      'Connexion ou autorisation requise sur cette passerelle.';
+
+  @override
+  String get ng_board_err_stale =>
+      'Le propriétaire de la passerelle a changé. Actualisez avant de continuer.';
+
+  @override
+  String get ng_board_err_insecure =>
+      'HTTPS (ou loopback) est requis pour les opérations sur l’espace de travail Kanban.';
+
+  @override
+  String get ng_board_err_unreachable =>
+      'Impossible de joindre le service Kanban sur cette passerelle.';
+
+  @override
+  String get ng_board_err_failed =>
+      'L’opération a échoué. Actualisez, puis réessayez.';
+
+  @override
+  String ng_board_block_title(String task) {
+    return 'Bloquer $task';
+  }
+
+  @override
+  String get ng_board_block_reason => 'Motif du blocage';
+
+  @override
+  String get ng_board_block_hint => 'Qu’est-ce qui bloque cette carte ?';
+
+  @override
+  String ng_board_review_title(String task) {
+    return 'Demander une revue de $task';
+  }
+
+  @override
+  String get ng_board_review_summary => 'Résumé de la revue';
+
+  @override
+  String get ng_board_review_hint =>
+      'Qu’est-ce qui a été implémenté et vérifié ?';
+
+  @override
+  String ng_board_move_title(String cards, String column) {
+    return 'Déplacer $cards vers $column ?';
+  }
+
+  @override
+  String ng_board_move_body(String board) {
+    return 'Chaque carte sélectionnée de $board change de colonne. Une carte en cours d’exécution est arrêtée.';
+  }
+
+  @override
+  String get ng_board_move => 'Déplacer';
+
+  @override
+  String ng_board_moved(String column) {
+    return 'Cartes déplacées vers $column';
+  }
+
+  @override
+  String ng_board_unassign_title(String cards) {
+    return 'Désassigner $cards ?';
+  }
+
+  @override
+  String ng_board_assign_title(String cards, String profile) {
+    return 'Assigner $cards à @$profile ?';
+  }
+
+  @override
+  String get ng_board_assign_body =>
+      'Les cartes en cours d’exécution sont d’abord récupérées : leurs workers sont arrêtés.';
+
+  @override
+  String get ng_board_unassign => 'Désassigner';
+
+  @override
+  String get ng_board_assign => 'Assigner';
+
+  @override
+  String get ng_board_unassigned_done => 'Cartes sélectionnées désassignées';
+
+  @override
+  String ng_board_assigned_done(String profile) {
+    return '@$profile assigné';
+  }
+
+  @override
+  String ng_board_archive_title(String cards) {
+    return 'Archiver $cards ?';
+  }
+
+  @override
+  String ng_board_archive_body(String board) {
+    return 'Les cartes archivées quittent $board. Activez « Archivées » pour les revoir.';
+  }
+
+  @override
+  String get ng_board_archived_done => 'Cartes sélectionnées archivées';
+
+  @override
+  String ng_board_delete_title(String cards) {
+    return 'Supprimer $cards ?';
+  }
+
+  @override
+  String ng_board_delete_body(String board) {
+    return 'Les cartes sélectionnées seront définitivement supprimées de $board.';
+  }
+
+  @override
+  String ng_board_deleted(String cards) {
+    return 'Suppression effectuée : $cards.';
+  }
+
+  @override
+  String ng_board_partial_failure(String failed, String total, String reason) {
+    return '$failed sur $total en échec : $reason';
+  }
+
+  @override
+  String get ng_board_refused => 'refusé';
+
+  @override
+  String ng_board_dispatched(
+    String spawned,
+    String promoted,
+    String reclaimed,
+  ) {
+    return 'Répartition : $spawned lancés, $promoted promus, $reclaimed récupérés.';
+  }
+
+  @override
+  String ng_board_board_archived(String board) {
+    return 'Tableau $board archivé';
+  }
+
+  @override
+  String ng_board_board_archived_to(String path) {
+    return 'Archivé dans $path';
+  }
+
+  @override
+  String ng_board_exported(String board, String archive) {
+    return '$board exporté vers $archive';
+  }
+
+  @override
+  String ng_board_imported(String board, String warnings) {
+    return 'Tableau $board importé$warnings';
+  }
+
+  @override
+  String ng_board_created(String task) {
+    return 'Tâche $task créée';
+  }
+
+  @override
+  String get ng_board_orchestration_saved => 'Orchestration Kanban enregistrée';
+
+  @override
+  String get ng_board_auto_describe_unavailable =>
+      'Description automatique indisponible';
+
+  @override
+  String ng_board_description_updated(String profile) {
+    return 'Description de @$profile mise à jour';
+  }
+
+  @override
+  String ng_board_title(String board) {
+    return 'Kanban · $board';
+  }
+
+  @override
+  String ng_board_active(String count) {
+    return 'Actives : $count';
+  }
+
+  @override
+  String get ng_board_dispatch => 'Répartir maintenant les tâches prêtes';
+
+  @override
+  String get ng_board_orchestration => 'Orchestration et workers';
+
+  @override
+  String get ng_board_new_task => 'Nouvelle tâche';
+
+  @override
+  String get ng_board_enable_plugin =>
+      'Activez le plugin « kanban » fourni dans Capacités → Plugins sur cette passerelle pour activer son routeur de tableaux.';
+
+  @override
+  String get ng_board_filter => 'Filtrer les tâches…';
+
+  @override
+  String get ng_board_all_assignees => 'Tous les assignés';
+
+  @override
+  String get ng_board_unassigned => 'Non assigné';
+
+  @override
+  String get ng_board_running_by_profile => 'En cours par profil';
+
+  @override
+  String get ng_board_select => 'Sélectionner';
+
+  @override
+  String ng_board_selected_chip(String count) {
+    return 'Sélection ($count)';
+  }
+
+  @override
+  String get ng_board_locked_column =>
+      'Colonne gérée — glisser-déposer désactivé';
+
+  @override
+  String ng_board_add_to(String column) {
+    return 'Ajouter à $column';
+  }
+
+  @override
+  String ng_board_collapse(String column) {
+    return 'Réduire $column';
+  }
+
+  @override
+  String ng_board_column_empty(String column) {
+    return 'Aucune tâche dans $column';
+  }
+
+  @override
+  String get ng_board_drop_here => 'Déposer ou + tâche';
+
+  @override
+  String get ng_board_card_actions => 'Actions de la carte';
+
+  @override
+  String get ng_board_open_details => 'Ouvrir les détails';
+
+  @override
+  String get ng_board_select_card => 'Sélectionner la carte';
+
+  @override
+  String ng_board_move_to(String column) {
+    return 'Déplacer vers $column';
+  }
+
+  @override
+  String get ng_board_parked => 'En attente';
+
+  @override
+  String ng_board_blocked_by(String count) {
+    return 'Bloquée par $count';
+  }
+
+  @override
+  String get ng_board_goal_loop => 'Boucle d’objectif';
+
+  @override
+  String ng_board_selected(String count) {
+    return 'Sélection : $count';
+  }
+
+  @override
+  String get ng_board_move_menu => 'Déplacer…';
+
+  @override
+  String get ng_board_assign_menu => 'Assigner…';
+
+  @override
+  String get ng_board_new_board_title => 'Nouveau tableau Kanban';
+
+  @override
+  String get ng_board_slug => 'Slug (minuscules, p. ex. release-v5)';
+
+  @override
+  String get ng_board_display_name => 'Nom d’affichage';
+
+  @override
+  String get ng_board_linked_project => 'Projet lié (facultatif)';
+
+  @override
+  String get ng_board_none => 'Aucun';
+
+  @override
+  String get ng_board_default_workdir =>
+      'Répertoire de travail par défaut sur l’hôte (facultatif)';
+
+  @override
+  String get ng_board_import_title => 'Importer une archive de tableau';
+
+  @override
+  String get ng_board_import_path => 'Chemin de l’archive .tar.gz sur l’hôte';
+
+  @override
+  String get ng_board_import => 'Importer';
+
+  @override
+  String ng_board_edit_board(String board) {
+    return 'Modifier $board';
+  }
+
+  @override
+  String get ng_board_name => 'Nom';
+
+  @override
+  String get ng_board_description => 'Description';
+
+  @override
+  String get ng_board_workdir_clear =>
+      'Répertoire de travail par défaut (vide pour effacer)';
+
+  @override
+  String get ng_board_boards => 'Tableaux Kanban';
+
+  @override
+  String get ng_board_new_board => 'Nouveau tableau';
+
+  @override
+  String get ng_board_search_boards => 'Rechercher des tableaux…';
+
+  @override
+  String get ng_board_unpin => 'Désépingler l’onglet';
+
+  @override
+  String get ng_board_pin => 'Épingler l’onglet';
+
+  @override
+  String ng_board_archive_board_title(String board) {
+    return 'Archiver le tableau $board ?';
+  }
+
+  @override
+  String ng_board_archive_board_body(String cards) {
+    return 'Le tableau et ses cartes ($cards) quittent la liste des tableaux. La passerelle en conserve une archive sur son hôte.';
+  }
+
+  @override
+  String get ng_board_edit_metadata => 'Modifier les métadonnées';
+
+  @override
+  String get ng_board_export => 'Exporter en .tar.gz sur l’hôte';
+
+  @override
+  String get ng_board_move_pin_left =>
+      'Déplacer l’onglet épinglé vers la gauche';
+
+  @override
+  String get ng_board_archive_board => 'Archiver le tableau';
+
+  @override
+  String get ng_board_new_task_title => 'Nouvelle tâche Kanban';
+
+  @override
+  String get ng_board_title_required => 'Titre *';
+
+  @override
+  String get ng_board_spec => 'Spécification et critères d’acceptation';
+
+  @override
+  String get ng_board_estimate => 'Estimation';
+
+  @override
+  String ng_board_estimate_draft(String complexity, String tokens) {
+    return 'Complexité $complexity (~$tokens tok — estimation en tokens uniquement, pas un coût en dollars)';
+  }
+
+  @override
+  String get ng_board_estimate_unavailable => 'Estimation indisponible';
+
+  @override
+  String get ng_board_initial_column => 'Colonne initiale';
+
+  @override
+  String get ng_board_worker_assignee => 'Worker assigné';
+
+  @override
+  String get ng_board_parked_unassigned => 'En attente (non assignée)';
+
+  @override
+  String get ng_board_priority => 'Priorité';
+
+  @override
+  String get ng_board_workspace => 'Espace de travail';
+
+  @override
+  String get ng_board_scratch => 'Temporaire';
+
+  @override
+  String get ng_board_worktree => 'Worktree Git';
+
+  @override
+  String get ng_board_shared_dir => 'Répertoire partagé';
+
+  @override
+  String get ng_board_workspace_path =>
+      'Chemin de l’espace de travail sur l’hôte';
+
+  @override
+  String get ng_board_parent => 'Dépendance parente (facultatif)';
+
+  @override
+  String get ng_board_skills =>
+      'Compétences épinglées (séparées par des virgules, facultatif)';
+
+  @override
+  String get ng_board_provider_override => 'Forcer le fournisseur';
+
+  @override
+  String get ng_board_model_override => 'Forcer le modèle';
+
+  @override
+  String get ng_board_reasoning => 'Effort de raisonnement';
+
+  @override
+  String get ng_board_profile_default => 'Par défaut du profil';
+
+  @override
+  String get ng_board_xhigh => 'Très élevé';
+
+  @override
+  String get ng_board_goal_mode => 'Mode boucle d’objectif';
+
+  @override
+  String get ng_board_goal_turns =>
+      'Tours max. de l’objectif (vide = par défaut)';
+
+  @override
+  String get ng_board_create_task => 'Créer la tâche';
+
+  @override
+  String get ng_board_orchestration_title =>
+      'Orchestration et profils de workers';
+
+  @override
+  String ng_board_orchestrator(String profile) {
+    return 'Profil de l’orchestrateur (résolu : $profile)';
+  }
+
+  @override
+  String get ng_board_inherit_default =>
+      'Hériter de la valeur par défaut active';
+
+  @override
+  String ng_board_default_assignee(String profile) {
+    return 'Assigné par défaut (résolu : $profile)';
+  }
+
+  @override
+  String get ng_board_auto_decompose =>
+      'Décomposer automatiquement les cartes de triage';
+
+  @override
+  String get ng_board_auto_decompose_help =>
+      'Utilise le modèle kanban_decomposer configuré pour les tâches de triage';
+
+  @override
+  String get ng_board_save_orchestration => 'Enregistrer l’orchestration';
+
+  @override
+  String get ng_board_worker_descriptions =>
+      'Descriptions des spécialisations des workers';
+
+  @override
+  String ng_board_worker_label(String profile, String model, String skills) {
+    return '@$profile ($model · $skills)';
+  }
+
+  @override
+  String get ng_board_default_model => 'modèle par défaut';
+
+  @override
+  String get ng_board_save_description => 'Enregistrer la description';
+
+  @override
+  String get ng_board_auto_describe =>
+      'Décrire automatiquement à partir des compétences et du persona';
+
+  @override
+  String get ng_board_manual_block => 'Blocage manuel par l’opérateur';
+
+  @override
+  String get ng_board_requested_review => 'Revue demandée';
+
+  @override
+  String ng_board_requeue_title(String task) {
+    return 'Remettre $task en file d’attente ?';
+  }
+
+  @override
+  String get ng_board_requeue_body =>
+      'Le worker qui exécute cette carte est arrêté et la carte retourne dans la file d’attente.';
+
+  @override
+  String get ng_board_requeue => 'Remettre en file';
+
+  @override
+  String ng_board_reassign_title(String task, String profile) {
+    return 'Réassigner $task à @$profile ?';
+  }
+
+  @override
+  String get ng_board_reassign_body =>
+      'Cette carte est en cours d’exécution : son worker sera d’abord arrêté.';
+
+  @override
+  String get ng_board_reassign => 'Réassigner';
+
+  @override
+  String ng_board_saved_task(String task) {
+    return 'Tâche $task enregistrée';
+  }
+
+  @override
+  String get ng_board_commented_requeued =>
+      'Commentaire publié et tâche remise en file d’attente';
+
+  @override
+  String get ng_board_commented => 'Commentaire publié';
+
+  @override
+  String ng_board_requeued(String task) {
+    return 'Tâche $task remise en file d’attente';
+  }
+
+  @override
+  String get ng_board_decompose_failed => 'Échec de la décomposition.';
+
+  @override
+  String ng_board_decompose_failed_reason(String reason) {
+    return 'Échec de la décomposition : $reason';
+  }
+
+  @override
+  String ng_board_decomposed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Décomposée en $count sous-tâches',
+      one: 'Décomposée en 1 sous-tâche',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_board_no_children => 'Aucune sous-tâche n’a été créée.';
+
+  @override
+  String ng_board_no_children_reason(String reason) {
+    return 'Aucune sous-tâche n’a été créée : $reason';
+  }
+
+  @override
+  String ng_board_uploaded(String file) {
+    return '$file téléversé';
+  }
+
+  @override
+  String ng_board_linked_parent(String task) {
+    return 'Tâche parente $task liée';
+  }
+
+  @override
+  String ng_board_unlinked_parent(String task) {
+    return 'Lien vers la tâche parente $task supprimé';
+  }
+
+  @override
+  String get ng_board_task_load_failed => 'Impossible de charger la tâche';
+
+  @override
+  String get ng_board_refresh_task => 'Actualiser la tâche';
+
+  @override
+  String get ng_board_tab_overview => 'Aperçu';
+
+  @override
+  String get ng_board_tab_comments => 'Commentaires et liens';
+
+  @override
+  String get ng_board_tab_runs => 'Exécutions et journal';
+
+  @override
+  String get ng_board_tab_events => 'Événements';
+
+  @override
+  String get ng_board_decompose => 'Décomposer';
+
+  @override
+  String get ng_board_attach => 'Joindre un fichier';
+
+  @override
+  String ng_board_estimate_task(
+    String complexity,
+    String tokens,
+    String rationale,
+  ) {
+    return 'Estimation : $complexity · ~$tokens tokens ($rationale) — pas un coût en dollars.';
+  }
+
+  @override
+  String get ng_board_no_rationale => 'aucune justification';
+
+  @override
+  String get ng_board_status => 'Statut';
+
+  @override
+  String get ng_board_assignee => 'Assigné à';
+
+  @override
+  String get ng_board_title_label => 'Titre';
+
+  @override
+  String get ng_board_body => 'Corps / spécification';
+
+  @override
+  String get ng_board_save_changes => 'Enregistrer les modifications';
+
+  @override
+  String get ng_board_clear_model => 'Retirer le modèle forcé';
+
+  @override
+  String ng_board_blocked_reason(String reason) {
+    return 'Motif du blocage : $reason';
+  }
+
+  @override
+  String ng_board_result(String result) {
+    return 'Résultat : $result';
+  }
+
+  @override
+  String ng_board_parents(String count) {
+    return 'Bloquée par (parents · $count)';
+  }
+
+  @override
+  String get ng_board_add_parent => '+ Ajouter un parent';
+
+  @override
+  String ng_board_children(String count) {
+    return 'Bloque (enfants · $count)';
+  }
+
+  @override
+  String ng_board_attachments(String count) {
+    return 'Pièces jointes ($count)';
+  }
+
+  @override
+  String get ng_board_worker => 'worker';
+
+  @override
+  String ng_board_comments(String count) {
+    return 'Commentaires ($count)';
+  }
+
+  @override
+  String get ng_board_comment_hint =>
+      'Ajouter un commentaire / des consignes pour le worker';
+
+  @override
+  String get ng_board_post_comment => 'Publier le commentaire';
+
+  @override
+  String get ng_board_comment_requeue => 'Commenter et remettre en file';
+
+  @override
+  String ng_board_runs(String count) {
+    return 'Exécutions ($count)';
+  }
+
+  @override
+  String get ng_board_no_runs =>
+      'Aucune exécution de worker enregistrée pour l’instant.';
+
+  @override
+  String ng_board_run_error(String error) {
+    return 'Erreur : $error';
+  }
+
+  @override
+  String ng_board_log_tail_truncated(String bytes) {
+    return 'Fin du journal du worker ($bytes o, tronqué)';
+  }
+
+  @override
+  String ng_board_log_tail(String bytes) {
+    return 'Fin du journal du worker ($bytes o)';
+  }
+
+  @override
+  String get ng_board_refresh_log => 'Actualiser le journal';
+
+  @override
+  String get ng_board_no_log => 'Aucune sortie dans le journal du worker.';
+
+  @override
+  String get ng_board_no_events => 'Aucun événement enregistré.';
+
+  @override
+  String get ng_bots_room_unknown => 'inconnu';
+
+  @override
+  String get ng_bots_room_blocked => 'bloqué';
+
+  @override
+  String get ng_bots_room_working => 'au travail';
+
+  @override
+  String get ng_bots_room_running => 'en marche';
+
+  @override
+  String get ng_bots_room_idle => 'inactif';
+
+  @override
+  String ng_board_run_title(String id, String profile, String outcome) {
+    return 'Exécution n° $id · @$profile · $outcome';
+  }
+
+  @override
+  String get ng_bots_new_bot => 'Nouveau bot';
+
+  @override
+  String get ng_bots_new_bot_hint =>
+      'Un coéquipier nommé, avec sa propre mémoire, ses compétences et son chat. Il peut écrire à vos autres agents.';
+
+  @override
+  String get ng_bots_field_name => 'Nom';
+
+  @override
+  String get ng_bots_field_title => 'Titre';
+
+  @override
+  String get ng_bots_field_description => 'Description';
+
+  @override
+  String get ng_bots_description_hint => 'Avec quoi ce bot doit-il aider ?';
+
+  @override
+  String get ng_bots_name_invalid =>
+      'Utilisez des minuscules, chiffres, tirets ou tirets bas, en commençant par une lettre ou un chiffre (64 caractères au plus).';
+
+  @override
+  String ng_bots_name_taken(String name) {
+    return 'Un agent nommé « $name » existe déjà.';
+  }
+
+  @override
+  String ng_bots_profile_id(String id) {
+    return 'ID de profil : $id';
+  }
+
+  @override
+  String get ng_bots_advanced =>
+      'Avancé — modèle, compétences, jeux d’outils, SOUL.md';
+
+  @override
+  String get ng_bots_clone_from => 'Cloner depuis le profil';
+
+  @override
+  String get ng_bots_clone_main => 'Profil principal (default)';
+
+  @override
+  String get ng_bots_fresh_profile => 'Nouveau profil (compétences fournies)';
+
+  @override
+  String get ng_bots_create_empty =>
+      'Créer vide (sans les compétences fournies)';
+
+  @override
+  String get ng_bots_share_keys =>
+      'Partager clés et comptes avec le profil principal';
+
+  @override
+  String get ng_bots_provider => 'Fournisseur';
+
+  @override
+  String get ng_bots_model => 'Modèle';
+
+  @override
+  String get ng_bots_model_pair => 'Indiquez un fournisseur et un modèle.';
+
+  @override
+  String get ng_bots_soul =>
+      'SOUL.md (facultatif — remplace la persona générée)';
+
+  @override
+  String get ng_bots_soul_edit => 'SOUL.md';
+
+  @override
+  String get ng_bots_creating => 'Création…';
+
+  @override
+  String get ng_bots_create_bot => 'Créer le bot';
+
+  @override
+  String ng_bots_created(String name) {
+    return 'Bot « $name » créé';
+  }
+
+  @override
+  String get ng_bots_look_failed =>
+      'Son apparence n’a pas été enregistrée sur la passerelle ; réglez-la dans Modifier le profil.';
+
+  @override
+  String ng_bots_request_failed(String reason) {
+    return 'La passerelle ne l’a pas accepté ($reason).';
+  }
+
+  @override
+  String get ng_bots_avatar_shape => 'Forme';
+
+  @override
+  String ng_bots_avatar_shape_n(int n) {
+    return 'Forme $n';
+  }
+
+  @override
+  String get ng_bots_avatar_colour => 'Couleur';
+
+  @override
+  String ng_bots_avatar_colour_n(int n) {
+    return 'Couleur $n';
+  }
+
+  @override
+  String get ng_bots_avatar_match_name => 'Selon le nom';
+
+  @override
+  String get ng_bots_avatar_upload => 'Choisir une image…';
+
+  @override
+  String get ng_bots_avatar_remove => 'Retirer l’image — utiliser la forme';
+
+  @override
+  String get ng_bots_avatar_too_large => 'Image trop volumineuse (15 Mo max.).';
+
+  @override
+  String get ng_bots_avatar_unreadable => 'Impossible de lire cette image.';
+
+  @override
+  String get ng_bots_edit_profile => 'Modifier le profil';
+
+  @override
+  String ng_bots_edit_description(String name, String profile) {
+    return 'Apparence et rôle de $name ($profile).';
+  }
+
+  @override
+  String ng_bots_advanced_failed(String reason) {
+    return 'Impossible de charger les réglages du profil ($reason).';
+  }
+
+  @override
+  String get ng_bots_skills => 'Compétences';
+
+  @override
+  String get ng_bots_toolsets => 'Jeux d’outils';
+
+  @override
+  String get ng_bots_toolsets_hint =>
+      'Tout cocher (ou rien) conserve le comportement par défaut des jeux d’outils.';
+
+  @override
+  String get ng_bots_mcp_servers => 'Serveurs MCP';
+
+  @override
+  String get ng_bots_saving => 'Enregistrement…';
+
+  @override
+  String get ng_bots_confirm_changes_title => 'Enregistrer ces modifications ?';
+
+  @override
+  String get ng_bots_change_remove_image => 'Retirer l’image du bot';
+
+  @override
+  String get ng_bots_change_soul => 'Remplacer son SOUL.md';
+
+  @override
+  String ng_bots_change_turn_off(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Désactiver $count compétences, jeux d’outils ou serveurs MCP',
+      one: 'Désactiver 1 compétence, jeu d’outils ou serveur MCP',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String ng_bots_updated(String name) {
+    return '$name mis à jour';
+  }
+
+  @override
+  String ng_bots_sections_failed(String sections) {
+    return 'Certaines sections ont échoué : $sections';
+  }
+
+  @override
+  String get ng_bots_model_confirm_title => 'Changer de modèle ?';
+
+  @override
+  String get ng_bots_model_confirm_ok => 'Changer';
+
+  @override
+  String get ng_bots_model_not_switched => 'Le modèle n’a pas été changé.';
+
+  @override
+  String get ng_bots_section_new => 'Nouvelle section';
+
+  @override
+  String get ng_bots_section_new_ellipsis => 'Nouvelle section…';
+
+  @override
+  String get ng_bots_section_name => 'Nom de la section';
+
+  @override
+  String get ng_bots_section_name_hint => 'p. ex. Clients';
+
+  @override
+  String get ng_bots_section_create => 'Créer';
+
+  @override
+  String get ng_bots_section_rename => 'Renommer la section';
+
+  @override
+  String get ng_bots_section_delete => 'Supprimer la section';
+
+  @override
+  String get ng_bots_section_move_up => 'Monter';
+
+  @override
+  String get ng_bots_section_move_down => 'Descendre';
+
+  @override
+  String get ng_bots_section_unassigned => 'Non classés';
+
+  @override
+  String ng_bots_section_options(String name) {
+    return 'Options de la section $name';
+  }
+
+  @override
+  String get ng_bots_section_empty =>
+      'Aucun bot ici pour l’instant. Utilisez Déplacer vers une section sur un bot.';
+
+  @override
+  String get ng_bots_section_move_to => 'Déplacer vers une section';
+
+  @override
+  String get ng_bots_section_remove => 'Retirer de la section';
+
+  @override
+  String ng_bots_section_deleted(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '« $name » supprimée — $count bots déplacés vers Non classés',
+      one: '« $name » supprimée — 1 bot déplacé vers Non classés',
+      zero: '« $name » supprimée',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_bots_undo => 'Annuler';
+
+  @override
+  String ng_bots_section_move_failed(String reason) {
+    return 'Impossible de déplacer le bot ($reason).';
+  }
+
+  @override
+  String ng_bots_bot_actions(String name) {
+    return 'Actions pour $name';
+  }
+
+  @override
+  String ng_bots_section_toggle(String name) {
+    return 'Afficher ou masquer $name';
+  }
+
+  @override
+  String
+  get release_core_transcript_reader_this_passage_is_no_longer_in_the_loaded =>
+      'Ce passage ne fait plus partie de la portion chargée.';
+
+  @override
+  String get release_core_transcript_reader_loaded_prompts => 'Prompts chargés';
+
+  @override
+  String get release_core_transcript_reader_jump_to_latest =>
+      'Aller au dernier élément';
+
+  @override
+  String get release_core_transcript_reader_no_prompts_loaded =>
+      'Aucun prompt chargé';
+
+  @override
+  String get release_core_transcript_reader_find_in_loaded_messages =>
+      'Rechercher dans les messages chargés';
+
+  @override
+  String get release_core_transcript_reader_previous_match =>
+      'Résultat précédent';
+
+  @override
+  String get release_core_transcript_reader_next_match => 'Résultat suivant';
+
+  @override
+  String get release_core_transcript_reader_prompt_timeline =>
+      'Chronologie des prompts';
+
+  @override
+  String get release_core_transcript_reader_close_find => 'Fermer la recherche';
+
+  @override
+  String get release_core_session_organisation_organise_chats =>
+      'Organiser les discussions';
+
+  @override
+  String get release_core_session_organisation_show_model_and_usage =>
+      'Afficher le modèle et l’utilisation';
+
+  @override
+  String
+  get release_core_session_files_view_connection_changed_reopen_files_on_the_new_connection =>
+      'La connexion a changé. Rouvrez les fichiers avec la nouvelle connexion.';
+
+  @override
+  String
+  get release_core_session_files_view_the_connection_or_session_changed_reopen_this_pane =>
+      'La connexion ou la session a changé. Rouvrez ce volet.';
+
+  @override
+  String
+  get release_core_session_files_view_no_verified_host_working_directory_for_this_session =>
+      'Aucun répertoire de travail vérifié sur l’hôte pour cette session.';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_denied_this_operation =>
+      'La passerelle a refusé cette opération.';
+
+  @override
+  String
+  get release_core_session_files_view_this_gateway_does_not_support_this_operation =>
+      'Cette passerelle ne prend pas en charge cette opération.';
+
+  @override
+  String
+  get release_core_session_files_view_the_file_owner_or_working_directory_changed_reload =>
+      'Le fichier, le propriétaire ou le répertoire de travail a changé. Rechargez et vérifiez.';
+
+  @override
+  String
+  get release_core_session_files_view_the_gateway_returned_an_unsafe_path_or_invalid =>
+      'La passerelle a renvoyé un chemin non sûr ou une réponse de fichier invalide.';
+
+  @override
+  String
+  get release_core_session_files_view_workspace_access_requires_a_secure_gateway_connection =>
+      'L’accès à l’espace de travail nécessite une connexion sécurisée à la passerelle.';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_unavailable_refresh_to_check_the_current_state =>
+      'Passerelle indisponible. Actualisez pour vérifier l’état actuel.';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_operation_could_not_be_confirmed =>
+      'L’opération de la passerelle n’a pas pu être confirmée.';
+
+  @override
+  String get release_core_session_files_view_git_status_unavailable =>
+      'État Git indisponible.';
+
+  @override
+  String
+  get release_core_session_files_view_change_this_chat_s_working_directory =>
+      'Modifier le répertoire de travail de cette discussion ?';
+
+  @override
+  String get release_core_session_files_view_absolute_gateway_directory =>
+      'Répertoire absolu sur la passerelle';
+
+  @override
+  String get release_core_session_files_view_change_directory =>
+      'Changer de répertoire';
+
+  @override
+  String get release_core_session_files_view_replace_gateway_file =>
+      'Remplacer le fichier sur la passerelle ?';
+
+  @override
+  String
+  release_core_session_files_view_only_if_the_file_still_matches_the_version(
+    String path,
+  ) {
+    return '$path\n\nUniquement si le fichier correspond toujours à la version que vous avez examinée. Un hôte compatible conserve le fichier remplacé pour permettre sa récupération.';
+  }
+
+  @override
+  String get release_core_session_files_view_save_changes =>
+      'Enregistrer les modifications';
+
+  @override
+  String
+  get release_core_session_files_view_saved_and_verified_on_the_gateway =>
+      'Enregistré et vérifié sur la passerelle.';
+
+  @override
+  String
+  get release_core_session_files_view_guarded_saving_is_unavailable_on_this_gateway_your =>
+      'L’enregistrement protégé est indisponible sur cette passerelle. Votre brouillon est toujours là.';
+
+  @override
+  String
+  release_core_session_files_view_save_was_not_confirmed_your_draft_is_still(
+    String reason,
+  ) {
+    return '$reason L’enregistrement n’a pas été confirmé. Votre brouillon est toujours là.';
+  }
+
+  @override
+  String get release_core_session_files_view_review_current_gateway_version =>
+      'Examiner la version actuelle sur la passerelle';
+
+  @override
+  String get release_core_session_files_view_discard_draft_and_reload =>
+      'Supprimer le brouillon et recharger';
+
+  @override
+  String get release_core_session_files_view_keep_draft_against_this_version =>
+      'Conserver le brouillon sur la base de cette version';
+
+  @override
+  String get release_core_session_files_view_discard_unsaved_edits =>
+      'Abandonner les modifications non enregistrées ?';
+
+  @override
+  String get release_core_session_files_view_keep_editing =>
+      'Continuer la modification';
+
+  @override
+  String get release_core_session_files_view_discard_edits =>
+      'Abandonner les modifications';
+
+  @override
+  String get release_core_session_files_view_remote_working_directory =>
+      'Répertoire de travail distant';
+
+  @override
+  String get release_core_session_files_view_change_working_directory =>
+      'Changer de répertoire de travail';
+
+  @override
+  String get release_core_session_files_view_show_ignored_files =>
+      'Afficher les fichiers ignorés';
+
+  @override
+  String
+  get release_core_session_files_view_gateway_does_not_report_ignored_status =>
+      'La passerelle n’indique pas quels fichiers sont ignorés.';
+
+  @override
+  String get release_core_session_files_view_no_visible_entries =>
+      'Aucune entrée visible';
+
+  @override
+  String get release_core_session_files_view_changed => 'Modifié';
+
+  @override
+  String get release_core_session_files_view_ignored => 'Ignoré';
+
+  @override
+  String release_core_session_files_view_actions_for(String name) {
+    return 'Actions pour $name';
+  }
+
+  @override
+  String get release_core_session_files_view_copy_relative_path =>
+      'Copier le chemin relatif';
+
+  @override
+  String get release_core_session_files_view_copy_gateway_path =>
+      'Copier le chemin sur la passerelle';
+
+  @override
+  String get release_core_session_files_view_attach_folder_reference =>
+      'Joindre une référence de dossier';
+
+  @override
+  String get release_core_session_files_view_attach_file_reference =>
+      'Joindre une référence de fichier';
+
+  @override
+  String
+  get release_core_session_files_view_preview_truncated_editing_disabled =>
+      'Aperçu tronqué — modification désactivée.';
+
+  @override
+  String get release_core_session_files_view_select_lines =>
+      'Sélectionner des lignes';
+
+  @override
+  String get release_core_session_files_view_review_gateway_version =>
+      'Examiner la version sur la passerelle';
+
+  @override
+  String get release_core_session_files_view_attach_selected_lines =>
+      'Joindre les lignes sélectionnées';
+
+  @override
+  String get release_core_session_files_view_binary_file_no_text_preview =>
+      'Fichier binaire — aucun aperçu textuel.';
+
+  @override
+  String get release_core_session_files_view_file_source => 'Source du fichier';
+
+  @override
+  String get release_core_session_files_view_close_session_files =>
+      'Fermer les fichiers de la session';
+
+  @override
+  String get release_core_session_files_view_back_to_tree =>
+      'Revenir à l’arborescence';
+
+  @override
+  String get release_core_session_files_view_session_files =>
+      'Fichiers de la session';
+
+  @override
+  String get release_core_session_files_view_git_review => 'Revue Git';
+
+  @override
+  String get release_core_session_files_view_refresh_tree =>
+      'Actualiser l’arborescence';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_this_connection_changed_reopen_its_chat =>
+      'Cette connexion a changé. Rouvrez la discussion associée.';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_disconnected_reconnect_the_chat_then_refresh =>
+      'Connexion interrompue. Reconnectez la discussion, puis actualisez.';
+
+  @override
+  String release_core_gateway_queue_screen_gateway_queue_unavailable(
+    String reason,
+  ) {
+    return 'File d’attente de la passerelle indisponible : $reason.';
+  }
+
+  @override
+  String release_core_gateway_queue_screen_not_confirmed_nothing_was_resent(
+    String reason,
+  ) {
+    return 'Non confirmé ($reason). Rien n’a été renvoyé.';
+  }
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_confirmed_admission =>
+      'La passerelle a confirmé la prise en charge.';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_edited_entry_admitted_at_the_end_of_the =>
+      'Entrée modifiée prise en charge en fin de file d’attente.';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_unknown_outcome =>
+      'Abandonner l’entrée au résultat inconnu ?';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_this_entry =>
+      'Supprimer cette entrée ?';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_the_lost_turn_will_not_be_retried_waiting =>
+      'Le tour perdu ne sera pas relancé. Les tours en attente peuvent maintenant s’exécuter.';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_if_the_gateway_has_just_started_this_entry =>
+      'Si la passerelle vient de démarrer cette entrée, sa suppression peut arrêter le tour correspondant.';
+
+  @override
+  String get release_core_gateway_queue_screen_keep => 'Conserver';
+
+  @override
+  String get release_core_gateway_queue_screen_discard_and_resume =>
+      'Abandonner et reprendre';
+
+  @override
+  String get release_core_gateway_queue_screen_remove_entry =>
+      'Supprimer l’entrée';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_lost_admission_resolved_it_was_not_resent =>
+      'Prise en charge incertaine résolue ; rien n’a été renvoyé.';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_acknowledged_removal =>
+      'La passerelle a confirmé la suppression.';
+
+  @override
+  String get release_core_gateway_queue_screen_gateway_queue =>
+      'File d’attente de la passerelle';
+
+  @override
+  String get release_core_gateway_queue_screen_refresh_queue =>
+      'Actualiser la file d’attente';
+
+  @override
+  String get release_core_gateway_queue_screen_queue_paused_unknown_outcome =>
+      'File d’attente suspendue : résultat inconnu';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_review_the_lost_admission_before_resuming_nothing_is =>
+      'Examinez la prise en charge incertaine avant de reprendre. Rien n’est renvoyé.';
+
+  @override
+  String get release_core_gateway_queue_screen_no_pending_admissions =>
+      'Aucune prise en charge en attente';
+
+  @override
+  String get release_core_gateway_queue_screen_discard => 'Abandonner…';
+
+  @override
+  String
+  get release_core_gateway_queue_screen_gateway_acknowledged_the_steering_request =>
+      'La passerelle a confirmé la demande de réorientation.';
+
+  @override
+  String get release_core_gateway_queue_screen_steer_running_turn =>
+      'Réorienter le tour en cours';
+
+  @override
+  String get release_core_gateway_queue_screen_remove => 'Supprimer…';
+
+  @override
+  String get release_core_gateway_queue_screen_next_prompt => 'Prompt suivant';
+
+  @override
+  String get release_core_gateway_queue_screen_edit_queued_prompt =>
+      'Modifier le prompt en attente';
+
+  @override
+  String get release_core_gateway_queue_screen_submit_to_gateway_queue =>
+      'Envoyer à la file d’attente de la passerelle';
+
+  @override
+  String get release_core_gateway_queue_screen_save_at_queue_end =>
+      'Enregistrer en fin de file d’attente';
+
+  @override
+  String get release_core_gateway_queue_screen_cancel_edit =>
+      'Annuler la modification';
+
+  @override
+  String get release_core_git_review_pane_the_git_operation_did_not_complete =>
+      'L’opération Git ne s’est pas terminée.';
+
+  @override
+  String get release_core_git_review_pane_close_git_review =>
+      'Fermer la revue Git';
+
+  @override
+  String get release_core_git_review_pane_pin_lane => 'Épingler la voie';
+
+  @override
+  String get release_core_git_review_pane_refresh_git_review =>
+      'Actualiser la revue Git';
+
+  @override
+  String get release_core_git_review_pane_uncommitted => 'Non commité';
+
+  @override
+  String get release_core_git_review_pane_last_turn => 'Dernier tour';
+
+  @override
+  String
+  get release_core_git_review_pane_branch_and_last_turn_views_are_read_only =>
+      'Les vues de branche et du dernier tour sont en lecture seule.';
+
+  @override
+  String get release_core_git_review_pane_mark_head_as_the_turn_baseline =>
+      'Définir HEAD comme référence de départ du tour';
+
+  @override
+  String get release_core_git_review_pane_stage_all => 'Tout indexer';
+
+  @override
+  String get release_core_git_review_pane_discard_every_uncommitted_change =>
+      'Abandonner toutes les modifications non commitées ?';
+
+  @override
+  String
+  get release_core_git_review_pane_tracked_files_return_to_head_and_untracked_files =>
+      'Les fichiers suivis sont rétablis à HEAD et les fichiers non suivis de ce répertoire de session sont supprimés.';
+
+  @override
+  String get release_core_git_review_pane_discard => 'Abandonner';
+
+  @override
+  String get release_core_git_review_pane_discard_all => 'Tout abandonner';
+
+  @override
+  String get release_core_git_review_pane_unstage => 'Désindexer';
+
+  @override
+  String get release_core_git_review_pane_stage => 'Indexer';
+
+  @override
+  String get release_core_git_review_pane_discard_file =>
+      'Abandonner les modifications du fichier';
+
+  @override
+  String release_core_git_review_pane_discard_2(String path) {
+    return 'Abandonner les modifications de $path ?';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_this_restores_the_committed_copy_or_removes_the =>
+      'Cela rétablit la version commitée ou supprime le fichier non suivi.';
+
+  @override
+  String get release_core_git_review_pane_commit_message => 'Message de commit';
+
+  @override
+  String get release_core_git_review_pane_nothing_in_the_diff_to_summarise =>
+      'Aucune modification à résumer dans le diff.';
+
+  @override
+  String get release_core_git_review_pane_generate_message =>
+      'Générer le message';
+
+  @override
+  String get release_core_git_review_pane_commit => 'Commiter';
+
+  @override
+  String get release_core_git_review_pane_commit_and_push =>
+      'Commiter et pousser';
+
+  @override
+  String get release_core_git_review_pane_push => 'Pousser';
+
+  @override
+  String get release_core_git_review_pane_create_pull_request =>
+      'Créer une pull request';
+
+  @override
+  String get release_core_git_review_pane_pull_request_ready =>
+      'Pull request prête';
+
+  @override
+  String get release_core_git_review_pane_ask_hermes_to_ship =>
+      'Demander à Hermes de publier';
+
+  @override
+  String get release_core_git_review_pane_gh_is_authenticated_on_this_gateway =>
+      'gh est authentifié sur cette passerelle.';
+
+  @override
+  String
+  get release_core_git_review_pane_install_the_github_cli_gh_and_sign_in =>
+      'Installez la CLI GitHub (gh) et connectez-vous pour ouvrir des PR';
+
+  @override
+  String get release_core_git_review_pane_worktrees => 'Arbres de travail';
+
+  @override
+  String get release_core_git_review_pane_main => 'Principal';
+
+  @override
+  String release_core_git_review_pane_follow(String branch) {
+    return 'Suivre $branch ?';
+  }
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_working_directory_becomes_this_worktree_unless =>
+      'Cet arbre de travail devient le répertoire de travail de la session, sauf si la voie est épinglée.';
+
+  @override
+  String get release_core_git_review_pane_follow_2 => 'Suivre';
+
+  @override
+  String release_core_git_review_pane_remove(String branch) {
+    return 'Supprimer $branch ?';
+  }
+
+  @override
+  String get release_core_git_review_pane_the_worktree_directory_is_removed =>
+      'Le répertoire de l’arbre de travail est supprimé.';
+
+  @override
+  String get release_core_git_review_pane_remove_2 => 'Supprimer';
+
+  @override
+  String get release_core_git_review_pane_new_worktree_name =>
+      'Nom du nouvel arbre de travail';
+
+  @override
+  String get release_core_git_review_pane_new_branch => 'Nouvelle branche';
+
+  @override
+  String get release_core_git_review_pane_base_branch => 'Branche de base';
+
+  @override
+  String get release_core_git_review_pane_create_worktree =>
+      'Créer un arbre de travail';
+
+  @override
+  String get release_core_git_review_pane_existing_branch =>
+      'Branche existante';
+
+  @override
+  String get release_core_git_review_pane_convert_branch_to_worktree =>
+      'Convertir la branche en arbre de travail';
+
+  @override
+  String get release_core_git_review_pane_switch_branch => 'Changer de branche';
+
+  @override
+  String
+  get release_core_git_review_pane_this_gateway_does_not_support_that_git_operation =>
+      'Cette passerelle ne prend pas en charge cette opération Git.';
+
+  @override
+  String
+  get release_core_git_review_pane_git_needs_the_session_directory_on_the_local =>
+      'Git a besoin du répertoire de session sur le backend de terminal local.';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_refused_the_git_operation =>
+      'La passerelle a refusé l’opération Git.';
+
+  @override
+  String
+  get release_core_git_review_pane_the_session_changed_refresh_and_try_again =>
+      'La session a changé. Actualisez et réessayez.';
+
+  @override
+  String
+  get release_core_git_review_pane_this_review_is_no_longer_the_selected_session =>
+      'Cette revue ne correspond plus à la session sélectionnée.';
+
+  @override
+  String
+  get release_core_git_review_pane_the_gateway_returned_an_unexpected_git_result =>
+      'La passerelle a renvoyé un résultat Git inattendu.';
+
+  @override
+  String
+  get release_core_git_review_pane_git_review_requires_the_gateway_transport =>
+      'La revue Git nécessite le transport de la passerelle.';
+
+  @override
+  String get release_core_client_held_queue_bar_resume => 'Reprendre';
+
+  @override
+  String get release_core_client_held_queue_bar_send_queued_prompt =>
+      'Envoyer le prompt en attente';
+
+  @override
+  String get release_core_client_held_queue_bar_edit_unsent_prompt =>
+      'Modifier le prompt non envoyé';
+
+  @override
+  String get release_core_client_held_queue_bar_remove_unsent_prompt =>
+      'Supprimer le prompt non envoyé';
+
+  @override
+  String get release_core_workspace_discovery_view_repository_discovery =>
+      'Découverte des dépôts';
+
+  @override
+  String get release_core_workspace_discovery_view_refresh_results =>
+      'Actualiser les résultats';
+
+  @override
+  String release_core_workspace_discovery_view_hide(String path) {
+    return 'Masquer $path';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_invalid_path_or_discovery_data_use_absolute_server =>
+      'Chemin ou données de découverte invalides. Utilisez des chemins absolus sur le serveur, sans composants « . » ou « .. ».';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_does_not_support_repository_discovery =>
+      'Cette passerelle ne prend pas en charge la découverte des dépôts.';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_denied_access_to_repository_discovery =>
+      'La passerelle a refusé l’accès à la découverte des dépôts.';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_connection_changed_reopen_discovery_on_the_current =>
+      'La connexion a changé. Rouvrez la découverte sur la passerelle actuelle.';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_displayed_settings_have_changed_refresh_before_trying =>
+      'Les paramètres affichés ont changé. Actualisez avant de réessayer.';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_could_not_load_or_verify_discovery_settings_refresh =>
+      'Impossible de charger ou de vérifier les paramètres de découverte. Actualisez pour réessayer.';
+
+  @override
+  String release_core_workspace_discovery_view_repositories_shown_of(
+    int visible,
+    int total,
+  ) {
+    return 'Dépôts affichés : $visible sur $total';
+  }
+
+  @override
+  String
+  get release_core_workspace_discovery_view_the_gateway_returned_no_repositories =>
+      'La passerelle n’a renvoyé aucun dépôt.';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_no_repositories_match_your_device_filters =>
+      'Aucun dépôt ne correspond aux filtres de votre appareil.';
+
+  @override
+  String get release_core_workspace_discovery_view_gateway_scan_policy =>
+      'Politique d’analyse de la passerelle';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_this_gateway_did_not_report_a_scan_policy =>
+      'Cette passerelle n’a pas indiqué de politique d’analyse.';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_to_scan_folders_configure_repository_scanning_in_the =>
+      'Pour analyser les dossiers, configurez l’analyse des dépôts dans les paramètres Desktop du profil de la passerelle.';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_results_can_include_cached_repositories_and_repositories_with =>
+      'Les résultats peuvent inclure des dépôts en cache et des dépôts associés à des sessions. Une analyse ne garantit pas que tous les dossiers ont été atteints.';
+
+  @override
+  String get release_core_workspace_discovery_view_scan_gateway_roots =>
+      'Analyser les répertoires racines de la passerelle';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_filter_results_on_this_device =>
+      'Filtrer les résultats sur cet appareil';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_only_this_discovery_list_changes_not_the_gateway =>
+      'Seule cette liste de découverte change, pas l’analyse de la passerelle.';
+
+  @override
+  String get release_core_workspace_discovery_view_include_subtrees_empty_all =>
+      'Inclure les sous-arborescences (vide = toutes)';
+
+  @override
+  String get release_core_workspace_discovery_view_exclude_subtrees =>
+      'Exclure les sous-arborescences';
+
+  @override
+  String get release_core_workspace_discovery_view_apply_filters =>
+      'Appliquer les filtres';
+
+  @override
+  String release_core_workspace_discovery_view_hidden_repositories(int count) {
+    return 'Dépôts masqués ($count)';
+  }
+
+  @override
+  String get release_core_workspace_discovery_view_undo_hide =>
+      'Annuler le masquage';
+
+  @override
+  String
+  get release_core_workspace_discovery_view_one_absolute_server_path_per_line =>
+      'Un chemin absolu sur le serveur par ligne';
+
+  @override
+  String get release_core_project_settings_view_project_settings =>
+      'Paramètres du projet';
+
+  @override
+  String
+  get release_core_project_settings_view_the_gateway_did_not_confirm_the_selected_project =>
+      'La passerelle n’a pas confirmé le projet sélectionné ou la modification. Vérifiez les paramètres avant de réessayer.';
+
+  @override
+  String
+  get release_core_project_settings_view_could_not_verify_these_settings_use_one_absolute =>
+      'Impossible de vérifier ces paramètres. Utilisez un chemin absolu de dossier sur le serveur par ligne, sans composants « . » ou « .. ».';
+
+  @override
+  String get release_core_project_settings_view_set_active =>
+      'Définir comme actif';
+
+  @override
+  String get release_core_project_settings_view_icon => 'Icône';
+
+  @override
+  String get release_core_project_settings_view_folder => 'Dossier';
+
+  @override
+  String get release_core_project_settings_view_repository => 'Dépôt';
+
+  @override
+  String get release_core_project_settings_view_rocket => 'Fusée';
+
+  @override
+  String get release_core_project_settings_view_star => 'Étoile';
+
+  @override
+  String get release_core_project_settings_view_book => 'Livre';
+
+  @override
+  String get release_core_project_settings_view_terminal => 'Terminal';
+
+  @override
+  String get release_core_project_settings_view_colour => 'Couleur';
+
+  @override
+  String get release_core_project_settings_view_primary_folder =>
+      'Dossier principal';
+
+  @override
+  String get release_core_project_settings_view_server_folder_paths =>
+      'Chemins des dossiers sur le serveur';
+
+  @override
+  String
+  get release_core_project_settings_view_one_absolute_path_per_line_existing_folders_are =>
+      'Un chemin absolu par ligne. Les dossiers existants sont conservés.';
+
+  @override
+  String get release_core_project_settings_view_add_folders =>
+      'Ajouter des dossiers';
+
+  @override
+  String release_core_project_settings_view_choose(String label) {
+    return 'Choisir $label';
+  }
+
+  @override
+  String
+  get release_core_prepared_image_recovery_wait_for_an_empty_draft_before_restoring =>
+      'Attendez que le brouillon soit vide avant de restaurer.';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_no_unacknowledged_image_drafts_in_this_chat =>
+      'Aucun brouillon d’image non confirmé dans cette discussion.';
+
+  @override
+  String get release_core_prepared_image_recovery_unacknowledged_image_drafts =>
+      'Brouillons d’images non confirmés';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_the_gateway_may_already_have_received_these_restore =>
+      'La passerelle les a peut-être déjà reçus. Restaurez-les pour les examiner ; rien n’est envoyé.';
+
+  @override
+  String get release_core_prepared_image_recovery_image_draft =>
+      'Brouillon d’image';
+
+  @override
+  String get release_core_prepared_image_recovery_discard_local_copy =>
+      'Supprimer la copie locale';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_discard_this_local_image_draft =>
+      'Supprimer ce brouillon d’image local ?';
+
+  @override
+  String
+  get release_core_prepared_image_recovery_image_draft_recovery_is_unavailable =>
+      'La récupération des brouillons d’images est indisponible.';
+
+  @override
+  String get release_core_prepared_image_recovery_recover_image_draft =>
+      'Récupérer un brouillon d’image…';
+
+  @override
+  String get release_core_session_search_mode_menu_could_not_save_search_mode =>
+      'Impossible d’enregistrer le mode de recherche.';
+
+  @override
+  String get release_core_projects_pane_discover_repositories =>
+      'Découvrir des dépôts';
+
+  @override
+  String
+  get release_core_projects_pane_project_created_but_the_gateway_did_not_confirm =>
+      'Projet créé, mais la passerelle n’a pas confirmé son idée.';
+
+  @override
+  String get release_core_projects_pane_project_idea_optional =>
+      'Idée de projet (facultatif)';
+
+  @override
+  String
+  get release_core_projects_pane_saved_in_the_project_description_not_a_file =>
+      'Enregistrée dans la description du projet, pas dans un fichier.';
+
+  @override
+  String get release_core_project_detail_screen_new_chat_in_this_lane =>
+      'Nouvelle discussion dans cette voie';
+
+  @override
+  String get release_core_project_detail_screen_review_git => 'Examiner Git';
+
+  @override
+  String get release_core_more_pane_gateway_fleet => 'Parc de passerelles';
+
+  @override
+  String
+  get release_core_more_pane_connected_sessions_hermes_cloud_and_desktop_webapp =>
+      'Sessions connectées, Hermes Cloud et application Web Desktop';
+
+  @override
+  String get release_core_more_pane_use_dashboard_sign_in_for_a_named_profile =>
+      'Utilisez la connexion au tableau de bord pour un profil nommé. Cette ancienne API ne peut pas confirmer à quel profil appartient l’historique des discussions.';
+
+  @override
+  String get release_core_more_pane_capabilities => 'Capacités';
+
+  @override
+  String
+  get release_core_more_pane_install_and_govern_skills_plugins_connectors_and_tool =>
+      'Installer et gérer les compétences, extensions, connecteurs et backends d’outils';
+
+  @override
+  String get release_core_more_pane_browser_vault =>
+      'Coffre-fort du navigateur';
+
+  @override
+  String
+  get release_core_more_pane_site_logins_addresses_cards_and_credential_sources =>
+      'Connexions aux sites, adresses, cartes et sources d’identifiants';
+
+  @override
+  String get release_core_more_pane_agent_policy => 'Politique de l’agent';
+
+  @override
+  String
+  get release_core_more_pane_approvals_checkpoints_browser_access_and_shared_metrics =>
+      'Approbations, points de contrôle, accès au navigateur et métriques partagées';
+
+  @override
+  String get release_core_more_pane_remote_logs_health_maintenance_and_update =>
+      'Journaux distants, état du système, maintenance et mise à jour';
+
+  @override
+  String get release_core_more_pane_schedules => 'Planifications';
+
+  @override
+  String get release_core_more_pane_all_profiles_blueprints_catch_up_and_stop =>
+      'Tous les profils, modèles, rattrapage et arrêt';
+
+  @override
+  String get release_core_more_pane_memory_graph => 'Graphe de mémoire';
+
+  @override
+  String get release_core_more_pane_timeline_edits_and_memory_providers =>
+      'Chronologie, modifications et fournisseurs de mémoire';
+
+  @override
+  String get release_core_more_pane_providers_and_routes =>
+      'Fournisseurs et routes';
+
+  @override
+  String get release_core_more_pane_keys_endpoints_delegation_and_mixtures =>
+      'Clés, points de terminaison, délégation et combinaisons';
+
+  @override
+  String get release_core_more_pane_credits_and_plans => 'Crédits et offres';
+
+  @override
+  String
+  get release_core_more_pane_consented_nous_billing_when_the_account_allows_it =>
+      'Facturation Nous avec consentement, si le compte l’autorise';
+
+  @override
+  String
+  get release_core_fleet_screen_this_gateway_does_not_offer_this_service =>
+      'Cette passerelle ne propose pas ce service.';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_or_permission_required_on_this_gateway =>
+      'Connexion ou autorisation requise sur cette passerelle.';
+
+  @override
+  String get release_core_fleet_screen_a_secure_gateway_address_is_required =>
+      'Une adresse de passerelle sécurisée est requise.';
+
+  @override
+  String
+  get release_core_fleet_screen_the_owner_changed_refresh_before_continuing =>
+      'Le propriétaire a changé. Actualisez avant de continuer.';
+
+  @override
+  String
+  get release_core_fleet_screen_could_not_verify_the_operation_check_the_gateway =>
+      'Impossible de vérifier l’opération. Vérifiez la passerelle et actualisez.';
+
+  @override
+  String get release_core_fleet_screen_verified_ssh => 'SSH vérifié';
+
+  @override
+  String
+  get release_core_fleet_screen_confirm_a_host_key_inspect_a_remote_service =>
+      'Confirmer une clé d’hôte, inspecter un service distant ou ouvrir son shell';
+
+  @override
+  String get release_core_fleet_screen_cloud_and_desktop_webapp =>
+      'Cloud et application Web Desktop';
+
+  @override
+  String get release_core_fleet_screen_register_an_existing_gateway_or_webapp =>
+      'Enregistrer une passerelle ou une application Web existante';
+
+  @override
+  String
+  get release_core_fleet_screen_sign_in_to_its_address_nothing_is_hosted =>
+      'Connectez-vous à son adresse. Rien n’est hébergé sur cet appareil.';
+
+  @override
+  String get release_core_fleet_screen_fleet_updates => 'Mises à jour du parc';
+
+  @override
+  String get release_core_fleet_screen_refresh_roster => 'Actualiser la liste';
+
+  @override
+  String release_core_fleet_screen_disconnect(String gateway) {
+    return 'Déconnecter $gateway';
+  }
+
+  @override
+  String get release_core_fleet_screen_open_this_gateway_on_launch =>
+      'Ouvrir cette passerelle au lancement';
+
+  @override
+  String
+  get release_core_fleet_screen_primary_for_ares_does_not_change_the_last =>
+      'Principale pour Ares ; ne change pas la dernière passerelle utilisée.';
+
+  @override
+  String get release_core_fleet_screen_reconnect_in_fleet_on_launch =>
+      'Reconnecter dans le parc au lancement';
+
+  @override
+  String get release_core_fleet_screen_no_sessions_for_this_profile =>
+      'Aucune session pour ce profil.';
+
+  @override
+  String get release_core_fleet_screen_more_sessions => 'Plus de sessions';
+
+  @override
+  String get release_core_fleet_screen_this_gateway_was_disconnected =>
+      'Cette passerelle a été déconnectée.';
+
+  @override
+  String
+  get release_core_fleet_screen_some_conversation_data_could_not_be_loaded =>
+      'Certaines données de conversation n’ont pas pu être chargées.';
+
+  @override
+  String get release_core_fleet_screen_message_this_session =>
+      'Écrire à cette session';
+
+  @override
+  String get release_core_fleet_screen_send_to_this_session =>
+      'Envoyer à cette session';
+
+  @override
+  String get release_core_fleet_updates_screen_update_these_remote_gateways =>
+      'Mettre à jour ces passerelles distantes ?';
+
+  @override
+  String
+  release_core_fleet_updates_screen_this_can_restart_the_backend_and_interrupt_other(
+    String gateways,
+  ) {
+    return 'Cela peut redémarrer le backend et interrompre d’autres utilisateurs. Ares ne sera pas mis à jour.\n\n$gateways';
+  }
+
+  @override
+  String get release_core_fleet_updates_screen_update_listed_gateways =>
+      'Mettre à jour les passerelles répertoriées';
+
+  @override
+  String
+  get release_core_fleet_updates_screen_checks_connected_gateways_cloud_is_platform_managed_entries =>
+      'Vérifie les passerelles connectées. Le Cloud est géré par la plateforme ; les entrées sans preuve d’enrôlement sont exclues.';
+
+  @override
+  String get release_core_fleet_updates_screen_check_connected_gateways =>
+      'Vérifier les passerelles connectées';
+
+  @override
+  String get release_core_fleet_updates_screen_read_update_receipt =>
+      'Lire le compte rendu de mise à jour';
+
+  @override
+  String get release_core_fleet_updates_screen_review_eligible_updates =>
+      'Examiner les mises à jour admissibles';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_account_changed_reopen_this_page =>
+      'Le compte a changé. Rouvrez cette page.';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_set_the_webapp_s_primary_gateway =>
+      'Définir la passerelle principale de l’application Web ?';
+
+  @override
+  String
+  release_core_fleet_webapp_screen_this_changes_the_shared_registry_not_the_last(
+    String webapp,
+    String gateway,
+    String id,
+  ) {
+    return '$webapp → $gateway ($id)\nCela modifie le registre partagé, pas la dernière passerelle utilisée.';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_set_primary =>
+      'Définir comme principale';
+
+  @override
+  String get release_core_fleet_webapp_screen_serving_profile =>
+      'Profil de service';
+
+  @override
+  String get release_core_fleet_webapp_screen_hermes_cloud => 'Hermes Cloud';
+
+  @override
+  String get release_core_fleet_webapp_screen_discover_signed_in_agents =>
+      'Découvrir les agents connectés';
+
+  @override
+  String release_core_fleet_webapp_screen_organisation(String organisation) {
+    return 'Organisation : $organisation';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_no_agents_available =>
+      'Aucun agent disponible.';
+
+  @override
+  String get release_core_fleet_webapp_screen_existing_desktop_webapp =>
+      'Application Web Desktop existante';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_check_gateway_and_web_access_status =>
+      'Vérifier l’état de la passerelle et de l’accès Web';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_these_settings_belong_to_the_machine_serving_this =>
+      'Ces paramètres appartiennent à la machine qui héberge cette application Web. La publication et les redémarrages ne sont pas des actions distantes.';
+
+  @override
+  String get release_core_fleet_webapp_screen_read_webapp_gateway_registry =>
+      'Lire le registre des passerelles de l’application Web';
+
+  @override
+  String get release_core_fleet_webapp_screen_last_used => 'Dernière utilisée';
+
+  @override
+  String get release_core_fleet_webapp_screen_primary => 'Principale';
+
+  @override
+  String release_core_fleet_webapp_screen_set_primary_2(String gateway) {
+    return 'Définir comme principale : $gateway';
+  }
+
+  @override
+  String get release_core_fleet_webapp_screen_read_shared_display_preferences =>
+      'Lire les préférences d’affichage partagées';
+
+  @override
+  String
+  get release_core_fleet_webapp_screen_chat_text_direction_on_this_webapp_and_desktop =>
+      'Sens du texte des discussions dans cette application Web et sur Desktop';
+
+  @override
+  String release_core_schedule_desk_screen_created_on(
+    String job,
+    String profile,
+  ) {
+    return '$job créé sur $profile.';
+  }
+
+  @override
+  String
+  get release_core_schedule_desk_screen_the_list_covers_every_profile_on_this_gateway =>
+      'La liste couvre tous les profils de cette passerelle. Les actions d’arrêt, de pause, de rattrapage, de livraison et les modèles sont envoyés au profil propriétaire de la tâche.';
+
+  @override
+  String get release_core_schedule_desk_screen_a_run_is_in_progress =>
+      'Une exécution est en cours';
+
+  @override
+  String get release_core_schedule_desk_screen_no_current_run =>
+      'Aucune exécution en cours';
+
+  @override
+  String release_core_schedule_desk_screen_stop_requested_for(String job) {
+    return 'Arrêt demandé pour $job.';
+  }
+
+  @override
+  String release_core_schedule_desk_screen_no_run_was_in_flight_for(
+    String job,
+  ) {
+    return 'Aucune exécution n’était en cours pour $job.';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_stop_current_run =>
+      'Arrêter l’exécution en cours';
+
+  @override
+  String get release_core_schedule_desk_screen_pause_future_runs =>
+      'Suspendre les prochaines exécutions';
+
+  @override
+  String get release_core_schedule_desk_screen_resume_future_runs =>
+      'Reprendre les prochaines exécutions';
+
+  @override
+  String get release_core_schedule_desk_screen_catch_up_default =>
+      'Rattrapage par défaut';
+
+  @override
+  String get release_core_schedule_desk_screen_run_one_missed =>
+      'Rattraper une exécution manquée';
+
+  @override
+  String get release_core_schedule_desk_screen_skip_missed =>
+      'Ignorer les exécutions manquées';
+
+  @override
+  String get release_core_schedule_desk_screen_blueprint_recipes =>
+      'Recettes de modèles';
+
+  @override
+  String get release_core_schedule_desk_screen_profile_for_the_new_job =>
+      'Profil de la nouvelle tâche';
+
+  @override
+  String release_core_schedule_desk_screen_create(String blueprint) {
+    return 'Créer $blueprint';
+  }
+
+  @override
+  String get release_core_schedule_desk_screen_loading_delivery_targets =>
+      'Chargement des destinations de livraison';
+
+  @override
+  String release_core_schedule_desk_screen_no_home_channel(String target) {
+    return '$target (aucun canal d’accueil)';
+  }
+
+  @override
+  String release_core_memory_graph_screen_edit(String label) {
+    return 'Modifier $label';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_content => 'Contenu';
+
+  @override
+  String get release_core_memory_graph_screen_archive_skill =>
+      'Archiver la compétence';
+
+  @override
+  String get release_core_memory_graph_screen_delete_memory =>
+      'Supprimer le souvenir';
+
+  @override
+  String release_core_memory_graph_screen_archive_on_it_can_be_restored_on_the(
+    String label,
+    String profile,
+  ) {
+    return 'Archiver $label sur $profile ? La restauration est possible sur l’hôte avec le Curator.';
+  }
+
+  @override
+  String release_core_memory_graph_screen_delete_from_this_removes_that_memory(
+    String label,
+    String profile,
+  ) {
+    return 'Supprimer $label de $profile ? Cela supprime ce souvenir.';
+  }
+
+  @override
+  String get release_core_memory_graph_screen_filter => 'Filtre';
+
+  @override
+  String get release_core_memory_graph_screen_timeline => 'Chronologie';
+
+  @override
+  String get release_core_memory_graph_screen_play_timeline =>
+      'Lire la chronologie';
+
+  @override
+  String get release_core_memory_graph_screen_layout_code =>
+      'Code de disposition';
+
+  @override
+  String get release_core_memory_graph_screen_external_memory_providers =>
+      'Fournisseurs de mémoire externes';
+
+  @override
+  String
+  get release_core_memory_graph_screen_a_value_is_stored_leave_blank_to_keep =>
+      'Une valeur est enregistrée. Laissez vide pour la conserver.';
+
+  @override
+  String get release_core_memory_graph_screen_save_provider =>
+      'Enregistrer le fournisseur';
+
+  @override
+  String release_core_workspace_profiles_screen_applies_to(String profile) {
+    return 'S’applique à : $profile';
+  }
+
+  @override
+  String get release_core_workspace_profiles_screen_choose_another_profile =>
+      'Choisir un autre profil';
+
+  @override
+  String
+  get release_core_workspace_profiles_screen_could_not_verify_the_selected_profile_on_this =>
+      'Impossible de vérifier le profil sélectionné sur cette passerelle.';
+
+  @override
+  String get release_core_workspace_profiles_screen_create_profile =>
+      'Créer un profil';
+
+  @override
+  String get release_core_workspace_profiles_screen_new_profile_id =>
+      'Identifiant du nouveau profil';
+
+  @override
+  String get release_core_assets_screen_links => 'Liens';
+
+  @override
+  String get release_core_workspace_picker_no_matching_items =>
+      'Aucun élément correspondant.';
+
+  @override
+  String get release_core_workspace_picker_save_layout =>
+      'Enregistrer la disposition';
+
+  @override
+  String get release_core_workspace_picker_layout_name =>
+      'Nom de la disposition';
+
+  @override
+  String
+  get release_core_workspace_popout_this_chat_already_has_a_pop_out_window =>
+      'Cette discussion dispose déjà d’une fenêtre détachée.';
+
+  @override
+  String
+  get release_core_workspace_popout_could_not_open_this_saved_chat_check_the =>
+      'Impossible d’ouvrir cette discussion enregistrée. Vérifiez la connexion et réessayez.';
+
+  @override
+  String
+  get release_core_popout_bootstrap_use_the_main_window_to_change_your_connection =>
+      'Utilisez la fenêtre principale pour changer de connexion.';
+
+  @override
+  String get release_core_guarded_save_refused =>
+      'Ce fichier ne peut pas être enregistré par la passerelle';
+
+  @override
+  String get release_core_guarded_save_unavailable =>
+      'L’enregistrement protégé n’est pas disponible sur cette passerelle';
+
+  @override
+  String release_core_git_files_changed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fichiers modifiés pendant ce tour',
+      one: '1 fichier modifié pendant ce tour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_git_entries_omitted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count entrées Git ont été omises, car leur affichage n’était pas sûr.',
+      one: '1 entrée Git a été omise, car son affichage n’était pas sûr.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get release_core_git_staged => 'Indexé';
+
+  @override
+  String get release_core_session_sort_recent => 'Activité récente';
+
+  @override
+  String get release_core_session_sort_created => 'Création la plus récente';
+
+  @override
+  String get release_core_session_sort_status => 'En cours d’abord';
+
+  @override
+  String get release_core_session_sort_tokens => 'Le plus de jetons';
+
+  @override
+  String get release_core_session_sort_cost => 'Coût le plus élevé';
+
+  @override
+  String get release_core_session_group_standard => 'Regroupement par défaut';
+
+  @override
+  String get release_core_session_group_status => 'Regrouper par état';
+
+  @override
+  String get release_core_session_group_project => 'Regrouper par projet';
+
+  @override
+  String release_core_session_tokens(int count) {
+    return '$count jetons';
+  }
+
+  @override
+  String release_core_search_gateway_mode(String mode) {
+    return '$mode (passerelle)';
+  }
+
+  @override
+  String release_core_search_mode_tooltip(String label, String mode) {
+    return '$label : $mode';
+  }
+
+  @override
+  String get release_core_image_recovery_new_turn =>
+      'L’envoi crée un nouveau tour';
+
+  @override
+  String release_core_image_recovery_metadata(int count, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count images · $date',
+      one: '1 image · $date',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String release_core_discovery_scanning(String state) {
+    return 'Analyse : $state';
+  }
+
+  @override
+  String get release_core_discovery_enabled => 'activée';
+
+  @override
+  String get release_core_discovery_disabled => 'désactivée';
+
+  @override
+  String get release_core_discovery_none => 'aucun';
+
+  @override
+  String release_core_discovery_roots(String paths) {
+    return 'Répertoires racines à analyser : $paths';
+  }
+
+  @override
+  String release_core_discovery_excluded(String paths) {
+    return 'Sous-arborescences exclues : $paths';
+  }
+
+  @override
+  String release_core_discovery_repository_sessions(String path, int count) {
+    return '$path\nSessions : $count';
+  }
+
+  @override
+  String get release_core_projects_local_only =>
+      'Cette passerelle Hermes est antérieure aux projets côté serveur ; les discussions ne sont donc regroupées que sur cet appareil. Mettez à jour Hermes pour partager les mêmes projets entre vos appareils.';
+
+  @override
+  String get release_core_fleet_no_address =>
+      'Pas encore d’adresse de passerelle';
+
+  @override
+  String release_core_fleet_diagnostics(String version, String access) {
+    return 'Passerelle $version · $access';
+  }
+
+  @override
+  String get release_core_schedule_builtin => 'intégré';
+
+  @override
+  String get release_core_memory_gateway_profile => 'passerelle';
+
+  @override
+  String release_core_memory_profile_summary(String profile, String gateway) {
+    return 'Profil $profile sur $gateway. Le code de partage enregistre uniquement le zoom, le temps et les filtres.';
+  }
+
+  @override
+  String release_core_memory_layers_summary(
+    int memoryBytes,
+    int userBytes,
+    String provider,
+  ) {
+    return 'Mémoire intégrée : $memoryBytes octets, utilisateur : $userBytes octets. Fournisseur actif : $provider.';
+  }
+
+  @override
+  String get release_core_memory_kind_all => 'Tous';
+
+  @override
+  String get release_core_memory_kind_skill => 'Compétences';
+
+  @override
+  String get release_core_memory_kind_memory => 'Mémoire';
+
+  @override
+  String get release_core_workspace_failure_stale => 'connexion modifiée';
+
+  @override
+  String get release_core_workspace_failure_unbound =>
+      'aucun répertoire de travail vérifié';
+
+  @override
+  String get release_core_workspace_failure_denied => 'autorisation refusée';
+
+  @override
+  String get release_core_workspace_failure_ineligible =>
+      'opération non autorisée pour ce fichier';
+
+  @override
+  String get release_core_workspace_failure_unsupported =>
+      'non pris en charge par cette passerelle';
+
+  @override
+  String get release_core_workspace_failure_mismatch => 'état distant modifié';
+
+  @override
+  String get release_core_workspace_failure_invalid =>
+      'réponse de passerelle invalide';
+
+  @override
+  String get release_core_workspace_failure_insecure =>
+      'connexion sécurisée requise';
+
+  @override
+  String get release_core_workspace_failure_unavailable =>
+      'passerelle indisponible';
+
+  @override
+  String get release_core_queue_state_queued => 'En attente';
+
+  @override
+  String get release_core_queue_state_started => 'Démarré';
+
+  @override
+  String get release_core_queue_state_unknown => 'Résultat inconnu';
+
+  @override
+  String get release_core_unknown_state => 'Inconnu';
+
+  @override
+  String get release_core_fleet_state_idle => 'Hors ligne';
+
+  @override
+  String get release_core_fleet_state_connected => 'Connecté';
+
+  @override
+  String get release_core_fleet_state_reconnecting => 'Reconnexion…';
+
+  @override
+  String get release_core_fleet_state_sessionExpired => 'Déconnecté';
+
+  @override
+  String get release_core_fleet_state_failed => 'Échec de la connexion';
+
+  @override
+  String release_core_workspace_operation_failed(String reason) {
+    return 'L’opération de la passerelle n’a pas pu être confirmée : $reason.';
+  }
+
+  @override
+  String get release_core_workspace_invalid_data =>
+      'Impossible de vérifier les données ou la saisie. Vérifiez-les et réessayez.';
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_changed_in_this_window_but_could_not =>
+      'La disposition a changé dans cette fenêtre, mais n’a pas pu être enregistrée.';
+
+  @override
+  String get release_core_parallel_workspace_first_pane => 'Premier volet';
+
+  @override
+  String get release_core_parallel_workspace_second_pane => 'Second volet';
+
+  @override
+  String get release_core_parallel_workspace_unavailable_page =>
+      'Page indisponible';
+
+  @override
+  String release_core_parallel_workspace_close_a_tab_first_maximum(
+    String maximum,
+  ) {
+    return 'Fermez d’abord un onglet (maximum : $maximum).';
+  }
+
+  @override
+  String get release_core_parallel_workspace_dock_beside_current_pane =>
+      'Ancrer à côté du volet actuel';
+
+  @override
+  String get release_core_parallel_workspace_add_chat =>
+      'Ajouter une discussion';
+
+  @override
+  String
+  get release_core_parallel_workspace_action_failed_check_the_connection_and_try_again =>
+      'Échec de l’action. Vérifiez la connexion et réessayez.';
+
+  @override
+  String
+  get release_core_parallel_workspace_close_a_tab_before_reopening_another =>
+      'Fermez un onglet avant d’en rouvrir un autre.';
+
+  @override
+  String release_core_parallel_workspace_replace_layout(String name) {
+    return 'Remplacer la disposition « $name » ?';
+  }
+
+  @override
+  String
+  get release_core_parallel_workspace_layout_limit_reached_replace_an_existing_layout =>
+      'Limite de dispositions atteinte. Remplacez une disposition existante.';
+
+  @override
+  String get release_core_parallel_workspace_restore_layout =>
+      'Restaurer la disposition';
+
+  @override
+  String get release_core_parallel_workspace_workspace_options =>
+      'Options de l’espace de travail';
+
+  @override
+  String get release_core_parallel_workspace_dock_another_pane =>
+      'Ancrer un autre volet';
+
+  @override
+  String get release_core_parallel_workspace_swap_panes =>
+      'Permuter les volets';
+
+  @override
+  String get release_core_parallel_workspace_undock_second_pane =>
+      'Détacher le second volet';
+
+  @override
+  String get release_core_parallel_workspace_arrange_side_by_side =>
+      'Disposer côte à côte';
+
+  @override
+  String get release_core_parallel_workspace_arrange_top_to_bottom =>
+      'Disposer de haut en bas';
+
+  @override
+  String release_core_parallel_workspace_change_split_size(String percent) {
+    return 'Modifier la proportion de partage ($percent %)';
+  }
+
+  @override
+  String get release_core_parallel_workspace_focus_pane_full_screen =>
+      'Afficher le volet actif en plein écran';
+
+  @override
+  String get release_core_parallel_workspace_open_chat_in_new_window =>
+      'Ouvrir la discussion dans une nouvelle fenêtre';
+
+  @override
+  String get release_core_parallel_workspace_hide_pane_keep_running =>
+      'Masquer le volet (laisser en cours)';
+
+  @override
+  String get release_core_parallel_workspace_previous_tab => 'Onglet précédent';
+
+  @override
+  String get release_core_parallel_workspace_next_tab => 'Onglet suivant';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_left =>
+      'Déplacer l’onglet vers la gauche';
+
+  @override
+  String get release_core_parallel_workspace_move_tab_right =>
+      'Déplacer l’onglet vers la droite';
+
+  @override
+  String get release_core_parallel_workspace_reload_current_tab =>
+      'Recharger l’onglet actuel';
+
+  @override
+  String get release_core_parallel_workspace_close_tab => 'Fermer l’onglet';
+
+  @override
+  String get release_core_parallel_workspace_close_other_tabs =>
+      'Fermer les autres onglets';
+
+  @override
+  String get release_core_parallel_workspace_close_tabs_to_the_right =>
+      'Fermer les onglets à droite';
+
+  @override
+  String get release_core_parallel_workspace_close_all_tabs =>
+      'Fermer tous les onglets';
+
+  @override
+  String get release_core_parallel_workspace_reopen_closed_tab =>
+      'Rouvrir l’onglet fermé';
+
+  @override
+  String get release_core_parallel_workspace_save_named_layout =>
+      'Enregistrer une disposition nommée';
+
+  @override
+  String get release_core_parallel_workspace_restore_named_layout =>
+      'Restaurer une disposition nommée';
+
+  @override
+  String get release_core_parallel_workspace_refresh_chat_list =>
+      'Actualiser la liste des discussions';
+
+  @override
+  String get release_core_parallel_workspace_workspace_tools =>
+      'Outils de l’espace de travail';
+
+  @override
+  String get release_core_parallel_workspace_choose_a_chat_for_this_pane =>
+      'Choisir une discussion pour ce volet';
+
+  @override
+  String release_core_parallel_workspace_choose_chat_for(String pane) {
+    return 'Choisir une discussion pour $pane';
+  }
+
+  @override
+  String get release_core_parallel_workspace_add_a_chat_to_start_a_workspace =>
+      'Ajoutez une discussion pour démarrer un espace de travail.';
+
+  @override
+  String get release_core_parallel_workspace_select_a_tab_to_show_its_pane =>
+      'Sélectionnez un onglet pour afficher son volet.';
+
+  @override
+  String get release_core_parallel_workspace_parallel_workspace =>
+      'Espace de travail parallèle';
+
+  @override
+  String get release_core_parallel_workspace_show_workspace =>
+      'Afficher l’espace de travail';
+
+  @override
+  String get release_core_parallel_workspace_could_not_load_chats_retry =>
+      'Impossible de charger les discussions. Réessayer';
+
+  @override
+  String release_core_parallel_workspace_close(String pane) {
+    return 'Fermer $pane';
+  }
+
+  @override
+  String release_core_parallel_workspace_switch_pane(String pane) {
+    return 'Changer de volet : $pane';
+  }
+
+  @override
+  String get release_core_workspace_registry_session_id_copied =>
+      'Identifiant de session copié.';
+
+  @override
+  String get release_core_workspace_registry_chat_details =>
+      'Détails de la discussion';
+
+  @override
+  String get release_core_workspace_registry_server_default =>
+      'Valeur par défaut du serveur';
+
+  @override
+  String get release_core_workspace_registry_session_id =>
+      'Identifiant de session';
+
+  @override
+  String get release_core_workspace_registry_title => 'Titre';
+
+  @override
+  String get release_core_workspace_label_terminals => 'Terminaux';
+
+  @override
+  String get release_core_workspace_label_copy_id =>
+      'Copier l’identifiant de session';
+
+  @override
+  String get release_core_workspace_label_contributions => 'Contributions';
+
+  @override
+  String get release_core_workspace_owner_inactive =>
+      'Le propriétaire de cet espace de travail n’est plus actif.';
+
+  @override
+  String get release_core_workspace_select_chat =>
+      'Sélectionnez d’abord une discussion.';
+
+  @override
+  String get release_core_workspace_chat_unavailable =>
+      'Cette discussion n’est pas disponible pour cette connexion.';
+
+  @override
+  String get release_core_workspace_page_unavailable =>
+      'Cette page n’est pas disponible pour cette connexion.';
+
+  @override
+  String release_core_client_queue_count(int count) {
+    return '$count en attente';
+  }
+
+  @override
+  String release_core_client_queue_paused_count(int count) {
+    return '$count en attente — en pause';
+  }
+
+  @override
+  String release_core_git_diff_truncated(String diff) {
+    return '$diff\n… tronqué';
+  }
+
+  @override
+  String get release_core_search_no_models =>
+      'Hermes n’a renvoyé aucun modèle configuré et sélectionnable.';
+
+  @override
+  String get release_core_chat_archive_unavailable =>
+      'L’action d’archivage de la discussion est indisponible.';
+
+  @override
+  String get release_core_chat_pin_unconfirmed =>
+      'L’état d’épinglage n’a pas été confirmé.';
+
+  @override
+  String get release_core_chat_archive_unconfirmed =>
+      'L’état d’archivage n’a pas été confirmé.';
+
+  @override
+  String get release_core_chat_archive_history_unavailable =>
+      'Historique archivé indisponible';
+
+  @override
+  String get release_core_quick_chat_history_unavailable =>
+      'Historique des discussions rapides indisponible';
+
+  @override
+  String get release_core_chat_project_ownership_unavailable =>
+      'Appartenance au projet indisponible';
+
+  @override
+  String get release_core_chat_unknown_project => 'Projet inconnu';
+
+  @override
+  String get release_core_chat_local_search_fallback =>
+      'Recherche de messages indisponible. Affichage des résultats locaux.';
+
+  @override
+  String release_core_fleet_update_eligible(String version) {
+    return 'Admissible · $version';
+  }
+
+  @override
+  String get release_core_fleet_update_state_1 => 'Ignoré : même installation';
+
+  @override
+  String get release_core_fleet_update_state_2 => 'Non vérifié';
+
+  @override
+  String get release_core_fleet_update_state_3 => 'Ignoré : géré par le Cloud';
+
+  @override
+  String get release_core_fleet_update_state_4 =>
+      'Ignoré : non enrôlé comme passerelle directe';
+
+  @override
+  String get release_core_fleet_update_state_5 =>
+      'Ignoré : déconnecté ou occupé';
+
+  @override
+  String get release_core_fleet_update_state_6 =>
+      'Aucune mise à jour applicable';
+
+  @override
+  String get release_core_fleet_update_state_7 =>
+      'Impossible de vérifier l’admissibilité';
+
+  @override
+  String get release_core_fleet_update_state_8 =>
+      'Ignoré : obsolète, occupé ou déjà demandé';
+
+  @override
+  String get release_core_fleet_update_state_9 => 'Demande en cours';
+
+  @override
+  String get release_core_fleet_update_state_10 =>
+      'Accepté ; compte rendu indisponible';
+
+  @override
+  String get release_core_fleet_update_state_11 =>
+      'Accepté ; en attente du compte rendu';
+
+  @override
+  String get release_core_fleet_update_state_12 =>
+      'Ignoré : une discussion est en cours sur cette installation';
+
+  @override
+  String get release_core_fleet_update_state_13 =>
+      'Non confirmé ; ne pas renvoyer automatiquement';
+
+  @override
+  String get release_core_fleet_update_state_14 =>
+      'Reconnectez-vous pour vérifier le compte rendu';
+
+  @override
+  String get release_core_fleet_update_state_15 => 'Compte rendu indisponible';
+
+  @override
+  String get release_core_fleet_update_state_16 =>
+      'En attente du compte rendu correspondant';
+
+  @override
+  String get release_core_fleet_update_state_17 =>
+      'Mis à jour ; suivi nécessaire';
+
+  @override
+  String get release_core_fleet_update_state_19 => 'Partiellement mis à jour';
+
+  @override
+  String get release_core_fleet_update_state_20 => 'Échec de la mise à jour';
+
+  @override
+  String get release_core_fleet_update_state_21 => 'Non confirmé';
+
+  @override
+  String get release_core_cloud_status_ready => 'Prêt';
+
+  @override
+  String get release_core_cloud_status_online => 'En ligne';
+
+  @override
+  String get release_core_cloud_status_stopped => 'Arrêté';
+
+  @override
+  String get release_core_cloud_status_error => 'Erreur';
+
+  @override
+  String get ng_release_more_contributions_subtitle =>
+      'Cartes de réponse examinées pour cette connexion';
+
+  @override
+  String get ng_release_more_gateway_fleet => 'Parc de passerelles';
+
+  @override
+  String get ng_release_more_memory_graph => 'Graphe de mémoire';
+
+  @override
+  String get ng_release_more_memory_graph_subtitle =>
+      'Chronologie, modifications et fournisseurs de mémoire';
+
+  @override
+  String get ng_release_more_capabilities_subtitle =>
+      'Installer et gérer les compétences, extensions, connecteurs et backends d’outils';
+
+  @override
+  String get ng_release_more_browser_vault => 'Coffre-fort du navigateur';
+
+  @override
+  String get ng_release_more_browser_vault_subtitle =>
+      'Connexions aux sites, adresses, cartes et sources d’identifiants';
+
+  @override
+  String get ng_release_more_agent_policy => 'Politique de l’agent';
+
+  @override
+  String get ng_release_more_agent_policy_subtitle =>
+      'Approbations, points de contrôle, accès au navigateur et métriques partagées';
+
+  @override
+  String get ng_release_more_schedules => 'Planifications';
+
+  @override
+  String get ng_release_more_schedules_subtitle =>
+      'Tous les profils, modèles, rattrapage et arrêt';
+
+  @override
+  String get ng_release_more_host_subtitle =>
+      'Journaux distants, état du système, maintenance et mise à jour';
+
+  @override
+  String get ng_release_more_providers_routes => 'Fournisseurs et routes';
+
+  @override
+  String get ng_release_more_providers_routes_subtitle =>
+      'Clés, points de terminaison, délégation et combinaisons';
+
+  @override
+  String get ng_release_more_credits_plans => 'Crédits et offres';
+
+  @override
+  String get ng_release_more_credits_plans_subtitle =>
+      'Facturation Nous avec consentement, si le compte l’autorise';
+
+  @override
+  String get ng_release_sign_in_or => 'ou';
+
+  @override
+  String ng_release_deployment_sign_in_hint(String message) {
+    return '$message Vous pouvez toujours vous connecter avec un jeton de session du déploiement à l’étape suivante.';
+  }
+
+  @override
+  String get ng_release_message_search_unavailable =>
+      'Recherche de messages indisponible. Affichage des résultats locaux.';
+
+  @override
+  String ng_release_insights_days(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days jours',
+      one: '$days jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get ng_release_signed_in_you => 'vous';
+
+  @override
+  String get release_chat_unsent_prompt_gone =>
+      'Ce prompt non envoyé n’est plus dans la file d’attente.';
+
+  @override
+  String ng_release_attachment_not_attached(String name) {
+    return 'La passerelle n’a pas joint $name.';
+  }
+
+  @override
+  String get ng_release_gateway_not_connected =>
+      'Pas encore connecté à la passerelle.';
+
+  @override
+  String get ng_release_gateway_unreachable =>
+      'Impossible de joindre la passerelle.';
+
+  @override
+  String get ng_release_projects_scope_changed =>
+      'Le périmètre des projets n’est plus sélectionné';
+
+  @override
+  String get ng_release_missing_providers => 'Fournisseurs manquants';
+
+  @override
+  String get ng_release_missing_tasks => 'Tâches manquantes';
+
+  @override
+  String ng_release_age_minutes(int count) {
+    return '$count min';
+  }
+
+  @override
+  String ng_release_age_hours(int count) {
+    return '$count h';
+  }
+
+  @override
+  String ng_release_age_days(int count) {
+    return '$count j';
+  }
+
+  @override
+  String ng_release_age_weeks(int count) {
+    return '$count sem.';
+  }
+
+  @override
+  String ng_release_age_years(int count) {
+    return '$count a';
+  }
+
+  @override
+  String ng_release_compact_billions(String count) {
+    return '$count Md';
+  }
+
+  @override
+  String ng_release_compact_millions(String count) {
+    return '$count M';
+  }
+
+  @override
+  String ng_release_compact_thousands(String count) {
+    return '$count k';
+  }
+
+  @override
+  String ng_release_token_thousands(String count) {
+    return '$count k';
+  }
+
+  @override
+  String ng_release_elapsed_minutes_seconds(int minutes, int seconds) {
+    return '$minutes min $seconds s';
+  }
+
+  @override
+  String ng_release_elapsed_seconds(int seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get ng_release_notification_foreground =>
+      'Ares était affiché à l’écran';
+
+  @override
+  String get ng_release_notification_stopped => 'le tour a été arrêté';
+
+  @override
+  String get ng_release_more_parallel_workspace =>
+      'Espace de travail parallèle';
+
+  @override
+  String get ng_release_more_parallel_workspace_subtitle =>
+      'Ouvrez plusieurs discussions dans des onglets ou côte à côte.';
+
+  @override
+  String get release_chat_unknown_model => 'inconnu';
+
+  @override
+  String release_chat_profile_default(String model) {
+    return 'Valeur par défaut du profil : $model';
+  }
+
+  @override
+  String release_chat_profile_default_provider(String model, String provider) {
+    return 'Valeur par défaut du profil : $model • $provider';
+  }
+
+  @override
+  String get release_chat_choose_provider =>
+      'Ce modèle est disponible auprès de plusieurs fournisseurs. Choisissez un fournisseur pour continuer.';
+
+  @override
+  String get release_chat_slash_needs_gateway =>
+      'Les commandes slash nécessitent la passerelle Desktop';
+
+  @override
+  String get release_chat_recovering_without_resending =>
+      'Récupération sans renvoi';
+
+  @override
+  String get release_chat_live_request_unreachable =>
+      'Désolé, je n’ai pas pu joindre Hermes pour cette demande.';
+
+  @override
+  String release_chat_live_working(String tool) {
+    return 'Hermes travaille : $tool. Ce n’est pas encore terminé.';
+  }
+
+  @override
+  String get release_chat_live_finished_without_spoken_result =>
+      'Hermes a terminé cette demande sans résultat vocal.';
+
+  @override
+  String get release_chat_reply_language_unavailable =>
+      'La langue de réponse sélectionnée est indisponible';
+
+  @override
+  String get release_chat_reply_voice_unavailable =>
+      'La voix de réponse sélectionnée est indisponible';
+
+  @override
+  String get release_chat_reply_voice_configuration_unavailable =>
+      'La configuration de la voix de réponse est indisponible';
+
+  @override
+  String get release_chat_notification_review_action =>
+      'Ouvrez la discussion pour examiner l’action demandée.';
+
+  @override
+  String get release_chat_notification_respond =>
+      'Ouvrez la discussion pour répondre.';
+
+  @override
+  String get release_chat_start_new_main_window =>
+      'Démarrez une nouvelle discussion dans la fenêtre principale.';
+
+  @override
+  String get release_chat_no_desktop_gateway => 'Aucune passerelle Desktop';
+
+  @override
+  String get release_chat_attachment_preparation_cancelled =>
+      'La préparation de la pièce jointe a été annulée.';
+
+  @override
+  String get release_chat_approval_authority_revoked =>
+      'Le pouvoir d’approbation a été révoqué.';
+
+  @override
+  String get release_chat_gateway_session_disconnected =>
+      'La session de la passerelle Desktop n’est plus connectée';
+
+  @override
+  String get release_chat_stop_requested =>
+      'Arrêt demandé. En attente de la fin de l’exécution de Hermes.';
+
+  @override
+  String release_chat_stop_request_failed(String error) {
+    return 'Impossible de demander l’arrêt : $error';
+  }
+
+  @override
+  String get release_chat_queued_prompt_not_sent =>
+      'Le prompt en attente n’a pas été envoyé.';
+
+  @override
+  String get release_chat_running_turn_unreachable =>
+      'Le tour en cours n’a pas pu être joint. Reconnexion sans renvoi.';
+
+  @override
+  String get release_chat_wait_for_composer =>
+      'Attendez que la zone de rédaction soit disponible.';
+
+  @override
+  String get release_chat_find_in_transcript =>
+      'Rechercher dans la transcription';
+
+  @override
+  String get release_chat_open_browser_preview =>
+      'Ouvrir l’aperçu du navigateur';
+
+  @override
+  String get release_chat_more_tools => 'Autres outils de discussion';
+
+  @override
+  String get release_chat_queue_until_finished =>
+      'Mettre en attente jusqu’à la fin de ce tour';
+
+  @override
+  String get release_chat_format_bold => 'Gras';
+
+  @override
+  String get release_chat_format_italic => 'Italique';
+
+  @override
+  String get ng_release_chat_gateway_queue_requirements =>
+      'La file d’attente de la passerelle nécessite une discussion rattachée et un prompt contenant uniquement du texte.';
+
+  @override
+  String get ng_release_chat_start_new_main_screen =>
+      'Démarrez une nouvelle discussion depuis l’écran principal des discussions.';
+
+  @override
+  String get ng_release_chat_image => 'image';
+
+  @override
+  String ng_release_chat_tool_seconds(String seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String get release_preview_chat_changed =>
+      'La discussion a changé. Reconnectez l’aperçu pour continuer.';
+
+  @override
+  String get release_preview_authenticating_chat =>
+      'Authentification de la discussion…';
+
+  @override
+  String release_preview_unavailable_reason(String reason) {
+    return 'Aperçu indisponible : $reason';
+  }
+
+  @override
+  String get release_preview_operation_failed =>
+      'Échec de l’opération d’aperçu.';
+
+  @override
+  String get release_preview_added_to_draft =>
+      'Ajouté au brouillon. Rien n’a été envoyé.';
+
+  @override
+  String get release_preview_open_site_title => 'Ouvrir ce site ?';
+
+  @override
+  String release_preview_open_site_body(String origin) {
+    return '$origin\n\nLe mode lecture charge uniquement ce document. Il ne partage ni les cookies, ni les identifiants de connexion, ni la page avec Hermes.';
+  }
+
+  @override
+  String get release_preview_open_site => 'Ouvrir le site';
+
+  @override
+  String get release_preview_discard_pins_title =>
+      'Abandonner les repères non ajoutés au brouillon ?';
+
+  @override
+  String get release_preview_keep_pins => 'Conserver les repères';
+
+  @override
+  String get release_preview_share_page_title =>
+      'Partager cette page avec cette discussion ?';
+
+  @override
+  String release_preview_share_page_body(String origin) {
+    return 'Hermes peut lire le texte affiché et la liste des éléments de $origin, et faire défiler ce volet. Toute navigation met fin au partage. Les formulaires et les identifiants ne sont pas partagés.';
+  }
+
+  @override
+  String get release_preview_share_page => 'Partager la page';
+
+  @override
+  String release_preview_comment_number(int number) {
+    return 'Commentaire n° $number';
+  }
+
+  @override
+  String get release_preview_note => 'Note';
+
+  @override
+  String get release_preview_keep_pin => 'Conserver le repère';
+
+  @override
+  String get release_preview_title => 'Aperçu du navigateur';
+
+  @override
+  String get release_preview_hide => 'Masquer l’aperçu';
+
+  @override
+  String get release_preview_close_and_forget => 'Fermer et oublier la page';
+
+  @override
+  String get release_preview_site_address => 'Adresse du site';
+
+  @override
+  String get release_preview_go_to_address => 'Aller à l’adresse';
+
+  @override
+  String get release_preview_forward => 'Suivant';
+
+  @override
+  String get release_preview_reload => 'Recharger';
+
+  @override
+  String get release_preview_share_with_hermes =>
+      'Partager la page avec Hermes';
+
+  @override
+  String get release_preview_stop_sharing => 'Arrêter le partage de la page';
+
+  @override
+  String get release_preview_annotate => 'Annoter un élément ou une zone';
+
+  @override
+  String get release_preview_reader_console => 'Console de lecture';
+
+  @override
+  String get release_preview_reconnect => 'Reconnecter l’aperçu';
+
+  @override
+  String get release_preview_reader_mode_help =>
+      'Mode lecture : HTML et texte. Aucun script, aucune ressource intégrée ni aucun profil de navigateur connecté.';
+
+  @override
+  String release_preview_sharing_origin(String origin) {
+    return 'Lecteur partagé avec cette discussion : $origin';
+  }
+
+  @override
+  String get release_preview_annotation_help =>
+      'Touchez un élément ou tracez une zone pour ajouter un commentaire.';
+
+  @override
+  String get release_preview_reader_requests =>
+      'Requêtes du lecteur (JavaScript désactivé)';
+
+  @override
+  String release_preview_selected_requests(int count) {
+    return '$count sélectionnées · JavaScript désactivé';
+  }
+
+  @override
+  String get release_preview_copy_all => 'Tout copier';
+
+  @override
+  String get release_preview_copy_selected => 'Copier la sélection';
+
+  @override
+  String get release_preview_add_log_to_draft =>
+      'Ajouter le journal au brouillon';
+
+  @override
+  String release_preview_requests_draft(String log) {
+    return 'Requêtes du lecteur :\n$log';
+  }
+
+  @override
+  String release_preview_add_pins_to_draft(int count) {
+    return 'Ajouter $count au brouillon';
+  }
+
+  @override
+  String release_preview_request_loaded(String origin, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count éléments du lecteur',
+      one: '$count élément du lecteur',
+    );
+    return 'HTTP 200 · $origin · $_temp0';
+  }
+
+  @override
+  String release_preview_annotation_intro(String origin) {
+    return 'Examinez ces commentaires sur l’aperçu de $origin. Les captures jointes sont numérotées dans le même ordre.';
+  }
+
+  @override
+  String get release_preview_reader_region => 'zone du lecteur';
+
+  @override
+  String get release_preview_capture_failed =>
+      'Impossible de capturer ces pixels.';
+
+  @override
+  String get release_preview_address_not_approved =>
+      'Cette adresse est en dehors de l’origine autorisée pour l’aperçu.';
+
+  @override
+  String get release_preview_page_limit =>
+      'La page dépasse la limite du lecteur.';
+
+  @override
+  String get release_preview_page_unreadable => 'La page n’a pas pu être lue.';
+
+  @override
+  String get release_preview_page_complex =>
+      'Cette page est trop complexe pour le mode lecture.';
+
+  @override
+  String release_preview_http_failed(int statusCode) {
+    return 'HTTP $statusCode. Aucune redirection n’a été suivie et aucune connexion à un compte n’a été effectuée.';
+  }
+
+  @override
+  String get release_preview_unsupported_type =>
+      'Seuls le HTML et le texte brut peuvent être ouverts en mode lecture.';
+
+  @override
+  String get release_preview_load_insecure =>
+      'Le site n’a pas pu être chargé de manière sécurisée.';
+
+  @override
+  String get release_preview_crop_limit =>
+      'La capture de l’aperçu dépasse sa limite.';
+
+  @override
+  String get release_preview_image_unreadable =>
+      'L’image sélectionnée est vide ou illisible.';
+
+  @override
+  String get release_preview_image_budget =>
+      'L’image sélectionnée dépasse la limite de 64 MiB du brouillon.';
+
+  @override
+  String get release_preview_image_format =>
+      'Format d’image non pris en charge. Choisissez une image JPEG, PNG ou WebP.';
+
+  @override
+  String get release_preview_image_decode =>
+      'L’image JPEG, PNG ou WebP sélectionnée n’a pas pu être décodée en toute sécurité.';
+
+  @override
+  String get release_preview_image_sanitize =>
+      'Impossible de nettoyer cette image. Choisissez une image JPEG, PNG ou WebP valide.';
+
+  @override
+  String get release_preview_draft_budget =>
+      'Les pièces jointes sont limitées à un total de 64 MiB par brouillon.';
+
+  @override
+  String get release_preview_generic_file_limit =>
+      'Les fichiers génériques sont limités à 16 MiB chacun.';
+
+  @override
+  String get release_preview_image_not_sanitized =>
+      'Les images distantes doivent être nettoyées avant l’envoi.';
+
+  @override
+  String get release_preview_stage_failed =>
+      'Impossible d’ajouter les éléments de l’aperçu au brouillon. Réessayez.';
+
+  @override
+  String get release_misc_find_hermes_on_lan =>
+      'Rechercher Hermes sur le réseau local';
+
+  @override
+  String release_misc_discovery_failed(String error) {
+    return 'Échec de la découverte : $error';
+  }
+
+  @override
+  String get release_misc_no_lan_servers =>
+      'Aucun serveur Hermes trouvé sur le réseau local.';
+
+  @override
+  String release_misc_api_key_rejected(String endpoint, int statusCode) {
+    return 'La clé API a été rejetée par $endpoint (HTTP $statusCode).';
+  }
+
+  @override
+  String get release_misc_api_key_required =>
+      'Le serveur nécessite une clé API. Saisissez votre API_SERVER_KEY.';
+
+  @override
+  String release_misc_gateway_not_found(String endpoint) {
+    return 'Le point de terminaison de la passerelle $endpoint a renvoyé HTTP 404. Vérifiez le préfixe de chemin de la passerelle et les routes du proxy inverse.';
+  }
+
+  @override
+  String release_misc_gateway_http_error(String endpoint, int statusCode) {
+    return 'Le point de terminaison de la passerelle $endpoint a renvoyé HTTP $statusCode.';
+  }
+
+  @override
+  String release_misc_gateway_unreachable(String endpoint) {
+    return 'Impossible de joindre le point de terminaison de la passerelle $endpoint.';
+  }
+
+  @override
+  String get release_core_schedule_invalid_delivery_target =>
+      'Destination de livraison non valide';
+
+  @override
+  String get release_core_file_save_direct_only =>
+      'Seul un fichier situé directement dans le répertoire de travail peut être enregistré.';
+
+  @override
+  String get release_core_file_save_hidden =>
+      'La passerelle ne peut pas enregistrer les fichiers masqués.';
+
+  @override
+  String get rel_admin_choose_provider =>
+      'Choisissez un fournisseur et un modèle.';
+
+  @override
+  String get rel_admin_known_effort => 'Choisissez un niveau d’effort connu.';
+
+  @override
+  String get rel_admin_endpoint_name_required =>
+      'Saisissez un nom pour ce point de terminaison.';
+
+  @override
+  String get rel_admin_endpoint_model_required =>
+      'Saisissez le modèle fourni par ce point de terminaison.';
+
+  @override
+  String get rel_admin_known_api_mode =>
+      'Choisissez Automatique ou un mode API connu.';
+
+  @override
+  String get rel_admin_endpoint_id_invalid =>
+      'Cet identifiant de point de terminaison n’est pas utilisable.';
+
+  @override
+  String get rel_admin_endpoint_https =>
+      'Utilisez HTTPS pour un point de terminaison distant, ou HTTP sur localhost.';
+
+  @override
+  String get rel_admin_key_invalid =>
+      'Cette clé API ne peut pas être enregistrée.';
+
+  @override
+  String get rel_admin_response_shape =>
+      'La réponse de la passerelle n’avait pas la structure attendue.';
+
+  @override
+  String get rel_admin_limits_required =>
+      'Saisissez les limites d’itérations, de simultanéité et de délai avant d’enregistrer.';
+
+  @override
+  String get rel_admin_route_required =>
+      'Chaque route doit avoir un nom et un modèle avant d’être enregistrée.';
+
+  @override
+  String get rel_admin_route_unique =>
+      'Les noms des routes doivent être uniques.';
+
+  @override
+  String get rel_admin_route_default_invalid =>
+      'La route par défaut doit être l’une des routes enregistrées.';
+
+  @override
+  String get rel_admin_policy_required =>
+      'Choisissez une politique avec alerte ou silencieuse pour les références dégradées.';
+
+  @override
+  String get rel_admin_mixture_missing =>
+      'La passerelle n’a renvoyé aucun mélange actif.';
+
+  @override
+  String get rel_admin_mixture_slots_required =>
+      'Indiquez un fournisseur et un modèle pour l’agrégateur et chaque référence.';
+
+  @override
+  String get rel_admin_chat_id_required =>
+      'Saisissez l’identifiant du chat auquel ce changement s’applique.';
+
+  @override
+  String rel_admin_http_error(String status) {
+    return 'La passerelle a renvoyé HTTP $status.';
+  }
+
+  @override
+  String get rel_admin_response_unreadable =>
+      'La réponse de la passerelle n’a pas pu être lue.';
+
+  @override
+  String get rel_admin_connect_before_change =>
+      'Connectez la session active de la passerelle avant de modifier la facturation ou un chat.';
+
+  @override
+  String get rel_admin_operation_unavailable =>
+      'Cette passerelle ne propose pas cette opération.';
+
+  @override
+  String get rel_admin_key_required => 'Saisissez la clé à enregistrer.';
+
+  @override
+  String get rel_admin_key_save_failed =>
+      'La passerelle n’a pas enregistré cette clé.';
+
+  @override
+  String get rel_admin_key_clear_required =>
+      'Choisissez une clé de fournisseur à effacer.';
+
+  @override
+  String get rel_admin_key_clear_failed =>
+      'La passerelle n’a pas effacé cette clé.';
+
+  @override
+  String get rel_admin_endpoint_save_failed =>
+      'La passerelle n’a pas enregistré ce point de terminaison.';
+
+  @override
+  String get rel_admin_endpoint_activate_failed =>
+      'La passerelle n’a pas activé ce point de terminaison.';
+
+  @override
+  String get rel_admin_accounts_secure_required =>
+      'Les comptes fournisseurs nécessitent une passerelle HTTPS authentifiée, ou localhost.';
+
+  @override
+  String get rel_admin_accounts_read_failed =>
+      'Les comptes fournisseurs n’ont pas pu être lus.';
+
+  @override
+  String get rel_admin_account_disconnect_failed =>
+      'La passerelle n’a pas déconnecté ce compte.';
+
+  @override
+  String get rel_admin_account_not_disconnectable =>
+      'Ce compte fournisseur ne peut pas être déconnecté.';
+
+  @override
+  String get rel_admin_backend_required =>
+      'Choisissez l’un des moteurs de délégation disponibles.';
+
+  @override
+  String get rel_admin_backend_save_failed =>
+      'La passerelle n’a pas sélectionné ce moteur.';
+
+  @override
+  String get rel_admin_routes_save_failed =>
+      'La passerelle n’a pas enregistré ces routes.';
+
+  @override
+  String get rel_admin_profile_route_required =>
+      'Chaque route de profil doit avoir un nom de profil.';
+
+  @override
+  String get rel_admin_profile_route_unique =>
+      'Les routes de profil doivent être uniques.';
+
+  @override
+  String get rel_admin_profile_route_default_invalid =>
+      'La route de profil par défaut doit correspondre à l’un des profils autorisés.';
+
+  @override
+  String get rel_admin_profile_routes_save_failed =>
+      'La passerelle n’a pas enregistré ces routes de profil.';
+
+  @override
+  String get rel_admin_limits_save_failed =>
+      'La passerelle n’a pas enregistré ces limites.';
+
+  @override
+  String get rel_admin_mixture_save_failed =>
+      'La passerelle n’a pas enregistré ce mélange.';
+
+  @override
+  String get rel_admin_credit_amount_required =>
+      'Choisissez l’un des montants de crédit proposés.';
+
+  @override
+  String get rel_admin_charge_check_failed =>
+      'Ce débit n’a pas pu être vérifié.';
+
+  @override
+  String get rel_admin_reload_amounts_missing =>
+      'Les montants de recharge automatique n’ont pas été fournis et n’ont donc pas été modifiés.';
+
+  @override
+  String get rel_admin_plan_required => 'Choisissez d’abord une offre.';
+
+  @override
+  String get rel_admin_plan_scheduled_only =>
+      'Seul un changement d’offre programmé peut être confirmé ici.';
+
+  @override
+  String get rel_admin_billing_refused =>
+      'La passerelle a refusé cette demande de facturation.';
+
+  @override
+  String get rel_admin_request_refused =>
+      'La passerelle a refusé cette demande.';
+
+  @override
+  String get rel_admin_endpoint_answered =>
+      'Le point de terminaison a répondu.';
+
+  @override
+  String get rel_admin_endpoint_no_answer =>
+      'Le point de terminaison n’a pas répondu.';
+
+  @override
+  String get rel_admin_charge_unknown =>
+      'Le résultat du débit est inconnu. Il peut encore être finalisé. Consultez le portail avant de réessayer.';
+
+  @override
+  String get rel_admin_connect_before_billing =>
+      'Connectez la session active de la passerelle avant de consulter la facturation. Aucun débit n’est effectué depuis cette page.';
+
+  @override
+  String get rel_admin_preset_required =>
+      'Enregistrez un préréglage avant de l’appliquer.';
+
+  @override
+  String get rel_admin_cancel => 'Annuler';
+
+  @override
+  String get rel_admin_refresh => 'Actualiser';
+
+  @override
+  String get rel_admin_credits_and_plans => 'Crédits et offres';
+
+  @override
+  String get rel_admin_saved => 'Enregistré';
+
+  @override
+  String get rel_admin_name => 'Nom';
+
+  @override
+  String get rel_admin_base_url => 'URL de base';
+
+  @override
+  String get rel_admin_model => 'Modèle';
+
+  @override
+  String get rel_admin_signed_in => 'Session ouverte';
+
+  @override
+  String get rel_admin_not_signed_in => 'Non connecté';
+
+  @override
+  String get rel_admin_provider => 'Fournisseur';
+
+  @override
+  String get rel_admin_apply_to_this_chat => 'Appliquer à cette discussion';
+
+  @override
+  String get rel_admin_auto => 'Automatique';
+
+  @override
+  String get rel_admin_chat_completions => 'Complétions de chat';
+
+  @override
+  String get rel_admin_codex_responses => 'Réponses Codex';
+
+  @override
+  String get rel_admin_anthropic_messages => 'Messages Anthropic';
+
+  @override
+  String get rel_admin_could_not_complete_that_request =>
+      'Cette demande n’a pas pu être effectuée.';
+
+  @override
+  String get rel_admin_confirm => 'Confirmer';
+
+  @override
+  String get rel_admin_providers_and_billing => 'Fournisseurs et facturation';
+
+  @override
+  String get rel_admin_api_keys => 'Clés API';
+
+  @override
+  String get rel_admin_custom_endpoints =>
+      'Points de terminaison personnalisés';
+
+  @override
+  String get rel_admin_provider_accounts => 'Comptes fournisseurs';
+
+  @override
+  String get rel_admin_effort_and_speed_presets =>
+      'Préréglages d’effort et de vitesse';
+
+  @override
+  String get rel_admin_delegation => 'Délégation';
+
+  @override
+  String get rel_admin_mixture_of_agents => 'Mélange d’agents';
+
+  @override
+  String get rel_admin_no_provider_keys_were_reported_for_this_profile =>
+      'Aucune clé de fournisseur n’a été signalée pour ce profil.';
+
+  @override
+  String get rel_admin_not_saved => 'Non enregistré';
+
+  @override
+  String get rel_admin_new_key_value => 'Nouvelle valeur de clé';
+
+  @override
+  String get rel_admin_provider_key_saved => 'Clé du fournisseur enregistrée.';
+
+  @override
+  String get rel_admin_save_key => 'Enregistrer la clé';
+
+  @override
+  String get rel_admin_clear_provider_key => 'Effacer la clé du fournisseur';
+
+  @override
+  String get rel_admin_provider_key_cleared => 'Clé du fournisseur effacée.';
+
+  @override
+  String get rel_admin_clear_key => 'Effacer la clé';
+
+  @override
+  String get rel_admin_new_endpoint => 'Nouveau point de terminaison';
+
+  @override
+  String get rel_admin_api_key => 'Clé API';
+
+  @override
+  String get rel_admin_leave_blank_to_keep_a_key_this_endpoint_already_has =>
+      'Laissez vide pour conserver la clé existante de ce point de terminaison.';
+
+  @override
+  String get rel_admin_reachable => 'Accessible';
+
+  @override
+  String get rel_admin_unreachable => 'Inaccessible';
+
+  @override
+  String get rel_admin_test_endpoint => 'Tester le point de terminaison';
+
+  @override
+  String get rel_admin_endpoint_saved => 'Point de terminaison enregistré.';
+
+  @override
+  String get rel_admin_save_endpoint => 'Enregistrer le point de terminaison';
+
+  @override
+  String get rel_admin_use_this_endpoint => 'Utiliser ce point de terminaison';
+
+  @override
+  String
+  get rel_admin_make_this_named_endpoint_the_current_model_for_this_profile =>
+      'Définir ce point de terminaison nommé comme modèle actuel de ce profil ?';
+
+  @override
+  String get rel_admin_endpoint_is_now_current =>
+      'Ce point de terminaison est désormais le point actuel.';
+
+  @override
+  String get rel_admin_use_endpoint => 'Utiliser le point de terminaison';
+
+  @override
+  String get rel_admin_delete_endpoint => 'Supprimer le point de terminaison';
+
+  @override
+  String get rel_admin_delete_this_named_endpoint_from_the_profile =>
+      'Supprimer ce point de terminaison nommé du profil ?';
+
+  @override
+  String get rel_admin_endpoint_deleted => 'Point de terminaison supprimé.';
+
+  @override
+  String get rel_admin_signing_in_stays_on_the_provider_sign_in_screen =>
+      'La connexion reste sur l’écran de connexion du fournisseur. La déconnexion n’a lieu que si cette passerelle indique que le compte peut être supprimé.';
+
+  @override
+  String get rel_admin_disconnect_this_provider_account_on_the_gateway =>
+      'Déconnecter ce compte fournisseur sur la passerelle ?';
+
+  @override
+  String get rel_admin_provider_account_disconnected =>
+      'Compte fournisseur déconnecté.';
+
+  @override
+  String get rel_admin_disconnect => 'Déconnecter';
+
+  @override
+  String get rel_admin_not_disconnectable => 'Déconnexion impossible';
+
+  @override
+  String get rel_admin_fast => 'Rapide';
+
+  @override
+  String get rel_admin_preset_saved_for_this_model =>
+      'Préréglage enregistré pour ce modèle.';
+
+  @override
+  String get rel_admin_save_preset => 'Enregistrer le préréglage';
+
+  @override
+  String get rel_admin_chat_id => 'Identifiant du chat';
+
+  @override
+  String get rel_admin_apply_preset => 'Appliquer le préréglage';
+
+  @override
+  String get rel_admin_set_this_chat_s_effort_and_speed_from_the_saved_preset =>
+      'Définir l’effort et la vitesse de ce chat à partir du préréglage enregistré ?';
+
+  @override
+  String get rel_admin_preset_applied_to_this_chat =>
+      'Préréglage appliqué à ce chat.';
+
+  @override
+  String get rel_admin_this_route_sends_the_picked_effort_unchanged =>
+      'Cette route transmet l’effort choisi sans modification.';
+
+  @override
+  String get rel_admin_show_route_clamp => 'Afficher la limitation de la route';
+
+  @override
+  String get rel_admin_delegation_backend => 'Moteur de délégation';
+
+  @override
+  String get rel_admin_delegation_backend_saved =>
+      'Moteur de délégation enregistré.';
+
+  @override
+  String get rel_admin_save_backend => 'Enregistrer le moteur';
+
+  @override
+  String get rel_admin_max_iterations => 'Itérations maximales';
+
+  @override
+  String get rel_admin_max_concurrent_children =>
+      'Agents enfants simultanés maximum';
+
+  @override
+  String get rel_admin_child_timeout_seconds =>
+      'Délai des agents enfants en secondes';
+
+  @override
+  String get rel_admin_delegation_effort_leave_unchanged =>
+      'Effort de délégation, laisser inchangé';
+
+  @override
+  String get rel_admin_delegation_limits_saved =>
+      'Limites de délégation enregistrées.';
+
+  @override
+  String get rel_admin_save_limits => 'Enregistrer les limites';
+
+  @override
+  String get rel_admin_remove_route => 'Retirer la route';
+
+  @override
+  String get rel_admin_route_name => 'Nom de la route';
+
+  @override
+  String get rel_admin_route_provider => 'Fournisseur de la route';
+
+  @override
+  String get rel_admin_route_model => 'Modèle de la route';
+
+  @override
+  String get rel_admin_route_effort_unchanged => 'Effort de la route inchangé';
+
+  @override
+  String get rel_admin_add_route => 'Ajouter une route';
+
+  @override
+  String get rel_admin_default_route => 'Route par défaut';
+
+  @override
+  String get rel_admin_delegation_routes_saved =>
+      'Routes de délégation enregistrées.';
+
+  @override
+  String get rel_admin_save_routes => 'Enregistrer les routes';
+
+  @override
+  String get rel_admin_profile_routes_saved => 'Routes de profil enregistrées.';
+
+  @override
+  String get rel_admin_save_profile_routes =>
+      'Enregistrer les routes de profil';
+
+  @override
+  String get rel_admin_no_mixture_is_loaded => 'Aucun mélange n’est chargé.';
+
+  @override
+  String get rel_admin_mixture_enabled => 'Mélange activé';
+
+  @override
+  String get rel_admin_loud_degraded_references =>
+      'Références dégradées avec alerte';
+
+  @override
+  String get rel_admin_silent_degraded_references =>
+      'Références dégradées silencieuses';
+
+  @override
+  String get rel_admin_aggregator => 'Agrégateur';
+
+  @override
+  String get rel_admin_aggregator_provider => 'Fournisseur de l’agrégateur';
+
+  @override
+  String get rel_admin_aggregator_model => 'Modèle de l’agrégateur';
+
+  @override
+  String get rel_admin_reference_provider => 'Fournisseur de référence';
+
+  @override
+  String get rel_admin_reference_model => 'Modèle de référence';
+
+  @override
+  String get rel_admin_add_reference_model => 'Ajouter un modèle de référence';
+
+  @override
+  String get rel_admin_mixture_saved => 'Mélange enregistré.';
+
+  @override
+  String get rel_admin_save_mixture => 'Enregistrer le mélange';
+
+  @override
+  String get rel_admin_credit_purchase_submitted => 'Achat de crédits envoyé.';
+
+  @override
+  String get rel_admin_credit_purchase_settled => 'Achat de crédits finalisé.';
+
+  @override
+  String get rel_admin_credit_and_plan_changes_wait_for_confirmation_a_plan =>
+      'Les changements de crédits et d’offre attendent une confirmation. Une offre entraînant un débit immédiat est affichée, mais n’est pas confirmée ici.';
+
+  @override
+  String get rel_admin_buy_credits => 'Acheter des crédits';
+
+  @override
+  String get rel_admin_retry_same_charge => 'Réessayer le même débit';
+
+  @override
+  String get rel_admin_retry_the_same_credit_charge_this_does_not_start =>
+      'Réessayez le même débit de crédits. Cela ne lance pas un second achat.';
+
+  @override
+  String get rel_admin_credit_purchases_are_not_available_for_this_account =>
+      'L’achat de crédits n’est pas disponible pour ce compte.';
+
+  @override
+  String get rel_admin_auto_reload => 'Recharge automatique';
+
+  @override
+  String get rel_admin_read_only_until_this_account_can_charge =>
+      'Lecture seule tant que ce compte ne peut pas être débité.';
+
+  @override
+  String get rel_admin_auto_reload_updated =>
+      'Recharge automatique mise à jour.';
+
+  @override
+  String get rel_admin_keep_going_on_credits => 'Continuer avec des crédits';
+
+  @override
+  String get rel_admin_continue_on_credits_when_the_plan_window_is_used_up =>
+      'Continuer avec des crédits lorsque le quota de la période de l’offre est épuisé ?';
+
+  @override
+  String
+  get rel_admin_stop_continuing_on_credits_when_the_plan_window_is_used_up =>
+      'Arrêter de continuer avec des crédits lorsque le quota de la période de l’offre est épuisé ?';
+
+  @override
+  String get rel_admin_credit_continuation_updated =>
+      'Poursuite avec des crédits mise à jour.';
+
+  @override
+  String get rel_admin_this_plan_change_is_not_confirmed_from_ares =>
+      'Ce changement d’offre n’est pas confirmé depuis Ares.';
+
+  @override
+  String get rel_admin_this_change_is_scheduled_confirm_to_apply_it =>
+      'Ce changement est programmé. Confirmez pour l’appliquer.';
+
+  @override
+  String get rel_admin_preview_plan => 'Aperçu de l’offre';
+
+  @override
+  String get rel_admin_schedule_plan_change =>
+      'Programmer le changement d’offre';
+
+  @override
+  String get rel_admin_plan_change_scheduled => 'Changement d’offre programmé.';
+
+  @override
+  String get rel_admin_confirm_scheduled_plan_change =>
+      'Confirmer le changement d’offre programmé';
+
+  @override
+  String rel_admin_remove_key_confirm(String key) {
+    return 'Supprimer la valeur enregistrée de $key de ce profil ?';
+  }
+
+  @override
+  String rel_admin_current_endpoint(String name) {
+    return '$name · actuel';
+  }
+
+  @override
+  String rel_admin_endpoint_result(
+    String status,
+    String transport,
+    String count,
+    String message,
+  ) {
+    return '$status · $transport · $count modèles. $message';
+  }
+
+  @override
+  String rel_admin_disconnect_account(String name) {
+    return 'Déconnecter $name';
+  }
+
+  @override
+  String rel_admin_delegation_blocked(String reason) {
+    return 'La délégation est bloquée : $reason';
+  }
+
+  @override
+  String rel_admin_backend_unavailable(String name) {
+    return '$name · indisponible';
+  }
+
+  @override
+  String rel_admin_reference_number(String number) {
+    return 'Référence $number';
+  }
+
+  @override
+  String rel_admin_reload_enable_confirm(String amount, String threshold) {
+    return 'Activer la recharge automatique et débiter $amount lorsque le solde descend sous $threshold ?';
+  }
+
+  @override
+  String rel_admin_reload_disable_confirm(String amount, String threshold) {
+    return 'Désactiver la recharge automatique ? Elle débite actuellement $amount lorsque le solde descend sous $threshold.';
+  }
+
+  @override
+  String get rel_admin_this_plan => 'cette offre';
+
+  @override
+  String rel_admin_plan_confirm(String name) {
+    return 'Programmer $name. Le changement est prévu à la fin de la période en cours. Aucun débit n’est effectué maintenant.';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price(String name, String price) {
+    return 'Programmer $name à $price. Le changement est prévu à la fin de la période en cours. Aucun débit n’est effectué maintenant.';
+  }
+
+  @override
+  String rel_admin_plan_confirm_when(String name, String when) {
+    return 'Programmer $name. Le changement prend effet $when. Aucun débit n’est effectué maintenant.';
+  }
+
+  @override
+  String rel_admin_plan_confirm_price_when(
+    String name,
+    String price,
+    String when,
+  ) {
+    return 'Programmer $name à $price. Le changement prend effet $when. Aucun débit n’est effectué maintenant.';
+  }
+
+  @override
+  String rel_admin_balance(String amount) {
+    return 'Solde $amount';
+  }
+
+  @override
+  String rel_admin_buy_confirm(String amount) {
+    return 'Débiter \$$amount sur le moyen de paiement de ce compte Nous. Cela dépense de l’argent réel.';
+  }
+
+  @override
+  String rel_admin_reload_portal(String url) {
+    return 'Modifiez la recharge automatique sur le portail : $url';
+  }
+
+  @override
+  String rel_admin_team_portal(String url) {
+    return 'Les abonnements d’équipe se modifient sur le portail : $url';
+  }
+
+  @override
+  String get rel_admin_effort_none => 'aucun';
+
+  @override
+  String get rel_admin_effort_minimal => 'minimal';
+
+  @override
+  String get rel_admin_effort_low => 'faible';
+
+  @override
+  String get rel_admin_effort_medium => 'moyen';
+
+  @override
+  String get rel_admin_effort_high => 'élevé';
+
+  @override
+  String get rel_admin_effort_xhigh => 'très élevé';
+
+  @override
+  String get rel_admin_effort_max => 'maximal';
+
+  @override
+  String get rel_admin_effort_ultra => 'ultra-élevé';
+
+  @override
+  String get rel_admin_auto_lower => 'Automatique';
+
+  @override
+  String get rel_admin_create => 'Créer';
+
+  @override
+  String get rel_admin_prompt => 'Instruction';
+
+  @override
+  String get rel_admin_new_profile_id => 'Identifiant du nouveau profil';
+
+  @override
+  String get rel_admin_this_operation_is_unavailable_on_this_gateway =>
+      'Cette opération n’est pas disponible sur cette passerelle.';
+
+  @override
+  String get rel_admin_access_denied_by_the_gateway =>
+      'Accès refusé par la passerelle.';
+
+  @override
+  String get rel_admin_connection_changed_reopen_profiles =>
+      'La connexion a changé. Rouvrez Profils.';
+
+  @override
+  String
+  get rel_admin_invalid_input_or_gateway_response_check_the_target_before =>
+      'Saisie ou réponse de la passerelle invalide. Vérifiez la cible avant de réessayer.';
+
+  @override
+  String get rel_admin_could_not_verify_the_result_refresh_the_target_before =>
+      'Le résultat n’a pas pu être vérifié. Actualisez la cible avant de réessayer.';
+
+  @override
+  String get rel_admin_edit_soul_md => 'Modifier SOUL.md';
+
+  @override
+  String get rel_admin_persona => 'Personnalité';
+
+  @override
+  String get rel_admin_persona_saved => 'Personnalité enregistrée.';
+
+  @override
+  String get rel_admin_not_set => 'non défini';
+
+  @override
+  String get rel_admin_enabled => 'Activé';
+
+  @override
+  String get rel_admin_keys_to_remove_comma_separated =>
+      'Clés à retirer (séparées par des virgules)';
+
+  @override
+  String get rel_admin_saved_and_applied_by_the_gateway =>
+      'Enregistré et appliqué par la passerelle.';
+
+  @override
+  String get rel_admin_saved_a_gateway_restart_may_be_required =>
+      'Enregistré. Un redémarrage de la passerelle peut être nécessaire.';
+
+  @override
+  String get rel_admin_create_signed_route => 'Créer une route signée';
+
+  @override
+  String get rel_admin_route_id => 'Identifiant de route';
+
+  @override
+  String get rel_admin_signature => 'Signature';
+
+  @override
+  String get rel_admin_events_comma_separated =>
+      'Événements (séparés par des virgules)';
+
+  @override
+  String get rel_admin_delivery_target => 'Destination de livraison';
+
+  @override
+  String get rel_admin_skills_comma_separated =>
+      'Compétences (séparées par des virgules)';
+
+  @override
+  String get rel_admin_delivery_mode => 'Mode de livraison';
+
+  @override
+  String get rel_admin_delivery_chat_id_optional =>
+      'Identifiant du chat de livraison (facultatif)';
+
+  @override
+  String get rel_admin_hide_signing_secret => 'Masquer le secret de signature';
+
+  @override
+  String get rel_admin_reveal_signing_secret =>
+      'Afficher le secret de signature';
+
+  @override
+  String get rel_admin_edit_persona => 'Modifier la personnalité';
+
+  @override
+  String get rel_admin_portable_profile_bundle => 'Paquet de profil portable';
+
+  @override
+  String get rel_admin_clone_profile => 'Cloner le profil';
+
+  @override
+  String get rel_admin_rename_display_label => 'Renommer le libellé affiché';
+
+  @override
+  String get rel_admin_rename_profile => 'Renommer le profil';
+
+  @override
+  String get rel_admin_new_name => 'Nouveau nom';
+
+  @override
+  String get rel_admin_rename_verified => 'Renommage vérifié.';
+
+  @override
+  String get rel_admin_delete_profile => 'Supprimer le profil';
+
+  @override
+  String get rel_admin_profile_id_to_delete =>
+      'Identifiant du profil à supprimer';
+
+  @override
+  String get rel_admin_profile_deleted => 'Profil supprimé.';
+
+  @override
+  String
+  get rel_admin_profile_deleted_server_identity_cleanup_is_still_pending =>
+      'Profil supprimé. Le nettoyage de l’identité du serveur est toujours en attente.';
+
+  @override
+  String get rel_admin_export_profile_archive => 'Exporter l’archive du profil';
+
+  @override
+  String get rel_admin_import_profile_archive => 'Importer l’archive du profil';
+
+  @override
+  String get rel_admin_import_a_trusted_profile =>
+      'Importer un profil de confiance';
+
+  @override
+  String get rel_admin_absolute_archive_path_on_gateway =>
+      'Chemin absolu de l’archive sur la passerelle';
+
+  @override
+  String get rel_admin_messaging_channels => 'Canaux de messagerie';
+
+  @override
+  String get rel_admin_dm_pairing_requests =>
+      'Demandes d’association par message privé';
+
+  @override
+  String get rel_admin_no_pending_or_approved_users =>
+      'Aucun utilisateur en attente ou approuvé.';
+
+  @override
+  String get rel_admin_legacy_pairing_no_verifiable_request_id_ask_the_user =>
+      'Ancienne association : aucun identifiant de demande vérifiable. Demandez à l’utilisateur de s’associer à nouveau.';
+
+  @override
+  String get rel_admin_pairing_change_verified =>
+      'Changement d’association vérifié.';
+
+  @override
+  String get rel_admin_create_telegram_bot_by_qr =>
+      'Créer un bot Telegram par QR';
+
+  @override
+  String get rel_admin_create_telegram_bot => 'Créer un bot Telegram';
+
+  @override
+  String get rel_admin_bot_name => 'Nom du bot';
+
+  @override
+  String get rel_admin_telegram_bot_creation_qr_code =>
+      'Code QR de création d’un bot Telegram';
+
+  @override
+  String get rel_admin_check_telegram_pairing =>
+      'Vérifier l’association Telegram';
+
+  @override
+  String get rel_admin_waiting_for_telegram => 'En attente de Telegram.';
+
+  @override
+  String get rel_admin_apply_telegram_bot => 'Appliquer le bot Telegram';
+
+  @override
+  String get rel_admin_allowed_numeric_user_ids =>
+      'Identifiants numériques des utilisateurs autorisés';
+
+  @override
+  String get rel_admin_saved_restart_still_required =>
+      'Enregistré. Un redémarrage reste nécessaire.';
+
+  @override
+  String get rel_admin_saved_gateway_restart_requested =>
+      'Enregistré ; redémarrage de la passerelle demandé.';
+
+  @override
+  String get rel_admin_cancel_telegram_setup =>
+      'Annuler la configuration Telegram';
+
+  @override
+  String get rel_admin_inbound_webhooks => 'Webhooks entrants';
+
+  @override
+  String get rel_admin_enable_webhook_service =>
+      'Activer le service de webhooks';
+
+  @override
+  String get rel_admin_enable_webhooks => 'Activer les webhooks';
+
+  @override
+  String get rel_admin_enabled_restart_still_required =>
+      'Activé. Un redémarrage reste nécessaire.';
+
+  @override
+  String get rel_admin_enabled_restart_requested =>
+      'Activé ; redémarrage demandé.';
+
+  @override
+  String get rel_admin_route_change_verified => 'Changement de route vérifié.';
+
+  @override
+  String get rel_admin_delete_route => 'Supprimer la route';
+
+  @override
+  String get rel_admin_disable_route => 'Désactiver la route';
+
+  @override
+  String get rel_admin_enable_route => 'Activer la route';
+
+  @override
+  String get rel_admin_back_up_entire_agent_home =>
+      'Sauvegarder tout le répertoire personnel de l’agent';
+
+  @override
+  String get rel_admin_transfer_to_a_cloud_agent =>
+      'Transférer vers un agent Cloud';
+
+  @override
+  String get rel_admin_check_backup_progress =>
+      'Vérifier l’avancement de la sauvegarde';
+
+  @override
+  String get rel_admin_save_backup_to_this_device =>
+      'Enregistrer la sauvegarde sur cet appareil';
+
+  @override
+  String get rel_admin_save_sensitive_full_home_archive =>
+      'Enregistrer l’archive sensible de tout le répertoire personnel';
+
+  @override
+  String get rel_admin_save_cancelled => 'Enregistrement annulé.';
+
+  @override
+  String get rel_admin_backup_saved => 'Sauvegarde enregistrée.';
+
+  @override
+  String get rel_admin_up_to_32_mib_larger_archives_remain_on_the_gateway =>
+      'Jusqu’à 32 MiB. Les archives plus volumineuses restent sur la passerelle.';
+
+  @override
+  String rel_admin_persona_scope(String scope) {
+    return 'Enregistrez la personnalité de $scope.';
+  }
+
+  @override
+  String rel_admin_configure_channel(String name) {
+    return 'Configurer $name';
+  }
+
+  @override
+  String rel_admin_channel_warning(String scope) {
+    return 'S’applique à $scope. Un champ vide conserve la valeur existante. Pour supprimer une valeur, indiquez sa clé ci-dessous.';
+  }
+
+  @override
+  String rel_admin_hook_warning(String scope) {
+    return 'S’applique à $scope. Utilisez un nom unique. La passerelle crée un secret de signature. Si un autre opérateur crée ce nom en même temps, l’hôte peut remplacer cette route.';
+  }
+
+  @override
+  String rel_admin_hook_created(String url) {
+    return '$url créé. Conservez le secret de signature avant de quitter.';
+  }
+
+  @override
+  String rel_admin_clone_warning(String scope) {
+    return 'Copiez les paramètres, compétences, personnalité et éventuellement les identifiants fournisseurs de $scope. Les jetons de messagerie ne sont pas demandés.';
+  }
+
+  @override
+  String rel_admin_cloned(String source, String destination) {
+    return '$source cloné vers $destination.';
+  }
+
+  @override
+  String rel_admin_rename_target(String name) {
+    return 'Renommer $name';
+  }
+
+  @override
+  String rel_admin_rename_label_warning(String scope) {
+    return 'Modifiez le libellé affiché de $scope. Son identifiant reste default.';
+  }
+
+  @override
+  String rel_admin_rename_warning(String scope) {
+    return 'Renommez $scope sur le serveur. Une passerelle en cours d’exécution peut s’arrêter.';
+  }
+
+  @override
+  String rel_admin_delete_target(String name) {
+    return 'Supprimer $name';
+  }
+
+  @override
+  String rel_admin_delete_profile_warning(String scope) {
+    return 'Supprimez définitivement $scope, y compris les sessions et identifiants. Saisissez l’identifiant exact du profil.';
+  }
+
+  @override
+  String rel_admin_export_target(String name) {
+    return 'Exporter $name';
+  }
+
+  @override
+  String rel_admin_export_warning(String scope) {
+    return 'Créez un .tar.gz sur $scope. Les magasins d’identifiants connus sont exclus, mais des données privées peuvent rester. Examinez avant de partager.';
+  }
+
+  @override
+  String rel_admin_archive_on(String gateway, String path) {
+    return 'Archive sur $gateway : $path';
+  }
+
+  @override
+  String rel_admin_import_warning(String gateway) {
+    return 'Utilisez un .tar.gz examiné déjà présent sur $gateway. Il peut contenir des plugins, scripts et programmations. Un nouvel identifiant de profil est requis.';
+  }
+
+  @override
+  String rel_admin_imported(String name) {
+    return '$name importé.';
+  }
+
+  @override
+  String rel_admin_approve_user(String user) {
+    return 'Approuver $user';
+  }
+
+  @override
+  String rel_admin_revoke_user(String user) {
+    return 'Révoquer $user';
+  }
+
+  @override
+  String rel_admin_allow_pair(String platform, String scope) {
+    return '$platform sur $scope : autoriser l’accès de cet utilisateur à la messagerie.';
+  }
+
+  @override
+  String rel_admin_remove_pair(String platform, String scope) {
+    return '$platform sur $scope : retirer l’accès de cet utilisateur à la messagerie.';
+  }
+
+  @override
+  String rel_admin_telegram_start(String scope) {
+    return 'Démarrez une association Telegram sur $scope via le service de configuration de la passerelle.';
+  }
+
+  @override
+  String rel_admin_expires(String time) {
+    return 'Expire : $time';
+  }
+
+  @override
+  String rel_admin_telegram_apply(String bot, String scope) {
+    return 'Activez @$bot sur $scope et tentez un redémarrage de la passerelle. Seuls les utilisateurs indiqués peuvent lui envoyer des messages.';
+  }
+
+  @override
+  String rel_admin_hooks_enable(String scope) {
+    return 'Activez les webhooks entrants sur $scope et tentez un redémarrage de la passerelle.';
+  }
+
+  @override
+  String rel_admin_disable_target(String name) {
+    return 'Désactiver $name';
+  }
+
+  @override
+  String rel_admin_enable_target(String name) {
+    return 'Activer $name';
+  }
+
+  @override
+  String rel_admin_hook_change(String name, String scope) {
+    return 'Modifiez précisément $name sur $scope.';
+  }
+
+  @override
+  String rel_admin_backup_warning(String gateway) {
+    return 'Ce n’est pas une sauvegarde des paramètres d’Ares. Sauvegardez tous les profils, sessions et identifiants sur $gateway. L’archive est sensible.';
+  }
+
+  @override
+  String rel_admin_backup_started(String gateway) {
+    return 'Sauvegarde démarrée sur $gateway.';
+  }
+
+  @override
+  String rel_admin_backup_verified(String gateway, String path) {
+    return 'Sauvegarde vérifiée sur $gateway : $path';
+  }
+
+  @override
+  String rel_admin_backup_running(String gateway) {
+    return 'La sauvegarde est toujours en cours sur $gateway.';
+  }
+
+  @override
+  String get rel_admin_choice_yes => 'oui';
+
+  @override
+  String get rel_admin_choice_no => 'non';
+
+  @override
+  String get rel_admin_choice_generic => 'générique';
+
+  @override
+  String get rel_admin_choice_log => 'journal';
+
+  @override
+  String get rel_admin_choice_email => 'e-mail';
+
+  @override
+  String get rel_admin_choice_github_comment => 'commentaire GitHub';
+
+  @override
+  String get rel_admin_choice_agent => 'L’agent traite l’événement';
+
+  @override
+  String get rel_admin_choice_direct => 'Livraison directe';
+
+  @override
+  String get rel_admin_configured => 'configuré';
+
+  @override
+  String get rel_admin_state_pending_restart => 'redémarrage en attente';
+
+  @override
+  String get rel_admin_state_unknown => 'inconnu';
+
+  @override
+  String get rel_admin_state_connected => 'connecté';
+
+  @override
+  String get rel_admin_state_disconnected => 'déconnecté';
+
+  @override
+  String get rel_admin_state_disabled => 'désactivé';
+
+  @override
+  String get rel_admin_state_enabled => 'activé';
+
+  @override
+  String get rel_admin_state_running => 'en cours';
+
+  @override
+  String get rel_admin_state_stopped => 'arrêté';
+
+  @override
+  String get rel_admin_state_error => 'erreur';
+
+  @override
+  String get rel_admin_state_not_configured => 'non configuré';
+
+  @override
+  String get rel_admin_state_startup_failed => 'échec du démarrage';
+
+  @override
+  String get rel_admin_state_gateway_stopped => 'passerelle arrêtée';
+
+  @override
+  String get rel_admin_state_connecting => 'connexion en cours';
+
+  @override
+  String get rel_admin_state_retrying => 'nouvelle tentative';
+
+  @override
+  String get rel_admin_state_fatal => 'erreur fatale';
+
+  @override
+  String get rel_admin_unsupported_or_oversized_profile_archive =>
+      'Archive de profil non prise en charge ou trop volumineuse.';
+
+  @override
+  String get rel_admin_current_layout => 'Disposition actuelle';
+
+  @override
+  String get rel_admin_one_pane => 'Un volet';
+
+  @override
+  String get rel_admin_stacked => 'Empilé';
+
+  @override
+  String get rel_admin_side_by_side => 'Côte à côte';
+
+  @override
+  String get rel_admin_no_supported_appearance_in_this_profile =>
+      'Aucune apparence prise en charge dans ce profil.';
+
+  @override
+  String get rel_admin_review_appearance_saved_with_this_profile =>
+      'Examiner l’apparence enregistrée avec ce profil';
+
+  @override
+  String get rel_admin_applies_only_to_this_named_profile_on_this_device =>
+      'S’applique uniquement à ce profil nommé sur cet appareil. Une disposition importée commence avec des volets vides ; choisissez vous-même ses chats.';
+
+  @override
+  String get rel_admin_apply_to_this_profile_on_this_device =>
+      'Appliquer à ce profil sur cet appareil';
+
+  @override
+  String get rel_admin_export_prepares_a_tar_gz_on_the_gateway_review =>
+      'L’export prépare un .tar.gz sur la passerelle. Examinez ses fichiers portables avant d’enregistrer une copie ici. L’import ouvre une archive locale pour examen ; l’ouverture seule ne téléverse rien.';
+
+  @override
+  String get rel_admin_prepare_profile_export => 'Préparer l’export du profil';
+
+  @override
+  String get rel_admin_open_tar_gz_from_this_device =>
+      'Ouvrir un .tar.gz de cet appareil';
+
+  @override
+  String get rel_admin_only_selected_text_files_travel_review_for_secrets_and =>
+      'Seuls les fichiers texte sélectionnés sont transférés. Vérifiez l’absence de secrets et d’informations privées. La configuration, les compétences et les programmations peuvent modifier le comportement du nouveau profil.';
+
+  @override
+  String get rel_admin_include_this_reviewed_file =>
+      'Inclure ce fichier examiné';
+
+  @override
+  String get rel_admin_apply_appearance_to_the_new_profile_on_this_device =>
+      'Appliquer l’apparence au nouveau profil sur cet appareil';
+
+  @override
+  String
+  get rel_admin_imports_colours_and_pane_sizes_never_chats_tools_or_session_ids =>
+      'Importe les couleurs et tailles des volets, jamais les chats, outils ou identifiants de session.';
+
+  @override
+  String
+  get rel_admin_the_gateway_retains_a_private_staged_copy_import_creates =>
+      'La passerelle conserve une copie privée préparée. L’import crée un nouveau profil ; il ne remplace pas un profil existant.';
+
+  @override
+  String get rel_admin_appearance_not_applied_the_gateway_did_not_confirm_the =>
+      ' Apparence non appliquée : la passerelle n’a pas confirmé la surcouche examinée.';
+
+  @override
+  String get rel_admin_appearance_applied_on_this_device =>
+      ' Apparence appliquée sur cet appareil.';
+
+  @override
+  String get rel_admin_appearance_was_not_saved_on_this_device =>
+      ' L’apparence n’a pas été enregistrée sur cet appareil.';
+
+  @override
+  String get rel_admin_save_reviewed_profile_bundle =>
+      'Enregistrer le paquet de profil examiné';
+
+  @override
+  String get rel_admin_profile_bundle_saved => 'Paquet de profil enregistré.';
+
+  @override
+  String get rel_admin_import_selected_files =>
+      'Importer les fichiers sélectionnés';
+
+  @override
+  String get rel_admin_save_selected_files_to_device =>
+      'Enregistrer les fichiers sélectionnés sur l’appareil';
+
+  @override
+  String rel_admin_layout_first_pane(String layout, String percent) {
+    return '$layout · $percent% premier volet';
+  }
+
+  @override
+  String rel_admin_appearance_summary(String skin, String mode, String layout) {
+    return 'Thème : $skin · Mode : $mode · $layout';
+  }
+
+  @override
+  String rel_admin_appearance_applied(String gateway, String profile) {
+    return 'Apparence appliquée à $gateway / $profile.';
+  }
+
+  @override
+  String rel_admin_bundle_summary(
+    String profile,
+    String count,
+    String omitted,
+  ) {
+    return 'Paquet : $profile · $count fichiers examinables · $omitted omis';
+  }
+
+  @override
+  String rel_admin_imported_on(String name, String gateway) {
+    return '$name importé sur $gateway.';
+  }
+
+  @override
+  String get rel_admin_unchanged => 'inchangé';
+
+  @override
+  String get rel_admin_mode_system => 'système';
+
+  @override
+  String get rel_admin_mode_light => 'clair';
+
+  @override
+  String get rel_admin_mode_dark => 'sombre';
+
+  @override
+  String get rel_admin_skin_classic => 'classique';
+
+  @override
+  String get rel_admin_skin_midnight => 'minuit';
+
+  @override
+  String get rel_admin_skin_ember => 'braise';
+
+  @override
+  String get rel_admin_skin_mono => 'monochrome';
+
+  @override
+  String get rel_admin_skin_cyberpunk => 'cyberpunk';
+
+  @override
+  String get rel_admin_skin_slate => 'ardoise';
+
+  @override
+  String get rel_admin_no_available_cloud_agents_in_this_account =>
+      'Aucun agent Cloud disponible dans ce compte.';
+
+  @override
+  String get rel_admin_the_previous_undo_receipt_could_not_be_verified_no =>
+      'Le reçu d’annulation précédent n’a pas pu être vérifié. Aucune modification n’a été effectuée.';
+
+  @override
+  String get rel_admin_transfer_to_cloud => 'Transférer vers Cloud';
+
+  @override
+  String
+  get rel_admin_connection_changed_leave_this_page_a_restore_already_submitted =>
+      'La connexion a changé. Quittez cette page. Une restauration déjà soumise peut se poursuivre.';
+
+  @override
+  String get rel_admin_find_my_cloud_agents => 'Trouver mes agents Cloud';
+
+  @override
+  String
+  get rel_admin_undo_replaces_the_destination_with_its_pre_transfer_backup =>
+      'L’annulation remplace la destination par sa sauvegarde d’avant le transfert.';
+
+  @override
+  String get rel_admin_replace_this_cloud_agent_with_the_entire_source_home =>
+      'Remplacez cet agent Cloud par tout le répertoire personnel source, y compris les identifiants, conversations et fichiers. La source n’est pas supprimée. Les bots de messagerie entrante sont désactivés.';
+
+  @override
+  String get rel_admin_type_destination_agent_id =>
+      'Saisissez l’identifiant de l’agent de destination';
+
+  @override
+  String
+  get rel_admin_could_not_retain_the_local_undo_receipt_keep_this_page_open =>
+      'Le reçu d’annulation local n’a pas pu être conservé. Gardez cette page ouverte.';
+
+  @override
+  String get rel_admin_undo_transfer => 'Annuler le transfert';
+
+  @override
+  String get rel_admin_replace_cloud_agent => 'Remplacer l’agent Cloud';
+
+  @override
+  String
+  get rel_admin_local_undo_receipt_forgotten_no_remote_backup_was_removed =>
+      'Reçu d’annulation local oublié. Aucune sauvegarde distante n’a été supprimée.';
+
+  @override
+  String get rel_admin_forget_local_undo_receipt_only =>
+      'Oublier uniquement le reçu d’annulation local';
+
+  @override
+  String get rel_admin_stop_before_restore => 'Arrêter avant la restauration';
+
+  @override
+  String get rel_admin_do_not_close_this_page_restore_runs_on_the =>
+      'Ne fermez pas cette page. La restauration s’exécute sur la destination et ne peut pas être annulée.';
+
+  @override
+  String get rel_admin_files_restored_destination_gateway_needs_attention =>
+      'Fichiers restaurés ; la passerelle de destination nécessite une intervention.';
+
+  @override
+  String rel_admin_transfer_sign_in(String origin) {
+    return 'Connectez-vous à une seule connexion Ares enregistrée pour $origin, puis revenez ici.';
+  }
+
+  @override
+  String rel_admin_transfer_source(String gateway, String profile) {
+    return 'Source : $gateway / $profile';
+  }
+
+  @override
+  String rel_admin_transfer_destination(String name, String origin) {
+    return 'Destination : $name · $origin / default';
+  }
+
+  @override
+  String rel_admin_agent_id(String id) {
+    return 'Identifiant de l’agent : $id';
+  }
+
+  @override
+  String rel_admin_transfer_status(String phase) {
+    return 'État : $phase';
+  }
+
+  @override
+  String rel_admin_copied_percent(String percent) {
+    return 'Copié à $percent%';
+  }
+
+  @override
+  String rel_admin_undo_point(String path) {
+    return 'Point d’annulation sur la destination : $path';
+  }
+
+  @override
+  String rel_admin_messaging_disabled(String channels) {
+    return 'Messagerie désactivée : $channels';
+  }
+
+  @override
+  String get rel_admin_phase_prepared => 'préparé';
+
+  @override
+  String get rel_admin_phase_backup => 'sauvegarde';
+
+  @override
+  String get rel_admin_phase_upload => 'téléversement';
+
+  @override
+  String get rel_admin_phase_restore => 'restauration';
+
+  @override
+  String get rel_admin_phase_finished => 'terminé';
+
+  @override
+  String get rel_admin_phase_failed => 'échoué';
+
+  @override
+  String get rel_admin_phase_undo => 'annulation';
+
+  @override
+  String get rel_admin_phase_undone => 'annulé';
+
+  @override
+  String rel_ops_cap_install_blocked(String verdict, String detail) {
+    return 'Installation bloquée ($verdict) : $detail';
+  }
+
+  @override
+  String rel_ops_cap_scan_confirm(String verdict, String requested) {
+    return 'Résultat de l’analyse : $verdict. Confirmez $requested avant l’installation.';
+  }
+
+  @override
+  String rel_ops_cap_install_unconfirmed(String requested) {
+    return 'La passerelle n’a pas confirmé l’installation de $requested.';
+  }
+
+  @override
+  String rel_ops_cap_edit_skill(String name) {
+    return 'Modifier $name';
+  }
+
+  @override
+  String rel_ops_cap_archive_skill(String name) {
+    return 'Archiver $name ?';
+  }
+
+  @override
+  String rel_ops_cap_archive_explanation(String command) {
+    return 'La compétence sera archivée et pourra être restaurée avec $command.';
+  }
+
+  @override
+  String rel_ops_cap_install_anyway(String name) {
+    return 'Installer $name quand même';
+  }
+
+  @override
+  String rel_ops_cap_install_despite_scan(String name) {
+    return 'Installer $name malgré l’analyse ?';
+  }
+
+  @override
+  String rel_ops_cap_scan_warning(String name) {
+    return 'L’analyse de sécurité a bloqué $name. Cette confirmation ne s’applique qu’à $name.';
+  }
+
+  @override
+  String rel_ops_cap_accept_scan_warning(String name) {
+    return 'Accepter les capacités ne permet pas de contourner l’analyse de $name.';
+  }
+
+  @override
+  String rel_ops_cap_review_scan(String name) {
+    return 'Consulter l’analyse de $name';
+  }
+
+  @override
+  String rel_ops_cap_desktop_grants(String description) {
+    return '$description\nLes autorisations des dossiers et des scripts d’aperçu restent dans l’application Desktop de cet ordinateur. Supprimer le plugin ici ne révoque pas ces autorisations locales.';
+  }
+
+  @override
+  String rel_ops_cap_remove_plugin(String name) {
+    return 'Supprimer $name ?';
+  }
+
+  @override
+  String rel_ops_cap_probe_result(String name, String tools) {
+    return 'Test de $name : $tools';
+  }
+
+  @override
+  String rel_ops_cap_save_tool_grants_for(String connector) {
+    return 'Enregistrer les autorisations des outils pour $connector';
+  }
+
+  @override
+  String rel_ops_cap_backends_for(String name) {
+    return 'Moteurs pour $name';
+  }
+
+  @override
+  String rel_ops_cap_use_backend_confirmation(String name) {
+    return 'Utiliser $name ?';
+  }
+
+  @override
+  String rel_ops_cap_unlock_source(String name) {
+    return 'Déverrouiller $name';
+  }
+
+  @override
+  String get rel_ops_cap_capabilities => 'Capacités';
+
+  @override
+  String get rel_ops_cap_plugins => 'Plugins';
+
+  @override
+  String get rel_ops_cap_connectors => 'Connecteurs';
+
+  @override
+  String get rel_ops_cap_backends => 'Moteurs';
+
+  @override
+  String get rel_ops_cap_save_skill => 'Enregistrer la compétence';
+
+  @override
+  String get rel_ops_cap_archive => 'Archiver';
+
+  @override
+  String get rel_ops_cap_hub_identifier => 'Identifiant du Hub';
+
+  @override
+  String get rel_ops_cap_install => 'Installer';
+
+  @override
+  String get rel_ops_cap_update_all => 'Tout mettre à jour';
+
+  @override
+  String get rel_ops_cap_unlock => 'Déverrouiller';
+
+  @override
+  String get rel_ops_cap_lock => 'Verrouiller';
+
+  @override
+  String get rel_ops_cap_this_update_adds_capabilities_nothing_changed_yet =>
+      'Cette mise à jour ajoute des capacités. Rien n’a encore changé.';
+
+  @override
+  String get rel_ops_cap_the_scan_blocked_this_plugin =>
+      'L’analyse a bloqué ce plugin.';
+
+  @override
+  String get rel_ops_cap_the_plugin_was_not_changed =>
+      'Le plugin n’a pas été modifié.';
+
+  @override
+  String get rel_ops_cap_repository => 'Dépôt';
+
+  @override
+  String get rel_ops_cap_install_plugin => 'Installer un plugin';
+
+  @override
+  String get rel_ops_cap_update_plugins => 'Mettre à jour les plugins';
+
+  @override
+  String get rel_ops_cap_accept_capabilities => 'Accepter les capacités';
+
+  @override
+  String get rel_ops_cap_update => 'Mettre à jour';
+
+  @override
+  String get rel_ops_cap_remove_desktop_half =>
+      'Supprimer le composant de bureau';
+
+  @override
+  String get rel_ops_cap_server_name => 'Nom du serveur';
+
+  @override
+  String get rel_ops_cap_command => 'Commande';
+
+  @override
+  String get rel_ops_cap_http_url => 'URL HTTP';
+
+  @override
+  String get rel_ops_cap_add_server => 'Ajouter un serveur';
+
+  @override
+  String get rel_ops_cap_probe => 'Tester';
+
+  @override
+  String get rel_ops_cap_probe_failed => 'Échec du test.';
+
+  @override
+  String get rel_ops_cap_logs => 'Journaux';
+
+  @override
+  String get rel_ops_cap_mcp_log => 'Journal MCP';
+
+  @override
+  String get rel_ops_cap_connector => 'Connecteur';
+
+  @override
+  String get rel_ops_cap_account_alias => 'Alias du compte';
+
+  @override
+  String get rel_ops_cap_link_account => 'Associer un compte';
+
+  @override
+  String get rel_ops_cap_remove_account => 'Supprimer le compte';
+
+  @override
+  String get rel_ops_cap_tool_connector => 'Connecteur d’outils';
+
+  @override
+  String get rel_ops_cap_load_tools => 'Charger les outils';
+
+  @override
+  String get rel_ops_cap_save_tool_grants =>
+      'Enregistrer les autorisations des outils';
+
+  @override
+  String
+  get rel_ops_cap_this_policy_has_no_member_revision_so_tool_grants_stay_unchanged =>
+      'Cette politique n’a pas de révision de membre ; les autorisations des outils restent donc inchangées.';
+
+  @override
+  String get rel_ops_cap_active => 'Actif';
+
+  @override
+  String get rel_ops_cap_use => 'Utiliser';
+
+  @override
+  String get rel_ops_cap_run_setup => 'Lancer la configuration';
+
+  @override
+  String get rel_ops_cap_terminal_backends => 'Moteurs du terminal';
+
+  @override
+  String get rel_ops_cap_this_changes_the_terminal_backend_for_this_profile =>
+      'Cela modifie le moteur du terminal pour ce profil.';
+
+  @override
+  String get rel_ops_cap_use_backend => 'Utiliser ce moteur';
+
+  @override
+  String get rel_ops_cap_select => 'Sélectionner';
+
+  @override
+  String get rel_ops_cap_browser_vault => 'Coffre-fort du navigateur';
+
+  @override
+  String
+  get rel_ops_cap_saved_site_logins_addresses_and_cards_passwords_stay_in_the_secure_fields_and_are_not_listed_here =>
+      'Connexions aux sites, adresses et cartes enregistrées. Les mots de passe restent dans les champs sécurisés et ne sont pas affichés ici.';
+
+  @override
+  String get rel_ops_cap_remove_saved_item => 'Supprimer l’élément enregistré';
+
+  @override
+  String get rel_ops_cap_delete_this_item => 'Supprimer cet élément ?';
+
+  @override
+  String get rel_ops_cap_unlocked => 'Déverrouillé';
+
+  @override
+  String get rel_ops_cap_locked => 'Verrouillé';
+
+  @override
+  String get rel_ops_cap_not_detected => 'Non détecté';
+
+  @override
+  String get rel_ops_cap_master_password => 'Mot de passe principal';
+
+  @override
+  String get rel_ops_cap_login => 'Identifiants de connexion';
+
+  @override
+  String get rel_ops_cap_address => 'Adresse';
+
+  @override
+  String get rel_ops_cap_card => 'Carte';
+
+  @override
+  String get rel_ops_cap_label => 'Libellé';
+
+  @override
+  String get rel_ops_cap_site_origin => 'Origine du site';
+
+  @override
+  String get rel_ops_cap_identifier => 'Identifiant';
+
+  @override
+  String get rel_ops_cap_password => 'Mot de passe';
+
+  @override
+  String get rel_ops_cap_authenticator_key => 'Clé d’authentification';
+
+  @override
+  String get rel_ops_cap_street => 'Rue';
+
+  @override
+  String get rel_ops_cap_city => 'Ville';
+
+  @override
+  String get rel_ops_cap_postal_code => 'Code postal';
+
+  @override
+  String get rel_ops_cap_country => 'Pays';
+
+  @override
+  String get rel_ops_cap_name_on_card => 'Nom sur la carte';
+
+  @override
+  String get rel_ops_cap_card_number => 'Numéro de carte';
+
+  @override
+  String get rel_ops_cap_expiry_month => 'Mois d’expiration';
+
+  @override
+  String get rel_ops_cap_expiry_year => 'Année d’expiration';
+
+  @override
+  String get rel_ops_cap_security_code => 'Code de sécurité';
+
+  @override
+  String get rel_ops_cap_this_gateway_has_no_shared_metrics_consent_method =>
+      'Cette passerelle n’a pas de méthode de consentement au partage des métriques.';
+
+  @override
+  String get rel_ops_cap_agent_policy => 'Politique de l’agent';
+
+  @override
+  String get rel_ops_cap_loading_policy => 'Chargement de la politique';
+
+  @override
+  String get rel_ops_cap_approval_timeout => 'Délai d’approbation';
+
+  @override
+  String get rel_ops_cap_confirm_mcp_reloads =>
+      'Confirmer les rechargements MCP';
+
+  @override
+  String get rel_ops_cap_command_allowlist => 'Liste des commandes autorisées';
+
+  @override
+  String get rel_ops_cap_file_checkpoints =>
+      'Points de restauration des fichiers';
+
+  @override
+  String get rel_ops_cap_checkpoint_limit =>
+      'Limite des points de restauration';
+
+  @override
+  String get rel_ops_cap_browser_private_urls =>
+      'URL privées dans le navigateur';
+
+  @override
+  String get rel_ops_cap_use_my_real_browser_profile =>
+      'Utiliser mon vrai profil de navigateur';
+
+  @override
+  String get rel_ops_cap_save_policy => 'Enregistrer la politique';
+
+  @override
+  String get rel_ops_cap_shared_metrics_for_this_profile =>
+      'Métriques partagées pour ce profil';
+
+  @override
+  String get rel_ops_cap_send_shared_metrics =>
+      'Envoyer les métriques partagées';
+
+  @override
+  String get rel_ops_cap_error_enter_a_label => 'Saisissez un libellé.';
+
+  @override
+  String get rel_ops_cap_error_enter_a_valid_url_like_https_example_com =>
+      'Saisissez une URL valide, comme https://example.com.';
+
+  @override
+  String get rel_ops_cap_error_enter_the_identifier_and_password =>
+      'Saisissez l’identifiant et le mot de passe.';
+
+  @override
+  String
+  get rel_ops_cap_error_enter_the_card_name_number_expiry_and_security_code =>
+      'Saisissez le nom sur la carte, son numéro, sa date d’expiration et son code de sécurité.';
+
+  @override
+  String get rel_ops_cap_error_enter_the_street_city_postal_code_and_country =>
+      'Saisissez la rue, la ville, le code postal et le pays.';
+
+  @override
+  String
+  get rel_ops_cap_error_the_gateway_returned_a_response_that_could_not_be_read =>
+      'La passerelle a renvoyé une réponse illisible.';
+
+  @override
+  String rel_ops_cap_error_the_gateway_refused_the_request_status(
+    int statusCode,
+  ) {
+    return 'La passerelle a refusé la requête ($statusCode).';
+  }
+
+  @override
+  String
+  rel_ops_cap_error_this_connection_has_no_gateway_socket_so_method_is_unavailable(
+    String method,
+  ) {
+    return 'Cette connexion n’a pas de socket de passerelle ; $method n’est donc pas disponible.';
+  }
+
+  @override
+  String get rel_ops_cap_error_choose_a_skill => 'Choisissez une compétence.';
+
+  @override
+  String get rel_ops_cap_error_the_skill_text_was_not_returned =>
+      'Le texte de la compétence n’a pas été renvoyé.';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_saved =>
+      'La compétence n’a pas été enregistrée.';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_archived =>
+      'La compétence n’a pas été archivée.';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_installed =>
+      'La compétence n’a pas été installée.';
+
+  @override
+  String get rel_ops_cap_error_skill_updates_did_not_start =>
+      'Les mises à jour des compétences n’ont pas démarré.';
+
+  @override
+  String get rel_ops_cap_error_the_skill_was_not_removed =>
+      'La compétence n’a pas été supprimée.';
+
+  @override
+  String get rel_ops_cap_error_enter_a_skill_or_plugin_identifier =>
+      'Saisissez un identifiant de compétence ou de plugin.';
+
+  @override
+  String get rel_ops_cap_error_choose_a_plugin => 'Choisissez un plugin.';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_removed =>
+      'Le plugin n’a pas été supprimé.';
+
+  @override
+  String get rel_ops_cap_error_the_desktop_half_was_not_removed =>
+      'Le composant de bureau n’a pas été supprimé.';
+
+  @override
+  String
+  get rel_ops_cap_error_this_gateway_did_not_give_the_plugin_a_stable_key =>
+      'Cette passerelle n’a pas attribué de clé stable au plugin.';
+
+  @override
+  String get rel_ops_cap_error_the_plugin_was_not_changed =>
+      'Le plugin n’a pas été modifié.';
+
+  @override
+  String get rel_ops_cap_error_choose_a_server => 'Choisissez un serveur.';
+
+  @override
+  String get rel_ops_cap_error_name_the_server => 'Donnez un nom au serveur.';
+
+  @override
+  String get rel_ops_cap_error_give_the_server_a_command_or_an_http_s_url =>
+      'Indiquez une commande ou une URL http(s) pour le serveur.';
+
+  @override
+  String get rel_ops_cap_error_choose_a_toolset =>
+      'Choisissez un ensemble d’outils.';
+
+  @override
+  String get rel_ops_cap_error_tool_backend_status_was_not_returned =>
+      'L’état du moteur d’outils n’a pas été renvoyé.';
+
+  @override
+  String get rel_ops_cap_error_choose_a_provider =>
+      'Choisissez un fournisseur.';
+
+  @override
+  String get rel_ops_cap_error_this_provider_has_no_setup_action =>
+      'Ce fournisseur n’a pas d’action de configuration.';
+
+  @override
+  String get rel_ops_cap_error_setup_did_not_start =>
+      'La configuration n’a pas démarré.';
+
+  @override
+  String get rel_ops_cap_error_choose_a_terminal_backend =>
+      'Choisissez un moteur de terminal.';
+
+  @override
+  String get rel_ops_cap_error_name_the_connector =>
+      'Donnez un nom au connecteur.';
+
+  @override
+  String get rel_ops_cap_error_choose_an_account => 'Choisissez un compte.';
+
+  @override
+  String
+  get rel_ops_cap_error_reload_the_connector_policy_before_changing_tool_grants =>
+      'Rechargez la politique du connecteur avant de modifier les autorisations des outils.';
+
+  @override
+  String get rel_ops_cap_error_choose_an_item => 'Choisissez un élément.';
+
+  @override
+  String get rel_ops_cap_error_choose_a_source => 'Choisissez une source.';
+
+  @override
+  String get rel_ops_cap_error_enter_the_master_password =>
+      'Saisissez le mot de passe principal.';
+
+  @override
+  String get rel_ops_cap_error_gateway_config_was_not_returned =>
+      'La configuration de la passerelle n’a pas été renvoyée.';
+
+  @override
+  String get rel_ops_cap_error_choose_a_known_approval_mode =>
+      'Choisissez un mode d’approbation connu.';
+
+  @override
+  String get rel_ops_cap_error_use_a_positive_limit =>
+      'Utilisez une limite positive.';
+
+  @override
+  String get rel_ops_cap_error_the_policy_was_not_saved =>
+      'La politique n’a pas été enregistrée.';
+
+  @override
+  String get rel_ops_cap_value_manual => 'manuelle';
+
+  @override
+  String get rel_ops_cap_value_smart => 'intelligente';
+
+  @override
+  String get rel_ops_cap_value_off => 'désactivé';
+
+  @override
+  String get rel_ops_cap_value_safe => 'sûr';
+
+  @override
+  String get rel_ops_cap_value_caution => 'prudence';
+
+  @override
+  String get rel_ops_cap_value_dangerous => 'dangereux';
+
+  @override
+  String get rel_ops_cap_value_blocked => 'bloqué';
+
+  @override
+  String get rel_ops_cap_value_clean => 'sans menace';
+
+  @override
+  String get rel_ops_cap_value_ready => 'prêt';
+
+  @override
+  String get rel_ops_cap_value_available => 'disponible';
+
+  @override
+  String get rel_ops_cap_value_unavailable => 'indisponible';
+
+  @override
+  String get rel_ops_cap_value_enabled => 'activé';
+
+  @override
+  String get rel_ops_cap_value_disabled => 'désactivé';
+
+  @override
+  String get rel_ops_cap_value_active => 'actif';
+
+  @override
+  String get rel_ops_cap_value_inactive => 'inactif';
+
+  @override
+  String get rel_ops_cap_value_installed => 'installé';
+
+  @override
+  String get rel_ops_cap_value_missing => 'manquant';
+
+  @override
+  String get rel_ops_cap_value_configured => 'configuré';
+
+  @override
+  String get rel_ops_cap_value_not_configured => 'non configuré';
+
+  @override
+  String get rel_ops_cap_value_error => 'erreur';
+
+  @override
+  String get rel_ops_cap_value_unknown => 'inconnu';
+
+  @override
+  String get rel_ops_cap_value_login => 'connexion';
+
+  @override
+  String get rel_ops_cap_value_address => 'adresse';
+
+  @override
+  String get rel_ops_cap_value_payment => 'paiement';
+
+  @override
+  String get rel_ops_term_connecting => 'Connexion…';
+
+  @override
+  String get rel_ops_term_unbound =>
+      'Aucune session active ni aucun répertoire de travail de l’hôte ne correspond. Ouvrez d’abord la discussion associée.';
+
+  @override
+  String get rel_ops_term_unsupported =>
+      'Cette passerelle ne propose pas cette fonctionnalité de terminal. Aucun interpréteur de commandes local n’a été lancé.';
+
+  @override
+  String get rel_ops_term_local_pty_unavailable =>
+      'Le pseudo-terminal local (PTY) fourni n’est pas disponible sur cet appareil.';
+
+  @override
+  String get rel_ops_term_operation_failed =>
+      'Impossible d’ouvrir ou de contrôler le terminal. Vérifiez l’hôte, les identifiants et l’empreinte. Aucun interpréteur de commandes de secours n’a été lancé.';
+
+  @override
+  String get rel_ops_term_input_refused =>
+      'Saisie refusée. Rouvrez la discussion d’origine.';
+
+  @override
+  String get rel_ops_term_cancel => 'Annuler';
+
+  @override
+  String get rel_ops_term_confirm => 'Confirmer';
+
+  @override
+  String get rel_ops_term_open_device_title =>
+      'Ouvrir un interpréteur de commandes sur cet appareil ?';
+
+  @override
+  String get rel_ops_term_ssh_shell => 'Interpréteur de commandes SSH';
+
+  @override
+  String get rel_ops_term_local_shell => 'Interpréteur de commandes local';
+
+  @override
+  String get rel_ops_term_connection_lost => 'Connexion perdue';
+
+  @override
+  String get rel_ops_term_shell_ended => 'Interpréteur de commandes terminé';
+
+  @override
+  String get rel_ops_term_no_owner =>
+      'Cette discussion n’a pas de propriétaire authentifié pour le terminal de la passerelle. Une URL ou une connexion au cloud seule ne donne pas accès à un interpréteur de commandes.';
+
+  @override
+  String get rel_ops_term_open_gateway_title =>
+      'Ouvrir un interpréteur de commandes sur la passerelle ?';
+
+  @override
+  String get rel_ops_term_shell_expired =>
+      'Interpréteur de commandes terminé ou expiré';
+
+  @override
+  String get rel_ops_term_disconnected => 'Déconnecté';
+
+  @override
+  String get rel_ops_term_gateway_shell =>
+      'Interpréteur de commandes de la passerelle';
+
+  @override
+  String get rel_ops_term_close_body =>
+      'Terminer cet interpréteur de commandes. Pour le laisser fonctionner, masquez plutôt le volet.';
+
+  @override
+  String get rel_ops_term_closing => 'Fermeture…';
+
+  @override
+  String get rel_ops_term_close_unconfirmed => 'Fermeture non confirmée';
+
+  @override
+  String get rel_ops_term_processes_require_chat =>
+      'Les processus de l’agent nécessitent la discussion authentifiée à laquelle ils appartiennent.';
+
+  @override
+  String get rel_ops_term_watching_processes =>
+      'Surveillance des processus de l’agent de cette discussion. Fermer une vue miroir n’arrête jamais son processus.';
+
+  @override
+  String get rel_ops_term_paste_limit => 'Le collage est limité à 16 KiB.';
+
+  @override
+  String get rel_ops_term_paste => 'Coller';
+
+  @override
+  String get rel_ops_term_select_first =>
+      'Sélectionnez d’abord la sortie du terminal.';
+
+  @override
+  String get rel_ops_term_open_chat_to_insert =>
+      'Ouvrez la discussion d’origine avant d’insérer la sortie.';
+
+  @override
+  String get rel_ops_term_added_to_draft =>
+      'Ajouté au brouillon de la discussion d’origine. Rien n’a été envoyé.';
+
+  @override
+  String get rel_ops_term_close => 'Fermer';
+
+  @override
+  String get rel_ops_term_add_selection =>
+      'Ajouter la sélection au brouillon de la discussion';
+
+  @override
+  String get rel_ops_term_new_terminal => 'Nouveau terminal';
+
+  @override
+  String get rel_ops_term_gateway_terminal =>
+      'Terminal de l’hôte de la passerelle';
+
+  @override
+  String get rel_ops_term_verified_ssh_terminal => 'Terminal SSH vérifié';
+
+  @override
+  String get rel_ops_term_device_local_shell =>
+      'Cet appareil (interpréteur de commandes local)';
+
+  @override
+  String get rel_ops_term_local_unavailable_mobile =>
+      'Interpréteur de commandes local indisponible sur mobile';
+
+  @override
+  String get rel_ops_term_watch_processes =>
+      'Surveiller les processus de l’agent';
+
+  @override
+  String get rel_ops_term_select_output => 'Sélectionner ou copier la sortie';
+
+  @override
+  String get rel_ops_term_add_selected_output =>
+      'Ajouter la sortie sélectionnée au brouillon de la discussion';
+
+  @override
+  String get rel_ops_term_review_paste =>
+      'Vérifier le collage du presse-papiers';
+
+  @override
+  String get rel_ops_term_reconnect =>
+      'Se reconnecter au même interpréteur de commandes';
+
+  @override
+  String get rel_ops_term_close_mirror => 'Fermer la vue miroir';
+
+  @override
+  String get rel_ops_term_close_shell => 'Fermer l’interpréteur de commandes';
+
+  @override
+  String get rel_ops_term_empty =>
+      'Choisissez + pour ouvrir un terminal. Aucun interpréteur de commandes ne démarre automatiquement.';
+
+  @override
+  String get rel_ops_term_reason_stale => 'périmé';
+
+  @override
+  String get rel_ops_term_reason_mismatch => 'non concordant';
+
+  @override
+  String get rel_ops_term_reason_unbound => 'non associé';
+
+  @override
+  String get rel_ops_term_reason_unsupported => 'non pris en charge';
+
+  @override
+  String get rel_ops_term_reason_denied => 'refusé';
+
+  @override
+  String get rel_ops_term_reason_ineligible => 'non admissible';
+
+  @override
+  String get rel_ops_term_reason_unavailable => 'indisponible';
+
+  @override
+  String get rel_ops_term_reason_invalid => 'non valide';
+
+  @override
+  String get rel_ops_term_reason_insecure => 'non sécurisé';
+
+  @override
+  String rel_ops_term_refused(String reason) {
+    return 'La passerelle a refusé cette opération de terminal ($reason).';
+  }
+
+  @override
+  String rel_ops_term_open_device_body(String connection) {
+    return 'Il s’agit de l’appareil Ares, et non de $connection. L’interpréteur de commandes utilise les autorisations de l’application et démarre dans son espace de stockage.';
+  }
+
+  @override
+  String rel_ops_term_open_gateway_body(String host) {
+    return 'Lancez un interpréteur de commandes sur $host dans le répertoire de travail vérifié de la discussion. Il ne s’agit pas d’un interpréteur de commandes sur l’appareil.';
+  }
+
+  @override
+  String rel_ops_term_close_tab_title(String label) {
+    return 'Fermer $label ?';
+  }
+
+  @override
+  String rel_ops_term_read_only_status(String status) {
+    return 'Lecture seule · $status';
+  }
+
+  @override
+  String rel_ops_term_paste_title(String label) {
+    return 'Coller dans $label ?';
+  }
+
+  @override
+  String rel_ops_term_output_title(String label) {
+    return 'Sortie · $label';
+  }
+
+  @override
+  String rel_ops_term_mirror_status(String label) {
+    return 'Vue miroir du processus en lecture seule · $label';
+  }
+
+  @override
+  String rel_ops_term_status_label(String status, String label) {
+    return '$status · $label';
+  }
+
+  @override
+  String rel_ops_term_ssh_tab(String user, String host, int port, int number) {
+    return 'SSH $user@$host:$port · $number';
+  }
+
+  @override
+  String rel_ops_term_device_tab(int number) {
+    return 'Cet appareil · $number';
+  }
+
+  @override
+  String rel_ops_term_gateway_tab(String host, int number) {
+    return 'Passerelle $host · $number';
+  }
+
+  @override
+  String get rel_ops_term_earlier_output_trimmed =>
+      '[Sortie antérieure tronquée]';
+
+  @override
+  String get rel_ops_term_ssh_dialog_title => 'Ouvrir un terminal SSH vérifié';
+
+  @override
+  String get rel_ops_term_ssh_dialog_body =>
+      'Utilisez une empreinte obtenue indépendamment auprès de l’administrateur de l’hôte. Cela ouvre une nouvelle session distante, et non la passerelle ni un interpréteur de commandes local.';
+
+  @override
+  String get rel_ops_term_ssh_host => 'Hôte SSH';
+
+  @override
+  String get rel_ops_term_ssh_port => 'Port';
+
+  @override
+  String get rel_ops_term_ssh_user => 'Utilisateur';
+
+  @override
+  String get rel_ops_term_ssh_fingerprint =>
+      'Empreinte de la clé de l’hôte (SHA256:…)';
+
+  @override
+  String get rel_ops_term_ssh_password => 'Mot de passe SSH (non enregistré)';
+
+  @override
+  String get rel_ops_term_connect => 'Se connecter';
+
+  @override
+  String get rel_ops_ssh_invalid_destination =>
+      'Hôte, port ou utilisateur SSH non valide.';
+
+  @override
+  String get rel_ops_ssh_public_key_required =>
+      'Une clé publique d’hôte OpenSSH Ed25519 est requise.';
+
+  @override
+  String get rel_ops_ssh_invalid_public_key => 'Clé d’hôte Ed25519 non valide.';
+
+  @override
+  String get rel_ops_ssh_invalid_saved_key =>
+      'La clé d’hôte enregistrée n’est pas valide.';
+
+  @override
+  String get rel_ops_ssh_enrollment_unverified =>
+      'Impossible de vérifier l’enrôlement de la clé d’hôte.';
+
+  @override
+  String get rel_ops_ssh_different_key_pinned =>
+      'Une autre clé est déjà épinglée. Vérifiez le changement séparément.';
+
+  @override
+  String get rel_ops_ssh_open_ssh_unavailable =>
+      'OpenSSH n’est pas disponible sur le système.';
+
+  @override
+  String get rel_ops_ssh_confirm_host_key =>
+      'Confirmez la clé d’hôte avant de vous connecter.';
+
+  @override
+  String get rel_ops_ssh_absolute_identity_required =>
+      'Sélectionnez un fichier d’identité avec un chemin absolu.';
+
+  @override
+  String get rel_ops_ssh_invalid_remote_port => 'Port distant non valide.';
+
+  @override
+  String get rel_ops_ssh_preview_too_large =>
+      'L’aperçu dépasse la limite de 64 KiB.';
+
+  @override
+  String get rel_ops_ssh_connection_refused =>
+      'Connexion SSH refusée. Vérifiez la clé d’hôte enrôlée, l’identité et le service.';
+
+  @override
+  String get rel_ops_ssh_http_not_ok =>
+      'Le service distant n’a pas renvoyé HTTP 200.';
+
+  @override
+  String get rel_ops_ssh_encoded_response =>
+      'Cet aperçu ne prend pas en charge les réponses encodées.';
+
+  @override
+  String get rel_ops_ssh_preview_type_unsupported =>
+      'Seuls le texte et le code source HTML peuvent être prévisualisés.';
+
+  @override
+  String get rel_ops_ssh_health_unconfirmed =>
+      'Le service n’a pas confirmé le bon fonctionnement de la passerelle.';
+
+  @override
+  String get rel_ops_ssh_enroll_host_key_first =>
+      'Enrôlez d’abord la clé publique de l’hôte.';
+
+  @override
+  String get rel_ops_ssh_cancel => 'Annuler';
+
+  @override
+  String get rel_ops_ssh_confirm => 'Confirmer';
+
+  @override
+  String get rel_ops_ssh_pin_title => 'Épingler cette clé d’hôte SSH ?';
+
+  @override
+  String rel_ops_ssh_pin_detail(String destination, String fingerprint) {
+    return '$destination\n$fingerprint\nComparez cette empreinte avec l’administrateur de l’hôte via un canal indépendant. Aucune connexion ne sera établie.';
+  }
+
+  @override
+  String get rel_ops_ssh_host_key_pinned => 'Clé d’hôte épinglée.';
+
+  @override
+  String get rel_ops_ssh_shell_detail =>
+      'Ouvrir un shell de connexion interactif.';
+
+  @override
+  String rel_ops_ssh_read_detail(String path, int port) {
+    return 'Lire $path sur 127.0.0.1:$port de la machine distante via un canal SSH.';
+  }
+
+  @override
+  String rel_ops_ssh_connect_title(String destination) {
+    return 'Se connecter à $destination ?';
+  }
+
+  @override
+  String rel_ops_ssh_connect_detail(
+    String detail,
+    String fingerprint,
+    String authentication,
+  ) {
+    return '$detail\n$fingerprint\n$authentication';
+  }
+
+  @override
+  String get rel_ops_ssh_agent_auth =>
+      'Authentifiez-vous avec votre agent SSH.';
+
+  @override
+  String get rel_ops_ssh_identity_auth =>
+      'Utiliser le fichier d’identité sélectionné.';
+
+  @override
+  String rel_ops_ssh_gateway_responding(int port) {
+    return 'La passerelle répond sur le port de bouclage distant $port.';
+  }
+
+  @override
+  String get rel_ops_ssh_session_closed => 'Session SSH fermée.';
+
+  @override
+  String get rel_ops_ssh_session_unclean =>
+      'La session SSH s’est terminée sans sortie normale.';
+
+  @override
+  String get rel_ops_ssh_operation_failed =>
+      'Échec de l’opération SSH. Vérifiez la destination et l’identité.';
+
+  @override
+  String get rel_ops_ssh_title => 'SSH vérifié';
+
+  @override
+  String get rel_ops_ssh_unsupported =>
+      'Cet appareil ne dispose d’aucun transport OpenSSH système pris en charge. Le relais de la passerelle épinglée accepte automatiquement les nouvelles clés et ne peut pas être utilisé pour un enrôlement vérifié.';
+
+  @override
+  String get rel_ops_ssh_host => 'Hôte SSH';
+
+  @override
+  String get rel_ops_ssh_port => 'Port SSH';
+
+  @override
+  String get rel_ops_ssh_user => 'Utilisateur SSH';
+
+  @override
+  String get rel_ops_ssh_identity =>
+      'Fichier d’identité (facultatif ; sinon, utiliser l’agent SSH)';
+
+  @override
+  String get rel_ops_ssh_public_key =>
+      'Clé publique d’hôte fournie par l’administrateur (ssh-ed25519)';
+
+  @override
+  String get rel_ops_ssh_review_key => 'Examiner la clé d’hôte';
+
+  @override
+  String get rel_ops_ssh_remote_port => 'Port du service de bouclage distant';
+
+  @override
+  String get rel_ops_ssh_check_gateway => 'Vérifier la passerelle via SSH';
+
+  @override
+  String get rel_ops_ssh_preview_source =>
+      'Prévisualiser le code source via SSH';
+
+  @override
+  String get rel_ops_ssh_open_shell => 'Ouvrir un shell SSH';
+
+  @override
+  String get rel_ops_ssh_shell_line => 'Ligne à envoyer au shell distant';
+
+  @override
+  String get rel_ops_ssh_disconnect => 'Déconnecter le shell';
+
+  @override
+  String get rel_ops_host_cancel => 'Annuler';
+
+  @override
+  String get rel_ops_host_confirm => 'Confirmer';
+
+  @override
+  String get rel_ops_host_title => 'Hôte';
+
+  @override
+  String get rel_ops_host_refresh => 'Actualiser';
+
+  @override
+  String get rel_ops_host_update => 'Mettre à jour Hermes à distance';
+
+  @override
+  String rel_ops_host_update_confirmation(String profile) {
+    return 'Ceci lance une mise à jour sur place sur l’hôte de la passerelle pour $profile. Ares ne sera pas mis à jour sur cet appareil. La réussite est attestée par le compte rendu de mise à jour correspondant, et non par le fait que l’hôte reste joignable.';
+  }
+
+  @override
+  String get rel_ops_host_update_awaiting =>
+      'En attente du compte rendu correspondant. La mise à jour est toujours en cours.';
+
+  @override
+  String get rel_ops_host_receipt_success =>
+      'Le compte rendu de mise à jour indique une réussite.';
+
+  @override
+  String get rel_ops_host_receipt_partial =>
+      'Mise à jour appliquée ; des étapes de suivi restent à effectuer.';
+
+  @override
+  String get rel_ops_host_receipt_failed =>
+      'Le compte rendu de mise à jour indique un échec.';
+
+  @override
+  String get rel_ops_host_receipt_refused =>
+      'Le compte rendu de mise à jour indique un refus.';
+
+  @override
+  String get rel_ops_host_update_running =>
+      'La mise à jour est toujours en cours.';
+
+  @override
+  String get rel_ops_host_update_unknown =>
+      'Le résultat de la mise à jour est inconnu. Une passerelle active ne signifie pas que la mise à jour a réussi.';
+
+  @override
+  String get rel_ops_host_default_profile =>
+      'le profil par défaut de la passerelle';
+
+  @override
+  String get rel_ops_host_restart => 'Redémarrer la passerelle distante';
+
+  @override
+  String rel_ops_host_restart_shared_confirmation(String profiles) {
+    return 'Ceci redémarre la passerelle partagée par $profiles. Les tours en cours sur cette passerelle seront interrompus. Reconnectez-vous ensuite. Le fait qu’elle soit joignable ne prouve pas que le redémarrage est terminé.';
+  }
+
+  @override
+  String rel_ops_host_restart_confirmation(String profile) {
+    return 'Ceci redémarre la passerelle distante pour $profile. Les tours en cours sur cette passerelle seront interrompus. Reconnectez-vous ensuite.';
+  }
+
+  @override
+  String get rel_ops_host_restart_running =>
+      'La commande de redémarrage est toujours en cours.';
+
+  @override
+  String get rel_ops_host_restart_finished =>
+      'La commande de redémarrage est terminée. Reconnectez-vous à l’hôte manuellement.';
+
+  @override
+  String get rel_ops_host_restart_failed =>
+      'La commande de redémarrage a échoué.';
+
+  @override
+  String rel_ops_host_maintenance_running(String name) {
+    return '$name est toujours en cours';
+  }
+
+  @override
+  String rel_ops_host_maintenance_finished(String name) {
+    return '$name est terminé';
+  }
+
+  @override
+  String rel_ops_host_maintenance_failed(String name) {
+    return '$name a échoué';
+  }
+
+  @override
+  String get rel_ops_host_curator_paused_result => 'Curateur en pause.';
+
+  @override
+  String get rel_ops_host_curator_resumed_result => 'Curateur relancé.';
+
+  @override
+  String get rel_ops_host_reset =>
+      'Réinitialiser les fichiers de mémoire distants';
+
+  @override
+  String rel_ops_host_reset_confirmation(String targetName, String profile) {
+    return 'Supprimer le fichier de mémoire $targetName sur $profile ? Cette action ne peut pas être annulée depuis Ares.';
+  }
+
+  @override
+  String rel_ops_host_reset_result(String targetName, int count) {
+    return '$targetName réinitialisé. $count fichier(s) distant(s) supprimé(s).';
+  }
+
+  @override
+  String get rel_ops_host_share_not_redacted =>
+      'L’hôte n’a pas confirmé le masquage des données sensibles dans l’archive. Aucun lien n’est affiché.';
+
+  @override
+  String rel_ops_host_scope(String connection, String profile) {
+    return 'Ces commandes agissent sur la passerelle distante $connection pour $profile, pas sur cet appareil ni sur la mise à jour du client Ares.';
+  }
+
+  @override
+  String rel_ops_host_health_running(String version, int count) {
+    return 'Processus de passerelle en cours $version · $count sessions';
+  }
+
+  @override
+  String rel_ops_host_health_stopped(String version, int count) {
+    return 'Processus de passerelle arrêté $version · $count sessions';
+  }
+
+  @override
+  String rel_ops_host_heartbeat_stale(num seconds) {
+    return 'Le signal de présence de l’hôte est ancien ($seconds s).';
+  }
+
+  @override
+  String get rel_ops_host_doctor => 'Exécuter Doctor';
+
+  @override
+  String get rel_ops_host_security_audit => 'Audit de sécurité';
+
+  @override
+  String get rel_ops_host_check_receipt =>
+      'Vérifier le compte rendu de mise à jour';
+
+  @override
+  String get rel_ops_host_logs => 'Journaux de l’hôte distant';
+
+  @override
+  String get rel_ops_host_search_logs =>
+      'Rechercher dans les journaux de l’hôte';
+
+  @override
+  String get rel_ops_host_driver => 'Pilote de l’hôte distant';
+
+  @override
+  String get rel_ops_host_driver_scope =>
+      'La disponibilité du contrôle de l’ordinateur dépend du pilote et des autorisations du système d’exploitation de la machine de la passerelle, pas de cet appareil.';
+
+  @override
+  String rel_ops_host_computer_status(
+    String platform,
+    String installed,
+    String ready,
+  ) {
+    return '$platform · installé $installed · prêt $ready';
+  }
+
+  @override
+  String get rel_ops_host_null => 'indisponible';
+
+  @override
+  String get rel_ops_host_true => 'oui';
+
+  @override
+  String get rel_ops_host_false => 'non';
+
+  @override
+  String get rel_ops_host_curator => 'Curateur';
+
+  @override
+  String get rel_ops_host_curator_paused => 'Curateur en pause';
+
+  @override
+  String get rel_ops_host_curator_running => 'Curateur en cours d’exécution';
+
+  @override
+  String get rel_ops_host_no_run => 'Aucune exécution terminée';
+
+  @override
+  String get rel_ops_host_run_curator => 'Exécuter le Curateur maintenant';
+
+  @override
+  String get rel_ops_host_reset_memory => 'Réinitialiser le fichier de mémoire';
+
+  @override
+  String get rel_ops_host_reset_user => 'Réinitialiser le fichier utilisateur';
+
+  @override
+  String get rel_ops_host_reset_both => 'Réinitialiser les deux fichiers';
+
+  @override
+  String get rel_ops_host_share_consent =>
+      'J’accepte d’envoyer une archive de diagnostic de l’hôte distant dont les données sensibles ont été masquées';
+
+  @override
+  String get rel_ops_host_share =>
+      'Partager les diagnostics avec les données sensibles masquées';
+
+  @override
+  String get rel_ops_host_update_unknown_installation =>
+      'Cette installation est inconnue ; la mise à jour n’a donc pas été envoyée';
+
+  @override
+  String get rel_ops_host_update_busy_installation =>
+      'Une conversation est en cours sur cette installation';
+
+  @override
+  String get rel_ops_host_update_refused => 'Mise à jour distante refusée';
+
+  @override
+  String get rel_ops_host_error_stale => 'Espace de travail distant : obsolète';
+
+  @override
+  String get rel_ops_host_error_mismatch =>
+      'Espace de travail distant : discordance';
+
+  @override
+  String get rel_ops_host_error_unbound =>
+      'Espace de travail distant : non associé';
+
+  @override
+  String get rel_ops_host_error_unsupported =>
+      'Espace de travail distant : non pris en charge';
+
+  @override
+  String get rel_ops_host_error_denied =>
+      'Espace de travail distant : accès refusé';
+
+  @override
+  String get rel_ops_host_error_ineligible =>
+      'Espace de travail distant : non admissible';
+
+  @override
+  String get rel_ops_host_error_unavailable =>
+      'Espace de travail distant : indisponible';
+
+  @override
+  String get rel_ops_host_error_invalid =>
+      'Espace de travail distant : invalide';
+
+  @override
+  String get rel_ops_host_error_insecure =>
+      'Espace de travail distant : non sécurisé';
+
+  @override
+  String get rel_ops_host_error_request =>
+      'Impossible de terminer cette demande.';
+
+  @override
+  String get rel_svc_push_api_select_sessions =>
+      'Sélectionnez de 1 à 128 ID de session durables, de 1 à 200 caractères ASCII chacun, avec uniquement des lettres, chiffres, _ . : @ ou -. Supprimez les ID vides et les espaces.';
+
+  @override
+  String get rel_svc_push_api_unavailable =>
+      'Les notifications push mobiles ne sont pas disponibles sur ce serveur.';
+
+  @override
+  String get rel_svc_push_api_invalid_vapid =>
+      'La clé publique VAPID du serveur n’est pas valide.';
+
+  @override
+  String get rel_svc_push_api_update_plugin =>
+      'Ce serveur nécessite une extension mobile-push à jour pour les abonnements automatiques.';
+
+  @override
+  String get rel_svc_push_status_android_only => 'Android uniquement';
+
+  @override
+  String get rel_svc_push_native_prefs_sync_failed =>
+      'Impossible de synchroniser les préférences de notifications natives.';
+
+  @override
+  String get rel_svc_push_choose_android_connection =>
+      'Choisissez d’abord une connexion enregistrée sur Android.';
+
+  @override
+  String get rel_svc_push_status_checking_authorization =>
+      'Vérification de l’autorisation du serveur';
+
+  @override
+  String get rel_svc_push_revoke_persist_failed =>
+      'Impossible d’enregistrer la révocation. Réessayez de désactiver avant de quitter l’application.';
+
+  @override
+  String get rel_svc_push_status_off_api_ready =>
+      'Désactivé ; API du serveur prête';
+
+  @override
+  String get rel_svc_push_status_off_revoke_pending =>
+      'Désactivé ; révocation du serveur en attente';
+
+  @override
+  String get rel_svc_push_status_off_connection_changed =>
+      'Désactivé ; connexion enregistrée modifiée';
+
+  @override
+  String get rel_svc_push_status_pending_endpoint =>
+      'Point de terminaison du distributeur en attente';
+
+  @override
+  String get rel_svc_push_status_registering => 'Inscription en cours';
+
+  @override
+  String get rel_svc_push_status_pending_challenge =>
+      'Défi chiffré en attente (attente de la notification push silencieuse de vérification du serveur)';
+
+  @override
+  String get rel_svc_push_allow_android_notifications_retry =>
+      'Autorisez les notifications Android dans les paramètres système, puis réessayez.';
+
+  @override
+  String get rel_svc_push_plugin_invalid =>
+      'L’extension mobile-push du serveur est indisponible, obsolète ou a renvoyé une réponse d’abonnement non valide. Demandez à l’opérateur de la mettre à jour, puis réessayez.';
+
+  @override
+  String get rel_svc_push_transport_unavailable =>
+      'Aucun transport push n’est disponible. La distribution intégrée nécessite des services Google Play fonctionnels ; vous pouvez aussi installer un distributeur UnifiedPush et réessayer.';
+
+  @override
+  String get rel_svc_push_transport_choice =>
+      'Plusieurs distributeurs UnifiedPush sont disponibles. Choisissez-en un dans Transport avancé, puis réessayez.';
+
+  @override
+  String get rel_svc_push_transport_missing =>
+      'Le distributeur UnifiedPush sélectionné est indisponible. Restaurez-le ou choisissez-en un autre dans Transport avancé.';
+
+  @override
+  String get rel_svc_push_companion_unavailable =>
+      'Le composant mobile-push du serveur est indisponible. Il est peut-être absent ou désactivé, ou cette connexion pointe vers le mauvais tableau de bord. Installez ou activez le composant sur le serveur, vérifiez la connexion au tableau de bord, puis actualisez. Consultez le guide de configuration du serveur ci-dessus.';
+
+  @override
+  String get rel_svc_push_server_denied =>
+      'Le serveur a refusé les notifications push mobiles. Demandez à l’opérateur d’autoriser ce principal et ces sessions.';
+
+  @override
+  String get rel_svc_push_not_ready =>
+      'Les notifications push mobiles ne sont pas prêtes. Vérifiez l’autorisation de l’extension serveur, le distributeur et le réseau, puis réessayez.';
+
+  @override
+  String get rel_svc_push_availability_read_failed =>
+      'Impossible de vérifier la disponibilité des notifications push Android. Réessayez ci-dessous.';
+
+  @override
+  String get rel_svc_push_setup_failed =>
+      'La configuration push a échoué. Vérifiez l’autorisation Android, l’autorisation du serveur et le transport, puis réessayez.';
+
+  @override
+  String rel_svc_push_status(String status) {
+    return 'État : $status';
+  }
+
+  @override
+  String rel_svc_push_status_bound(
+    String bound,
+    String connection,
+    String status,
+  ) {
+    return 'État : lié à $bound (inactif pour $connection ; négociation : $status)';
+  }
+
+  @override
+  String get rel_svc_push_another_saved_connection =>
+      'une autre connexion enregistrée';
+
+  @override
+  String get rel_svc_push_background_notifications =>
+      'Notifications en arrière-plan';
+
+  @override
+  String rel_svc_push_bound_subtitle(String bound, String connection) {
+    return 'Lié à $bound — révoquez cette liaison ci-dessous avant l’activation pour $connection';
+  }
+
+  @override
+  String rel_svc_push_private_activity(String connection) {
+    return 'Activité privée du serveur pour $connection';
+  }
+
+  @override
+  String rel_svc_push_bound_warning_named(String bound) {
+    return 'Lié à une autre connexion enregistrée ($bound). Désactivez et révoquez cette liaison avant l’activation pour cette connexion.';
+  }
+
+  @override
+  String get rel_svc_push_bound_warning =>
+      'Lié à une autre connexion enregistrée. Désactivez et révoquez cette liaison avant l’activation pour cette connexion.';
+
+  @override
+  String get rel_svc_push_local_notifications_muted =>
+      'Les notifications locales sont désactivées ci-dessus. Le consentement aux notifications en arrière-plan reste inchangé, mais les alertes d’activité ordinaires sont silencieuses jusqu’à l’activation de \"Activer les notifications\".';
+
+  @override
+  String rel_svc_push_legacy_subscription(int count) {
+    return 'Ancien abonnement : $count session(s) sélectionnée(s) uniquement. Il ne s’étendra pas automatiquement. Désactivez puis réactivez pour accepter les sessions autorisées par le serveur.';
+  }
+
+  @override
+  String get rel_svc_push_authorized_binding =>
+      'Lié uniquement à cette connexion enregistrée et à ce profil. L’accès aux sessions suit l’autorisation actuelle du serveur.';
+
+  @override
+  String get rel_svc_push_revocation_pending =>
+      'Révocation du serveur en attente. La distribution locale est désactivée ; réessayez tant que la connexion enregistrée d’origine est disponible.';
+
+  @override
+  String get rel_svc_push_refresh_retry => 'Actualiser / réessayer';
+
+  @override
+  String rel_svc_push_disable_named(String bound) {
+    return 'Désactiver et révoquer $bound';
+  }
+
+  @override
+  String get rel_svc_push_other_connection => 'autre connexion';
+
+  @override
+  String get rel_svc_push_disable => 'Désactiver et révoquer';
+
+  @override
+  String get rel_svc_push_refresh_explanation =>
+      'Actualiser / réessayer revérifie la disponibilité après la configuration du serveur ; cela ne peut pas installer le composant. L’activation des notifications reste un choix distinct.';
+
+  @override
+  String get rel_svc_push_companion_required =>
+      'Les notifications en arrière-plan nécessitent un composant mobile-push côté serveur installé et activé séparément. Android ne peut pas l’installer. La mise à jour de l’APK seul ne configure pas le serveur.';
+
+  @override
+  String get rel_svc_push_server_setup_guide =>
+      'Guide de configuration du serveur';
+
+  @override
+  String get rel_svc_push_enable_disclosure =>
+      'Activez pour demander l’autorisation de notifications Android et partager avec ce serveur le point de terminaison et les clés de chiffrement de cette installation. Les alertes d’activité chiffrées ne contiennent aucun contenu de discussion. Seules les sessions autorisées par votre connexion au serveur sont incluses.';
+
+  @override
+  String get rel_svc_push_transport_disclosure =>
+      'La distribution intégrée utilise le transport push de Google et nécessite les services Google Play, sans inclure le SDK Firebase. Un distributeur UnifiedPush facultatif peut être utilisé. La distribution est au mieux ; rouvrez Hermes pour réconcilier.';
+
+  @override
+  String get rel_svc_push_advanced_transport => 'Transport avancé';
+
+  @override
+  String get rel_svc_push_automatic_explanation =>
+      'Automatique conserve le distributeur existant ; sinon, la distribution Google intégrée est utilisée si disponible. Désactivez avant de changer de transport.';
+
+  @override
+  String get rel_svc_push_transport_label => 'Transport push';
+
+  @override
+  String get rel_svc_push_automatic_recommended => 'Automatique (recommandé)';
+
+  @override
+  String get rel_svc_push_selected_unavailable =>
+      'Distributeur sélectionné (indisponible)';
+
+  @override
+  String get rel_svc_push_no_transport_detected =>
+      'Aucun transport disponible détecté. La distribution intégrée nécessite les services Google Play ; sinon, installez et configurez un distributeur UnifiedPush, puis actualisez.';
+
+  @override
+  String get rel_svc_push_channel_turns_name => 'Tours Ares';
+
+  @override
+  String get rel_svc_push_channel_turns_description =>
+      'Notifications pour les tours terminés en arrière-plan';
+
+  @override
+  String get rel_svc_push_channel_attention_name => 'Attention Ares';
+
+  @override
+  String get rel_svc_push_channel_attention_description =>
+      'Approbations et demandes de saisie qui vous attendent';
+
+  @override
+  String get rel_svc_push_channel_background_name => 'Ares en arrière-plan';
+
+  @override
+  String get rel_svc_push_channel_background_description =>
+      'Achèvements des tâches en arrière-plan';
+
+  @override
+  String get rel_svc_push_channel_notices_name => 'Avis Ares';
+
+  @override
+  String get rel_svc_push_channel_notices_description =>
+      'Avis de crédits et d’extensions';
+
+  @override
+  String get rel_svc_push_diag_not_initialised => 'non initialisé';
+
+  @override
+  String get rel_svc_push_diag_replies_off => 'les réponses sont désactivées';
+
+  @override
+  String get rel_svc_push_diag_conversation => 'conversation';
+
+  @override
+  String get rel_svc_push_diag_conversation_permission_denied =>
+      'conversation ; autorisation refusée';
+
+  @override
+  String rel_svc_push_diag_conversation_error(String error) {
+    return 'conversation : $error';
+  }
+
+  @override
+  String get rel_svc_push_diag_failures_off => 'les échecs sont désactivés';
+
+  @override
+  String rel_svc_push_diag_kind_off(String kind) {
+    return '$kind est désactivé';
+  }
+
+  @override
+  String get rel_svc_push_diag_windows_setting_unknown =>
+      'Windows n’a pas indiqué son paramètre de notifications';
+
+  @override
+  String get rel_svc_backup_not_hermes_configuration_backup =>
+      'Ce fichier n’est pas une sauvegarde de configuration Hermes.';
+
+  @override
+  String get rel_svc_backup_newer_version_cannot_import =>
+      'Cette sauvegarde a été créée avec une version plus récente de l’application et ne peut pas être importée.';
+
+  @override
+  String get rel_svc_backup_missing_client_certificate =>
+      'Cette sauvegarde indique un certificat client pour une connexion, mais ne le contient pas ; une restauration complète est donc impossible.';
+
+  @override
+  String get rel_svc_backup_damaged_unreadable =>
+      'Ce fichier de sauvegarde est endommagé et n’a pas pu être lu.';
+
+  @override
+  String get rel_svc_backup_unsupported_preference_type =>
+      'Une préférence enregistrée est d’un type non pris en charge et ne peut pas être exportée.';
+
+  @override
+  String get rel_svc_backup_choose_passphrase_api_keys =>
+      'Choisissez une phrase secrète — la sauvegarde contient vos clés API.';
+
+  @override
+  String get rel_svc_backup_could_not_protect_safely =>
+      'La sauvegarde n’a pas pu être protégée de manière sûre.';
+
+  @override
+  String get rel_svc_backup_unsupported_encryption =>
+      'Cette sauvegarde utilise un schéma de chiffrement non pris en charge.';
+
+  @override
+  String get rel_svc_backup_wrong_passphrase_or_altered =>
+      'La phrase secrète est incorrecte ou ce fichier de sauvegarde a été modifié.';
+
+  @override
+  String get rel_svc_backup_share_subject =>
+      'Sauvegarde de configuration Hermes';
+
+  @override
+  String get rel_svc_backup_selected_file_unreadable =>
+      'Ce fichier n’a pas pu être lu.';
+
+  @override
+  String rel_svc_backup_connections_added(int count) {
+    return '$count ajoutées';
+  }
+
+  @override
+  String rel_svc_backup_connections_updated(int count) {
+    return '$count mises à jour';
+  }
+
+  @override
+  String rel_svc_backup_connections_removed(int count) {
+    return '$count supprimées';
+  }
+
+  @override
+  String get rel_svc_backup_no_connection_changes =>
+      'Aucune modification des connexions';
+
+  @override
+  String rel_svc_backup_connections_summary(String changes) {
+    return 'Connexions : $changes';
+  }
+
+  @override
+  String rel_svc_backup_restore_summary(String connections, int count) {
+    return '$connections · $count paramètres restaurés';
+  }
+
+  @override
+  String rel_svc_backup_certificate_not_included(String label, String error) {
+    return 'Le certificat client de « $label » n’a pas pu être inclus dans cette sauvegarde : $error';
+  }
+
+  @override
+  String get rel_svc_backup_certificate_password_needed =>
+      'Ce certificat nécessite son mot de passe. Saisissez-le ci-dessous et il s’ouvrira automatiquement.';
+
+  @override
+  String get rel_svc_backup_certificate_password_or_corrupt =>
+      'Le mot de passe du certificat est incorrect ou le fichier est endommagé.';
+
+  @override
+  String get rel_svc_backup_certificate_password_incorrect =>
+      'Le mot de passe du certificat est incorrect.';
+
+  @override
+  String get rel_svc_backup_certificate_unsupported_encryption =>
+      'Ce certificat utilise une méthode de chiffrement que l’application ne peut pas lire.';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable_pkcs12 =>
+      'Le fichier sélectionné n’est pas un certificat PKCS#12 (.p12/.pfx) lisible.';
+
+  @override
+  String get rel_svc_backup_certificate_unreadable =>
+      'Le certificat sélectionné n’a pas pu être lu.';
+
+  @override
+  String get rel_svc_backup_not_certificate_file =>
+      'Ce fichier n’est pas un certificat : choisissez un conteneur .p12/.pfx ou des fichiers de certificat et de clé PEM.';
+
+  @override
+  String get rel_svc_backup_not_pem_certificate =>
+      'Le certificat sélectionné n’est pas un certificat PEM.';
+
+  @override
+  String get rel_svc_backup_not_pem_private_key =>
+      'La clé privée sélectionnée n’est pas une clé privée PEM.';
+
+  @override
+  String get rel_svc_backup_certificate_pair_unloadable =>
+      'Le certificat et la clé privée sélectionnés n’ont pas pu être chargés.';
+
+  @override
+  String get rel_svc_backup_saved_certificate_files_unreadable =>
+      'Les fichiers de certificat client enregistrés n’ont pas pu être lus.';
+
+  @override
+  String get rel_svc_backup_client_certificate_storage_failed =>
+      'Le certificat client n’a pas pu être stocké de manière sécurisée sur cet appareil.';
+
+  @override
+  String get rel_svc_backup_certificate_storage_failed =>
+      'Le certificat n’a pas pu être stocké de manière sécurisée sur cet appareil.';
+
+  @override
+  String get rel_svc_backup_client_certificate_label => 'Certificat client';
+
+  @override
+  String rel_svc_backup_search_dashboard_unreachable(String error) {
+    return 'Impossible d’accéder au tableau de bord : $error';
+  }
+
+  @override
+  String get rel_svc_backup_search_credentials_rejected =>
+      'Le tableau de bord a refusé les identifiants enregistrés. Vérifiez le nom d’utilisateur et le mot de passe du tableau de bord pour cette connexion.';
+
+  @override
+  String get rel_svc_backup_search_not_supported =>
+      'Ce tableau de bord ne propose pas la recherche de sessions. Mettez Hermes à jour sur l’hôte ou revenez à la recherche sur l’appareil.';
+
+  @override
+  String rel_svc_backup_search_redirected(int statusCode) {
+    return 'Le tableau de bord a redirigé la recherche de sessions (HTTP $statusCode). Ares ne suit pas les redirections avec des identifiants enregistrés ; vérifiez l’adresse de connexion.';
+  }
+
+  @override
+  String rel_svc_backup_search_http_failed(int statusCode) {
+    return 'La recherche de sessions a échoué avec HTTP $statusCode.';
+  }
+
+  @override
+  String get rel_svc_backup_search_malformed_response =>
+      'Le tableau de bord a renvoyé une réponse de recherche incorrecte.';
+
+  @override
+  String get rel_svc_backup_search_unexpected_response =>
+      'Le tableau de bord a renvoyé une réponse de recherche inattendue.';
+
+  @override
+  String get rel_svc_backup_search_too_many_results =>
+      'Le tableau de bord a renvoyé plus de résultats que demandé.';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_response =>
+      'Réponse de recherche de messages inattendue.';
+
+  @override
+  String get rel_svc_backup_message_search_unexpected_result =>
+      'Résultat de recherche de messages inattendu.';
+
+  @override
+  String get rel_svc_backup_ai_search_api_key_rejected =>
+      'L’API Hermes a refusé la clé API enregistrée.';
+
+  @override
+  String rel_svc_backup_ai_search_http_failed(int statusCode) {
+    return 'La reformulation de la requête par l’IA a échoué avec HTTP $statusCode.';
+  }
+
+  @override
+  String get rel_svc_backup_ai_search_no_usable_query =>
+      'Le modèle sélectionné n’a renvoyé aucune requête de recherche utilisable.';
+
+  @override
+  String get rel_svc_backup_ai_search_malformed_response =>
+      'Hermes a renvoyé une réponse de reformulation par l’IA incorrecte.';
+
+  @override
+  String get rel_svc_backup_space_name_already_exists =>
+      'Un espace portant ce nom existe déjà';
+
+  @override
+  String get rel_svc_backup_space_name_length_invalid =>
+      'Le nom de l’espace doit comporter entre 1 et 80 caractères';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_required =>
+      'Saisissez l’adresse de votre tableau de bord Hermes.';
+
+  @override
+  String ng_rel_svc_backup_gateway_address_scheme(String scheme) {
+    return 'L’adresse doit commencer par http:// ou https:// ($scheme reçu).';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_invalid =>
+      'Cette adresse n’est pas valide.';
+
+  @override
+  String get ng_rel_svc_backup_gateway_address_no_host =>
+      'L’adresse ne contient aucun nom d’hôte.';
+
+  @override
+  String get ng_rel_svc_backup_sign_in_main_window =>
+      'Connectez-vous dans la fenêtre principale.';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_failed =>
+      'La passerelle n’a pas pu renouveler la connexion pour le moment.';
+
+  @override
+  String get rel_svc_backup_sign_in_provider_unreachable =>
+      'La passerelle n’a pas pu renouveler la connexion : son fournisseur de connexion est inaccessible.';
+
+  @override
+  String get rel_svc_backup_sign_in_renewal_timed_out =>
+      'Le renouvellement de la connexion a expiré.';
+
+  @override
+  String get rel_svc_backup_sign_in_no_tokens =>
+      'La passerelle n’a renvoyé aucun jeton de connexion.';
+
+  @override
+  String get ng_rel_svc_backup_probe_timed_out =>
+      'Délai dépassé. Vérifiez l’adresse et la connexion VPN ou Tailscale.';
+
+  @override
+  String ng_rel_svc_backup_probe_tls_failed(String error) {
+    return 'Échec de la négociation TLS : $error';
+  }
+
+  @override
+  String ng_rel_svc_backup_gateway_answered_http(int statusCode) {
+    return 'La passerelle a répondu avec HTTP $statusCode.';
+  }
+
+  @override
+  String get ng_rel_svc_backup_gateway_answer_timed_out =>
+      'La passerelle a mis trop de temps à répondre.';
+
+  @override
+  String ng_rel_svc_backup_browser_callback_not_ready(String error) {
+    return 'Impossible de préparer le retour du navigateur : $error';
+  }
+
+  @override
+  String get ng_rel_svc_backup_browser_signed_in_body =>
+      'Vous pouvez maintenant revenir à Hermes.';
+
+  @override
+  String get ng_rel_svc_backup_browser_waiting_title =>
+      'En attente de connexion';
+
+  @override
+  String get ng_rel_svc_backup_browser_not_current =>
+      'Cette page ne fait pas partie de la connexion en cours.';
+
+  @override
+  String get ng_rel_svc_backup_browser_open_failed =>
+      'Impossible d’ouvrir le navigateur pour se connecter.';
+
+  @override
+  String get ng_rel_svc_backup_browser_sign_in_timed_out =>
+      'La connexion a pris trop de temps. Réessayez.';
+
+  @override
+  String ng_rel_svc_backup_gateway_refused_sign_in(int statusCode) {
+    return 'La passerelle a refusé la connexion (HTTP $statusCode).';
+  }
+
+  @override
+  String get rel_svc_misc_alert_caution => 'Attention';
+
+  @override
+  String get rel_svc_misc_alert_important => 'Important';
+
+  @override
+  String get rel_svc_misc_alert_tip => 'Astuce';
+
+  @override
+  String get rel_svc_misc_alert_warning => 'Avertissement';
+
+  @override
+  String get rel_svc_misc_allow_folder_session =>
+      'Autoriser ce dossier jusqu’à la fin de la session.';
+
+  @override
+  String get rel_svc_misc_allow_website_session =>
+      'Autoriser ce site web jusqu’à la fin de la session.';
+
+  @override
+  String rel_svc_misc_approval_needed_title(String title) {
+    return 'Approbation requise — $title';
+  }
+
+  @override
+  String get rel_svc_misc_attach_file_reference =>
+      'Joindre une référence de fichier';
+
+  @override
+  String get rel_svc_misc_attach_folder_reference =>
+      'Joindre une référence de dossier';
+
+  @override
+  String get rel_svc_misc_attach_git_context => 'Joindre le contexte git';
+
+  @override
+  String get rel_svc_misc_attach_image_reference =>
+      'Joindre une référence d’image';
+
+  @override
+  String get rel_svc_misc_attach_staged_diff => 'Joindre le diff indexé';
+
+  @override
+  String get rel_svc_misc_attach_tool_reference =>
+      'Joindre une référence d’outil';
+
+  @override
+  String get rel_svc_misc_attach_unstaged_diff => 'Joindre le diff non indexé';
+
+  @override
+  String get rel_svc_misc_attach_url_reference => 'Joindre une référence d’URL';
+
+  @override
+  String get rel_svc_misc_background_task_completed =>
+      'Tâche en arrière-plan terminée';
+
+  @override
+  String rel_svc_misc_background_task_named_completed(String taskId) {
+    return 'Tâche en arrière-plan $taskId terminée';
+  }
+
+  @override
+  String get rel_svc_misc_chat => 'Discussion';
+
+  @override
+  String get rel_svc_misc_compacting_context =>
+      'Compactage du contexte de la conversation…';
+
+  @override
+  String rel_svc_misc_completed_in(String duration) {
+    return 'Terminé en $duration';
+  }
+
+  @override
+  String get rel_svc_misc_context_compacted =>
+      'Contexte de la conversation compacté';
+
+  @override
+  String get rel_svc_misc_cron_readback_mismatch =>
+      'La relecture du modèle Cron ne correspondait pas';
+
+  @override
+  String get rel_svc_misc_cron_update_rejected => 'Mise à jour Cron refusée';
+
+  @override
+  String get rel_svc_misc_deny_folder_grant =>
+      'Ne pas accorder l’accès à ce dossier.';
+
+  @override
+  String get rel_svc_misc_deny_website_grant =>
+      'Ne pas accorder l’accès à ce site web.';
+
+  @override
+  String rel_svc_misc_failed_after(String duration) {
+    return 'Échec après $duration';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_folder_unnamed =>
+      'La passerelle n’a indiqué aucun dossier.';
+
+  @override
+  String get rel_svc_misc_gateway_idle_unconfirmed =>
+      'La passerelle est inactive. Le résultat du tour précédent n’a pas pu être confirmé.';
+
+  @override
+  String get rel_svc_misc_gateway_turn_failed =>
+      'Échec du tour de la passerelle';
+
+  @override
+  String rel_svc_misc_gateway_turn_status(String status) {
+    return 'Tour de la passerelle : $status';
+  }
+
+  @override
+  String get rel_svc_misc_gateway_website_unnamed =>
+      'La passerelle n’a indiqué aucun site web.';
+
+  @override
+  String get rel_svc_misc_hermes_review => 'Examen Hermes';
+
+  @override
+  String get rel_svc_misc_hermes_turn_failed => 'Échec du tour Hermes';
+
+  @override
+  String get rel_svc_misc_image_recovery_companion_gap =>
+      'La récupération des images et du texte n’est pas disponible avec la récupération compagnon. Un envoi d’image non confirmé ne peut pas être restauré sur cette connexion et rien n’est renvoyé automatiquement.';
+
+  @override
+  String get rel_svc_misc_image_recovery_rest_gap =>
+      'La récupération des images et du texte n’est pas disponible avec Classic REST/SSE. Un envoi d’image non confirmé ne peut pas être restauré sur cette connexion et rien n’est renvoyé automatiquement.';
+
+  @override
+  String rel_svc_misc_input_needed_title(String title) {
+    return 'Réponse requise — $title';
+  }
+
+  @override
+  String get rel_svc_misc_parallel_workspace_connection_changed =>
+      'La connexion a changé. Rouvrez-la pour utiliser l’espace de travail.';
+
+  @override
+  String get rel_svc_misc_preparing => 'Préparation';
+
+  @override
+  String get rel_svc_misc_save_folder_grant =>
+      'Enregistrer cette autorisation de dossier pour les demandes ultérieures.';
+
+  @override
+  String get rel_svc_misc_save_website_grant =>
+      'Enregistrer cette autorisation de site web pour les demandes ultérieures.';
+
+  @override
+  String get rel_svc_misc_stored_identity_turn_conflict =>
+      'Cette discussion a été ouverte via son identité enregistrée alors qu’un autre tour était admis. La requête non envoyée n’a pas été transmise ; réessayez explicitement une fois ce tour terminé.';
+
+  @override
+  String get rel_svc_misc_untitled => 'Sans titre';
+
+  @override
+  String get rel_svc_misc_wake_capture_silent =>
+      'La capture d’activation du client ne détecte que du silence — vérifiez l’accès au microphone du système et réactivez le mot d’activation.';
+
+  @override
+  String get rel_svc_misc_wake_capture_stalled =>
+      'La capture d’activation du client est bloquée : aucun rappel audio du microphone n’est arrivé.';
+
+  @override
+  String rel_svc_misc_wake_feed_refused(int count, String detail) {
+    return 'Le flux du mot d’activation a refusé $count trames consécutives$detail — réactivez le mot d’activation.';
+  }
+
+  @override
+  String rel_svc_misc_wake_microphone_failed(String error) {
+    return 'Échec du flux du microphone d’activation du client : $error';
+  }
+
+  @override
+  String get rel_svc_misc_wake_track_ended =>
+      'La piste du microphone s’est arrêtée pendant la capture du mot d’activation — réactivez le mot d’activation.';
+
+  @override
+  String get rel_svc_misc_website => 'Site web';
+
+  @override
+  String get rel_svc_lan_timeout =>
+      'Le délai de découverte sur le réseau local a expiré';
+
+  @override
+  String get rel_svc_notification_permission_denied => 'autorisation refusée';
+
+  @override
+  String get rel_svc_notifications_off => 'les notifications sont désactivées';
+
+  @override
+  String rel_chat_preview_pin_label(int number, String note) {
+    return 'n° $number $note';
+  }
+
+  @override
+  String rel_chat_preview_pin_number(int number) {
+    return 'n° $number';
+  }
+
+  @override
+  String ng_rel_chat_wake_status_notice(String status, String notice) {
+    return '$status — $notice';
+  }
+
+  @override
+  String ng_rel_chat_cost_amount(String amount) {
+    return '\$$amount';
+  }
+
+  @override
+  String ng_rel_chat_context_ratio(String used, String maximum) {
+    return '$used / $maximum';
+  }
+
+  @override
+  String ng_rel_chat_connection_reason(String status, String reason) {
+    return '$status $reason';
+  }
+
+  @override
+  String ng_rel_chat_notice_time(String message, String time) {
+    return '$message · $time';
+  }
+
+  @override
+  String ng_rel_chat_attachment_progress(String name, String progress) {
+    return '$name · $progress';
+  }
+
+  @override
+  String ng_rel_chat_tool_detail(String name, String detail) {
+    return '$name · $detail';
+  }
+
+  @override
+  String get fleet_managed_ssh_title => 'SSH géré par la passerelle';
+
+  @override
+  String get fleet_managed_ssh_intro =>
+      'Gérez les hôtes SSH déjà enregistrés sur cette passerelle depuis n’importe quel appareil. Hermes doit déjà être installé sur l’hôte distant. Cette opération démarre un service distant appartenant à la passerelle ou s’y rattache, et non une connexion de discussion Ares. Les mises à jour gérées et la récupération ne sont disponibles que dans l’application de bureau native.';
+
+  @override
+  String get fleet_managed_ssh_read => 'Lire les hôtes SSH enregistrés';
+
+  @override
+  String get fleet_managed_ssh_trust =>
+      'Lors de cette première connexion, la passerelle fera confiance à la clé SSH de cet hôte et la mémorisera. Toute modification ultérieure de la clé sera signalée et bloquée. La passerelle ne communique pas l’empreinte de la clé ; Ares ne peut donc ni l’afficher ni l’enregistrer. Ne continuez que si vous faites confiance à cette première connexion.';
+
+  @override
+  String get fleet_managed_ssh_changed =>
+      'La clé SSH de cet hôte a changé. Connexion bloquée. Une personne ayant accès à l’hôte de la passerelle doit vérifier indépendamment l’empreinte de la nouvelle clé et y supprimer l’ancienne clé de confiance. Ne réessayez qu’après cette vérification et cette réparation. Ares ne remplace pas la clé de confiance.';
+
+  @override
+  String get fleet_managed_ssh_disconnect_warning =>
+      'Déconnecter le tunnel SSH et arrêter le service distant appartenant à cette passerelle ? Cela peut interrompre d’autres clients utilisant ce service.';
+
+  @override
+  String get fleet_managed_ssh_verify => 'Vérifier plutôt la clé vous-même';
+
+  @override
+  String fleet_managed_ssh_pending(int seconds) {
+    return 'En attente de la passerelle : $seconds s. Quitter cette page n’annule pas l’initialisation. Si la requête échoue, vérifiez l’état avant de réessayer.';
+  }
+
+  @override
+  String fleet_managed_ssh_status(
+    String host,
+    int localPort,
+    int remotePort,
+    String version,
+    String reused,
+  ) {
+    return 'Hôte : $host\nPort de bouclage de la passerelle : $localPort\nPort de bouclage distant : $remotePort\nHermes : $version\nRéutilisé : $reused';
+  }
+
+  @override
+  String get fleet_managed_ssh_disconnect => 'Déconnecter';
 
   @override
   String get ng_slash_suggestions_loading => 'Chargement des commandes…';
 
   @override
+  String get ng_slash_suggestions_empty => 'Aucune commande correspondante';
+
+  @override
+  String get ng_slash_suggestions_label => 'Suggestions de commandes';
+
+  @override
   String get ng_slash_suggestions_skill => 'Compétence';
+
+  @override
+  String get settings_classic_title => 'Paramètres Classic';
+
+  @override
+  String get settings_nextgen_title => 'Paramètres NextGen';
+
+  @override
+  String get settings_category_general => 'Général et langue';
+
+  @override
+  String get settings_category_chat => 'Discussion et sessions';
+
+  @override
+  String get settings_category_device => 'Appareil et raccourcis';
+
+  @override
+  String get settings_category_connections => 'Connexions et modèles';
+
+  @override
+  String get settings_category_security => 'Confidentialité et sauvegarde';
+
+  @override
+  String get settings_category_about => 'À propos et aide';
+
+  @override
+  String get settings_reopen_chat =>
+      'Restaurer la dernière discussion au retour vers une passerelle';
+
+  @override
+  String get settings_reopen_chat_hint =>
+      'Un démarrage à froid ouvre l’accueil. Les liens et notifications ouvrent la discussion demandée.';
+
+  @override
+  String get settings_danger => 'Zone de danger';
 }

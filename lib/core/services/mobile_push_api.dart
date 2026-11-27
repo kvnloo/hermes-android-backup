@@ -1,12 +1,16 @@
 import 'dart:convert';
 
+import '../../l10n/app_localizations.dart';
+import '../l10n/service_strings.dart';
 import 'connection_manager.dart';
 
 /// All requests use the existing dashboard login/cookie/proxy/token ladder.
 /// Subscriber keys come exclusively from the native connector, never VAPID.
 class MobilePushApi {
-  MobilePushApi(this.client);
+  MobilePushApi(this.client, {this.localizations});
   final DashboardClient client;
+  final AppLocalizations? localizations;
+  AppLocalizations get strings => localizations ?? serviceStrings;
   static const prefix = 'plugins/mobile-push';
 
   static bool validIdentifier(Object? value, {int maxLength = 200}) =>
@@ -41,13 +45,15 @@ class MobilePushApi {
   };
 
   /// Validate every supplied token before deduplication; never trim/drop one.
-  static List<String> validateSessionIds(List<String> sessions) {
+  static List<String> validateSessionIds(
+    List<String> sessions, {
+    AppLocalizations? localizations,
+  }) {
     if (sessions.isEmpty ||
         sessions.length > 128 ||
         sessions.any((id) => !validIdentifier(id))) {
       throw StateError(
-        'Select 1–128 durable session IDs, each 1–200 ASCII characters using '
-        'only letters, digits, _ . : @ or -. Remove blank IDs and whitespace.',
+        (localizations ?? serviceStrings).rel_svc_push_api_select_sessions,
       );
     }
     return sessions.toSet().toList();
@@ -66,18 +72,16 @@ class MobilePushApi {
         !(result['transports'] as List).contains('webpush') ||
         key is! String ||
         !RegExp(r'^[A-Za-z0-9_-]{87}$').hasMatch(key)) {
-      throw const FormatException('Mobile push is unavailable on this server.');
+      throw FormatException(strings.rel_svc_push_api_unavailable);
     }
     final bytes = base64Url.decode(base64Url.normalize(key));
     if (bytes.length != 65 || bytes.first != 4) {
-      throw const FormatException('Invalid server VAPID public key.');
+      throw FormatException(strings.rel_svc_push_api_invalid_vapid);
     }
     if (authorized &&
         (result['session_scope_modes'] is! List ||
             !(result['session_scope_modes'] as List).contains('authorized'))) {
-      throw const FormatException(
-        'This server needs an updated mobile-push plugin for automatic subscriptions.',
-      );
+      throw FormatException(strings.rel_svc_push_api_update_plugin);
     }
     return result;
   }

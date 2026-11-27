@@ -13,6 +13,7 @@ import 'package:hermes_android/core/services/ws_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/canonical_replay_fixture.dart';
+import 'support/strict_authority_gateway.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -239,6 +240,13 @@ class _Owner {
       final frame = Map<String, dynamic>.from(jsonDecode(raw as String) as Map);
       if (frame['method'] == null) return;
       requests.add(frame);
+      if (authority) {
+        final refused = strictAuthorityFrame(frame);
+        if (refused != null) {
+          ws.add(refused);
+          return;
+        }
+      }
       final params = Map<String, dynamic>.from(frame['params'] as Map? ?? {})
         ..remove('profile');
       final reply = _answer(frame['method'] as String, params);

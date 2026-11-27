@@ -13,6 +13,7 @@ import 'package:uuid/uuid.dart';
 
 import 'connection_manager.dart';
 import 'hermes_sign_in.dart';
+import 'session_search_client.dart';
 import '../utils/session_sources.dart' as sources;
 
 /// Thrown for API-server-only operations a dashboard can't perform.
@@ -364,19 +365,23 @@ class DashboardApiClient extends ApiClient {
     int offset = 0,
     String? title,
     String? excludeSources,
+    bool Function()? maySendSearch,
     Duration timeout = ApiClient.requestTimeout,
   }) async {
     if (title != null && title.trim().isNotEmpty) {
-      final found = await _getMap(
-        'sessions/search',
-        query: {'q': title.trim(), 'limit': '${limit.clamp(1, 100)}'},
+      final hits = await SessionSearchClient.searchDashboard(
+        dashboard,
+        title,
+        profile: _profile,
+        limit: limit,
+        maySend: maySendSearch,
         timeout: timeout,
       );
-      final rows = (found['results'] as List? ?? const [])
-          .whereType<Map<String, dynamic>>()
-          .map(Session.fromJson)
-          .toList();
-      return SessionListPage(sessions: rows, hasMore: false);
+      return SessionListPage(
+        sessions: [for (final hit in hits) hit.session],
+        hasMore: false,
+        searchExcerpts: {for (final hit in hits) hit.session.id: hit.snippet},
+      );
     }
     final pageSize = limit.clamp(1, 100);
     final data = await _getMap(
@@ -410,7 +415,11 @@ class DashboardApiClient extends ApiClient {
       'sessions/${Uri.encodeComponent(sessionId)}',
       queryParameters: _profileQuery,
     );
-    if (res.statusCode == 404) throw SessionNotFoundException(sessionId);
+    // A missing proxy route, wrong prefix or unavailable endpoint is not
+    // evidence that this session died. Require the session-specific verdict.
+    if (res.statusCode == 404 && _sessionMissing(res, sessionId)) {
+      throw SessionNotFoundException(sessionId);
+    }
     if (res.statusCode != 200) {
       throw DashboardRequestException(
         res.statusCode,
@@ -425,6 +434,27 @@ class DashboardApiClient extends ApiClient {
       row['pinned'] = row['pinned'] == true || row['pinned'] == 1;
     }
     return row;
+  }
+
+  static bool _sessionMissing(http.Response res, String id) {
+    try {
+      final body = _decodeMap(res);
+      final reason = body['error'] ?? body['detail'];
+      if (body['session_id'] != null && body['session_id'] != id) return false;
+      if (reason is Map) {
+        if (reason['session_id'] != null && reason['session_id'] != id) {
+          return false;
+        }
+        return reason['code'] == 'session_not_found';
+      }
+      return reason is String &&
+          const {
+            'session_not_found',
+            'session not found',
+          }.contains(reason.toLowerCase());
+    } on FormatException {
+      return false;
+    }
   }
 
   @override
@@ -564,6 +594,7 @@ class DashboardApiClient extends ApiClient {
     try {
       final probe = await GatewayProbe().probe(
         GatewayUrl.parse(dashboard.baseUrl),
+        customHeaders: dashboard.customHeaders,
       );
       if (probe is! ProbeReachable) {
         return ApiHealthCheckResult.httpFailure(status, 503);

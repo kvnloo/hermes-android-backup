@@ -348,8 +348,9 @@ ColorScheme _hermesColorScheme(Brightness brightness, HermesPalette palette) {
 ThemeData hermesTheme(
   Brightness brightness, {
   HermesPalette palette = HermesPalette.gold,
+  ColorScheme? profileScheme,
 }) {
-  final scheme = _hermesColorScheme(brightness, palette);
+  final scheme = profileScheme ?? _hermesColorScheme(brightness, palette);
   final tokens = HermesTokens._fromScheme(scheme, palette);
   final base = ThemeData(
     colorScheme: scheme,
@@ -730,6 +731,25 @@ SystemUiOverlayStyle hermesSystemUiStyle(
     systemNavigationBarIconBrightness: navigationIcons,
     systemNavigationBarContrastEnforced: true,
   );
+}
+
+/// Seeds for roles an imported VS Code colour theme leaves out. They are the
+/// neutral editor defaults the theme was written against, not Hermes
+/// branding, and they only ever fill a gap in an import.
+abstract final class ImportedThemeSeeds {
+  /// What a translucent editor background is composited onto.
+  static const Color backdrop = Color(0xFF000000);
+
+  /// Editor background when the theme names none.
+  static Color background({required bool dark}) =>
+      dark ? const Color(0xFF1E1E1E) : const Color(0xFFFFFFFF);
+
+  /// Editor text when the theme names none.
+  static Color foreground({required bool dark}) =>
+      dark ? const Color(0xFFD4D4D4) : const Color(0xFF1F1F1F);
+
+  /// Error ink when the theme names none.
+  static const Color error = Color(0xFFE25563);
 }
 
 /// Whichever opaque black/white foreground has the higher WCAG contrast.

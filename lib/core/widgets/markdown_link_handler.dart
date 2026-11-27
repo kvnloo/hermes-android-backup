@@ -10,7 +10,8 @@ Future<void> openMarkdownWebLink(BuildContext context, String? href) async {
   final uri = Uri.tryParse(href);
   if (uri == null ||
       (uri.scheme != 'https' && uri.scheme != 'http') ||
-      uri.host.isEmpty) {
+      uri.host.isEmpty ||
+      uri.userInfo.isNotEmpty) {
     return;
   }
 

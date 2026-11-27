@@ -82,6 +82,7 @@ class AttachmentDraftSendCoordinator {
 
   Future<void> uploadThenSubmit({
     required Iterable<AttachmentDraft> drafts,
+    bool retainUploadedFiles = false,
     required AttachmentUploadCallback upload,
     required AttachmentPromptSubmit submitPrompt,
     AttachmentDraftChanged? onChanged,
@@ -89,6 +90,7 @@ class AttachmentDraftSendCoordinator {
     final snapshot = drafts.toList(growable: false);
     await draftService.uploadSequential(
       drafts: snapshot,
+      retainUploadedFiles: retainUploadedFiles,
       upload: upload,
       onChanged: onChanged,
     );
@@ -246,6 +248,30 @@ class AttachmentDraftService {
     }
   }
 
+  /// Captured preview pixels go through the same decoder, metadata scrub and
+  /// aggregate limits as a picked photo. No page supplies a cache path.
+  Future<AttachmentDraft> preparePreviewCrop({
+    required Uint8List png,
+    required int pin,
+    required Iterable<AttachmentDraft> existingDrafts,
+  }) async {
+    if (png.isEmpty || png.length > 4 * 1024 * 1024) {
+      throw const AttachmentDraftException('Preview crop exceeds its limit.');
+    }
+    final source = await _newCacheFile('png');
+    try {
+      await _cacheFileWriter(source, png);
+      return await prepareImage(
+        sourcePath: source.path,
+        displayName: 'preview-$pin.png',
+        existingDrafts: existingDrafts,
+        mode: AttachmentDraftMode.remoteGateway,
+      );
+    } finally {
+      await _deleteIfPresent(source);
+    }
+  }
+
   Future<AttachmentDraft> prepareGenericFile({
     required String sourcePath,
     required String displayName,
@@ -347,7 +373,14 @@ class AttachmentDraftService {
     }
   }
 
-  void validateRemoteDrafts(Iterable<AttachmentDraft> drafts) {
+  /// The send-time check of a whole draft. NextGen passes its own limits
+  /// ([maxNextGenAttachmentBytes] per file, streamed past the inline size);
+  /// the count and image sanitising rules are the same everywhere.
+  void validateRemoteDrafts(
+    Iterable<AttachmentDraft> drafts, {
+    int maxFileBytes = maxGenericAttachmentBytes,
+    int maxTotalBytes = maxRemoteAttachmentDraftBytes,
+  }) {
     final snapshot = drafts.toList(growable: false);
     if (snapshot.length > maxRemoteAttachmentDrafts) {
       throw const AttachmentDraftException(
@@ -355,16 +388,21 @@ class AttachmentDraftService {
       );
     }
     final total = snapshot.fold<int>(0, (sum, draft) => sum + draft.byteLength);
-    if (total > maxRemoteAttachmentDraftBytes) {
-      throw const AttachmentDraftException(
-        'Attachments are limited to 64 MiB total per draft.',
+    if (total > maxTotalBytes) {
+      throw AttachmentDraftException(
+        maxTotalBytes == maxRemoteAttachmentDraftBytes
+            ? 'Attachments are limited to 64 MiB total per draft.'
+            : 'Attachments are limited to ${maxTotalBytes ~/ 1000000} MB '
+                  'total per draft.',
       );
     }
     for (final draft in snapshot) {
       if (draft.kind == AttachmentDraftKind.genericFile &&
-          draft.byteLength > maxGenericAttachmentBytes) {
-        throw const AttachmentDraftException(
-          'Generic files are limited to 16 MiB each.',
+          draft.byteLength > maxFileBytes) {
+        throw AttachmentDraftException(
+          maxFileBytes == maxGenericAttachmentBytes
+              ? 'Generic files are limited to 16 MiB each.'
+              : 'Files are limited to ${maxFileBytes ~/ 1000000} MB each.',
         );
       }
       if (draft.isImage && !draft.sanitized) {
@@ -420,6 +458,7 @@ class AttachmentDraftService {
 
   Future<List<AttachmentUploadReceipt>> uploadSequential({
     required Iterable<AttachmentDraft> drafts,
+    bool retainUploadedFiles = false,
     required AttachmentUploadCallback upload,
     AttachmentDraftChanged? onChanged,
   }) async {
@@ -438,7 +477,12 @@ class AttachmentDraftService {
         continue;
       }
       receipts.add(
-        await _uploadOne(draft, upload: upload, onChanged: onChanged),
+        await _uploadOne(
+          draft,
+          upload: upload,
+          onChanged: onChanged,
+          retainUploadedFile: retainUploadedFiles,
+        ),
       );
     }
     return receipts;
@@ -461,6 +505,7 @@ class AttachmentDraftService {
 
   Future<AttachmentUploadReceipt> _uploadOne(
     AttachmentDraft draft, {
+    bool retainUploadedFile = false,
     required AttachmentUploadCallback upload,
     AttachmentDraftChanged? onChanged,
   }) async {
@@ -477,7 +522,7 @@ class AttachmentDraftService {
         ..refText = receipt.refText
         ..atlasIntakeAccepted = receipt.atlasIntakeAccepted;
       dataUrl = null;
-      await removeCachedFile(draft);
+      if (!retainUploadedFile) await removeCachedFile(draft);
       onChanged?.call(draft);
       return receipt;
     } catch (error) {

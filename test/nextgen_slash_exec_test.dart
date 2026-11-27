@@ -120,6 +120,9 @@ class _Gateway extends NextGenGateway {
       calls.where((c) => c.method == method).toList();
 }
 
+Map<String, dynamic> _missingMethod(Map<String, dynamic> params) =>
+    throw JsonRpcError('rpc', 'Method not found', code: -32601);
+
 class _Harness {
   _Harness(this.gateway, this.chat, this.historyReads);
   final _Gateway gateway;
@@ -406,6 +409,9 @@ void main() {
     tester,
   ) async {
     final h = await pump(tester, storedId: 'stored-1', runtimeId: 'rt-1');
+    // /bg runs prompt.background first (Desktop); a gateway without it
+    // answers method-not-found and the line goes through slash.exec.
+    h.gateway.handlers['prompt.background'] = _missingMethod;
     h.gateway.handlers['slash.exec'] = (params) =>
         params['command'] == 'bg run tests'
         ? {'type': 'alias', 'target': '/background'}
@@ -623,6 +629,9 @@ void main() {
       'run on the gateway', (tester) async {
     final h = await pump(tester, storedId: 'stored-1', runtimeId: 'rt-1');
     h.gateway.handlers['slash.exec'] = (params) => {'output': 'ok'};
+    // An older gateway without prompt.background: /bg falls back to
+    // slash.exec, as Desktop's runExec fallback does.
+    h.gateway.handlers['prompt.background'] = _missingMethod;
     await _send(tester, '/deploy');
     await _send(tester, '/bg tidy up');
     await _send(tester, '/review');

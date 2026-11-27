@@ -2,6 +2,7 @@
 // and Classic do: `slash.exec` first, then `command.dispatch` only after a
 // definite refusal. Rules shared by the chat controller, the composer and
 // the highlight.
+import '../nextgen_l10n.dart';
 import '../../core/services/ws_client.dart';
 import '../../core/widgets/slash_command_highlight.dart';
 
@@ -9,6 +10,14 @@ import '../../core/widgets/slash_command_highlight.dart';
 /// says: `/new` and `/reset` start a new chat, `/stop` stops the running turn
 /// and a bare `/model` opens the model sheet.
 const Set<String> kNgLocalSlashCommands = {'new', 'reset', 'stop', 'model'};
+
+/// Commands that open an Ares screen when typed bare: `/kanban` the board,
+/// `/bots` the bots screen. Always highlighted, listed by the gateway or not;
+/// with an argument they go to the gateway like any other command.
+Map<String, String> get kNgScreenSlashCommands => {
+  'kanban': ngL.ng_slash_kanban,
+  'bots': ngL.ng_slash_bots,
+};
 
 /// How long a send waits for a catalogue that is still loading before it
 /// decides with Classic's fallback set instead.

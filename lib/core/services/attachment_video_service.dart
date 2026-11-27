@@ -28,11 +28,14 @@ class AttachmentVideoFileStore {
 
   final Future<Directory> Function() temporaryDirectoryProvider;
 
+  /// Subclasses may reuse the same native-reader-safe ownership protocol.
+  bool acceptsExtension(String extension) => attachmentIsVideo(extension);
+
   Future<AttachmentVideoFile> stage(Uint8List bytes, String extension) async {
     if (bytes.isEmpty || bytes.length > maxAttachmentDownloadBytes) {
       throw const FormatException('Video exceeds preview bounds');
     }
-    if (!attachmentIsVideo(extension)) {
+    if (!acceptsExtension(extension)) {
       throw const FormatException('Unsupported video container');
     }
     // Snapshot before any await: callers cannot change a pending file write.
@@ -194,6 +197,9 @@ class AttachmentVideoSession {
 
   Future<void> setMuted(bool muted) =>
       _enqueue(() => _controller!.setVolume(muted ? 0 : 1));
+
+  Future<void> setPlaybackSpeed(double speed) =>
+      _enqueue(() => _controller!.setPlaybackSpeed(speed));
 
   Future<void> _enqueue(Future<void> Function() action) {
     if (_closed || !_ready) return Future<void>.value();

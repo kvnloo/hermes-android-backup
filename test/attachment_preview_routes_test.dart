@@ -20,6 +20,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/fake_voice_composer_adapter.dart';
+import 'support/markdown_file_fixture.dart';
 
 const _session = Session(
   id: 'preview-session',
@@ -214,6 +215,34 @@ void main() {
   });
 
   for (final surface in ['Chat', 'Assets']) {
+    testWidgets(
+      '$surface opens Markdown, toggles original source and saves original bytes',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = markdownViewport;
+        addTearDown(tester.view.reset);
+        const path = '/gateway/field report.MaRkDoWn';
+        final files = _Files(utf8.encode(markdownFixture));
+        await _open(tester, surface, path, files);
+        expect(files.paths, isEmpty);
+        await tester.ensureVisible(find.text('field report.MaRkDoWn'));
+        await tester.tap(find.text('field report.MaRkDoWn'));
+        await tester.pumpAndSettle();
+        await verifyMarkdownPreview(tester);
+        await tester.tap(find.byKey(const Key('attachment-preview-save')));
+        await tester.pumpAndSettle();
+        expect(picker.names, ['field report.MaRkDoWn']);
+        expect(
+          picker.payloads.single,
+          orderedEquals(utf8.encode(markdownFixture)),
+        );
+        expect(files.paths, [path]);
+        await tester.tap(find.byKey(const Key('attachment-preview-close')));
+        await tester.pumpAndSettle();
+        await tester.pumpWidget(const SizedBox.shrink());
+      },
+      variant: markdownPlatforms,
+    );
     for (final extension in ['docx', 'mp4']) {
       testWidgets(
         '$surface routes $extension to its viewer, saves original bytes '

@@ -250,6 +250,12 @@ void main() {
       // No modal drawer at the expanded breakpoint; the sidebar is inline.
       expect(find.byType(Drawer), findsNothing);
       expect(find.byKey(const Key('ng-session-search')), findsOneWidget);
+      // Cold launch is the brand landing; opening a new chat exposes the
+      // chat header's sidebar toggle without changing the docked layout.
+      expect(find.byKey(const Key('ng-brand-new-chat')), findsOneWidget);
+      await tester.tap(find.byKey(const Key('ng-brand-new-chat')));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.byKey(const Key('ng-session-search')), findsOneWidget);
       expect(find.byKey(const ValueKey('ng-sidebar-button')), findsOneWidget);
       await unmount(tester, gateway);
     });

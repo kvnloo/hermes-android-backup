@@ -3,17 +3,27 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../models/session.dart';
+import '../models/connection.dart';
+import '../services/session_search_preferences.dart';
+import '../widgets/session_search_mode_menu.dart';
+import '../models/session_search_hit.dart';
+import '../services/session_search_client.dart';
+import '../services/session_search_projection.dart';
 import '../services/chat_pins.dart';
 import '../services/session_archive_ledger.dart';
 import '../theme/hermes_theme.dart';
 import '../utils/relative_time.dart';
 import '../utils/session_sources.dart';
 import '../widgets/chat_attention_section.dart';
+import '../widgets/copy_session_id.dart';
 import '../widgets/hermes_components.dart';
 import '../widgets/hermes_shell.dart';
 import '../widgets/session_name_dialog.dart';
+import '../widgets/session_organisation.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
+import '../l10n/ui_message_exception.dart';
+import '../l10n/service_strings.dart';
 
 export '../utils/session_sources.dart';
 
@@ -417,6 +427,12 @@ class WorkspaceSessionsScreen extends StatefulWidget {
   final WorkspaceSessionView view;
   final WorkspaceSessionKind kind;
   final WorkspaceSessionsLoader load;
+  final Future<List<SessionSearchHit>> Function(
+    String,
+    bool Function() maySend,
+  )?
+  searchMessages;
+  final SavedConnection? searchScope;
   final WorkspaceSessionsProgressiveLoader? loadProgressively;
 
   /// [loadProgressively] minus the server-archive authority.
@@ -467,6 +483,8 @@ class WorkspaceSessionsScreen extends StatefulWidget {
     required this.view,
     this.kind = WorkspaceSessionKind.chats,
     required this.load,
+    this.searchMessages,
+    this.searchScope,
     this.loadProgressively,
     this.loadWithoutArchives,
     this.reloadActive,
@@ -498,6 +516,98 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
   bool _archivesFullyLoaded = false;
   Object? _error;
   String _query = '';
+  final _queryField = TextEditingController();
+  Timer? _searchTimer;
+  int _searchGeneration = 0,
+      _searchTitleRevision = 0,
+      _searchArchiveRevision = 0;
+  List<SessionSearchHit> _hits = const [];
+  String Function(AppLocalizations)? _searchError;
+  bool _searching = false;
+  SessionSearchAccess? _access;
+  int _accessGeneration = 0;
+
+  Future<void> _bindSearchAccess() async {
+    final generation = ++_accessGeneration;
+    _access?.dispose();
+    _access = null;
+    final scope = widget.searchScope;
+    final search = widget.searchMessages;
+    if (scope == null || search == null) return;
+    final identity = sessionSearchIdentity(scope);
+    try {
+      final prefs = await SessionSearchPreferences.open();
+      if (!mounted ||
+          generation != _accessGeneration ||
+          widget.searchMessages == null ||
+          widget.searchScope == null ||
+          sessionSearchIdentity(widget.searchScope!) != identity) {
+        return;
+      }
+      _access = SessionSearchAccess(prefs, identity)..addListener(_modeChanged);
+      _modeChanged();
+    } catch (_) {
+      // No readable preference: stay local.
+    }
+  }
+
+  void _modeChanged() => _queryChanged(_query);
+
+  void _queryChanged(String value) {
+    final term = value.trim();
+    final request = ++_searchGeneration;
+    _searchTimer?.cancel();
+    final access = _access;
+    final search = access?.value == true ? widget.searchMessages : null;
+    bool isCurrent() =>
+        mounted &&
+        request == _searchGeneration &&
+        identical(access, _access) &&
+        access?.isActive == true &&
+        access?.value == true;
+    setState(() {
+      _query = term;
+      _hits = const [];
+      _searchError = null;
+      _searching = term.isNotEmpty && search != null;
+    });
+    if (term.isEmpty || search == null) return;
+    _searchTimer = Timer(const Duration(milliseconds: 300), () async {
+      _searchTitleRevision = _titleRevision;
+      _searchArchiveRevision = _archiveChanges.revision;
+      try {
+        if (!isCurrent()) return;
+        final hits = await search(term, isCurrent);
+        if (!isCurrent()) return;
+        setState(() {
+          _hits = hits;
+          _searching = false;
+        });
+      } catch (e) {
+        if (!isCurrent()) return;
+        setState(() {
+          _searchError = (l10n) => e is SessionSearchException
+              ? e.message
+              : l10n.release_core_chat_local_search_fallback;
+          _searching = false;
+        });
+      }
+    });
+  }
+
+  Iterable<SessionSearchHit> get _currentHits sync* {
+    for (final hit in _hits) {
+      final row = _savedPins.apply(hit.session, _searchTitleRevision);
+      final title = _savedTitles[row.id];
+      yield SessionSearchHit(
+        session: title != null && title.revision > _searchTitleRevision
+            ? row.withTitle(title.title)
+            : row,
+        snippet: hit.snippet,
+      );
+    }
+  }
+
   final Set<String> _promoting = {};
   int _projectRevision = 0;
   final _movedProjects = <String, ({int revision, String label})>{};
@@ -552,6 +662,9 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
 
   /// The active chip filter in the embedded Chats browser.
   WorkspaceChatsFilter _filter = WorkspaceChatsFilter.all;
+  SessionSort _sort = SessionSort.recent;
+  SessionGroup _group = SessionGroup.standard;
+  bool _details = false;
 
   /// Injectable clock for deterministic tests.
   DateTime get _now => widget.now ?? DateTime.now();
@@ -569,6 +682,7 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
   @override
   void initState() {
     super.initState();
+    unawaited(_bindSearchAccess());
     _data = widget.initialData;
     _activeFullyLoaded = _data != null && !_data!.isPartial;
     _archivesFullyLoaded = _data != null && !_data!.archivedIsPartial;
@@ -579,6 +693,13 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
   @override
   void didUpdateWidget(covariant WorkspaceSessionsScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (oldWidget.searchScope != widget.searchScope ||
+        (oldWidget.searchMessages == null) != (widget.searchMessages == null) ||
+        oldWidget.kind != widget.kind) {
+      unawaited(_bindSearchAccess());
+      _queryField.clear();
+      _queryChanged('');
+    }
     if (!oldWidget.archiveSurfaceVisible &&
         widget.archiveSurfaceVisible &&
         _isArchivedSurface &&
@@ -656,6 +777,10 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
 
   @override
   void dispose() {
+    _access?.dispose();
+    _queryField.dispose();
+    _searchTimer?.cancel();
+    ++_searchGeneration;
     ++_loadGeneration;
     WidgetsBinding.instance.removeObserver(this);
     _refreshTimer?.cancel();
@@ -1117,7 +1242,7 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
     for (final session in [...data.archivedSessions, ...data.sessions]) {
       if (session.id == id) return session;
     }
-    return null;
+    return _currentHits.where((h) => h.session.id == id).firstOrNull?.session;
   }
 
   Future<void> _rename(Session session) async {
@@ -1262,6 +1387,7 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
   }
 
   Future<void> _setArchived(Session session, bool archived) async {
+    final releaseStrings = mounted ? context.sharedL10n : serviceStrings;
     final archive = widget.onArchive;
     if (archive == null ||
         !mounted ||
@@ -1279,7 +1405,9 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
       if (current == null) return;
       final confirmed = await archive(current, archived);
       if (confirmed != archived) {
-        throw StateError('Archive state was not confirmed');
+        throw UiMessageException(
+          releaseStrings.release_core_chat_archive_unconfirmed,
+        );
       }
       if (!mounted) return;
       setState(() {
@@ -1337,6 +1465,7 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
   /// Pins or unpins through the server flag Hermes Desktop also uses, so
   /// the change follows the chat to every client of this host.
   Future<void> _setPinned(Session session, bool pinned) async {
+    final releaseStrings = mounted ? context.sharedL10n : serviceStrings;
     final pin = widget.onPin;
     if (pin == null ||
         !mounted ||
@@ -1354,7 +1483,9 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
       if (current == null) return;
       final confirmed = await pin(current, pinned);
       if (confirmed != pinned) {
-        throw StateError('Pin state was not confirmed');
+        throw UiMessageException(
+          releaseStrings.release_core_chat_pin_unconfirmed,
+        );
       }
       if (!mounted) return;
       setState(() => _recordPin(current, pinned));
@@ -1413,13 +1544,26 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
         _error ??
         (archiveScope ? data.archiveError : data.sessionsError) ??
         (archiveScope && !data.archivesKnown && !data.archivedIsPartial
-            ? StateError('Archived history unavailable')
+            ? UiMessageException(
+                context
+                    .sharedL10n
+                    .release_core_chat_archive_history_unavailable,
+              )
             : null) ??
         (unresolvedQuick && !data.isPartial
-            ? data.sessionsError ?? StateError('Quick Chat history unavailable')
+            ? data.sessionsError ??
+                  UiMessageException(
+                    context
+                        .sharedL10n
+                        .release_core_quick_chat_history_unavailable,
+                  )
             : null) ??
         (_isUnassignedSurface && !data.projectsKnown && !data.projectsLoading
-            ? StateError('Project ownership unavailable')
+            ? UiMessageException(
+                context
+                    .sharedL10n
+                    .release_core_chat_project_ownership_unavailable,
+              )
             : null);
     // The embedded browser filters over the union of the gateway's active
     // list and the dashboard's archived list: the Archived chip needs the
@@ -1443,24 +1587,34 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
     List<Session> classified(List<Session> rows) => reuseClaims
         ? rows.where((s) => retainedIds.contains(s.id)).toList()
         : rows;
+    final matches = _query.isEmpty
+        ? const <SessionSearchHit>[]
+        : projectSessionSearch(unionSessions, _currentHits, _query);
+    final candidates = _query.isEmpty
+        ? unionSessions
+        : _archiveChanges.apply(
+            matches.map((h) => h.session),
+            _searchArchiveRevision,
+          );
+    final excerpts = {for (final hit in matches) hit.session.id: hit.snippet};
     final filteredSessions = widget.embedded
         ? filterChats(
-            sessions: classified(unionSessions),
+            sessions: classified(candidates),
             filter: _filter,
             kind: widget.kind,
             claimedSessionIds: data.claimedSessionIds,
             archivedQuickChatIds: data.archivedQuickChatIds,
-            query: _query,
+            query: '',
             now: _now,
             projectsKnown: data.projectsKnown || reuseClaims,
           )
         : filterWorkspaceSessions(
-            sessions: classified(unionSessions),
+            sessions: classified(candidates),
             view: widget.view,
             kind: widget.kind,
             claimedSessionIds: data.claimedSessionIds,
             archivedQuickChatIds: data.archivedQuickChatIds,
-            query: _query,
+            query: '',
             projectsKnown: data.projectsKnown || reuseClaims,
           );
 
@@ -1474,19 +1628,33 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
     // Server pins (shared with Hermes Desktop) lead the date groups. Search
     // and the selected filter have already run, so a pin never bypasses
     // them, and an archived row stays in its own view.
-    final ordered = orderPinnedChatsFirst(sessions);
+    final ordered = orderPinnedChatsFirst(_sort.apply(sessions));
     final pinnedSessions = ordered.where(isPinnedChat).toList();
     final unpinnedSessions = ordered
         .where((session) => !isPinnedChat(session))
         .toList();
-    final groups = widget.embedded
-        ? groupChatsByDate(_now, unpinnedSessions)
-        : [
-            MapEntry(
-              ChatDateBucket.today,
-              List<Session>.unmodifiable(unpinnedSessions),
-            ),
-          ];
+    final groups = switch (_group) {
+      SessionGroup.status => labelledGroups(
+        unpinnedSessions,
+        (s) =>
+            s.isActive ? context.l10n.status_running : context.l10n.status_done,
+      ).entries,
+      SessionGroup.project => labelledGroups(
+        unpinnedSessions,
+        (s) =>
+            data.projectLabels[s.id] ??
+            (data.projectsKnown && !data.claimedSessionIds.contains(s.id)
+                ? context.l10n.unassigned
+                : context.sharedL10n.release_core_chat_unknown_project),
+      ).entries,
+      SessionGroup.standard
+          when widget.embedded && _sort == SessionSort.recent =>
+        groupChatsByDate(
+          _now,
+          unpinnedSessions,
+        ).map((g) => MapEntry(g.key.label(context.l10n), g.value)),
+      _ => [MapEntry(widget.title, unpinnedSessions)],
+    };
 
     return RefreshIndicator(
       onRefresh: refresh,
@@ -1537,28 +1705,54 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
             ),
           TextField(
             key: kWorkspaceSessionSearchKey,
+            controller: _queryField,
             autofocus: widget.view == WorkspaceSessionView.search,
             decoration: InputDecoration(
               hintText: widget.kind == WorkspaceSessionKind.crons
                   ? context.l10n.search_cron_conversations
                   : context.l10n.search_conversations,
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: _access == null
+                  ? const Icon(Icons.search)
+                  : SessionSearchModeMenu(_access!),
               suffixIcon: _query.isEmpty
                   ? null
                   : IconButton(
                       tooltip: context.l10n.clear_search,
-                      onPressed: () => setState(() => _query = ''),
+                      onPressed: () {
+                        _queryField.clear();
+                        _queryChanged('');
+                      },
                       icon: const Icon(Icons.clear),
                     ),
             ),
-            onChanged: (value) => setState(() => _query = value),
+            onChanged: _queryChanged,
           ),
           if (widget.embedded) ...[
             const SizedBox(height: HermesSpacing.md),
-            _buildChips(),
+            Row(
+              children: [
+                Expanded(child: _buildChips()),
+                SessionOrganisationMenu(
+                  sort: _sort,
+                  group: _group,
+                  rows: sessions,
+                  details: _details,
+                  projects: widget.kind == WorkspaceSessionKind.chats,
+                  onSort: (s) => setState(() => _sort = s),
+                  onGroup: (g) => setState(() => _group = g),
+                  onDetails: () => setState(() => _details = !_details),
+                ),
+              ],
+            ),
           ],
           const SizedBox(height: HermesSpacing.lg),
-          if (sessions.isEmpty && !scopeLoading && scopeError == null)
+          if (_searching) const LinearProgressIndicator(),
+          if (_searchError != null) Text(_searchError!(context.sharedL10n)),
+          if (sessions.isEmpty &&
+              !scopeLoading &&
+              scopeError == null &&
+              !_searching &&
+              _searchError == null)
             EmptyState(
               icon: _emptyIcon,
               title: _query.isEmpty
@@ -1581,7 +1775,7 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
               for (final session in pinnedSessions)
                 Padding(
                   padding: const EdgeInsets.only(bottom: HermesSpacing.sm),
-                  child: _buildSessionRow(session, data),
+                  child: _buildSessionRow(session, data, excerpts[session.id]),
                 ),
             ],
             for (final group in groups)
@@ -1592,16 +1786,18 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
                     bottom: HermesSpacing.sm,
                   ),
                   child: Text(
-                    widget.embedded
-                        ? group.key.label(context.l10n)
-                        : widget.title,
+                    group.key,
                     style: HermesTokens.of(context).typography.section,
                   ),
                 ),
                 for (final session in group.value)
                   Padding(
                     padding: const EdgeInsets.only(bottom: HermesSpacing.sm),
-                    child: _buildSessionRow(session, data),
+                    child: _buildSessionRow(
+                      session,
+                      data,
+                      excerpts[session.id],
+                    ),
                   ),
               ],
           ],
@@ -1639,7 +1835,11 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
     );
   }
 
-  Widget _buildSessionRow(Session session, WorkspaceSessionsData data) {
+  Widget _buildSessionRow(
+    Session session,
+    WorkspaceSessionsData data,
+    String? excerpt,
+  ) {
     final tokens = HermesTokens.of(context);
     final projectLabel = data.projectLabels[session.id];
     final isArchived =
@@ -1691,9 +1891,14 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                if (session.preview.isNotEmpty)
+                if (_details)
                   Text(
-                    session.preview,
+                    sessionDetails(session, context.sharedL10n),
+                    style: TextStyle(color: tokens.muted),
+                  ),
+                if (excerpt?.isNotEmpty == true || session.preview.isNotEmpty)
+                  Text(
+                    excerpt?.isNotEmpty == true ? excerpt! : session.preview,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(color: tokens.muted),
@@ -1757,7 +1962,8 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
               dimension: 24,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-          if (widget.onPin != null ||
+          if (canCopySessionId(session) ||
+              widget.onPin != null ||
               widget.onRename != null ||
               widget.onPromote != null ||
               widget.onArchive != null)
@@ -1765,6 +1971,8 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
               tooltip: context.l10n.chat_actions,
               onSelected: (action) {
                 switch (action) {
+                  case 'copyId':
+                    unawaited(copySessionId(context, session));
                   case 'archive':
                     unawaited(_setArchived(session, !isArchived));
                   case 'rename':
@@ -1776,6 +1984,11 @@ class WorkspaceSessionsScreenState extends State<WorkspaceSessionsScreen>
                 }
               },
               itemBuilder: (_) => [
+                if (canCopySessionId(session))
+                  PopupMenuItem(
+                    value: 'copyId',
+                    child: Text(context.l10n.copy_session_id),
+                  ),
                 if (widget.onArchive != null)
                   PopupMenuItem(
                     value: 'archive',

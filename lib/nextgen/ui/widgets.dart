@@ -283,9 +283,11 @@ class NgPrimaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = NgColors.of(context);
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: double.infinity,
+        minHeight: 50,
+      ),
       child: FilledButton(
         style: FilledButton.styleFrom(
           backgroundColor: c.accent,
@@ -310,7 +312,7 @@ class NgPrimaryButton extends StatelessWidget {
                     Icon(icon, size: 18),
                     const SizedBox(width: 8),
                   ],
-                  Text(label),
+                  Flexible(child: Text(label, textAlign: TextAlign.center)),
                 ],
               ),
       ),
@@ -334,9 +336,11 @@ class NgSecondaryButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = NgColors.of(context);
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: double.infinity,
+        minHeight: 50,
+      ),
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
           foregroundColor: c.text,
@@ -351,7 +355,7 @@ class NgSecondaryButton extends StatelessWidget {
               Icon(icon, size: 18),
               const SizedBox(width: 8),
             ],
-            Text(label),
+            Flexible(child: Text(label, textAlign: TextAlign.center)),
           ],
         ),
       ),
@@ -503,13 +507,19 @@ class NgEmpty extends StatelessWidget {
     this.body,
     this.action,
     this.titleWidget,
+    this.header,
   });
 
   final Widget? titleWidget;
-  final IconData icon;
+
+  /// No icon when null.
+  final IconData? icon;
   final String title;
   final String? body;
   final Widget? action;
+
+  /// Optional decorative header above the greeting.
+  final Widget? header;
 
   @override
   Widget build(BuildContext context) {
@@ -520,8 +530,14 @@ class NgEmpty extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 36, color: c.text3),
-            const SizedBox(height: 14),
+            if (header != null) ...[
+              header!,
+              SizedBox(height: icon == null ? 26 : 30),
+            ],
+            if (icon != null) ...[
+              Icon(icon, size: 36, color: c.text3),
+              const SizedBox(height: 14),
+            ],
             titleWidget ??
                 Text(
                   title,
@@ -583,6 +599,7 @@ Future<String?> ngPromptText(
   final controller = TextEditingController(text: initial);
   final result = await showDialog<String>(
     context: context,
+    useRootNavigator: false,
     builder: (context) => AlertDialog(
       title: Text(title),
       content: TextField(
@@ -616,6 +633,7 @@ Future<bool> ngConfirm(
   final c = NgColors.of(context);
   final ok = await showDialog<bool>(
     context: context,
+    useRootNavigator: false,
     builder: (context) => AlertDialog(
       title: Text(title),
       content: Text(body),
@@ -639,18 +657,24 @@ Future<bool> ngConfirm(
 String ngAgo(DateTime? time) {
   if (time == null) return '';
   final d = DateTime.now().difference(time);
-  if (d.inSeconds < 60) return 'now';
-  if (d.inMinutes < 60) return '${d.inMinutes}m';
-  if (d.inHours < 24) return '${d.inHours}h';
-  if (d.inDays < 7) return '${d.inDays}d';
-  if (d.inDays < 365) return '${(d.inDays / 7).floor()}w';
-  return '${(d.inDays / 365).floor()}y';
+  if (d.inSeconds < 60) return ngL.now_label;
+  if (d.inMinutes < 60) return ngL.ng_release_age_minutes(d.inMinutes);
+  if (d.inHours < 24) return ngL.ng_release_age_hours(d.inHours);
+  if (d.inDays < 7) return ngL.ng_release_age_days(d.inDays);
+  if (d.inDays < 365) return ngL.ng_release_age_weeks((d.inDays / 7).floor());
+  return ngL.ng_release_age_years((d.inDays / 365).floor());
 }
 
 String ngCompactNumber(num n) {
-  if (n >= 1e9) return '${(n / 1e9).toStringAsFixed(1)}B';
-  if (n >= 1e6) return '${(n / 1e6).toStringAsFixed(1)}M';
-  if (n >= 1e3) return '${(n / 1e3).toStringAsFixed(1)}k';
+  if (n >= 1e9) {
+    return ngL.ng_release_compact_billions((n / 1e9).toStringAsFixed(1));
+  }
+  if (n >= 1e6) {
+    return ngL.ng_release_compact_millions((n / 1e6).toStringAsFixed(1));
+  }
+  if (n >= 1e3) {
+    return ngL.ng_release_compact_thousands((n / 1e3).toStringAsFixed(1));
+  }
   return n.toStringAsFixed(n is int ? 0 : 0);
 }
 

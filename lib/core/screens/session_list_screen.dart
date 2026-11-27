@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/session_search_hit.dart';
@@ -27,6 +28,8 @@ import 'skills_screen.dart';
 import 'workspace_screen.dart';
 
 import 'package:hermes_android/core/l10n/l10n.dart';
+import '../l10n/ui_message_exception.dart';
+import '../l10n/service_strings.dart';
 
 export '../widgets/session_name_dialog.dart' show showSessionNameDialog;
 
@@ -241,9 +244,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
   /// Namespaces stored search preferences, matching the chat model override
   /// convention so two connections to the same host stay independent.
   String get _searchConnectionIdentity =>
-      '${widget.connection.baseUrl}|'
-      '${widget.connection.gatewayPrefix ?? ''}|'
-      '${widget.connection.desktopGatewayUrl ?? ''}';
+      sessionSearchIdentity(widget.connection);
 
   /// Server search reaches the dashboard, which the gateway connection alone
   /// does not guarantee is reachable.
@@ -260,6 +261,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
     final created = SessionSearchClient(
       baseUrl: dashboard.baseUrl,
       headers: dashboard.authHeaders,
+      profile: dashboard.gatewayProfile,
       clientCertificate: widget.connection.clientCertificate,
       httpClient: widget.testHttpClient,
     );
@@ -269,6 +271,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
   }
 
   Future<void> _setSearchMode(SessionSearchMode mode) async {
+    final releaseStrings = context.sharedL10n;
     if (mode == _searchMode) return;
     if (mode == SessionSearchMode.ai && _aiSearchModel == null) {
       final selected = await _showAiModelSelector();
@@ -282,11 +285,24 @@ class _SessionListScreenState extends State<SessionListScreen> {
       _serverQuery = '';
       _aiRewrittenQuery = null;
     });
-    await _searchPreferences?.saveMode(
-      connectionIdentity: _searchConnectionIdentity,
-      mode: mode,
-    );
-    if (mode != SessionSearchMode.local) {
+    try {
+      await _searchPreferences?.saveMode(
+        connectionIdentity: _searchConnectionIdentity,
+        mode: mode,
+      );
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              releaseStrings
+                  .release_core_session_search_mode_menu_could_not_save_search_mode,
+            ),
+          ),
+        );
+      }
+    }
+    if (mounted && _searchMode == mode && mode != SessionSearchMode.local) {
       _onSearchChanged(_searchController.text);
     }
   }
@@ -333,13 +349,14 @@ class _SessionListScreenState extends State<SessionListScreen> {
   }
 
   Future<AiSearchModel?> _showAiModelSelector() async {
+    final releaseStrings = mounted ? context.sharedL10n : serviceStrings;
     if (_loadingAiModels) return null;
     setState(() => _loadingAiModels = true);
     try {
       final options = await _client.getModelOptions();
       final choices = AiSearchModel.configuredFromOptions(options);
       if (choices.isEmpty) {
-        throw StateError('Hermes returned no configured selectable models.');
+        throw UiMessageException(releaseStrings.release_core_search_no_models);
       }
 
       if (!mounted) return null;
@@ -847,11 +864,14 @@ class _SessionListScreenState extends State<SessionListScreen> {
     bool archived, {
     bool rowActionOwned = false,
   }) async {
+    final releaseStrings = mounted ? context.sharedL10n : serviceStrings;
     if (!mounted ||
         session.isLocalDraft ||
         (!rowActionOwned && _hasRowAction(session)) ||
         !_archivingSessionIds.add(session.id)) {
-      throw StateError('Chat archive action is unavailable.');
+      throw UiMessageException(
+        releaseStrings.release_core_chat_archive_unavailable,
+      );
     }
     setState(() {
       if (!rowActionOwned) _rowActionSessions[session.id] = session;
@@ -966,6 +986,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
 
   /// Pins or unpins through the server flag Hermes Desktop also uses.
   Future<void> _togglePin(Session session) async {
+    final releaseStrings = mounted ? context.sharedL10n : serviceStrings;
     final current = isPinnedChat(session);
     // Pin needs a saved, unarchived row whose pin state the server reported.
     if (session.isLocalDraft ||
@@ -981,7 +1002,11 @@ class _SessionListScreenState extends State<SessionListScreen> {
         pinned: pinned,
       );
       if (!mounted) return;
-      if (confirmed != pinned) throw StateError('Pin state was not confirmed');
+      if (confirmed != pinned) {
+        throw UiMessageException(
+          releaseStrings.release_core_chat_pin_unconfirmed,
+        );
+      }
       setState(() => _recordSessionPin(session, confirmed));
     } catch (error) {
       if (!mounted) return;
@@ -1282,21 +1307,27 @@ class _SessionListScreenState extends State<SessionListScreen> {
       return saved;
     }
 
-    await Navigator.push<void>(
-      context,
-      MaterialPageRoute(
-        settings: const RouteSettings(name: '/classic-session-chat'),
-        builder: (_) =>
-            widget.testSessionScreenBuilder?.call(session) ??
-            widget.testChatScreenBuilder?.call(session, archive) ??
-            ChatScreen(
-              connection: widget.connection,
-              session: session,
-              turnApplicationController: widget.turnApplicationController,
-              sessionArchiver: archive,
-            ),
-      ),
+    late final MaterialPageRoute<void> route;
+    route = MaterialPageRoute(
+      settings: const RouteSettings(name: '/classic-session-chat'),
+      builder: (_) =>
+          widget.testSessionScreenBuilder?.call(session) ??
+          widget.testChatScreenBuilder?.call(session, archive) ??
+          ChatScreen(
+            connection: widget.connection,
+            session: session,
+            turnApplicationController: widget.turnApplicationController,
+            sessionArchiver: archive,
+            // /resume opens the pick the way this list opens a row: in
+            // place of this chat, with the same controller and archive path.
+            onOpenSession: (picked) async {
+              if (!mounted) return;
+              if (route.isActive) Navigator.of(context).removeRoute(route);
+              await _openSession(picked);
+            },
+          ),
     );
+    await Navigator.push<void>(context, route);
     routeOpen = false;
     if (!mounted) return;
     await _refreshSessionProjections();

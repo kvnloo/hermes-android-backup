@@ -1,3 +1,5 @@
+import '../l10n/service_strings.dart';
+
 enum GatewayReasoningEventMode { append, replace }
 
 class GatewayReasoningUpdate {
@@ -98,9 +100,11 @@ class GatewayNotice {
   String get title => switch (kind) {
     GatewayNoticeKind.background =>
       taskId == null
-          ? 'Background task completed'
-          : 'Background task $taskId completed',
-    GatewayNoticeKind.review => 'Hermes review',
+          ? serviceStrings.rel_svc_misc_background_task_completed
+          : serviceStrings.rel_svc_misc_background_task_named_completed(
+              taskId!,
+            ),
+    GatewayNoticeKind.review => serviceStrings.rel_svc_misc_hermes_review,
   };
 
   static GatewayNotice? fromGatewayEvent(

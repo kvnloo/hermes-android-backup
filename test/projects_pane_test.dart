@@ -97,6 +97,8 @@ class _FakeGateway {
           id: 'srv-${projects.length + 1}',
           name: params['name'] as String,
         );
+        final idea = params['description'];
+        if (idea is String && idea.isNotEmpty) created['description'] = idea;
         projects = [...projects, created];
         return _ok({'project': created});
       case 'projects.update':
@@ -497,11 +499,20 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(find.byKey(const Key('project-name')), 'C-MAY');
+    await tester.enterText(
+      find.byKey(const Key('project-idea')),
+      'Ship the lane',
+    );
     await tester.tap(find.text('Create'));
     await tester.pumpAndSettle();
 
     expect(find.text('C-MAY'), findsOneWidget);
     expect(gateway.projects.single['name'], 'C-MAY');
+    expect(gateway.projects.single['description'], 'Ship the lane');
+    expect(
+      find.text('Project created, but the gateway did not confirm its idea.'),
+      findsNothing,
+    );
   });
 
   testWidgets('refuses to create a project with a blank name', (tester) async {

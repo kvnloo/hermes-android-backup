@@ -13,8 +13,19 @@ import 'package:flutter/foundation.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../services/shortcuts_store.dart' as shortcuts_store;
+
 /// Primary desktop actions exposed by the shells.
-enum DesktopShortcut { newChat, search, settings, tab1, tab2, tab3, tab4 }
+enum DesktopShortcut {
+  commandPalette,
+  newChat,
+  search,
+  settings,
+  tab1,
+  tab2,
+  tab3,
+  tab4,
+}
 
 /// Broadcast bus between [DesktopShortcuts] and the active shell.
 final StreamController<DesktopShortcut> desktopShortcutBus =
@@ -25,54 +36,88 @@ void fireDesktopShortcut(DesktopShortcut shortcut) {
   if (!desktopShortcutBus.isClosed) desktopShortcutBus.add(shortcut);
 }
 
+/// Whether the in-app keyboard shortcuts fire on [platform]: the desktop
+/// runners only. On Android and iOS [DesktopShortcuts] is a passthrough, so
+/// Settings hides the shortcuts card there instead of offering bindings that
+/// can never fire.
+bool desktopShortcutsAvailable([TargetPlatform? platform]) =>
+    switch (platform ?? defaultTargetPlatform) {
+      TargetPlatform.macOS ||
+      TargetPlatform.linux ||
+      TargetPlatform.windows => true,
+      _ => false,
+    };
+
 /// Wraps [child] with desktop shortcut bindings when running on a desktop
 /// platform. Pass [forceEnabled] in tests to exercise the bindings without
 /// changing the process-wide target platform.
 class DesktopShortcuts extends StatelessWidget {
-  const DesktopShortcuts({required this.child, this.forceEnabled, super.key});
+  const DesktopShortcuts({
+    required this.child,
+    this.store,
+    this.forceEnabled,
+    super.key,
+  });
 
   final Widget child;
+  final shortcuts_store.ShortcutsStore? store;
 
   /// Overrides the platform gate. Null uses the real target platform.
   final bool? forceEnabled;
 
-  static bool _isDesktop(TargetPlatform platform) =>
-      platform == TargetPlatform.macOS ||
-      platform == TargetPlatform.linux ||
-      platform == TargetPlatform.windows;
+  bool get _enabled => forceEnabled ?? desktopShortcutsAvailable();
 
-  bool get _enabled => forceEnabled ?? _isDesktop(defaultTargetPlatform);
+  static DesktopShortcut _shortcutFor(shortcuts_store.ShortcutAction action) =>
+      switch (action) {
+        shortcuts_store.ShortcutAction.commandPalette =>
+          DesktopShortcut.commandPalette,
+        shortcuts_store.ShortcutAction.newChat => DesktopShortcut.newChat,
+        shortcuts_store.ShortcutAction.search => DesktopShortcut.search,
+        shortcuts_store.ShortcutAction.settings => DesktopShortcut.settings,
+        shortcuts_store.ShortcutAction.tab1 => DesktopShortcut.tab1,
+        shortcuts_store.ShortcutAction.tab2 => DesktopShortcut.tab2,
+        shortcuts_store.ShortcutAction.tab3 => DesktopShortcut.tab3,
+        shortcuts_store.ShortcutAction.tab4 => DesktopShortcut.tab4,
+      };
+
+  static SingleActivator _activatorFor(shortcuts_store.KeyChord chord) =>
+      SingleActivator(
+        chord.key,
+        meta: chord.meta,
+        control: chord.ctrl,
+        shift: chord.shift,
+        alt: chord.alt,
+      );
+
+  Map<ShortcutActivator, VoidCallback> _buildBindings() {
+    // One plan for the key handler and Settings: the same chords that fire
+    // here are the ones the conflict check sees (including the Windows/Linux
+    // Ctrl twins), and a custom chord that collides falls back to its default.
+    final plan =
+        store?.plan(platform: defaultTargetPlatform) ??
+        shortcuts_store.ShortcutPlan.resolve(
+          const <String, String>{},
+          defaultTargetPlatform,
+        );
+    return {
+      for (final binding in plan.bindings)
+        _activatorFor(binding.chord): () =>
+            fireDesktopShortcut(_shortcutFor(binding.action)),
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
     if (!_enabled) return child;
 
-    final meta = <ShortcutActivator, VoidCallback>{
-      SingleActivator(LogicalKeyboardKey.keyN, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.newChat),
-      SingleActivator(LogicalKeyboardKey.keyN, control: true): () =>
-          fireDesktopShortcut(DesktopShortcut.newChat),
-      SingleActivator(LogicalKeyboardKey.keyK, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.search),
-      SingleActivator(LogicalKeyboardKey.keyF, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.search),
-      SingleActivator(LogicalKeyboardKey.keyF, control: true): () =>
-          fireDesktopShortcut(DesktopShortcut.search),
-      SingleActivator(LogicalKeyboardKey.comma, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.settings),
-      SingleActivator(LogicalKeyboardKey.digit1, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.tab1),
-      SingleActivator(LogicalKeyboardKey.digit2, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.tab2),
-      SingleActivator(LogicalKeyboardKey.digit3, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.tab3),
-      SingleActivator(LogicalKeyboardKey.digit4, meta: true): () =>
-          fireDesktopShortcut(DesktopShortcut.tab4),
-    };
-
-    return Focus(
-      autofocus: true,
-      child: CallbackShortcuts(bindings: meta, child: child),
+    return ValueListenableBuilder<int>(
+      valueListenable: shortcuts_store.shortcutsStoreChanges,
+      builder: (context, _, _) {
+        return CallbackShortcuts(
+          bindings: _buildBindings(),
+          child: Focus(autofocus: true, includeSemantics: false, child: child),
+        );
+      },
     );
   }
 }
@@ -83,12 +128,14 @@ class SendOnEnter extends StatelessWidget {
   const SendOnEnter({
     required this.child,
     required this.onSend,
+    this.onNavigate,
     this.enabled = true,
     super.key,
   });
 
   final Widget child;
   final VoidCallback onSend;
+  final KeyEventResult Function(KeyEvent)? onNavigate;
   final bool enabled;
 
   @override
@@ -98,7 +145,7 @@ class SendOnEnter extends StatelessWidget {
         onSend();
         return KeyEventResult.handled;
       }
-      return KeyEventResult.ignored;
+      return onNavigate?.call(event) ?? KeyEventResult.ignored;
     },
     child: child,
   );

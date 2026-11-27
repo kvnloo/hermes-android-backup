@@ -68,7 +68,7 @@ class _NgInsightsPageState extends State<NgInsightsPage> {
           NgSegmented<int>(
             values: const [7, 30, 90],
             selected: _days,
-            labelOf: (d) => '$d days',
+            labelOf: (d) => ngL.ng_release_insights_days(d),
             onChanged: (d) {
               setState(() => _days = d);
               _load();

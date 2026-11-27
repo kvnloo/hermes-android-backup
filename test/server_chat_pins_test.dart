@@ -635,7 +635,7 @@ void main() {
       };
       final preferences = await SessionSearchPreferences.open();
       await preferences.saveMode(
-        connectionIdentity: '${connection.baseUrl}||',
+        connectionIdentity: sessionSearchIdentity(connection),
         mode: SessionSearchMode.server,
       );
       await tester.pumpWidget(screen(host));

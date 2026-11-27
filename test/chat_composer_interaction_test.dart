@@ -97,6 +97,53 @@ void main() {
   setUp(mockChatImageRecovery);
   setUp(() => SharedPreferences.setMockInitialValues({'verbose_mode': false}));
 
+  testWidgets(
+    'sent audio keeps its gateway playback reference before history hydration',
+    (tester) async {
+      final submitted = <String>[];
+      await _pumpChat(
+        tester,
+        attachments: [
+          AttachmentDraft(
+            id: 'audio',
+            cachedPath: '/private/synthetic-audio.bin',
+            name: 'clip.wav',
+            byteLength: 3,
+            mediaType: 'audio/wav',
+            kind: AttachmentDraftKind.genericFile,
+          ),
+        ],
+        upload: ({required draft, required dataUrl}) async =>
+            const AttachmentUploadReceipt(refText: '@file:/gateway/clip.wav'),
+        remoteSubmit:
+            ({
+              required sessionId,
+              required text,
+              required onEvent,
+              required onSent,
+            }) async {
+              onSent();
+              submitted.add(text);
+            },
+      );
+      expect(submitted, isEmpty);
+      await tester.enterText(find.byKey(_composerKey), 'Listen');
+      await tester.tap(find.byTooltip('Send'));
+      await pumpChatUpdates(tester);
+      expect(submitted, ['Listen\n\n@file:/gateway/clip.wav']);
+      expect(
+        find.byKey(const Key('media-card-/gateway/clip.wav')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('attachment-audio-play-pause')),
+        findsOneWidget,
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      await pumpChatUpdates(tester);
+    },
+  );
+
   testWidgets('Enter inserts a newline; only the send button submits', (
     tester,
   ) async {

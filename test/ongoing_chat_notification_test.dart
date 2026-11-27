@@ -704,7 +704,7 @@ void main() {
   );
 
   test('plain notifications retain backward-compatible flags', () {
-    const notice = TurnNotification(
+    final notice = TurnNotification(
       id: 1,
       title: 't',
       body: 'b',

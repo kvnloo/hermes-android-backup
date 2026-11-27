@@ -149,6 +149,9 @@ class HermesShellState extends State<HermesShell> {
   /// Public tab switch used by desktop keyboard shortcuts (Cmd+1..4).
   void select(HermesDestination destination) => _select(destination);
 
+  /// The destination currently shown.
+  HermesDestination get current => _current;
+
   void _select(HermesDestination destination) {
     // Re-tapping the active destination is a no-op rather than a rebuild or a
     // duplicate notification: callers use the callback for analytics/state.

@@ -182,7 +182,7 @@ class _NgScheduledPageState extends State<NgScheduledPage> {
                                     )
                                   : ngL.ng_last_2(
                                       ngWhen(ngParseTime(job['last_run_at'])),
-                                      last,
+                                      ngScheduledStatusLabel(last),
                                     ),
                           ].join('   '),
                           style: NgType.caption.copyWith(
@@ -200,6 +200,18 @@ class _NgScheduledPageState extends State<NgScheduledPage> {
     );
   }
 }
+
+String ngScheduledStatusLabel(String status) => switch (status) {
+  'success' || 'ok' || 'done' || 'completed' => ngL.status_completed,
+  'error' || 'failed' => ngL.status_failed,
+  'running' => ngL.status_running,
+  'paused' => ngL.ng_paused,
+  'idle' => ngL.status_idle,
+  'skipped' => ngL.catalog_skipped,
+  'interrupted' => ngL.task_status_interrupted,
+  'cancelled' || 'canceled' => ngL.task_status_cancelled,
+  _ => ngL.task_status_unknown(status),
+};
 
 String _jobName(Map<String, dynamic> job) {
   final name = job['name']?.toString().trim() ?? '';

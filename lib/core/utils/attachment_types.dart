@@ -20,6 +20,11 @@ bool attachmentIsImageAsset(String extension) =>
 bool attachmentIsAudio(String extension) => const {
   'mp3',
   'm2a',
+  'aac',
+  'aif',
+  'aiff',
+  'caf',
+  'wma',
   'wav',
   'ogg',
   'opus',

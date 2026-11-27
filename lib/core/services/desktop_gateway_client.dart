@@ -2,16 +2,23 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/client_certificate.dart';
 import '../models/slash_command.dart';
 import 'capability_registry.dart';
+import 'composer_session_rpc.dart';
 import 'connection_manager.dart';
 import 'gateway_turn_coordinator.dart';
 import 'gateway_turn_journal.dart';
+import 'gateway_wake_word.dart';
+import 'gpt_live_conversation.dart';
 import 'projects_gateway_client.dart';
+import 'remote_workspace.dart';
+import 'voice_live_mode.dart';
 import 'ws_client.dart';
+import 'system_sleep_gate.dart';
 
 typedef DesktopAsyncEventCallback =
     void Function(String mobileSessionId, StreamEvent event);
@@ -26,12 +33,37 @@ enum DesktopConnectionState {
   reconnecting,
 }
 
+/// Clients that serve the gateway voice surface (`wake.*`, voice mode and
+/// GPT-Live): each client this file constructs, until it is closed. Kept
+/// outside the class, as [SlashCommandConnectionMemory] keeps its refusals,
+/// so a stand-in that implements [DesktopGatewayClient] for a chat's turns
+/// only is a client without voice rather than one that throws on first use.
+final Expando<bool> _servesVoice = Expando('DesktopGatewayClient voice');
+
+/// Voice a chat may use but must never need: a chat opens on a client
+/// without it, and shows no wake or voice-mode controls there.
+extension DesktopGatewayVoice on DesktopGatewayClient {
+  /// The wake-word controller, or null when this client serves no gateway
+  /// voice (it is closed, or a stand-in): wake is then not offered.
+  GatewayWakeWordController? get servedWakeWord =>
+      _servesVoice[this] == true ? wakeWord : null;
+
+  /// The GPT-Live / Chained mode controller, or null as for
+  /// [servedWakeWord].
+  VoiceLiveModeController? get servedVoiceLiveMode =>
+      _servesVoice[this] == true ? voiceLiveMode : null;
+}
+
 /// Authenticated JSON-RPC transport for a Hermes Desktop remote gateway.
 ///
 /// The mobile OpenAI-compatible endpoint remains available for legacy
 /// profiles. When a connection supplies [SavedConnection.desktopGatewayUrl],
 /// chat writes and interactive events use this one Desktop session transport.
-class DesktopGatewayClient implements SlashCommandGateway {
+class DesktopGatewayClient implements SlashCommandGateway, ComposerSessionRpc {
+  /// How long a new socket waits for `gateway.ready` before its first
+  /// request. Every current gateway greets at once.
+  static const gatewayReadyGrace = Duration(seconds: 3);
+
   static final _localServerRequestKey = RegExp(
     r'^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\.[0-9]+\.[0-9]+:',
   );
@@ -46,7 +78,16 @@ class DesktopGatewayClient implements SlashCommandGateway {
   /// let the server use its own. See [SavedConnection.gatewayProfile].
   final String? _gatewayProfile;
   final ClientCertificateConfig? _clientCertificate;
+  final Map<String, String> _customHeaders;
   WsClient? _ws;
+  bool get sessionAuthority => _ws?.sessionAuthority == true;
+  bool get isSocketConnected => !_closed && _ws?.isConnected == true;
+  String get connectionId => _connectionId;
+  String? get gatewayProfile => _gatewayProfile;
+  final _gatewayEvents = StreamController<StreamEvent>.broadcast();
+  final _socketReady = StreamController<void>.broadcast();
+  Stream<StreamEvent> get gatewayEvents => _gatewayEvents.stream;
+  Stream<void> get socketReady => _socketReady.stream;
   Future<WsClient>? _socketInFlight;
   Timer? _reconnectTimer;
   int _reconnectAttempts = 0;
@@ -76,10 +117,37 @@ class DesktopGatewayClient implements SlashCommandGateway {
   GatewayTurnSessionBoundCallback? _sessionCreatedListener;
   GatewayTurnCoordinatorRegistry? _turnCoordinatorRegistry;
   ProjectsGatewayClient? _projects;
+  GatewayWakeWordController? _wakeWord;
+  VoiceLiveModeController? _voiceLiveMode;
   final CapabilityRegistry _capabilities = CapabilityRegistry();
+
+  /// Gateway-backed wake-word controller scoped to this connection/profile.
+  GatewayWakeWordController get wakeWord =>
+      _wakeWord ??= GatewayWakeWordController(
+        transport: GatewayWakeTransport.fromDesktop(this),
+      );
+
+  /// Gateway-backed GPT-Live / Chained mode controller for this profile.
+  VoiceLiveModeController get voiceLiveMode =>
+      _voiceLiveMode ??= VoiceLiveModeController.fromDesktop(this);
+
+  @visibleForTesting
+  set debugVoiceLiveMode(VoiceLiveModeController? controller) {
+    _voiceLiveMode?.dispose();
+    _voiceLiveMode = controller;
+  }
+
+  /// Non-owning GPT-Live REST transport sharing this gateway's dashboard auth.
+  GptLiveTransport createGptLiveTransport() =>
+      GptLiveGatewayTransport.fromDashboard(
+        _dashboard,
+        profile: _gatewayProfile,
+      );
 
   static const _asyncEventTypes = {
     'background.complete',
+    // The answer to /btw arrives only as this event (Desktop's dispatcher).
+    'btw.complete',
     'review.summary',
     'notification.show',
     'notification.clear',
@@ -105,7 +173,78 @@ class DesktopGatewayClient implements SlashCommandGateway {
     required this._dashboard,
     this._gatewayProfile,
     this._clientCertificate,
-  });
+    this._customHeaders = const <String, String>{},
+  }) {
+    workspace = RemoteWorkspaceOwner(
+      connectionId: _connectionId,
+      expectedBaseUrl: _baseUrl,
+      profile: _gatewayProfile,
+      dashboard: _dashboard,
+      connect: _ensureSocket,
+      ownsSocket: _ownsSocket,
+    );
+    SystemSleepGate.instance.addListener(_onSystemSleep);
+    _servesVoice[this] = true;
+  }
+
+  late final RemoteWorkspaceOwner workspace;
+
+  /// True while the computer sleeps or the session is locked: the socket is
+  /// closed and nothing reconnects until [SystemSleepGate] clears.
+  bool _systemPaused = false;
+  bool _reconnectAfterPause = false;
+
+  void _onSystemSleep() {
+    if (_closed) return;
+    final paused = SystemSleepGate.instance.value;
+    if (paused == _systemPaused) return;
+    _systemPaused = paused;
+    if (paused) {
+      // Only a client that had a live socket reconnects on its own later;
+      // an idle client reconnects lazily on its next call.
+      _reconnectAfterPause =
+          _ws?.isConnected == true ||
+          _socketInFlight != null ||
+          _reconnectTimer != null;
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
+      _reconnectAttempts = 0;
+      final ws = _ws;
+      if (ws != null) {
+        // Report the drop like a lost connection; stored session ids stay,
+        // so the next socket re-binds each with session.resume.
+        _ws = null;
+        _gatewaySessionIds.clear();
+        ws.close();
+        _connectionListener?.call(DesktopConnectionState.disconnected);
+      }
+      return;
+    }
+    // A background policy that holds reconnects keeps the request until
+    // setReconnectAllowed(true).
+    if (!_reconnectAfterPause || !_reconnectAllowed) return;
+    _reconnectAfterPause = false;
+    _reconnectNow();
+  }
+
+  void _checkNotPaused() {
+    if (_systemPaused) {
+      throw StateError('Paused while the computer sleeps.');
+    }
+  }
+
+  void _reconnectNow() {
+    _ensureSocket().then<void>(
+      (_) {},
+      onError: (Object _) {
+        if (!_closed && !_systemPaused) _scheduleReconnect();
+      },
+    );
+  }
+
+  /// The terminal executor reported by the live resume binding, if any.
+  String? boundTerminalBackend(String storedSessionId) =>
+      _ws?.workspaceBinding(storedSessionId)?.backend;
 
   void _checkOpen() {
     if (_closed) throw StateError('DesktopGatewayClient is closed.');
@@ -207,9 +346,12 @@ class DesktopGatewayClient implements SlashCommandGateway {
         password: connection.dashboardPassword,
         gatewayProfile: connection.gatewayProfile,
         clientCertificate: connection.clientCertificate,
+        deploymentToken: connection.deploymentToken,
+        customHeaders: connection.customHeaders,
       ),
       gatewayProfile: connection.gatewayProfile,
       clientCertificate: connection.clientCertificate,
+      customHeaders: connection.customHeaders,
     );
   }
 
@@ -300,6 +442,11 @@ class DesktopGatewayClient implements SlashCommandGateway {
   /// bridge attached.
   Future<WsClient> _ensureSocket({Future<bool> Function()? beforeRequest}) {
     _checkOpen();
+    if (_systemPaused) {
+      // No network while the computer sleeps or the session is locked; a
+      // caller retries after resume instead of racing the suspend.
+      return Future.error(StateError('Paused while the computer sleeps.'));
+    }
     final existing = _ws;
     if (existing != null && existing.isConnected) {
       return Future.value(existing);
@@ -340,16 +487,21 @@ class DesktopGatewayClient implements SlashCommandGateway {
     // on the new socket re-populates protocol/advertisement.
     _capabilities.reset();
     _checkOpen();
-    final ticket = await _dashboard.mintWebSocketTicket();
+    final deploymentToken = _dashboard.deploymentToken;
+    final ticket = deploymentToken != null
+        ? null
+        : await _dashboard.mintWebSocketTicket();
     if (beforeRequest != null && !await beforeRequest()) {
       throw StateError('Notification admission revoked');
     }
     _checkOpen();
-    final client = WsClient(
-      _baseUrl,
+    // The computer slept or the session locked while the ticket was minted:
+    // do not open a socket during the pause. The pause remembered this dial
+    // and reconnects when it lifts.
+    _checkNotPaused();
+    final client = _socketClient(
+      deploymentToken: deploymentToken,
       ticket: ticket,
-      profile: _gatewayProfile,
-      clientCertificate: _clientCertificate,
     );
     _installAsyncEventBridge(client);
     final inheritedConnectionListener = client.onConnectionChanged;
@@ -392,10 +544,23 @@ class DesktopGatewayClient implements SlashCommandGateway {
     };
     try {
       await client.connect();
+      // The greeting says whether this gateway is a session authority
+      // (Hermes 0.23+), and every request is shaped by that. It arrives
+      // just after the upgrade; a request written before it would go out in
+      // the legacy shape and be refused. A gateway that never greets is
+      // served the legacy shapes after a short wait.
+      try {
+        await client.waitForGatewayReady(timeout: gatewayReadyGrace);
+      } on TimeoutException {
+        // No greeting: an older gateway.
+      }
       if (_closed) {
         client.close();
         throw StateError('DesktopGatewayClient is closed.');
       }
+      // A dial in flight when the pause began must not leave a live socket
+      // behind it: close it and let the wake reconnect.
+      _checkNotPaused();
       _ws = client;
       return client;
     } catch (_) {
@@ -412,7 +577,12 @@ class DesktopGatewayClient implements SlashCommandGateway {
   /// detached-turn recovery has no safe deadline after which a reply may be
   /// abandoned. The delay remains capped so a long outage does not spin.
   void _scheduleReconnect() {
-    if (_closed || !_reconnectAllowed || _reconnectTimer != null) return;
+    if (_closed ||
+        _systemPaused ||
+        !_reconnectAllowed ||
+        _reconnectTimer != null) {
+      return;
+    }
     _reconnectAttempts++;
     final exponent = _reconnectAttempts.clamp(1, 5);
     final delay = Duration(seconds: (1 << (exponent - 1)).clamp(2, 30));
@@ -489,7 +659,10 @@ class DesktopGatewayClient implements SlashCommandGateway {
       _checkSocket(client);
       // Known durable chats never silently become new chats on reconnect.
       if (_resumeOnlySessions.contains(mobileSessionId)) rethrow;
+      // A session-authority gateway names an unknown id `not_found` (4001);
+      // the legacy sidecar answers 4007 "session not found".
       if (error.code != 4007 &&
+          error.reason != 'not_found' &&
           !error.message.toLowerCase().contains('session not found')) {
         rethrow;
       }
@@ -618,6 +791,11 @@ class DesktopGatewayClient implements SlashCommandGateway {
   /// (`_sess_nowait`, 4001), so this is a recoverable stale-binding, not a
   /// hard failure.
   static bool _isStaleRuntimeSession(JsonRpcError error) {
+    // A session-authority gateway answers every refusal with 4001 and names
+    // the reason: only `not_found` means the runtime is gone. Re-resuming
+    // and resending on `session_busy` or `invalid_params` would repeat a
+    // request the owner already refused.
+    if (error.reason != null) return error.reason == 'not_found';
     if (error.code == 4001) return true;
     final message = error.message.toLowerCase();
     return message.contains('session not found') ||
@@ -758,6 +936,9 @@ class DesktopGatewayClient implements SlashCommandGateway {
     if (!allowed) {
       _reconnectTimer?.cancel();
       _reconnectTimer = null;
+    } else if (_reconnectAfterPause && !_systemPaused) {
+      _reconnectAfterPause = false;
+      _reconnectNow();
     }
   }
 
@@ -774,6 +955,32 @@ class DesktopGatewayClient implements SlashCommandGateway {
   /// reuse this connection's cached auth and single-flight login instead of
   /// standing up a second unauthenticated HTTP client.
   DashboardClient get dashboard => _dashboard;
+
+  /// One control-plane JSON-RPC call on this connection's socket.
+  ///
+  /// Opens the socket when the workspace has not connected yet. The call stays
+  /// on this client, so a profile name cannot hop to another machine.
+  @override
+  Future<Map<String, dynamic>> call(
+    String method,
+    Map<String, dynamic> params, {
+    Duration timeout = const Duration(seconds: 45),
+  }) async {
+    final client = await _ensureSocket();
+    final response = await client.send(method, params, timeout: timeout);
+    final error = response['error'];
+    if (error != null) {
+      throw JsonRpcError.fromGateway(
+        method,
+        error is Map ? Map<dynamic, dynamic>.from(error) : const {},
+        fallbackMessage: 'The gateway refused $method.',
+      );
+    }
+    final result = response['result'];
+    if (result is Map<String, dynamic>) return result;
+    if (result is Map) return Map<String, dynamic>.from(result);
+    return <String, dynamic>{};
+  }
 
   /// Server-owned Hermes Projects for this gateway.
   ///
@@ -796,8 +1003,39 @@ class DesktopGatewayClient implements SlashCommandGateway {
   /// gateway instead of failing.
   CapabilityRegistry get capabilities => _capabilities;
 
+  /// Presence never starts a connection or creates a missing chat.
+  (WsClient, String)? presenceFor(String localSessionId) {
+    final ws = _ws;
+    final id = _gatewaySessionIds[localSessionId];
+    return ws != null && _ownsSocket(ws) && id != null ? (ws, id) : null;
+  }
+
   /// Opens (or reuses) the gateway socket without binding it to a session.
   Future<WsClient> _connectControl() => _ensureSocket();
+
+  /// The gateway socket, authenticated the way Hermes Desktop does it. A
+  /// deployment-token connection puts the token in `?token=`, which loopback,
+  /// `--insecure` and gated gateways all accept (a loopback gateway cannot
+  /// mint `POST /api/auth/ws-ticket` tickets); every other connection spends
+  /// a single-use ticket in the subprotocol. The upgrade never follows a
+  /// redirect either way.
+  WsClient _socketClient({String? deploymentToken, String? ticket}) =>
+      deploymentToken != null
+      ? WsClient(
+          _baseUrl,
+          token: deploymentToken,
+          profile: _gatewayProfile,
+          clientCertificate: _clientCertificate,
+          customHeaders: _customHeaders,
+        )
+      : WsClient(
+          _baseUrl,
+          ticket: ticket,
+          ticketInSubprotocol: true,
+          profile: _gatewayProfile,
+          clientCertificate: _clientCertificate,
+          customHeaders: _customHeaders,
+        );
 
   /// Creates the source-only recovery-v2 registry without changing any legacy
   /// session, submit, interrupt, or event route in this client.
@@ -812,13 +1050,14 @@ class DesktopGatewayClient implements SlashCommandGateway {
             journal: journal ?? GatewayTurnJournal(),
             freshSocketFactory: () async {
               _checkOpen();
-              final ticket = await _dashboard.mintWebSocketTicket();
+              final deploymentToken = _dashboard.deploymentToken;
+              final ticket = deploymentToken != null
+                  ? null
+                  : await _dashboard.mintWebSocketTicket();
               _checkOpen();
-              final client = WsClient(
-                _baseUrl,
+              final client = _socketClient(
+                deploymentToken: deploymentToken,
                 ticket: ticket,
-                profile: _gatewayProfile,
-                clientCertificate: _clientCertificate,
               );
               _installAsyncEventBridge(client);
               return client;
@@ -874,6 +1113,10 @@ class DesktopGatewayClient implements SlashCommandGateway {
     bool Function()? maySend,
     Future<bool> Function()? beforeSend,
     void Function()? onAccepted,
+    String? submissionId,
+    Future<void> Function()? beforeLegacy,
+    Future<void> Function(Object?, String)? onReceipt,
+    Map<String, Object?> extraParams = const {},
   }) async {
     var emitted = false;
     if (beforeSend != null && !await beforeSend()) {
@@ -894,6 +1137,10 @@ class DesktopGatewayClient implements SlashCommandGateway {
         return gateway.client.submitPrompt(
           text,
           sessionId: gateway.sessionId,
+          submissionId: submissionId,
+          beforeLegacy: beforeLegacy,
+          onReceipt: onReceipt,
+          extraParams: extraParams,
           onEvent: (event) {
             if (!_closed) onEvent(event);
           },
@@ -937,7 +1184,9 @@ class DesktopGatewayClient implements SlashCommandGateway {
     _capabilities.bindTo(client);
     final gatewayReady = client.onGatewayReady;
     client.onGatewayReady = (frame) {
-      if (!_closed) gatewayReady?.call(frame);
+      if (_closed) return;
+      gatewayReady?.call(frame);
+      if (!_socketReady.isClosed) _socketReady.add(null);
     };
     _serverRequestClientOrdinals.putIfAbsent(
       client,
@@ -947,6 +1196,7 @@ class DesktopGatewayClient implements SlashCommandGateway {
     client.onConnectionClosed = () => _forgetServerRequestsFrom(client);
     client.onStreamEvent = (event) {
       if (_closed) return;
+      if (!_gatewayEvents.isClosed) _gatewayEvents.add(event);
       final ownerSessionId = _mobileSessionIdFor(
         event.sessionId ?? event.data['session_id']?.toString(),
       );
@@ -1003,7 +1253,7 @@ class DesktopGatewayClient implements SlashCommandGateway {
 
   bool _handleServerRequest(WsClient client, GatewayServerRequest request) {
     if (_closed || !client.isConnected) return false;
-    const supported = {'clarify', 'approval', 'sudo', 'secret'};
+    const supported = {'clarify', 'approval', 'sudo', 'secret', 'setup_beat'};
     if (!supported.contains(request.method)) return false;
 
     final gatewaySessionId = request.params['session_id']?.toString();
@@ -1149,10 +1399,17 @@ class DesktopGatewayClient implements SlashCommandGateway {
     }
   }
 
-  /// Rejects requests that no mounted route can answer.
+  /// Rejects requests that no mounted route can answer. A `setup_beat` card
+  /// is not one of them: like the Desktop, which parks it per session and
+  /// shows it again on resume, it waits for its chat to be opened again
+  /// ([replayServerRequestsForSession]) until the backend withdraws it.
   void rejectServerRequestsForSession(String mobileSessionId) {
     final requestIds = _serverRequestMobileSessionIds.entries
-        .where((entry) => entry.value == mobileSessionId)
+        .where(
+          (entry) =>
+              entry.value == mobileSessionId &&
+              _serverRequests[entry.key]?.method != 'setup_beat',
+        )
         .map((entry) => entry.key)
         .toList(growable: false);
     for (final requestId in requestIds) {
@@ -1235,6 +1492,57 @@ class DesktopGatewayClient implements SlashCommandGateway {
   bool ownsServerRequest(String requestId, String method) =>
       _serverRequests[requestId]?.method == method;
 
+  /// Answers a connection operation card (`manage_catalog` rows) for the
+  /// chat [sessionId] with `connection.respond`, owned by that chat's
+  /// runtime session. False, with nothing sent, when the chat has no bound
+  /// runtime session here; false too when the gateway does not say ok.
+  Future<bool> respondToConnection({
+    required String sessionId,
+    required String opId,
+    required Map<String, dynamic> result,
+  }) async {
+    if (_closed) return false;
+    final runtime = _gatewaySessionIds[sessionId];
+    if (runtime == null || runtime.isEmpty || opId.isEmpty) return false;
+    final reply = await call('connection.respond', {
+      'owner': {'type': 'session', 'session_id': runtime},
+      'op_id': opId,
+      'result': result,
+    });
+    return reply['status'] == 'ok';
+  }
+
+  /// Answers the `setup_beat` card [requestId] for the chat [sessionId] on
+  /// the socket it arrived on. False, and nothing is sent, when the request
+  /// is no longer open here (answered, withdrawn, its socket gone) or
+  /// belongs to another chat. An answer that did not go out leaves the
+  /// request held ([holdsSetupBeat]), so the card can be answered again.
+  bool respondToSetupBeat({
+    required String sessionId,
+    required String requestId,
+    required Map<String, dynamic> result,
+  }) {
+    if (_closed) return false;
+    final request = _serverRequests[requestId];
+    final client = _serverRequestClients[requestId];
+    if (request?.method != 'setup_beat' ||
+        _serverRequestMobileSessionIds[requestId] != sessionId ||
+        client == null ||
+        !client.isConnected) {
+      return false;
+    }
+    if (!request!.respond(result)) return false;
+    _forgetServerRequest(requestId);
+    return true;
+  }
+
+  /// Whether the `setup_beat` card [requestId] of the chat [sessionId] is
+  /// still open here.
+  bool holdsSetupBeat({required String sessionId, required String requestId}) =>
+      !_closed &&
+      _serverRequests[requestId]?.method == 'setup_beat' &&
+      _serverRequestMobileSessionIds[requestId] == sessionId;
+
   /// Whether this client owns the active approval for [sessionId].
   ///
   /// When [requestId] is supplied, both identities must match. This lets a
@@ -1301,6 +1609,51 @@ class DesktopGatewayClient implements SlashCommandGateway {
       throw StateError('The Desktop gateway session is no longer connected');
     }
     return client.slashExec(gatewaySessionId, command, onSent: onSent);
+  }
+
+  /// Whether [mobileSessionId] is bound to a gateway session on the live
+  /// socket, so a session-scoped RPC ([requestSessionRpc]) can reach it.
+  @override
+  bool hasLiveSession(String mobileSessionId) {
+    final client = _ws;
+    if (_closed || client == null || !client.isConnected) return false;
+    return _gatewaySessionIds.containsKey(mobileSessionId) ||
+        _gatewaySessionIds.containsValue(mobileSessionId);
+  }
+
+  /// One session-scoped JSON-RPC. The local session id in [params] is
+  /// replaced with the bound gateway id. Missing methods surface as
+  /// [JsonRpcError] `-32601` so the caller can fall back to slash.exec.
+  @override
+  Future<Map<String, dynamic>> requestSessionRpc(
+    String method,
+    Map<String, dynamic> params,
+  ) async {
+    final requested = params['session_id']?.toString();
+    final gatewaySessionId = requested == null
+        ? null
+        : (_gatewaySessionIds[requested] ??
+              (_gatewaySessionIds.containsValue(requested) ? requested : null));
+    final client = _ws;
+    if (gatewaySessionId == null || client == null || !client.isConnected) {
+      throw StateError('The Desktop gateway session is no longer connected');
+    }
+    final response = await client.send(method, {
+      ...params,
+      'session_id': gatewaySessionId,
+    });
+    final error = response['error'];
+    if (error != null) {
+      throw JsonRpcError.fromGateway(
+        method,
+        error is Map ? Map<dynamic, dynamic>.from(error) : const {},
+        fallbackMessage: 'The gateway refused $method',
+      );
+    }
+    final result = response['result'];
+    if (result is Map<String, dynamic>) return result;
+    if (result is Map) return Map<String, dynamic>.from(result);
+    return const {};
   }
 
   /// Interrupts the active turn in the Desktop gateway runtime. On the
@@ -1478,6 +1831,12 @@ class DesktopGatewayClient implements SlashCommandGateway {
     return client;
   }
 
+  /// One JSON-RPC call on the already connected gateway socket.
+  /// Billing and chat presets use this; it does not open a new session.
+  Future<Map<String, dynamic>> rpc(String method, Map<String, dynamic> params) {
+    return _connectedClient().send(method, params);
+  }
+
   /// The profile-scoped catalog and default shown by Hermes Desktop.  Keeping
   /// these reads on the Dashboard endpoint means Android never guesses model
   /// names or providers from the OpenAI-compatible API.
@@ -1551,6 +1910,10 @@ class DesktopGatewayClient implements SlashCommandGateway {
     // Idempotent: a double close must not re-enter or corrupt state.
     if (_closed) return;
     _closed = true;
+    unawaited(_gatewayEvents.close());
+    unawaited(_socketReady.close());
+    SystemSleepGate.instance.removeListener(_onSystemSleep);
+    workspace.close();
     slashRefusals.reset();
     _reconnectTimer?.cancel();
     _reconnectTimer = null;
@@ -1561,6 +1924,13 @@ class DesktopGatewayClient implements SlashCommandGateway {
     _sessionCreatedListener = null;
     _connectionListener = null;
     _projects = null;
+    // A closed client serves no voice: a late read must not build a fresh
+    // controller on it.
+    _servesVoice[this] = null;
+    _wakeWord?.dispose();
+    _wakeWord = null;
+    _voiceLiveMode?.dispose();
+    _voiceLiveMode = null;
     _ws?.close();
     _ws = null;
     _gatewaySessionIds.clear();

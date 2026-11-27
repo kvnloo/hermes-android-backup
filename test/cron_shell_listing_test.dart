@@ -593,7 +593,7 @@ void main() {
       );
       final prefs = await SessionSearchPreferences.open();
       await prefs.saveMode(
-        connectionIdentity: '${connection.baseUrl}||',
+        connectionIdentity: sessionSearchIdentity(connection),
         mode: SessionSearchMode.server,
       );
       var content = false;

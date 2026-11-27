@@ -4,9 +4,12 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
+  desktop_drop
   file_selector_windows
   flutter_secure_storage_windows
   flutter_tts
+  flutter_webrtc
+  pasteboard
   pdfx
   record_windows
   share_plus

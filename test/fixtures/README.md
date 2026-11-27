@@ -38,3 +38,10 @@ Android user-installed/private-CA acceptance.
   `clarify`, captured from a real gateway and anonymised (ids, prompt and
   question text replaced; every key and shape kept). Used by
   `test/nextgen_replayed_clarify_test.dart`.
+
+- `themes/OneDark-Pro.json`, `themes/light-default.json` and
+  `themes/solarized-light-color-theme.json` — real, unmodified VS Code theme
+  files (One Dark Pro 3.20.7, GitHub Light Default 6.3.5 and VS Code's
+  Solarized Light) for `test/appearance_contrast_walk_test.dart`. All three
+  are MIT-licensed; sources, hashes and the full licence notices are in
+  `themes/LICENSES.md`.

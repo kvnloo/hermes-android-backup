@@ -4,6 +4,7 @@
 // addresses and key names in those payloads are never kept, so nothing on
 // the page can show one.
 import '../../core/services/main_model_route.dart';
+import '../nextgen_l10n.dart';
 
 /// Prices as the gateway formats them: `$3.00`, `free`, or empty when unknown.
 class NgModelPrice {
@@ -177,7 +178,7 @@ class NgModelCatalog {
 
   factory NgModelCatalog.fromOptions(Map<String, dynamic> data) {
     final rows = data['providers'];
-    if (rows is! List) throw const FormatException('Missing providers');
+    if (rows is! List) throw FormatException(ngL.ng_release_missing_providers);
     final out = <NgCatalogProvider>[];
     final seen = <String>{};
     for (final row in rows) {
@@ -381,7 +382,7 @@ class NgAuxTask {
 
   static List<NgAuxTask> parseAll(Map<String, dynamic> data) {
     final rows = data['tasks'];
-    if (rows is! List) throw const FormatException('Missing tasks');
+    if (rows is! List) throw FormatException(ngL.ng_release_missing_tasks);
     final out = <NgAuxTask>[];
     final seen = <String>{};
     for (final row in rows) {
@@ -424,7 +425,9 @@ String ngTokenCount(int n) {
     return s.contains('.') ? s.replaceFirst(RegExp(r'\.?0+$'), '') : s;
   }
 
-  if (n >= 1000000) return '${trim(n / 1000000, 2)}M';
-  if (n >= 1000) return '${trim(n / 1000, 1)}K';
+  if (n >= 1000000) {
+    return ngL.ng_release_compact_millions(trim(n / 1000000, 2));
+  }
+  if (n >= 1000) return ngL.ng_release_token_thousands(trim(n / 1000, 1));
   return '$n';
 }

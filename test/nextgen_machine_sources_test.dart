@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:hermes_android/core/services/session_search_client.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/services/connection_manager.dart';
 import 'package:hermes_android/core/services/dashboard_api_client.dart';
@@ -16,6 +17,8 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/mtls_fixture.dart';
+import 'support/session_search_controls.dart';
+import 'package:hermes_android/core/services/session_search_preferences.dart';
 
 const _excluded = 'oneshot,subagent,kanban,tool';
 const _internal = ['oneshot', 'subagent', 'kanban', 'tool'];
@@ -51,6 +54,7 @@ class _Fixture {
       httpClient: MockClient((request) async {
         requests.add(request);
         if (request.url.path == '/hermes/auth/password-login') {
+          await heldLogin?.future;
           return http.Response(
             '{}',
             200,
@@ -58,6 +62,15 @@ class _Fixture {
               'set-cookie': 'hermes_session_at=fixture-session; Path=/',
             },
           );
+        }
+        if (request.url.path == '/hermes/api/sessions/buried') {
+          if (request.method == 'PATCH') {
+            archived = true;
+            return _json({});
+          }
+          return _json({
+            'session': {'id': 'buried', 'archived': archived},
+          });
         }
         if (request.url.path == '/hermes/api/config') {
           if (heldConfig != null) return heldConfig!.future;
@@ -68,7 +81,8 @@ class _Fixture {
               : http.Response('{}', configStatus);
         }
         if (request.url.path == '/hermes/api/sessions/search') {
-          return _json({'results': searchRows});
+          return heldSearch?.future ??
+              Future.value(searchReply ?? _json({'results': searchRows}));
         }
         if (request.url.path == '/hermes/api/sessions') {
           final offset = int.parse(
@@ -104,13 +118,17 @@ class _Fixture {
   final requests = <http.Request>[];
   final pages = <int, List<Map<String, dynamic>>>{};
   List<Map<String, dynamic>>? serverRows;
+  Completer<void>? heldLogin;
+  Completer<http.Response>? heldSearch;
+  http.Response? searchReply;
   Completer<http.Response>? heldConfig;
   List<Map<String, dynamic>> searchRows = [];
   int total = 0;
+  bool archived = false;
   late final SavedConnection connection;
   late final DashboardClient dashboard;
   late final NextGenGateway gateway;
-  late final NgSessionsModel model;
+  late NgSessionsModel model;
 
   List<http.Request> get listing =>
       requests.where((r) => r.url.path == '/hermes/api/sessions').toList();
@@ -165,6 +183,260 @@ Future<_Fixture> _fixture({
 }
 
 void main() {
+  for (final savedLocal in [false, true]) {
+    testWidgets(
+      'NextGen sends no local queries and revokes held search (saved: $savedLocal)',
+      (t) async {
+        final f = await _fixture();
+        final prefs = SessionSearchPreferences(f.prefs);
+        final identity = sessionSearchIdentity(f.connection);
+        if (savedLocal) {
+          await prefs.saveMode(
+            connectionIdentity: identity,
+            mode: SessionSearchMode.local,
+          );
+          f.model.dispose();
+          f.model = NgSessionsModel(f.scope(const SizedBox()));
+        }
+        f.pages[0] = [_row('local')];
+        await f.model.refresh();
+        await t.pumpWidget(f.widget);
+        final field = find.byKey(const Key('ng-session-search'));
+        List<String?> queries() => [
+          for (final r in f.requests)
+            if (r.url.path.endsWith('/sessions/search'))
+              r.url.queryParameters['q'],
+        ];
+        await t.enterText(field, 'local');
+        await t.pump(const Duration(milliseconds: 350));
+        await f.model.refresh();
+        expect(queries(), isEmpty);
+        expect(find.text('Row local'), findsOneWidget);
+        final held = f.heldSearch = Completer();
+        await chooseGatewaySearch(t, enable: true);
+        await t.pump(const Duration(milliseconds: 350));
+        expect(queries(), ['local']);
+        expect(f.model.loading, isTrue);
+        await chooseGatewaySearch(t, enable: false);
+        expect(find.text('Row local'), findsOneWidget);
+        expect(f.model.loading, isFalse);
+        held.complete(
+          _json({
+            'results': [
+              {'id': 'buried', 'snippet': 'secret excerpt'},
+            ],
+          }),
+        );
+        await t.pumpAndSettle();
+        expect(find.text('secret excerpt'), findsNothing);
+        await t.enterText(field, 'private again');
+        await t.pump(const Duration(milliseconds: 350));
+        expect(queries(), ['local']);
+        expect(
+          prefs.readMode(connectionIdentity: identity),
+          SessionSearchMode.local,
+        );
+        await t.pumpWidget(const SizedBox());
+      },
+    );
+  }
+  for (final after401 in [false, true]) {
+    test(
+      'revocation during dashboard login blocks query dispatch (retry: $after401)',
+      () async {
+        final f = await _fixture();
+        await f.model.searchAccess.setServer(true);
+        f.model.query = 'private';
+        if (after401) {
+          f.heldSearch = Completer();
+        } else {
+          f.heldLogin = Completer();
+        }
+        final refresh = f.model.refresh();
+        await pumpEventQueue();
+        final expected = after401 ? 1 : 0;
+        int searches() => f.requests
+            .where((r) => r.url.path.endsWith('/sessions/search'))
+            .length;
+        expect(searches(), expected);
+        if (after401) {
+          f.heldLogin = Completer();
+          f.heldSearch!.complete(http.Response('{}', 401));
+          await pumpEventQueue();
+        }
+        expect(
+          f.requests
+              .where((r) => r.url.path.endsWith('/password-login'))
+              .length,
+          after401 ? 2 : 1,
+        );
+        await f.model.searchAccess.setServer(false);
+        f.heldLogin!.complete();
+        await refresh;
+        expect(searches(), expected);
+        expect(f.model.error, isNull);
+        expect(f.model.loading, isFalse);
+      },
+    );
+  }
+  testWidgets('same-query refresh must drop FTS-only rows on fallback', (
+    t,
+  ) async {
+    final f = await _fixture();
+    await f.model.searchAccess.setServer(true);
+    f.pages[0] = [_row('local')];
+    await f.model.refresh();
+    await t.pumpWidget(f.widget);
+    f.searchRows = [
+      {
+        'session_id': 'buried',
+        'title': 'Remote only',
+        'snippet': 'private excerpt',
+      },
+    ];
+    await t.enterText(find.byKey(const Key('ng-session-search')), 'local');
+    await t.pump(const Duration(milliseconds: 350));
+    await t.pumpAndSettle();
+    expect(find.text('private excerpt'), findsOneWidget);
+    final unavailable = f.heldSearch = Completer();
+    final refresh = f.model.refresh();
+    await t.pump();
+    unavailable.completeError(http.ClientException('fixture offline'));
+    await refresh;
+    await t.pump();
+    expect(f.model.error, contains('Showing local matches'));
+    expect(find.text('Row local'), findsOneWidget);
+    expect(find.text('private excerpt'), findsNothing);
+  });
+  testWidgets('archive read-back wins over older held search', (t) async {
+    final f = await _fixture();
+    await f.model.searchAccess.setServer(true);
+    await f.model.refresh();
+    await t.pumpWidget(f.widget);
+    f.searchRows = [
+      {
+        'session_id': 'buried',
+        'title': 'Remote only',
+        'snippet': 'content excerpt',
+      },
+    ];
+    await t.enterText(find.byKey(const Key('ng-session-search')), 'content');
+    await t.pump(const Duration(milliseconds: 350));
+    await t.pumpAndSettle();
+    await t.testTextInput.receiveAction(TextInputAction.done);
+    await t.pumpAndSettle();
+    expect(find.text('content excerpt'), findsOneWidget);
+    final held = f.heldSearch = Completer();
+    final old = f.model.refresh();
+    await t.pump();
+    expect(f.requests.where((r) => r.url.path.endsWith('/search')).length, 2);
+    await t.longPress(find.text('Remote only'));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 350));
+    await t.tap(find.widgetWithText(ListTile, 'Archive'));
+    await t.pump();
+    await t.pump(const Duration(milliseconds: 350));
+    await t.pump();
+    expect(f.archived, true);
+    expect(f.model.sessions, isEmpty);
+    expect(f.model.loading, true);
+    expect(f.model.error, isNull);
+    held.complete(_json({'results': f.searchRows}));
+    await old;
+    await t.pumpAndSettle();
+    expect(find.text('Remote only'), findsNothing);
+  });
+
+  testWidgets(
+    'NextGen organises known usage below pins and can show row metadata',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(700, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final f = await _fixture();
+      f.pages[0] = [
+        {..._row('pin'), 'pinned': true, 'total_tokens': 1},
+        {..._row('small'), 'total_tokens': 2},
+        {..._row('large'), 'total_tokens': 900},
+      ];
+      f.total = 3;
+      await f.model.refresh();
+      await tester.pumpWidget(f.widget);
+      await tester.pumpAndSettle();
+      Future<void> choose(String label) async {
+        await tester.tap(find.byTooltip('Organise chats'));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.widgetWithText(CheckedPopupMenuItem<Object>, label),
+        );
+        await tester.pumpAndSettle();
+      }
+
+      await choose('Most tokens');
+      await choose('Show model and usage');
+      double y(String s) => tester.getTopLeft(find.text(s)).dy;
+      expect(y('Row pin'), lessThan(y('Row large')));
+      expect(y('Row large'), lessThan(y('Row small')));
+      expect(find.textContaining('900 tokens'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
+  testWidgets(
+    'active NextGen search resolves stored IDs, shows excerpts, and distinguishes wrong scope and unsupported from empty',
+    (tester) async {
+      final f = await _fixture();
+      await f.model.searchAccess.setServer(true);
+      f.pages[0] = [_row('local')];
+      f.total = 1;
+      await f.model.refresh();
+      await tester.pumpWidget(f.widget);
+      final field = find.byKey(const Key('ng-session-search'));
+      Future<void> query(String text) async {
+        await tester.enterText(field, text);
+        await tester.pump(const Duration(milliseconds: 350));
+        await tester.pumpAndSettle();
+      }
+
+      f.searchRows = [
+        {
+          'session_id': 'buried',
+          'title': 'Hidden conversation',
+          'snippet': 'Found in a message',
+        },
+      ];
+      await query('message');
+      expect(find.text('Found in a message'), findsOneWidget);
+      expect(f.model.sessions.single.id, 'buried');
+      final old = f.heldSearch = Completer();
+      await tester.enterText(field, 'old');
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.enterText(field, 'local');
+      old.complete(_json({'results': f.searchRows}));
+      f.heldSearch = null;
+      await tester.pump();
+      expect(find.text('Hidden conversation'), findsNothing);
+      expect(find.text('Row local'), findsOneWidget);
+      f.searchReply = http.Response('{}', 404);
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pumpAndSettle();
+      expect(
+        find.textContaining('does not expose session search'),
+        findsOneWidget,
+      );
+      expect(find.text('Row local'), findsOneWidget);
+      f.searchReply = _json({'profile': 'different', 'results': f.searchRows});
+      await query('scoped');
+      expect(
+        find.textContaining('Unexpected message search response'),
+        findsOneWidget,
+      );
+      expect(find.text('Hidden conversation'), findsNothing);
+      f.searchReply = _json({'results': []});
+      await query('absent');
+      expect(f.model.error, isNull);
+      expect(f.model.sessions, isEmpty);
+      await tester.pumpWidget(const SizedBox());
+    },
+  );
   test(
     'chat browse requests server exclusions on the selected authenticated origin',
     () async {
@@ -388,6 +660,7 @@ void main() {
     'Crons and search keep their unfiltered request and presentation scope',
     (tester) async {
       final f = await _fixture();
+      await f.model.searchAccess.setServer(true);
       f.pages[0] = [_row('human'), _row('cron', source: 'cron')];
       f.total = 2;
       await f.model.refresh();
@@ -516,6 +789,27 @@ void main() {
       });
     },
   );
+
+  test('rejects an oversized search page before mapping its rows', () async {
+    final f = await _fixture();
+    f.searchRows = [for (var i = 0; i < 61; i++) _row('item$i')];
+    await expectLater(
+      f.gateway.api.getSessionsPage(title: 'x', limit: 60),
+      throwsA(
+        isA<SessionSearchException>().having(
+          (e) => e.message,
+          'reason',
+          contains('more search results'),
+        ),
+      ),
+    );
+    expect(f.requests.last.url.queryParameters['limit'], '60');
+    f.searchRows.removeLast();
+    expect(
+      (await f.gateway.api.getSessionsPage(title: 'x', limit: 60)).sessions,
+      hasLength(60),
+    );
+  });
 
   test('generic dashboard paging and search remain unfiltered', () async {
     final f = await _fixture();
