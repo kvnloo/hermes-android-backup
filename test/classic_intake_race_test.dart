@@ -200,7 +200,7 @@ void main() {
       await tester.enterText(field, 'preserved text');
       target(tester).onFiles(make(1, 'existing'));
       await _drain(tester);
-      Future<void> keyboardPaste() async {
+      Future<void> keyboardPaste({int? expectedTiles}) async {
         await tester.showKeyboard(field);
         final modifier = defaultTargetPlatform == TargetPlatform.macOS
             ? LogicalKeyboardKey.metaLeft
@@ -208,17 +208,20 @@ void main() {
         await tester.sendKeyDownEvent(modifier);
         await tester.sendKeyEvent(LogicalKeyboardKey.keyV);
         await tester.sendKeyUpEvent(modifier);
-        await _drain(tester);
+        await _drain(
+          tester,
+          done: expectedTiles == null ? null : () => _tiles() == expectedTiles,
+        );
       }
 
       clip = ClipboardAttachment(image: png);
-      await keyboardPaste();
-      await keyboardPaste();
+      await keyboardPaste(expectedTiles: 2);
+      await keyboardPaste(expectedTiles: 3);
       expect(_tiles(), 3);
       final a = File('${root.path}/copied-a.png')..writeAsBytesSync(png);
       final b = File('${root.path}/copied-b.png')..writeAsBytesSync(png);
       clip = ClipboardAttachment(files: [a.path, b.path]);
-      await keyboardPaste();
+      await keyboardPaste(expectedTiles: 5);
       expect(_tiles(), 5);
       clip = ClipboardAttachment(image: png);
       // No text on the clipboard: Flutter normally omits the Paste item.
@@ -237,7 +240,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Paste'), findsOneWidget);
       await tester.tap(find.text('Paste'));
-      await _drain(tester);
+      await _drain(tester, done: () => _tiles() == 6);
       expect(_tiles(), 6);
       clip = ClipboardAttachment(image: Uint8List.fromList([1, 2, 3]));
       await keyboardPaste();

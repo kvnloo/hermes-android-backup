@@ -7,6 +7,8 @@ import 'package:hermes_android/core/services/connection_manager.dart';
 import 'package:hermes_android/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../test/support/settings_navigation.dart';
+
 void main() {
   test('this suite runs as a Play build', () {
     // This opt-in suite intentionally lives outside test/ so the ordinary
@@ -41,6 +43,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await openSettingsCategory(tester, 'about');
       await tester.scrollUntilVisible(
         find.text('Privacy policy'),
         300,

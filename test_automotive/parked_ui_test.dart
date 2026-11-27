@@ -25,6 +25,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../test/support/completed_stock_turn.dart';
+import '../test/support/settings_navigation.dart';
 
 void main() {
   setUpAll(() => expect(isParkedAutomotive, isTrue));
@@ -184,22 +185,12 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final scrollable = find
-        .descendant(
-          of: find.byType(SettingsScreen),
-          matching: find.byType(Scrollable),
-        )
-        .first;
-    await tester.scrollUntilVisible(
-      find.text('Chat density'),
-      250,
-      scrollable: scrollable,
-    );
-    await tester.scrollUntilVisible(
-      find.text('About'),
-      300,
-      scrollable: scrollable,
-    );
+    // Settings are now category-driven, not one long scrollable page.
+    await openSettingsCategory(tester, 'chat');
+    expect(find.text('Chat density'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await openSettingsCategory(tester, 'about');
     await tester.pumpAndSettle();
     expect(find.text('Check for updates'), findsNothing);
     expect(find.text('Check for updates on launch'), findsNothing);

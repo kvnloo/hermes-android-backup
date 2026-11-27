@@ -130,7 +130,6 @@ import '../utils/chat_history_scroll.dart';
 import '../widgets/transcript_reader.dart';
 import '../widgets/transcript_body.dart';
 import '../utils/message_content.dart';
-import '../utils/responsive.dart';
 import '../utils/turn_recovery_fallback.dart';
 import '../theme/hermes_theme.dart';
 import 'files_screen.dart';
@@ -10825,7 +10824,9 @@ class _ChatScreenState extends State<ChatScreen>
         child: Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: Responsive.isTablet(context) ? 800 : double.infinity,
+              // Width belongs to each message, not the entire transcript:
+              // a table can use this pane while ordinary prose stays capped.
+              maxWidth: double.infinity,
             ),
             child: Column(
               children: [
@@ -10899,9 +10900,15 @@ class _ChatScreenState extends State<ChatScreen>
                                 onSelected: _applySlashCommand,
                               ),
                             ),
-                          _buildInputBar(
-                            availableHeight: viewport.maxHeight - slashHeight,
-                            compactTools: compactTools,
+                          Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 800),
+                              child: _buildInputBar(
+                                availableHeight:
+                                    viewport.maxHeight - slashHeight,
+                                compactTools: compactTools,
+                              ),
+                            ),
                           ),
                         ],
                       );
@@ -12707,24 +12714,28 @@ class MessageBubble extends StatelessWidget {
                     if (block is MarkdownCodeBlock)
                       block
                     else
-                      MarkdownBody(
-                        data: block as String,
-                        selectable: false,
-                        sizedImageBuilder: (image) => externalEmbed(
-                          dialogContext,
-                          uri: '${image.uri}',
-                          alt: image.alt ?? image.title,
-                          blocked: Text(image.alt ?? image.title ?? ''),
-                          linkColor: sheet.a?.color,
-                        ),
-                        onTapLink: (_, href, _) => unawaited(
-                          _openLink(
+                      ...richProseWidgets(
+                        text: block as String,
+                        tablesOnly: true,
+                        markdown: (text) => MarkdownBody(
+                          data: text,
+                          selectable: false,
+                          sizedImageBuilder: (image) => externalEmbed(
                             dialogContext,
-                            href,
-                            previewOwner: previewOwner,
+                            uri: '${image.uri}',
+                            alt: image.alt ?? image.title,
+                            blocked: Text(image.alt ?? image.title ?? ''),
+                            linkColor: sheet.a?.color,
                           ),
+                          onTapLink: (_, href, _) => unawaited(
+                            _openLink(
+                              dialogContext,
+                              href,
+                              previewOwner: previewOwner,
+                            ),
+                          ),
+                          styleSheet: sheet,
                         ),
-                        styleSheet: sheet,
                       ),
                 ],
               ),
@@ -12886,6 +12897,7 @@ class MessageBubble extends StatelessWidget {
         }
       }
     }
+    final hasTable = _hasTable;
     Widget prose(String text) {
       final body = transcriptBody(
         MarkdownBody(
@@ -12904,11 +12916,17 @@ class MessageBubble extends StatelessWidget {
           onTapLink: (_, href, _) => unawaited(_openLink(context, href)),
         ),
       );
-      if (isUser) return body;
+      final boundedBody = hasTable
+          ? ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 752),
+              child: body,
+            )
+          : body;
+      if (isUser) return boundedBody;
       return transcriptEmbeds(
         context,
         text,
-        body,
+        boundedBody,
         complete: mediaReferencesFinal,
       );
     }
@@ -13220,7 +13238,13 @@ class MessageBubble extends StatelessWidget {
     builder: _buildBubble,
   );
 
+  bool get _hasTable => splitMarkdownCodeBlocks(
+    content,
+    openTail: true,
+  ).whereType<String>().any(richProseContainsTable);
+
   Widget _buildBubble(BuildContext context) {
+    final hasTable = _hasTable;
     final theme = Theme.of(context);
     final tokens = HermesTokens.of(context);
     final userBubbleColor = tokens.accent;
@@ -13268,11 +13292,16 @@ class MessageBubble extends StatelessWidget {
       onLongPress: () => _showActions(context),
       behavior: HitTestBehavior.opaque,
       child: Container(
-        margin: density.bubbleMargin,
+        margin: hasTable
+            ? const EdgeInsets.symmetric(horizontal: 4, vertical: 4)
+            : density.bubbleMargin,
         constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - density.maxWidthInset,
+          maxWidth: hasTable
+              ? double.infinity
+              : (MediaQuery.sizeOf(context).width - density.maxWidthInset)
+                    .clamp(0, 800),
         ),
-        padding: density.bubblePadding,
+        padding: hasTable ? const EdgeInsets.all(8) : density.bubblePadding,
         decoration: BoxDecoration(
           color: isUser
               ? userBubbleFill(context, userBubbleColor)

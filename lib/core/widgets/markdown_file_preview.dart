@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../l10n/l10n.dart';
+import '../render/rich_transcript.dart';
+import 'markdown_code_block.dart';
 import 'markdown_link_handler.dart';
 
 bool isMarkdownFilename(String filename) {
@@ -112,18 +114,34 @@ class _MarkdownFilePreviewState extends State<MarkdownFilePreview> {
                     ),
                   )
                 : SelectionArea(
-                    child: MarkdownBody(
-                      data: _formatted,
-                      fitContent: false,
-                      sizedImageBuilder: (image) =>
-                          image.alt?.isNotEmpty == true
-                          ? Text(image.alt!)
-                          : const Icon(Icons.image_not_supported_outlined),
-                      onTapLink: (_, href, _) =>
-                          openMarkdownWebLink(context, href),
-                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                        tableColumnWidth: const IntrinsicColumnWidth(),
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (final block in splitMarkdownCodeBlocks(
+                          _formatted,
+                          selectable: false,
+                        ))
+                          if (block is MarkdownCodeBlock)
+                            block
+                          else
+                            ...richProseWidgets(
+                              text: block as String,
+                              tablesOnly: true,
+                              markdown: (text) => MarkdownBody(
+                                data: text,
+                                fitContent: false,
+                                sizedImageBuilder: (image) =>
+                                    image.alt?.isNotEmpty == true
+                                    ? Text(image.alt!)
+                                    : const Icon(
+                                        Icons.image_not_supported_outlined,
+                                      ),
+                                onTapLink: (_, href, _) =>
+                                    openMarkdownWebLink(context, href),
+                                styleSheet: MarkdownStyleSheet.fromTheme(theme),
+                              ),
+                            ),
+                      ],
                     ),
                   ),
           ),

@@ -555,13 +555,30 @@ final _inlineMath = RegExp(r'(?<!\$)\$([^$\n]+)\$(?!\$)');
 bool _mathLike(String body) =>
     body.contains(r'\') || body.contains('^') || body.contains('_');
 
-List<String> _cells(String line) => line
-    .trim()
-    .replaceAll(RegExp(r'^\|'), '')
-    .replaceAll(RegExp(r'\|$'), '')
-    .split('|')
-    .map((cell) => cell.trim())
-    .toList();
+List<String> _cells(String line) {
+  final body = line.trim();
+  final cells = <String>[];
+  final cell = StringBuffer();
+  var i = body.startsWith('|') ? 1 : 0;
+  for (; i < body.length; i++) {
+    final char = body.codeUnitAt(i);
+    if (char == 0x5c && i + 1 < body.length) {
+      final next = body.codeUnitAt(++i);
+      // GFM removes the pipe escape before inline parsing, including code.
+      if (next != 0x7c) cell.writeCharCode(char);
+      cell.writeCharCode(next);
+    } else if (char == 0x7c) {
+      cells.add(cell.toString().trim());
+      cell.clear();
+    } else {
+      cell.writeCharCode(char);
+    }
+  }
+  if (!body.endsWith('|') || cell.isNotEmpty) {
+    cells.add(cell.toString().trim());
+  }
+  return cells;
+}
 
 /// `:?-{3,}:?` after trimming.
 bool _separatorCell(String cell) {
@@ -660,7 +677,7 @@ class RichPiece extends TranscriptPiece {
   final Object value;
 }
 
-List<TranscriptPiece> _piecesFromProse(String text) {
+List<TranscriptPiece> _piecesFromProse(String text, {bool tablesOnly = false}) {
   if (text.isEmpty) return const [];
   final matches = <_Hit>[];
   void take(RegExp pattern, Object? Function(RegExpMatch match) build) {
@@ -672,30 +689,32 @@ List<TranscriptPiece> _piecesFromProse(String text) {
     }
   }
 
-  _directives(text, matches);
-  _alerts(text, matches);
-  take(_displayMath, (match) {
-    final body = match.group(1)!.trim();
-    return _mathLike(body) ? MathPiece(body, display: true) : null;
-  });
-  take(_inlineMath, (match) {
-    final body = match.group(1)!.trim();
-    return _mathLike(body) ? MathPiece(body, display: false) : null;
-  });
-
+  if (!tablesOnly) {
+    _directives(text, matches);
+    _alerts(text, matches);
+    take(_displayMath, (match) {
+      final body = match.group(1)!.trim();
+      return _mathLike(body) ? MathPiece(body, display: true) : null;
+    });
+    take(_inlineMath, (match) {
+      final body = match.group(1)!.trim();
+      return _mathLike(body) ? MathPiece(body, display: false) : null;
+    });
+  }
   final lines = text.split('\n');
   var offset = 0;
   var row = 0;
   while (row < lines.length) {
     final lineStart = offset;
-    if (lines[row].trimLeft().startsWith('|') &&
+    if (lines[row].contains('|') &&
         row + 1 < lines.length &&
-        _separator(lines[row + 1])) {
+        _separator(lines[row + 1]) &&
+        _cells(lines[row]).length == _cells(lines[row + 1]).length) {
       final headers = _cells(lines[row]);
       final rows = <List<String>>[];
       var end = offset + lines[row].length + 1 + lines[row + 1].length;
       var next = row + 2;
-      while (next < lines.length && lines[next].trimLeft().startsWith('|')) {
+      while (next < lines.length && lines[next].contains('|')) {
         rows.add(_cells(lines[next]));
         end += 1 + lines[next].length;
         next++;
@@ -799,6 +818,15 @@ class _Hit {
 }
 
 final _prosePieces = ContentMemo<List<TranscriptPiece>>(64);
+final _tablePieces = ContentMemo<List<TranscriptPiece>>(16);
+
+/// Document previews opt into table layout without executing chat directives.
+List<TranscriptPiece> splitTableProse(String text) => _tablePieces.lookup(
+  text,
+  () => List<TranscriptPiece>.unmodifiable(
+    _piecesFromProse(text, tablesOnly: true),
+  ),
+);
 
 /// Splits reply prose into Markdown and rich pieces. Memoised by text, so
 /// every unchanged paragraph of a streaming reply skips the scan.
