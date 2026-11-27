@@ -34,6 +34,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Configure test scratch directory
+        run: |
+          mkdir -p "$RUNNER_TEMP/ares-ci"
+          printf 'TMPDIR=%s/ares-ci\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
       - name: Verify release scripts and README release window
         run: |
           python3 -m unittest scripts.test_check_readme_release_window scripts.test_publish_github_release scripts.test_native_ci_config scripts.test_verify_release_apks scripts.test_licence_evidence scripts.test_release_candidate_materials scripts.test_apk_update_guardrails scripts.test_verify_play_bundle
@@ -150,7 +155,9 @@ jobs:
         run: flutter analyze --no-pub --fatal-infos
 
       - name: Run tests
-        run: flutter test --no-pub
+        run: |
+          flutter test --no-pub -j2 --exclude-tags perf
+          flutter test --no-pub -j1 test/delivered_files_perf_test.dart test/transcript_redaction_gateway_test.dart
 
       - name: Verify Play distribution behaviour
         run: flutter test --no-pub --dart-define=ARES_PLAY_BUILD=true test_play/play_distribution_test.dart

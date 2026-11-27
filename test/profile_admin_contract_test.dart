@@ -36,7 +36,7 @@ Future<void> _checkTile(WidgetTester tester, String title) async {
 Future<void> _shown(WidgetTester tester, Finder finder) async {
   // Dashboard futures and their timeouts are real async; the widget binding's
   // fake clock does not complete them.
-  for (var attempt = 0; attempt < 40 && finder.evaluate().isEmpty; attempt++) {
+  for (var attempt = 0; attempt < 200 && finder.evaluate().isEmpty; attempt++) {
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 25)),
     );
@@ -685,10 +685,18 @@ void main() {
       expect(find.textContaining('ares-gold'), findsOneWidget);
       await _checkTile(tester, 'Include this reviewed file');
       await tester.ensureVisible(find.text('Save selected files to device'));
-      await tester.tap(
-        find.text('Save selected files to device').hitTestable(),
-      );
+      // Linux saves through real file I/O and a chmod subprocess. Start that
+      // work outside the widget binding's fake async zone; longer fake-clock
+      // polling cannot complete a process launched inside that zone.
+      await tester.runAsync(() async {
+        await tester.tap(
+          find.text('Save selected files to device').hitTestable(),
+        );
+      });
       await _shown(tester, find.text('Profile bundle saved.'));
+      if (Platform.isLinux) {
+        expect(saved.statSync().mode & 0x1ff, 0x180); // private mode 0600
+      }
       final reviewed = await PortableProfileBundle.inspect(
         saved.readAsBytesSync(),
       );

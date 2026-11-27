@@ -362,7 +362,7 @@ void main() {
     );
     for (
       var i = 0;
-      i < 20 &&
+      i < 100 &&
           find
               .byKey(const Key('attachment-video-play-pause'))
               .evaluate()

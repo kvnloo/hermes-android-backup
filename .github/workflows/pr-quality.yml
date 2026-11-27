@@ -21,6 +21,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Configure test scratch directory
+        run: |
+          mkdir -p "$RUNNER_TEMP/ares-ci"
+          printf 'TMPDIR=%s/ares-ci\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
       - name: Verify README release window
         run: |
           python3 -m unittest scripts.test_check_readme_release_window scripts.test_publish_github_release scripts.test_native_ci_config scripts.test_verify_release_apks scripts.test_licence_evidence scripts.test_release_candidate_materials scripts.test_apk_update_guardrails scripts.test_verify_play_bundle
@@ -91,12 +96,19 @@ jobs:
           exit ${PIPESTATUS[0]}
 
       # ── Step 2: Run tests ────────────────────────────────
+      - name: Linux profile save and Automotive settings regressions
+        run: |
+          flutter test --no-pub test/profile_admin_contract_test.dart
+          flutter test --no-pub --dart-define=ARES_PARKED_AUTOMOTIVE=true test_automotive/parked_ui_test.dart
+          flutter test --no-pub --dart-define=ARES_PLAY_BUILD=true test_play/play_distribution_test.dart
+
       - name: Run tests
         id: test
         continue-on-error: true
         run: |
-          flutter test --no-pub --reporter=expanded 2>&1 | tee test_output.txt
-          exit ${PIPESTATUS[0]}
+          set -o pipefail
+          flutter test --no-pub -j2 --exclude-tags perf --reporter=expanded 2>&1 | tee test_output.txt
+          flutter test --no-pub -j1 --reporter=expanded test/delivered_files_perf_test.dart test/transcript_redaction_gateway_test.dart 2>&1 | tee -a test_output.txt
 
       - name: Run Play distribution tests
         id: play_test

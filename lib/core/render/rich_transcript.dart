@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../l10n/l10n.dart';
 import 'artifact_library.dart';
@@ -24,13 +25,18 @@ class WidgetHtmlSource {
 /// Reads a `::preview{file=…}` widget file for the chat that shows it.
 typedef WidgetHtmlReader = Future<WidgetHtmlSource?> Function(String path);
 
+bool richProseContainsTable(String text) => splitRichProse(
+  text,
+).any((piece) => piece is RichPiece && piece.value is TablePiece);
+
 List<Widget> richProseWidgets({
   required String text,
   required Widget Function(String text) markdown,
+  bool tablesOnly = false,
   WidgetHtmlReader? readHtml,
   Future<void> Function(String prompt)? onIntent,
 }) {
-  final pieces = splitRichProse(text);
+  final pieces = tablesOnly ? splitTableProse(text) : splitRichProse(text);
   if (pieces.length == 1 && pieces.single is ProsePiece) {
     return [markdown(text)];
   }
@@ -125,7 +131,9 @@ class RichPieceView extends StatelessWidget {
     final value = this.value;
     if (value is AlertPiece) return AlertBanner(alert: value);
     if (value is MathPiece) return MathBlock(piece: value);
-    if (value is TablePiece) return ResizableMarkdownTable(table: value);
+    if (value is TablePiece) {
+      return ResizableMarkdownTable(table: value, markdown: markdown);
+    }
     if (value is DirectivePiece) {
       if (value.name == 'preview') {
         return SandboxPreviewCard(
@@ -237,90 +245,187 @@ class MathBlock extends StatelessWidget {
   }
 }
 
+/// A bounded-width grid: measure no cell intrinsically. Sample only a few
+/// source lengths to budget columns, then let Table align multiline row heights.
 class ResizableMarkdownTable extends StatefulWidget {
-  const ResizableMarkdownTable({super.key, required this.table});
+  const ResizableMarkdownTable({super.key, required this.table, this.markdown});
 
   final TablePiece table;
+
+  /// Reuse the caller's inline Markdown styles, link routing and selection area.
+  final Widget Function(String text)? markdown;
 
   @override
   State<ResizableMarkdownTable> createState() => _ResizableMarkdownTableState();
 }
 
 class _ResizableMarkdownTableState extends State<ResizableMarkdownTable> {
-  late final List<double> _widths;
+  final _scroll = ScrollController();
+  final _resized = <int, double>{};
 
   @override
-  void initState() {
-    super.initState();
-    _widths = [for (final _ in widget.table.headers) 96];
+  void didUpdateWidget(ResizableMarkdownTable oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!listEquals(oldWidget.table.headers, widget.table.headers)) {
+      _resized.clear();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final headers = widget.table.headers;
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    if (headers.isEmpty) return const SizedBox.shrink();
+    final scheme = Theme.of(context).colorScheme;
+    final scale = MediaQuery.textScalerOf(context).scale(14) / 14;
+    return LayoutBuilder(
+      builder: (context, box) {
+        // Parent is the chat pane, never the physical screen (split views too).
+        final available = box.hasBoundedWidth ? box.maxWidth : 640.0;
+        final widths = <double>[];
+        for (var i = 0; i < headers.length; i++) {
+          var longest = headers[i].length;
+          for (final row in widget.table.rows.take(12)) {
+            if (i < row.length && row[i].length > longest) {
+              longest = row[i].length;
+            }
+          }
+          widths.add(_resized[i] ?? ((longest > 40 ? 240.0 : 160.0) * scale));
+        }
+        final natural = widths.fold<double>(0, (sum, width) => sum + width);
+        if (natural < available) {
+          final extra = (available - natural) / headers.length;
+          for (var i = 0; i < widths.length; i++) {
+            widths[i] += extra;
+          }
+        }
+        final total = widths.fold<double>(0, (sum, width) => sum + width);
+        final overflow = total > available + 0.5;
+        return SizedBox(
+          width: available,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              for (var i = 0; i < headers.length; i++)
-                _cell(
-                  i,
-                  headers[i],
-                  header: true,
-                  resize: i < headers.length - 1,
+              Scrollbar(
+                controller: _scroll,
+                thumbVisibility: overflow,
+                trackVisibility: overflow,
+                notificationPredicate: (notification) =>
+                    notification.depth == 0,
+                child: SingleChildScrollView(
+                  key: const Key('table-horizontal-scroll'),
+                  controller: _scroll,
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.only(bottom: overflow ? 14 : 0),
+                  child: SizedBox(
+                    width: total,
+                    child: Table(
+                      key: const Key('markdown-table-grid'),
+                      border: TableBorder.all(color: scheme.outline),
+                      defaultVerticalAlignment: TableCellVerticalAlignment.top,
+                      columnWidths: {
+                        for (var i = 0; i < widths.length; i++)
+                          i: FixedColumnWidth(widths[i]),
+                      },
+                      children: [
+                        TableRow(
+                          decoration: BoxDecoration(
+                            color: scheme.surfaceContainerHighest,
+                          ),
+                          children: [
+                            for (var i = 0; i < headers.length; i++)
+                              _cell(
+                                i,
+                                headers[i],
+                                widths[i],
+                                scale,
+                                header: true,
+                              ),
+                          ],
+                        ),
+                        for (final row in widget.table.rows)
+                          TableRow(
+                            children: [
+                              for (var i = 0; i < headers.length; i++)
+                                _cell(
+                                  i,
+                                  i < row.length ? row[i] : '',
+                                  widths[i],
+                                  scale,
+                                ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              if (overflow)
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: Icon(
+                    Icons.swap_horiz,
+                    key: const Key('table-overflow-hint'),
+                    size: 18,
+                    color: scheme.onSurfaceVariant,
+                  ),
                 ),
             ],
           ),
-          for (final row in widget.table.rows)
-            Row(
-              children: [
-                for (var i = 0; i < headers.length; i++)
-                  _cell(i, i < row.length ? row[i] : ''),
-              ],
-            ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _cell(
     int index,
-    String text, {
+    String text,
+    double width,
+    double scale, {
     bool header = false,
-    bool resize = false,
   }) {
-    return SizedBox(
+    final body =
+        widget.markdown?.call(header ? '**$text**' : text) ??
+        MarkdownBody(data: header ? '**$text**' : text, selectable: false);
+    return Stack(
       key: header ? Key('table-col-$index') : null,
-      width: _widths[index],
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              text,
-              style: header
-                  ? const TextStyle(fontWeight: FontWeight.w700)
-                  : null,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: body,
+        ),
+        if (header && index < widget.table.headers.length - 1)
+          PositionedDirectional(
+            end: 0,
+            top: 0,
+            bottom: 0,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.resizeColumn,
+              child: GestureDetector(
+                key: Key('table-resize-$index'),
+                behavior: HitTestBehavior.opaque,
+                onHorizontalDragUpdate: (details) {
+                  final sign = Directionality.of(context) == TextDirection.rtl
+                      ? -1
+                      : 1;
+                  setState(() {
+                    _resized[index] = (width + details.delta.dx * sign).clamp(
+                      144 * scale,
+                      640 * scale,
+                    );
+                  });
+                },
+                child: const SizedBox(width: 12),
+              ),
             ),
           ),
-          if (resize)
-            GestureDetector(
-              key: Key('table-resize-$index'),
-              behavior: HitTestBehavior.opaque,
-              onHorizontalDragUpdate: (details) {
-                setState(() {
-                  _widths[index] = (_widths[index] + details.delta.dx).clamp(
-                    48,
-                    320,
-                  );
-                });
-              },
-              child: const SizedBox(width: 12, height: 24),
-            ),
-        ],
-      ),
+      ],
     );
   }
 }

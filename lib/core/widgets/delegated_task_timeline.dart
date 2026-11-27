@@ -6,6 +6,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import '../controllers/delegated_task_controller.dart';
 import '../services/delegated_task_history.dart';
 import '../l10n/l10n.dart';
+import '../render/rich_transcript.dart';
+import 'markdown_code_block.dart';
 import 'background_report_card.dart';
 import 'delegated_task_labels.dart';
 import 'markdown_link_handler.dart';
@@ -311,14 +313,48 @@ class _TranscriptRow extends StatelessWidget {
                 row.reasoning[i],
               ),
             if (row.role != 'tool' && row.text.trim().isNotEmpty)
-              MarkdownBody(
-                data: row.text,
-                selectable: true,
-                onTapLink: (_, href, _) =>
-                    unawaited(openMarkdownWebLink(context, href)),
-                sizedImageBuilder: (config) =>
-                    Text(config.alt ?? context.l10n.task_image_placeholder),
-              ),
+              // Preserve non-table selection geometry and lazy-row storage.
+              // Only table-bearing rows need the horizontal grid/SelectionArea.
+              if (!splitMarkdownCodeBlocks(
+                row.text,
+              ).whereType<String>().any(richProseContainsTable))
+                MarkdownBody(
+                  data: row.text,
+                  selectable: true,
+                  onTapLink: (_, href, _) =>
+                      unawaited(openMarkdownWebLink(context, href)),
+                  sizedImageBuilder: (config) =>
+                      Text(config.alt ?? context.l10n.task_image_placeholder),
+                )
+              else
+                SelectionArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final block in splitMarkdownCodeBlocks(
+                        row.text,
+                        selectable: false,
+                      ))
+                        if (block is MarkdownCodeBlock)
+                          block
+                        else
+                          ...richProseWidgets(
+                            text: block as String,
+                            tablesOnly: true,
+                            markdown: (text) => MarkdownBody(
+                              data: text,
+                              selectable: false,
+                              onTapLink: (_, href, _) =>
+                                  unawaited(openMarkdownWebLink(context, href)),
+                              sizedImageBuilder: (config) => Text(
+                                config.alt ??
+                                    context.l10n.task_image_placeholder,
+                              ),
+                            ),
+                          ),
+                    ],
+                  ),
+                ),
             for (var i = 0; i < row.calls.length; i++)
               _detail(
                 'call:${row.id}:${row.calls[i].id ?? i}',
