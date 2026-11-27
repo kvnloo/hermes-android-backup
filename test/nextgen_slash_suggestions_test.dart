@@ -14,7 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hermes_android/core/services/connection_manager.dart';
 import 'package:hermes_android/core/services/ws_client.dart';
-import 'package:hermes_android/core/widgets/desktop_shortcuts.dart';
 import 'package:hermes_android/l10n/app_localizations.dart';
 import 'package:hermes_android/nextgen/data/chat_controller.dart';
 import 'package:hermes_android/nextgen/data/nextgen_gateway.dart';
@@ -277,26 +276,6 @@ void main() {
       _app(chat, g, ConnectionManager(prefs), outerKeys: outerKeys),
     );
     await tester.pump(const Duration(milliseconds: 300));
-    if (outerKeys != null) {
-      // Windows/Apple ports: the composer field already sits under the real
-      // `SendOnEnter`, which takes Enter before a Focus above NgChatView sees
-      // it (and really sends). Put the stand-in in its place: the first
-      // handler after the box's own, on the field's node, and keep any Enter
-      // the stand-in leaves alone from reaching the real one.
-      // test/nextgen_slash_suggestions_send_on_enter_test.dart drives the
-      // real wrapper.
-      final node = _editable(tester).widget.focusNode;
-      final box = node.onKeyEvent;
-      node.onKeyEvent = (n, event) {
-        final boxResult = box?.call(n, event) ?? KeyEventResult.ignored;
-        if (boxResult != KeyEventResult.ignored) return boxResult;
-        final result = outerKeys(n, event);
-        if (result == KeyEventResult.ignored && shouldSendOnEnter(event)) {
-          return KeyEventResult.skipRemainingHandlers;
-        }
-        return result;
-      };
-    }
     return (g, chat);
   }
 
